@@ -1,15 +1,14 @@
 package com.oracle.visualize.pages
-
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.navigation.BottomNavBar
+import com.oracle.visualize.navigation.NavRoutes
 
 
 
@@ -17,7 +16,9 @@ import com.oracle.visualize.navigation.BottomNavBar
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
-    val selectedIndex by viewModel.selectedIndex.collectAsState()
+    //We obtain the state from View
+    val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
+    val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -25,13 +26,13 @@ fun MainScreen(
             BottomNavBar(
                 navItems = viewModel.navItems,
                 selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected
+                onItemSelected = viewModel::onNavItemSelected //Update the state
             )
         }
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            selectedIndex = selectedIndex
+            currentRoute = currentRoute //Update the screen type
         )
     }
 }
@@ -41,10 +42,10 @@ fun MainScreen(
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    selectedIndex: Int
+    currentRoute: String
 ) {
-    when (selectedIndex) {
-        0 -> FeedPage(modifier = modifier)
-        1 -> NotificationPage(modifier = modifier)
+    when (currentRoute) {
+        NavRoutes.Feed.route -> FeedPage(modifier = modifier)
+        NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
     }
 }

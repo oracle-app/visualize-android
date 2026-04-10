@@ -2,8 +2,11 @@ package com.oracle.visualize.pages
 
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PregnantWoman
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.navigation.NavItem
 import com.oracle.visualize.navigation.NavRoutes
@@ -14,14 +17,31 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
 
-    private val _selectedIndex = MutableStateFlow(0)
-    val selectedIndex: StateFlow<Int> = _selectedIndex.asStateFlow()
+    //State
+    private val route = MutableStateFlow(NavRoutes.Feed.route)
+    private val index = MutableStateFlow(0)
+
+
+    //SetState
+    val currentRoute: StateFlow<String> = route.asStateFlow()
+    val selectedIndex: StateFlow<Int> = index.asStateFlow()
+
+
 
     val navItems = listOf(
         NavItem(
+            label = "Create",
+            icon = Icons.Default.Add,
+            route = NavRoutes.Teams.route
+        ),
+        NavItem(
+            label = "Teams",
+            icon = Icons.Default.PregnantWoman,
+            route = NavRoutes.Teams.route
+        ),
+        NavItem(
             label = "Feed",
             icon = Icons.Default.Home,
-            badgeCount = 0,
             route = NavRoutes.Feed.route
         ),
         NavItem(
@@ -29,10 +49,16 @@ class MainViewModel : ViewModel() {
             icon = Icons.Default.Notifications,
             badgeCount = 5,
             route = NavRoutes.Notifications.route
+        ),
+        NavItem(
+            label = "Profile",
+            icon = Icons.Default.Person,
+            route = NavRoutes.Profile.route
         )
     )
 
-    fun onNavItemSelected(index: Int) {
-        _selectedIndex.value = index
+    fun onNavItemSelected(i: Int) {
+        index.value = i
+        route.value = navItems[i].route
     }
 }
