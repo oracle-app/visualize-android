@@ -1,4 +1,4 @@
-package com.oracle.visualize.pages
+package com.oracle.visualize.presentation.screens.FeedScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ fun FeedPage(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "FEED",
+            text = "PLACEHOLDER FEED",
             fontSize = 40.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White

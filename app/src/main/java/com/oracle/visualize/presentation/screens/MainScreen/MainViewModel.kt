@@ -1,19 +1,18 @@
-package com.oracle.visualize.pages
-
+package com.oracle.visualize.presentation.screens.MainScreen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PregnantWoman
 import androidx.lifecycle.ViewModel
-import com.oracle.visualize.navigation.NavItem
-import com.oracle.visualize.navigation.NavRoutes
+import com.oracle.visualize.domain.models.NavItem
+import com.oracle.visualize.domain.models.NavRoutes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-
 
 class MainViewModel : ViewModel() {
 
@@ -32,11 +31,11 @@ class MainViewModel : ViewModel() {
         NavItem(
             label = "Create",
             icon = Icons.Default.Add,
-            route = NavRoutes.Teams.route
+            route = NavRoutes.Create.route
         ),
         NavItem(
             label = "Teams",
-            icon = Icons.Default.PregnantWoman,
+            icon = Icons.Default.Groups,
             route = NavRoutes.Teams.route
         ),
         NavItem(

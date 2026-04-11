@@ -1,4 +1,4 @@
-package com.oracle.visualize.navigation
+package com.oracle.visualize.domain.models
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

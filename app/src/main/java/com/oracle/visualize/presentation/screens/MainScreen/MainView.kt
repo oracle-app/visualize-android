@@ -1,4 +1,4 @@
-package com.oracle.visualize.pages
+package com.oracle.visualize.presentation.screens.MainScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -7,9 +7,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.navigation.BottomNavBar
-import com.oracle.visualize.navigation.NavRoutes
-
+import com.oracle.visualize.presentation.components.BottomNavBar
+import com.oracle.visualize.domain.models.NavRoutes
+import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
 
 
 @Composable

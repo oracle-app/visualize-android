@@ -1,4 +1,4 @@
-package com.oracle.visualize.navigation
+package com.oracle.visualize.domain.models
 
 sealed class NavRoutes(val route: String) {
     object Feed : NavRoutes("feed")
