@@ -41,6 +41,16 @@ android {
 }
 
 dependencies {
+    // Material3
+    implementation("androidx.compose.material3:material3:1.3.1")
+
+    // Material Icons Extended (para Icons.Default.Send, Close, Search, etc.)
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
+    // Lifecycle (para collectAsStateWithLifecycle y viewModel)
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

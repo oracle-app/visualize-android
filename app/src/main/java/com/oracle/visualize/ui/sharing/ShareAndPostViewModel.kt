@@ -26,6 +26,7 @@ data class ShareTeam(
 data class ShareAndPostState(
     val emailQuery: String = "",
     val selectedUsers: List<ShareUser> = emptyList(),
+    val suggestedUsers: List<ShareUser> = emptyList(),
     val myTeams: List<ShareTeam> = emptyList(),
     val teamsImIn: List<ShareTeam> = emptyList(),
     val showUnsavedChangesDialog: Boolean = false
@@ -35,6 +36,12 @@ class ShareAndPostViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(
         ShareAndPostState(
+            suggestedUsers = listOf(
+                ShareUser("1", "Diana Escalante", "dianaescalante@gmail.com", "D", 0xFFE8A87C),
+                ShareUser("2", "Jocelyn Duarte",  "jocelynduarte@gmail.com",  "J", 0xFF7EC8C8),
+                ShareUser("3", "Eduardo Salazar", "eduardosalazar@gmail.com", "E", 0xFF8CB87C)
+            ),
+
             myTeams = listOf(
                 ShareTeam(
                     id = "team1",
@@ -86,7 +93,14 @@ class ShareAndPostViewModel : ViewModel() {
     }
 
     fun onRemoveUser(user: ShareUser) {
-        _state.update { it.copy(selectedUsers = it.selectedUsers - user) }
+        _state.update { state ->
+            val newSelected  = state.selectedUsers - user
+            val newSuggested = state.suggestedUsers - user
+            state.copy(
+                selectedUsers  = newSelected,
+                suggestedUsers = newSuggested
+            )
+        }
     }
 
     fun onAddUserByEmail(email: String) {
