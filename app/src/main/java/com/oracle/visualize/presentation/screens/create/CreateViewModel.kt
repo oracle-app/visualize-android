@@ -1,48 +1,40 @@
 package com.oracle.visualize.presentation.screens.create
 
+import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.usecases.GetDatasetInfoUseCase
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Locale
 
-/**
- * ViewModel for the Create Data Visualizations flow.
- * Coordinates between the View and the Domain layer via Use Cases.
- */
 class CreateViewModel(
-    private val getDatasetInfoUseCase: GetDatasetInfoUseCase,
-    private val validateDatasetUseCase: ValidateDatasetUseCase
+    private val validateDatasetUseCase: ValidateDatasetUseCase = ValidateDatasetUseCase()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CreateUiState>(CreateUiState.Idle)
     val uiState: StateFlow<CreateUiState> = _uiState.asStateFlow()
 
-    /**
-     * Handles the file selection event.
-     * Delegates to Use Cases for information retrieval and validation.
-     */
-    fun onFileSelected(uri: Uri?) {
+    fun onFileSelected(uri: Uri?, context: Context) {
         if (uri == null) return
 
-        val dataset = getDatasetInfoUseCase(uri)
-        if (dataset == null) {
-            _uiState.value = CreateUiState.Error("Could not read file information.")
-            return
-        }
+        // Get file info directly from context as it comes from the user selection
+        val fileName = getFileName(context, uri) ?: "unknown_file"
+        val fileSize = getFileSize(context, uri) ?: "0 MB"
 
-        validateDatasetUseCase(dataset.fileName).onSuccess {
-            startUpload(dataset.fileName, dataset.fileSize)
+        // Use Case only for business rule (format validation)
+        validateDatasetUseCase(fileName).onSuccess {
+            startUpload(fileName, fileSize)
         }.onFailure { exception ->
             _uiState.value = CreateUiState.Error(
                 message = exception.message ?: "Unsupported format",
-                fileName = dataset.fileName,
-                fileSize = dataset.fileSize
+                fileName = fileName,
+                fileSize = fileSize
             )
         }
     }
@@ -50,23 +42,41 @@ class CreateViewModel(
     private fun startUpload(fileName: String, fileSize: String) {
         viewModelScope.launch {
             _uiState.value = CreateUiState.Uploading(fileName, fileSize, 0f)
-            
-            // Simulating upload progress
             for (progressValue in 1..100) {
                 delay(15) 
                 if (_uiState.value is CreateUiState.Uploading) {
                     _uiState.value = CreateUiState.Uploading(fileName, fileSize, progressValue / 100f)
                 }
             }
-            
             _uiState.value = CreateUiState.Success(fileName, fileSize)
         }
     }
 
-    /**
-     * Resets the screen to its initial idle state.
-     */
     fun resetState() {
         _uiState.value = CreateUiState.Idle
+    }
+
+    // Helpers move back to ViewModel as they are UI-related metadata retrieval
+    private fun getFileName(context: Context, uri: Uri): String? {
+        var name: String? = null
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (index != -1) name = cursor.getString(index)
+            }
+        }
+        return name
+    }
+
+    private fun getFileSize(context: Context, uri: Uri): String? {
+        var size: Long = 0
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+                if (index != -1) size = cursor.getLong(index)
+            }
+        }
+        val mbSize = size / (1024f * 1024f)
+        return String.format(Locale.ROOT, "%.1f MB", mbSize)
     }
 }

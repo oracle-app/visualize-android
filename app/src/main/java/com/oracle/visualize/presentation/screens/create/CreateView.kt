@@ -15,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -22,10 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.VisualizeApplication
 import com.oracle.visualize.presentation.screens.create.components.FileStatusItem
 import com.oracle.visualize.ui.theme.*
 
@@ -35,28 +34,16 @@ import com.oracle.visualize.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: CreateViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val appModule = (context.applicationContext as VisualizeApplication).appModule
-    
-    val viewModel: CreateViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return CreateViewModel(
-                    getDatasetInfoUseCase = appModule.getDatasetInfoUseCase,
-                    validateDatasetUseCase = appModule.validateDatasetUseCase
-                ) as T
-            }
-        }
-    )
-
     val uiState by viewModel.uiState.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
         onResult = { uri ->
-            viewModel.onFileSelected(uri)
+            viewModel.onFileSelected(uri, context)
         }
     )
 
@@ -162,12 +149,35 @@ fun DashedSelector(onClick: () -> Unit) {
             )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Default.ArrowUpward,
-                contentDescription = null,
-                tint = TealPrimary,
-                modifier = Modifier.size(48.dp)
-            )
+            // Custom Arrow Icon to match Figma exactly
+            Canvas(modifier = Modifier.size(48.dp)) {
+                val iconSize = size.width
+                val teal = TealPrimary
+                
+                // Draw Arrow Head (Triangle)
+                val path = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(iconSize / 2, iconSize * 0.15f)
+                    lineTo(iconSize * 0.8f, iconSize * 0.45f)
+                    lineTo(iconSize * 0.2f, iconSize * 0.45f)
+                    close()
+                }
+                drawPath(path, teal)
+                
+                // Draw Arrow Stem (Rectangle)
+                drawRect(
+                    color = teal,
+                    topLeft = Offset(iconSize * 0.42f, iconSize * 0.45f),
+                    size = Size(iconSize * 0.16f, iconSize * 0.25f)
+                )
+                
+                // Draw Bottom Bar
+                drawRect(
+                    color = teal,
+                    topLeft = Offset(iconSize * 0.2f, iconSize * 0.75f),
+                    size = Size(iconSize * 0.6f, iconSize * 0.08f)
+                )
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Choose a .xlsx or .csv file.", 
