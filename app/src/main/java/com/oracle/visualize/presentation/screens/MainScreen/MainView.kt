@@ -1,4 +1,5 @@
 package com.oracle.visualize.presentation.screens.MainScreen
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,13 +12,12 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-
+import com.oracle.visualize.presentation.screens.create.CreatePage
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
-    //We obtain the state from View
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
@@ -27,18 +27,16 @@ fun MainScreen(
             BottomNavBar(
                 navItems = viewModel.navItems,
                 selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected //Update the state
+                onItemSelected = viewModel::onNavItemSelected
             )
         }
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute //Update the screen type
+            currentRoute = currentRoute
         )
     }
 }
-
-
 
 @Composable
 fun ContentScreen(
@@ -48,5 +46,10 @@ fun ContentScreen(
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
+        NavRoutes.Create.route -> CreatePage(modifier = modifier)
+        // Add other routes as they are implemented
+        else -> {
+            // Placeholder for unimplemented screens
+        }
     }
 }
