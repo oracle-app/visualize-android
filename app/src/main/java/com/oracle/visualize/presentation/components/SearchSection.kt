@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -26,16 +27,16 @@ fun SearchSection(
         trailingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "Buscar"
+                contentDescription = "Search"
             )
         },
         singleLine = true,
         shape = RoundedCornerShape(24.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedContainerColor = Color(0xFFF2F5F4),
+            unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
             focusedContainerColor = Color.White,
             unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = Color(0xFF7AA6A3)
+            focusedBorderColor = MaterialTheme.colorScheme.surface
         )
     )
 }
