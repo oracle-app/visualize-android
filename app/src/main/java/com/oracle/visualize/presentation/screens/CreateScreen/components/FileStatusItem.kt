@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.create.components
+package com.oracle.visualize.presentation.screens.CreateScreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

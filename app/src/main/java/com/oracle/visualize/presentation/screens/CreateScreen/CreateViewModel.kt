@@ -1,10 +1,11 @@
-package com.oracle.visualize.presentation.screens.create
+package com.oracle.visualize.presentation.screens.CreateScreen
 
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.domain.models.CreateUiState
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,11 +24,9 @@ class CreateViewModel(
     fun onFileSelected(uri: Uri?, context: Context) {
         if (uri == null) return
 
-        // Get file info directly from context as it comes from the user selection
         val fileName = getFileName(context, uri) ?: "unknown_file"
         val fileSize = getFileSize(context, uri) ?: "0 MB"
 
-        // Use Case only for business rule (format validation)
         validateDatasetUseCase(fileName).onSuccess {
             startUpload(fileName, fileSize)
         }.onFailure { exception ->
@@ -56,7 +55,6 @@ class CreateViewModel(
         _uiState.value = CreateUiState.Idle
     }
 
-    // Helpers move back to ViewModel as they are UI-related metadata retrieval
     private fun getFileName(context: Context, uri: Uri): String? {
         var name: String? = null
         context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->

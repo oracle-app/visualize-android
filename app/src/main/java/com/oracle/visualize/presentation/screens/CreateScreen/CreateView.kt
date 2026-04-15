@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.create
+package com.oracle.visualize.presentation.screens.CreateScreen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,7 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.presentation.screens.create.components.FileStatusItem
+import com.oracle.visualize.domain.models.CreateUiState
+import com.oracle.visualize.presentation.screens.CreateScreen.components.FileStatusItem
 import com.oracle.visualize.ui.theme.*
 
 /**
@@ -40,8 +40,9 @@ fun CreatePage(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
+    // Using GetContent for broader support of cloud providers like Google Drive
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
+        contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             viewModel.onFileSelected(uri, context)
         }
@@ -90,13 +91,8 @@ fun CreatePage(
             if (uiState is CreateUiState.Idle) {
                 DashedSelector(
                     onClick = {
-                        launcher.launch(
-                            arrayOf(
-                                "text/comma-separated-values",
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                "text/csv"
-                            )
-                        )
+                        // Use a broad filter to ensure Google Drive appears
+                        launcher.launch("*/*")
                     }
                 )
             } else {
@@ -134,6 +130,7 @@ fun DashedSelector(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp)
+            .background(Color.White, RoundedCornerShape(8.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -149,12 +146,10 @@ fun DashedSelector(onClick: () -> Unit) {
             )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Custom Arrow Icon to match Figma exactly
+            // Custom Arrow Icon
             Canvas(modifier = Modifier.size(48.dp)) {
                 val iconSize = size.width
                 val teal = TealPrimary
-                
-                // Draw Arrow Head (Triangle)
                 val path = androidx.compose.ui.graphics.Path().apply {
                     moveTo(iconSize / 2, iconSize * 0.15f)
                     lineTo(iconSize * 0.8f, iconSize * 0.45f)
@@ -162,15 +157,11 @@ fun DashedSelector(onClick: () -> Unit) {
                     close()
                 }
                 drawPath(path, teal)
-                
-                // Draw Arrow Stem (Rectangle)
                 drawRect(
                     color = teal,
                     topLeft = Offset(iconSize * 0.42f, iconSize * 0.45f),
                     size = Size(iconSize * 0.16f, iconSize * 0.25f)
                 )
-                
-                // Draw Bottom Bar
                 drawRect(
                     color = teal,
                     topLeft = Offset(iconSize * 0.2f, iconSize * 0.75f),
@@ -255,8 +246,7 @@ fun TableExampleComponent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(4.dp))
-            .border(1.dp, BorderGray.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+            .background(Color(0xFFE9F1F2), RoundedCornerShape(4.dp))
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {

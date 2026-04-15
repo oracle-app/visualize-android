@@ -12,7 +12,7 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.create.CreatePage
+import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 
 @Composable
 fun MainScreen(

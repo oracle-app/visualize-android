@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.create
+package com.oracle.visualize.domain.models
 
 /**
  * Represents the different states of the Create Data Visualizations screen.
