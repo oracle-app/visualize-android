@@ -9,7 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -163,7 +163,7 @@ fun DashedSelector(onClick: () -> Unit) {
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                imageVector = Icons.Default.CloudUpload,
+                imageVector = Icons.Default.ArrowUpward,
                 contentDescription = null,
                 tint = TealPrimary,
                 modifier = Modifier.size(48.dp)
@@ -172,7 +172,7 @@ fun DashedSelector(onClick: () -> Unit) {
             Text(
                 text = "Choose a .xlsx or .csv file.", 
                 fontWeight = FontWeight.Medium,
-                color = TealPrimary // Ajustado según observación de Figma
+                color = TealPrimary
             )
             Text("Minimum file size: 100 MB", fontSize = 12.sp, color = TextGray)
             Text("Only one dataset can be uploaded.", fontSize = 12.sp, color = TextGray)
