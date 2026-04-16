@@ -81,7 +81,6 @@ fun ChartCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Chart Container
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,7 +100,6 @@ fun ChartCard(
 fun MockChartContent() {
     Column(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f)) {
-            // Y-Axis Labels
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -113,13 +111,11 @@ fun MockChartContent() {
                 }
             }
 
-            // Chart Drawing Area
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(start = 35.dp, bottom = 20.dp, end = 8.dp)
             ) {
-                // Grid Lines
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween
@@ -133,7 +129,6 @@ fun MockChartContent() {
                     }
                 }
 
-                // Bars
                 Row(
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -150,7 +145,6 @@ fun MockChartContent() {
                     }
                 }
 
-                // Trend Line (Orange)
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val orangeLine = ChartLineOrange
                     val points = listOf(0.7f, 0.5f, 0.8f, 0.4f, 0.7f, 0.3f, 0.6f, 0.4f)
@@ -171,8 +165,7 @@ fun MockChartContent() {
                     )
                 }
             }
-            
-            // X-Axis Labels (Months)
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -186,7 +179,6 @@ fun MockChartContent() {
             }
         }
 
-        // Legend
         Row(
             modifier = Modifier
                 .fillMaxWidth()
