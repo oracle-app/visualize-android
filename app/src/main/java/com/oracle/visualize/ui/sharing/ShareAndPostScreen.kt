@@ -32,19 +32,25 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
 private val TopBarColor     = Color(0xFFB8D8DC)
-private val BackgroundColor = Color(0xFFDDE8EA)
-private val SurfaceColor    = Color(0xFFFFFFFF)
+private val BackgroundColor = Color.White
+private val SurfaceColor    = Color.White
+
+private val TeamUnselectedBg = Color(0xFFE5ECEB)
 private val TealSelected    = Color(0xFF3D8C84)
 private val OrangeConfirm   = Color(0xFFE8A85C)
 private val SearchBarBg     = Color(0xFFECF3F4)
 private val TextPrimary     = Color(0xFF1A1A2E)
 private val TextSecondary   = Color(0xFF8A8A9A)
 private val RemoveRed       = Color(0xFFE05555)
+
+private val SearchIconColor  = Color(0xFF7FA9A9)
 
 // ─── Mock data para preview ───────────────────────────────────────────────────
 val mockSelectedUsers = listOf(
@@ -96,9 +102,16 @@ fun ShareAndPostScreen(
         onRemoveUser            = viewModel::onRemoveUser,
         onToggleTeam            = viewModel::onToggleTeam,
         onConfirmShare          = viewModel::onConfirmShare,
-        onBackPressed           = {
-            viewModel.onBackPressed()
-            if (!state.showUnsavedChangesDialog) onNavigateBack()
+        onBackPressed = {
+            val hadSelections = state.selectedUsers.isNotEmpty() ||
+                    state.myTeams.any { it.isSelected } ||
+                    state.teamsImIn.any { it.isSelected }
+
+            if (hadSelections) {
+                viewModel.onBackPressed() // solo muestra el dialog
+            } else {
+                onNavigateBack()          // sale directo si no hay cambios
+            }
         },
         onDismissUnsavedChanges = viewModel::onDismissUnsavedChanges,
         onConfirmLeave          = { viewModel.onConfirmLeave(); onNavigateBack() }
@@ -181,7 +194,7 @@ fun ShareAndPostContent(
                         // Headline
                         Text(
                             text = "Share and post",
-                            fontSize = 28.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Normal,
                             lineHeight = 36.sp,
                             color = Color(0xFF1D1B20),
@@ -203,26 +216,38 @@ fun ShareAndPostContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // ── Barra de búsqueda ────────────────────────────────────────
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(2.dp, RoundedCornerShape(28.dp)) // ✅ sombra
-                        .background(SurfaceColor, RoundedCornerShape(28.dp))
-                        .padding(horizontal = 16.dp, vertical = 2.dp)
+                        .height(56.dp)
+                        .shadow(2.dp, RoundedCornerShape(28.dp))
+                        .background(SearchBarBg, RoundedCornerShape(28.dp))
+                        .padding(horizontal = 4.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        tint = TextSecondary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = SearchIconColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    // gap: 4px between icon and text field (Figma: gap 4px in search bar)
                     TextField(
                         value = state.emailQuery,
                         onValueChange = onEmailQueryChange,
                         placeholder = {
-                            Text("Enter email", color = TextSecondary, fontSize = 14.sp)
+                            Text(
+                                "Enter email",
+                                color = TextSecondary,
+                                fontSize = 14.sp,
+                                letterSpacing = 0.25.sp             // Figma body/medium tracking
+                            )
                         },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
@@ -233,10 +258,13 @@ fun ShareAndPostContent(
                             cursorColor             = TealSelected
                         ),
                         modifier = Modifier.weight(1f),
-                        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
+                        textStyle = LocalTextStyle.current.copy(
+                            fontSize = 16.sp,                       // Figma: body/large 16px
+                            lineHeight = 24.sp,                     // Figma: body/large line-height 24px
+                            letterSpacing = 0.5.sp                  // Figma: body/large tracking 0.5px
+                        )
                     )
                 }
-
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // ── Usuarios sugeridos / seleccionados ───────────────────────
@@ -260,7 +288,7 @@ fun ShareAndPostContent(
                             ) {
                                 Column {
                                     SelectedUserRow(user = user, onRemove = { onRemoveUser(user) })
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(4.dp))
                                 }
                             }
                         }
@@ -281,7 +309,7 @@ fun ShareAndPostContent(
                 } else {
                     state.myTeams.forEach { team ->
                         TeamRow(team = team, onToggle = { onToggleTeam(team.id, true) })
-                        Spacer(modifier = Modifier.height(10.dp)) // ✅ más espacio
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
 
@@ -367,9 +395,9 @@ private fun SelectedUserRow(user: ShareUser, onRemove: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(14.dp)) // ✅ sombra
+            //.shadow(2.dp, RoundedCornerShape(14.dp))
             .background(SurfaceColor, RoundedCornerShape(14.dp))
-            .padding(horizontal = 12.dp, vertical = 10.dp) // ✅ más padding vertical
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         UserAvatar(initials = user.avatarInitials, color = Color(user.avatarColor), size = 42)
         Spacer(modifier = Modifier.width(12.dp))
@@ -393,7 +421,7 @@ private fun SelectedUserRow(user: ShareUser, onRemove: () -> Unit) {
                 Icons.Default.Close,
                 contentDescription = "Remove",
                 tint = RemoveRed,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(25.dp)
             )
         }
     }
@@ -402,7 +430,7 @@ private fun SelectedUserRow(user: ShareUser, onRemove: () -> Unit) {
 // ─── Fila de equipo ───────────────────────────────────────────────────────────
 @Composable
 private fun TeamRow(team: ShareTeam, onToggle: () -> Unit) {
-    val bgColor   = if (team.isSelected) TealSelected else SurfaceColor // ✅ blanco puro
+    val bgColor   = if (team.isSelected) TealSelected else TeamUnselectedBg
     val textColor = if (team.isSelected) Color.White  else TextPrimary
     val subColor  = if (team.isSelected) Color.White.copy(alpha = 0.85f) else TextSecondary
 
@@ -410,10 +438,10 @@ private fun TeamRow(team: ShareTeam, onToggle: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(14.dp)) // ✅ sombra
+            .shadow(if (team.isSelected) 0.dp else 1.dp, RoundedCornerShape(14.dp))
             .background(bgColor, RoundedCornerShape(14.dp))
             .clickable { onToggle() }
-            .padding(horizontal = 16.dp, vertical = 14.dp) // ✅ más padding vertical
+            .padding(horizontal = 16.dp, vertical = 14.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -442,10 +470,14 @@ private fun MemberAvatarStack(members: List<ShareUser>, isSelected: Boolean) {
     val displayCount = minOf(members.size, 3)
     val extraCount   = members.size - displayCount
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,  // agrega esto
+        modifier = Modifier.wrapContentWidth()    // agrega esto — era sin modifier
+    ) {
         Box(
             modifier = Modifier
-                .width((displayCount * 20 + 8).dp)
+                .width((displayCount * 14 + 28).dp)
                 .height(28.dp)
         ) {
             repeat(displayCount) { index ->
@@ -524,36 +556,57 @@ private fun EmptyStateText(text: String) {
 // ─── Diálogo cambios sin guardar ──────────────────────────────────────────────
 @Composable
 private fun UnsavedChangesDialog(onDismiss: () -> Unit, onConfirmLeave: () -> Unit) {
-    AlertDialog(
+    Dialog(
         onDismissRequest = onDismiss,
-        containerColor   = SurfaceColor,
-        shape            = RoundedCornerShape(16.dp),
-        title = {
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .background(Color.White, RoundedCornerShape(20.dp))
+                .padding(horizontal = 24.dp, vertical = 28.dp)
+        ) {
             Text(
-                "Unsaved Changes",
-                fontSize = 18.sp,
+                text = "Unsaved Changes",
+                fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
             )
-        },
-        text = {
+            Spacer(modifier = Modifier.height(14.dp))
             Text(
-                "You have unsaved changes. Are you sure you want to leave?",
+                text = "You have unsaved changes. Are you sure you want to leave?",
                 fontSize = 14.sp,
-                color = TextSecondary
+                color = TextSecondary,
+                lineHeight = 21.sp
             )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirmLeave) {
-                Text("Share", color = TealSelected, fontWeight = FontWeight.SemiBold)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel", color = TextSecondary)
+            Spacer(modifier = Modifier.height(28.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text(
+                        "Cancel",
+                        color = TealSelected,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 15.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))  // ← más separación entre botones
+                TextButton(onClick = onConfirmLeave) {
+                    Text(
+                        "Share",
+                        color = TealSelected,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp
+                    )
+                }
             }
         }
-    )
+    }
 }
 
 // ─── Previews ─────────────────────────────────────────────────────────────────
@@ -578,7 +631,7 @@ fun ShareAndPostWithUsersPreview() {
             state = ShareAndPostState(
                 selectedUsers = mockSelectedUsers,
                 myTeams       = mockMyTeams,
-                teamsImIn     = mockTeamsImIn
+                teamsImIn     = mockTeamsImIn,
             ),
             onEmailQueryChange = {}, onAddUserByEmail = {}, onRemoveUser = {},
             onToggleTeam = { _, _ -> }, onConfirmShare = {}, onBackPressed = {},
@@ -601,5 +654,23 @@ fun ShareAndPostWithSelectionPreview() {
             onToggleTeam = { _, _ -> }, onConfirmShare = {}, onBackPressed = {},
             onDismissUnsavedChanges = {}, onConfirmLeave = {}
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UnsavedChangesDialogPreview() {
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x80000000)), // fondo oscuro simulado
+            contentAlignment = Alignment.Center
+        ) {
+            UnsavedChangesDialog(
+                onDismiss = {},
+                onConfirmLeave = {}
+            )
+        }
     }
 }
