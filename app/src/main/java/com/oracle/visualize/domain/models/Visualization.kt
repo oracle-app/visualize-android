@@ -2,10 +2,6 @@ package com.oracle.visualize.domain.models
 
 import java.util.Date
 
-/**
- * Represents a data visualization generated from a dataset.
- * Renamed from 'Chart' to avoid confusion with other UI chart components.
- */
 data class Visualization(
     val id: String,
     val ownerId: String,
@@ -25,5 +21,5 @@ enum class VisualizationType {
     PIE,
     SCATTER,
     AREA,
-    COMBINED // Like the one in the Figma (Bar + Line)
+    COMBINED
 }

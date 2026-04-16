@@ -14,6 +14,8 @@ import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 import com.oracle.visualize.presentation.screens.ChartSelection.ChartSelectionPage
+import com.oracle.visualize.ui.theme.ScreenBackground
+
 
 @Composable
 fun MainScreen(
@@ -25,8 +27,6 @@ fun MainScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            // Solo mostramos la BottomBar si no estamos en la pantalla de selección de gráficos
-            // para que se vea a pantalla completa como en el diseño.
             if (currentRoute != NavRoutes.ChartSelection.route) {
                 BottomNavBar(
                     navItems = viewModel.navItems,
@@ -44,6 +44,9 @@ fun MainScreen(
     }
 }
 
+
+
+
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
@@ -55,8 +58,8 @@ fun ContentScreen(
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
         NavRoutes.ChartSelection.route -> ChartSelectionPage(
-            onBack = { onNavigate(2) }, // Regresa a Create (index 2)
-            onNavigateToShare = { /* TODO */ }
+            onBack = { onNavigate(2) },
+            onNavigateToShare = {}
         )
         else -> { }
     }

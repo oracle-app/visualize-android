@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
 
-    // Cambiado temporalmente a ChartSelection para facilitar el desarrollo
     private val route = MutableStateFlow(NavRoutes.ChartSelection.route)
     private val index = MutableStateFlow(0)
 
