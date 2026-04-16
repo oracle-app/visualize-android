@@ -22,8 +22,7 @@ class ChartSelectionViewModel : ViewModel() {
     }
 
     private fun loadMockCharts() {
-        // Simulating loading data from a repository or use case
-        // Mock data for development reference
+
         val mockCharts = listOf(
             Visualization(
                 id = UUID.randomUUID().toString(),
