@@ -57,7 +57,6 @@ fun ChartSelectionPage(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Header Section
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,7 +102,6 @@ fun ChartSelectionPage(
                 }
             }
 
-            // Bottom Buttons
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +109,7 @@ fun ChartSelectionPage(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
-                    onClick = { /* TODO: Post to personal feed logic */ },
+                    onClick = {},
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
@@ -137,7 +135,6 @@ fun ChartSelectionPage(
         }
     }
 
-    // Edit Title Dialog
     if (showEditDialog != null) {
         AlertDialog(
             onDismissRequest = { showEditDialog = null },
@@ -166,7 +163,6 @@ fun ChartSelectionPage(
         )
     }
 
-    // Unsaved Changes Dialog (Example usage)
     if (uiState.isUnsavedChangesDialogVisible) {
         AlertDialog(
             onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
