@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,8 +30,11 @@ fun ChartSelectionPage(
     val uiState by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf<String?>(null) }
     var tempTitle by remember { mutableStateOf("") }
+    
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -45,6 +49,7 @@ fun ChartSelectionPage(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = TopBarColor
                 )
@@ -52,44 +57,43 @@ fun ChartSelectionPage(
         },
         containerColor = ScreenBackground
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(TealPrimary)
-                    .padding(16.dp)
-            ) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(TealPrimary)
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Your Visualizations Are Ready!",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                    Text(
+                        text = "We've generated several charts based on your dataset.",
+                        color = Color.White.copy(alpha = 0.9f),
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            item {
                 Text(
-                    text = "Your Visualizations Are Ready!",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
+                    text = "Choose the chart that best represents the insights you want to share.",
+                    modifier = Modifier.padding(16.dp),
+                    color = TextGray,
                     fontSize = 14.sp
-                )
-                Text(
-                    text = "We've generated several charts based on your dataset.",
-                    color = Color.White.copy(alpha = 0.9f),
-                    fontSize = 12.sp
                 )
             }
 
-            Text(
-                text = "Choose the chart that best represents the insights you want to share.",
-                modifier = Modifier.padding(16.dp),
-                color = TextGray,
-                fontSize = 14.sp
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                items(uiState.charts) { selection ->
+            items(uiState.charts) { selection ->
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                     ChartCard(
                         visualization = selection.visualization,
                         isSelected = selection.isSelected,
@@ -102,34 +106,36 @@ fun ChartSelectionPage(
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = {},
+            item {
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
-                    shape = RoundedCornerShape(8.dp),
-                    enabled = viewModel.hasSelections()
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("Post to personal feed", color = Color.White, fontSize = 12.sp)
-                }
+                    Button(
+                        onClick = {},
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
+                        shape = RoundedCornerShape(8.dp),
+                        enabled = viewModel.hasSelections()
+                    ) {
+                        Text("Post to personal feed", color = Color.White, fontSize = 12.sp)
+                    }
 
-                Button(
-                    onClick = onNavigateToShare,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
-                    shape = RoundedCornerShape(8.dp),
-                    enabled = viewModel.hasSelections()
-                ) {
-                    Text("Share and post", color = Color.White, fontSize = 12.sp)
+                    Button(
+                        onClick = onNavigateToShare,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
+                        shape = RoundedCornerShape(8.dp),
+                        enabled = viewModel.hasSelections()
+                    ) {
+                        Text("Share and post", color = Color.White, fontSize = 12.sp)
+                    }
                 }
             }
         }
