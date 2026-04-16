@@ -1,4 +1,5 @@
 package com.oracle.visualize.presentation.screens.MainScreen
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,7 +12,7 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedView
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-
+import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 
 @Composable
 fun MainScreen(
@@ -28,6 +29,7 @@ fun MainScreen(
                 navItems = viewModel.navItems,
                 selectedIndex = selectedIndex,
                 onItemSelected = viewModel::onNavItemSelected //Update the state
+
             )
         }
     ) { innerPadding ->
@@ -40,6 +42,7 @@ fun MainScreen(
 
 
 
+
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
@@ -48,5 +51,7 @@ fun ContentScreen(
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedView(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
+        NavRoutes.Create.route -> CreatePage(modifier = modifier)
+        // Add other routes as they are implemented
     }
 }
