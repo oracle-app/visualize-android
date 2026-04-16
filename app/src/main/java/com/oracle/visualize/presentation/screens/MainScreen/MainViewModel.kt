@@ -15,10 +15,12 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
 
-    // Initialize with Create route (index 0) to match the requirement of starting on the upload screen
-    private val route = MutableStateFlow(NavRoutes.Create.route)
+    //State
+    private val route = MutableStateFlow(NavRoutes.Feed.route)
     private val index = MutableStateFlow(0)
 
+
+    //SetState
     val currentRoute: StateFlow<String> = route.asStateFlow()
     val selectedIndex: StateFlow<Int> = index.asStateFlow()
 

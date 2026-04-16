@@ -10,7 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
-import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.FeedScreen.FeedView
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 
@@ -18,6 +18,7 @@ import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
+    //We obtain the state from View
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
@@ -27,16 +28,20 @@ fun MainScreen(
             BottomNavBar(
                 navItems = viewModel.navItems,
                 selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected
+                onItemSelected = viewModel::onNavItemSelected //Update the state
+
             )
         }
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute
+            currentRoute = currentRoute //Update the screen type
         )
     }
 }
+
+
+
 
 @Composable
 fun ContentScreen(
@@ -44,12 +49,9 @@ fun ContentScreen(
     currentRoute: String
 ) {
     when (currentRoute) {
-        NavRoutes.Feed.route -> FeedPage(modifier = modifier)
+        NavRoutes.Feed.route -> FeedView(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
         // Add other routes as they are implemented
-        else -> {
-            // Placeholder for unimplemented screens
-        }
     }
 }
