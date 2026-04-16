@@ -10,7 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
-import com.oracle.visualize.presentation.screens.FeedScreen.FeedView
+import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 import com.oracle.visualize.ui.theme.ScreenBackground
@@ -51,7 +51,7 @@ fun ContentScreen(
     currentRoute: String
 ) {
     when (currentRoute) {
-        NavRoutes.Feed.route -> FeedView(modifier = modifier)
+        NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
         // Add other routes as they are implemented
