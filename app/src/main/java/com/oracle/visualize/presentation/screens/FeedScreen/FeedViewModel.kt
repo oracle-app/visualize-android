@@ -29,6 +29,26 @@ class FeedViewModel : ViewModel() {
             7,
             true,
             Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+        ),
+        Visualization(
+            "3", "Eduardo Cardenas",
+            "Relative performance of major currencies",
+            emptyMap(),
+            emptyList(),
+            emptyList(),
+            7,
+            true,
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+        ),
+        Visualization(
+            "4", "Eduardo Cardenas",
+            "Relative performance of major currencies",
+            emptyMap(),
+            emptyList(),
+            emptyList(),
+            7,
+            true,
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
         )
     )
 
