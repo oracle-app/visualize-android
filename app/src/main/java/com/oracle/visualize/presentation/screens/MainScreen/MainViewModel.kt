@@ -17,7 +17,7 @@ class MainViewModel : ViewModel() {
 
     //State
     private val route = MutableStateFlow(NavRoutes.Feed.route)
-    private val index = MutableStateFlow(0)
+    private val index = MutableStateFlow(2)
 
 
     //SetState

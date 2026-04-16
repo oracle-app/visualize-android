@@ -23,7 +23,7 @@ import com.oracle.visualize.presentation.components.SearchSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedView(
+fun FeedPage(
     modifier: Modifier = Modifier,
     feedViewModel: FeedViewModel = viewModel()
 ) {
