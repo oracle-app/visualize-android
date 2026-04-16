@@ -1,4 +1,4 @@
-package com.oracle.visualize.ui.sharing
+package com.oracle.visualize.presentation.screens.ShareScreen
 
 import androidx.compose.runtime.key
 import androidx.compose.runtime.LaunchedEffect

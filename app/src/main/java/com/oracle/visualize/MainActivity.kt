@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.oracle.visualize.ui.sharing.ShareAndPostScreen  // ← agregar esta línea
+import com.oracle.visualize.presentation.screens.ShareScreen.ShareAndPostScreen  // ← agregar esta línea
 import com.oracle.visualize.ui.theme.VisualizeTheme
 
 class MainActivity : ComponentActivity() {
