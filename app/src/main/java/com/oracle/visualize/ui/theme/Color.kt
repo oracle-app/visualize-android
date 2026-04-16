@@ -35,3 +35,14 @@ val NavBarBackground = Color(0xFFCDE9EA)
 val NavBarSelected = Color(0xFF34797C)
 val NavBarIconUnselected = Color(0xFF4A454E)
 val NavBarIconSelected = Color(0xFFFFFFFF)
+
+/*
+the colors of the various elements of a navigation item.
+Params:
+selectedIconColor - the color to use for the icon when the item is selected.
+selectedTextColor - the color to use for the text label when the item is selected.
+selectedIndicatorColor - the color to use for the indicator when the item is selected.
+unselectedIconColor - the color to use for the icon when the item is unselected.
+unselectedTextColor - the color to use for the text label when the item is unselected.
+disabledIconColor - the color to use for the icon when the item is disabled.
+disabledTextColor - the color to use for the text label when the item is disabled.*/

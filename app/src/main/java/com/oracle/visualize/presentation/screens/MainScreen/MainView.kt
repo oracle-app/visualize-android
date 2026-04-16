@@ -13,6 +13,7 @@ import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedView
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
+import com.oracle.visualize.ui.theme.ScreenBackground
 
 @Composable
 fun MainScreen(
@@ -31,7 +32,8 @@ fun MainScreen(
                 onItemSelected = viewModel::onNavItemSelected //Update the state
 
             )
-        }
+        },
+        containerColor = ScreenBackground
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
