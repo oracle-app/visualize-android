@@ -8,18 +8,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
+import com.oracle.visualize.presentation.components.BottomNavBar
+import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
+import com.oracle.visualize.presentation.screens.ShareScreen.ShareAndPostScreen
 import com.oracle.visualize.ui.theme.ScreenBackground
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
-    //We obtain the state from View
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
@@ -29,31 +29,30 @@ fun MainScreen(
             BottomNavBar(
                 navItems = viewModel.navItems,
                 selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected //Update the state
-
+                onItemSelected = viewModel::onNavItemSelected
             )
         },
         containerColor = ScreenBackground
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute //Update the screen type
+            currentRoute = currentRoute,
+            onNavigateBack = { viewModel.onNavItemSelected(2) } // Back to Feed
         )
     }
 }
 
-
-
-
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    currentRoute: String
+    currentRoute: String,
+    onNavigateBack: () -> Unit = {}
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
+        NavRoutes.Share.route -> ShareAndPostScreen(onNavigateBack = onNavigateBack)
         // Add other routes as they are implemented
     }
 }
