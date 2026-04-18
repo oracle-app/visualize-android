@@ -6,6 +6,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.domain.models.NavRoutes
@@ -17,11 +19,17 @@ import com.oracle.visualize.presentation.screens.ShareScreen.ShareAndPostScreen
 import com.oracle.visualize.ui.theme.ScreenBackground
 
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = viewModel()
-) {
+fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
+
+    // Share screen ocupa pantalla completa, sin navbar
+    if (currentRoute == NavRoutes.Share.route) {
+        ShareAndPostScreen(
+            onNavigateBack = { viewModel.onNavItemSelected(2) }
+        )
+        return
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -37,7 +45,7 @@ fun MainScreen(
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
             currentRoute = currentRoute,
-            onNavigateBack = { viewModel.onNavItemSelected(2) } // Back to Feed
+            onNavigateBack = { viewModel.onNavItemSelected(2) }
         )
     }
 }
@@ -46,13 +54,16 @@ fun MainScreen(
 fun ContentScreen(
     modifier: Modifier = Modifier,
     currentRoute: String,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    bottomPadding: Dp = 0.dp
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
-        NavRoutes.Share.route -> ShareAndPostScreen(onNavigateBack = onNavigateBack)
-        // Add other routes as they are implemented
+        NavRoutes.Share.route -> ShareAndPostScreen(
+            onNavigateBack = onNavigateBack,
+            bottomPadding =  bottomPadding
+        )
     }
 }

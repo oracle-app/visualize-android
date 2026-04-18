@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -48,14 +52,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.domain.models.ShareAndPostState
+import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.screens.ShareScreen.components.SelectedUserRow
 import com.oracle.visualize.presentation.screens.ShareScreen.components.TeamRow
+import com.oracle.visualize.presentation.screens.ShareScreen.components.TeamRowPosition
 import com.oracle.visualize.presentation.screens.ShareScreen.components.UnsavedChangesDialog
 import com.oracle.visualize.ui.theme.OrangeButton
 import com.oracle.visualize.ui.theme.TealPrimary
@@ -63,13 +71,16 @@ import com.oracle.visualize.ui.theme.TextDark
 import com.oracle.visualize.ui.theme.TextGray
 import com.oracle.visualize.ui.theme.TopBarColor
 
-private val SearchBarBg = Color(0xFFF5F5F5)
+private val SearchBarBg   = Color(0xFFF5F4F2)
 private val SearchIconColor = Color(0xFF7FA9A9)
+
+
 
 @Composable
 fun ShareAndPostScreen(
     viewModel: ShareAndPostViewModel = viewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    bottomPadding: Dp = 0.dp
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -87,9 +98,11 @@ fun ShareAndPostScreen(
             if (hadSelections) viewModel.onBackPressed() else onNavigateBack()
         },
         onDismissUnsavedChanges = viewModel::onDismissUnsavedChanges,
-        onConfirmLeave = { viewModel.onConfirmLeave(); onNavigateBack() }
+        onConfirmLeave = { viewModel.onConfirmLeave(); onNavigateBack() },
+        bottomPadding = bottomPadding
     )
 }
+
 
 @Composable
 fun ShareAndPostContent(
@@ -101,12 +114,13 @@ fun ShareAndPostContent(
     onConfirmShare: () -> Unit,
     onBackPressed: () -> Unit,
     onDismissUnsavedChanges: () -> Unit,
-    onConfirmLeave: () -> Unit
+    onConfirmLeave: () -> Unit,
+    bottomPadding: Dp = 0.dp
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color(0xFFF5F4F2))
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -123,12 +137,9 @@ fun ShareAndPostContent(
                     query = state.emailQuery,
                     onQueryChange = onEmailQueryChange
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                ShareUserList(
-                    state = state,
-                    onRemoveUser = onRemoveUser
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+                ShareUserList(state = state, onRemoveUser = onRemoveUser)
+                Spacer(modifier = Modifier.height(16.dp))
                 ShareTeamSection(
                     title = "My Teams",
                     teams = state.myTeams,
@@ -148,6 +159,7 @@ fun ShareAndPostContent(
             ShareBottomBar(onConfirmShare = onConfirmShare)
         }
 
+        // AC-70: Dialog with dark overlay
         if (state.showUnsavedChangesDialog) {
             UnsavedChangesDialog(
                 onDismiss = onDismissUnsavedChanges,
@@ -157,55 +169,65 @@ fun ShareAndPostContent(
     }
 }
 
-// ─── Top bar ─────────────────────────────────────────────────────────────────
 
 @Composable
 private fun ShareTopBar(onBackPressed: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
-            .background(TopBarColor)
+            .background(Color(0xFFCDE9EA))
     ) {
         Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .requiredHeight(64.dp)
+                .padding(start = 4.dp)
         ) {
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(100.dp)),
+                modifier = Modifier.requiredSize(48.dp),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = onBackPressed, modifier = Modifier.size(40.dp)) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF1D1B20),
-                        modifier = Modifier.size(24.dp)
-                    )
+                Box(
+                    modifier = Modifier
+                        .requiredWidth(40.dp)
+                        .clip(RoundedCornerShape(100.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = onBackPressed,
+                        modifier = Modifier.requiredSize(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFF1D1B20),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
-            Spacer(modifier = Modifier.width(4.dp))
+
             Text(
                 text = "Share and post",
+                color = Color(0xFF1D1B20),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFF1D1B20),
+                lineHeight = 1.29.em,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
+                    .weight(1f)
+                    .wrapContentHeight(Alignment.CenterVertically)
             )
+
+            Spacer(modifier = Modifier.requiredWidth(4.dp))
         }
     }
 }
 
-// ─── Search bar ───────────────────────────────────────────────────────────────
 
 @Composable
 private fun ShareSearchBar(
@@ -217,39 +239,47 @@ private fun ShareSearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .shadow(1.dp, RoundedCornerShape(28.dp))
+            .shadow(2.dp, RoundedCornerShape(28.dp))
             .background(SearchBarBg, RoundedCornerShape(28.dp))
             .padding(horizontal = 4.dp)
     ) {
-        Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.requiredSize(48.dp), contentAlignment = Alignment.Center) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
                 tint = SearchIconColor,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
         TextField(
             value = query,
             onValueChange = onQueryChange,
             placeholder = {
-                Text("Enter email", color = TextGray, fontSize = 14.sp)
+                Text(
+                    text = "Enter email",
+                    color = SearchIconColor,
+                    fontSize = 16.sp,
+                    lineHeight = 1.5.em
+                )
             },
             singleLine = true,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
+                focusedContainerColor   = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor   = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                cursorColor = TealPrimary
+                cursorColor             = TealPrimary
             ),
             modifier = Modifier.weight(1f),
-            textStyle = LocalTextStyle.current.copy(fontSize = 16.sp)
+            textStyle = LocalTextStyle.current.copy(
+                fontSize = 16.sp,
+                lineHeight = 1.5.em
+            )
         )
+        Spacer(modifier = Modifier.requiredSize(48.dp))
     }
 }
 
-// ─── User list ────────────────────────────────────────────────────────────────
 
 @Composable
 private fun ShareUserList(
@@ -267,37 +297,41 @@ private fun ShareUserList(
         visibleUsers.addAll(displayUsers)
     }
 
-    visibleUsers.forEach { user ->
-        key(user.id) {
-            AnimatedVisibility(
-                visible = user in displayUsers,
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Column {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        visibleUsers.forEach { user ->
+            key(user.id) {
+                AnimatedVisibility(
+                    visible = user in displayUsers,
+                    exit = shrinkVertically() + fadeOut()
+                ) {
                     SelectedUserRow(user = user, onRemove = { onRemoveUser(user) })
-                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }
     }
 }
 
-// ─── Team section ─────────────────────────────────────────────────────────────
 
 @Composable
 private fun ShareTeamSection(
     title: String,
-    teams: List<com.oracle.visualize.domain.models.ShareTeam>,
+    teams: List<ShareTeam>,
     emptyMessage: String,
     onToggleTeam: (String) -> Unit
 ) {
     Text(
         text = title,
         fontSize = 16.sp,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Medium,
         color = TextDark,
-        modifier = Modifier.padding(bottom = 10.dp)
+        lineHeight = 1.5.em,
+        modifier = Modifier
+            .requiredWidth(380.dp)
+            .padding(bottom = 0.dp)
     )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
     if (teams.isEmpty()) {
         Box(
             modifier = Modifier
@@ -307,51 +341,52 @@ private fun ShareTeamSection(
         ) {
             Text(text = emptyMessage, fontSize = 13.sp, color = TextGray)
         }
-    } else {
-        teams.forEach { team ->
-            TeamRow(team = team, onToggle = { onToggleTeam(team.id) })
-            Spacer(modifier = Modifier.height(8.dp))
+        return
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        teams.forEachIndexed { index, team ->
+            val position = when {
+                teams.size == 1 -> TeamRowPosition.SINGLE
+                index == 0      -> TeamRowPosition.TOP
+                index == teams.size - 1 -> TeamRowPosition.BOTTOM
+                else            -> TeamRowPosition.MIDDLE
+            }
+            TeamRow(
+                team = team,
+                onToggle = { onToggleTeam(team.id) },
+                position = position
+            )
         }
     }
 }
 
-// ─── Bottom bar ───────────────────────────────────────────────────────────────
 
 @Composable
 private fun ShareBottomBar(onConfirmShare: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(88.dp)
-            .background(TopBarColor)
+            .requiredHeight(136.dp)
+            .background(Color(0xFFCDE9EA))
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
             onClick = onConfirmShare,
-            shape = RoundedCornerShape(100.dp),
+            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = OrangeButton,
+                containerColor = Color(0xFFEB9632),
                 contentColor = Color.White
             ),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
             modifier = Modifier
-                .width(184.dp)
-                .height(56.dp)
+                .requiredWidth(184.dp)
+                .requiredHeight(56.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.Send,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
+            Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Confirm",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.15.sp
-            )
+            Text("Confirm", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         }
     }
 }
