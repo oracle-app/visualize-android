@@ -1,12 +1,14 @@
 package com.oracle.visualize.presentation.screens.ShareScreen.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -16,11 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareUser
-import com.oracle.visualize.ui.theme.TextDark
+
+private val AVATAR_SIZE = 29.dp
+private val AVATAR_OFFSET = 15.dp
+private val AVATAR_BORDER = Color(0xFFE6EDEC)
 
 private val AVATAR_COLORS = listOf(
     Color(0xFFE8A87C),
@@ -36,30 +42,35 @@ fun MemberAvatarStack(
     isSelected: Boolean
 ) {
     val displayCount = minOf(members.size, 3)
-    val extraCount = members.size - displayCount
+    val extraCount   = members.size - displayCount
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.wrapContentWidth()
     ) {
+        // Stacked avatars box — width = offset*(n-1) + avatarSize
+        val stackWidth = if (displayCount > 0)
+            AVATAR_OFFSET * (displayCount - 1) + AVATAR_SIZE
+        else 0.dp
+
         Box(
             modifier = Modifier
-                .width((displayCount * 14 + 28).dp)
-                .height(28.dp)
+                .width(stackWidth)
+                .height(AVATAR_SIZE)
         ) {
             repeat(displayCount) { index ->
                 Box(
                     modifier = Modifier
-                        .offset(x = (index * 14).dp)
-                        .size(28.dp)
+                        .offset(x = AVATAR_OFFSET * index)
+                        .requiredSize(AVATAR_SIZE)
                         .clip(CircleShape)
-                        .background(AVATAR_COLORS[index % AVATAR_COLORS.size]),
+                        .background(AVATAR_COLORS[index % AVATAR_COLORS.size])
+                        .border(BorderStroke(1.dp, AVATAR_BORDER), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = members.getOrNull(index)?.avatarInitials ?: "",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Bold),
                         color = Color.White
                     )
                 }
@@ -67,22 +78,21 @@ fun MemberAvatarStack(
         }
 
         if (extraCount > 0) {
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(1.dp))
             Box(
                 modifier = Modifier
-                    .size(28.dp)
+                    .requiredSize(AVATAR_SIZE)
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) Color.White.copy(alpha = 0.25f)
-                        else Color(0xFFCDD5D8)
-                    ),
+                        if (isSelected) Color.White.copy(alpha = 0.25f) else Color.White
+                    )
+                    .border(BorderStroke(1.dp, AVATAR_BORDER), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "+$extraCount",
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isSelected) Color.White else TextDark
+                    style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
+                    color = if (isSelected) Color.White else Color.DarkGray
                 )
             }
         }
