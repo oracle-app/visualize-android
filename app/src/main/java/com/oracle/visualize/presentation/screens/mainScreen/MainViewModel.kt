@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PregnantWoman
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.NavItem
 import com.oracle.visualize.domain.models.NavRoutes
@@ -18,14 +17,12 @@ class MainViewModel : ViewModel() {
 
     //State
     private val route = MutableStateFlow(NavRoutes.Feed.route)
-    private val index = MutableStateFlow(0)
+    private val index = MutableStateFlow(2)
 
 
     //SetState
     val currentRoute: StateFlow<String> = route.asStateFlow()
     val selectedIndex: StateFlow<Int> = index.asStateFlow()
-
-
 
     val navItems = listOf(
         NavItem(

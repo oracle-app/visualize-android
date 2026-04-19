@@ -13,6 +13,3 @@ data class Visualization (
     val hasNewActivity: Boolean,
     val createdAt: Date
 )
-
-
-
