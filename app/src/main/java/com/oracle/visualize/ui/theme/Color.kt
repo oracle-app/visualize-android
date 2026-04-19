@@ -3,29 +3,29 @@ package com.oracle.visualize.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // ─── Base palette (raw colors) ────────────────────────────────────────────────
-// These are the raw color values. Use semantic tokens below in composables.
+
 
 // Teal family
 val Teal10  = Color(0xFF002021)
 val Teal20  = Color(0xFF00373A)
 val Teal30  = Color(0xFF004F54)
-val Teal40  = Color(0xFF34797C)   // Primary — Figma TealPrimary
-val Teal80  = Color(0xFFA9C8C4)   // Light variant
-val Teal90  = Color(0xFFCDE9EA)   // Lightest — Figma TopBarColor / NavBarBackground
+val Teal40  = Color(0xFF34797C)
+val Teal80  = Color(0xFFA9C8C4)
+val Teal90  = Color(0xFFCDE9EA)
 val Teal95  = Color(0xFFE6F4F4)
 
 // Orange family
-val Orange40 = Color(0xFFE69138)  // Figma OrangeButton
+val Orange40 = Color(0xFFE69138)
 val Orange80 = Color(0xFFFFB74D)
 val Orange90 = Color(0xFFFFE0B2)
 
 // Neutral family
-val Neutral10  = Color(0xFF13212C)  // Figma TextDark
+val Neutral10  = Color(0xFF13212C)
 val Neutral20  = Color(0xFF1D2B35)
-val Neutral30  = Color(0xFF323232)  // Figma TextGray
-val Neutral80  = Color(0xFFCCCCCC)  // Figma BorderGray
+val Neutral30  = Color(0xFF323232)
+val Neutral80  = Color(0xFFCCCCCC)
 val Neutral90  = Color(0xFFE8E8E8)
-val Neutral95  = Color(0xFFF5F4F2)  // Figma ScreenBackground
+val Neutral95  = Color(0xFFF5F4F2)
 val Neutral99  = Color(0xFFFCFCFC)
 val NeutralWhite = Color(0xFFFFFFFF)
 
@@ -42,7 +42,6 @@ val DarkNavBar     = Color(0xFF1F2527)
 val DarkTopBar     = Color(0xFF1F3335)
 
 // ─── Light semantic tokens ────────────────────────────────────────────────────
-// Use these in composables — they adapt to theme automatically via Theme.kt
 
 val LightScreenBackground  = Neutral95
 val LightTopBarColor       = Teal90
@@ -82,8 +81,6 @@ val DarkCardBackground     = DarkSurface3
 val DarkTeamUnselectedBg   = Color(0xFF243234)
 val DarkTeamSelectedBg     = Teal30
 
-// ─── Legacy aliases (keep for backward compatibility) ─────────────────────────
-// These point to light values — screens not yet migrated to AppColors still compile.
 
 val ScreenBackground  = LightScreenBackground
 val TopBarColor       = LightTopBarColor
@@ -106,7 +103,6 @@ val StrongerGreen = Teal40
 val Green         = Color(0xFFE6EDEC)
 val LightGreen    = Teal90
 
-// Material baseline (legacy — kept for Theme.kt DarkColorScheme)
 val Purple80      = Color(0xFFD0BCFF)
 val PurpleGrey80  = Color(0xFFCCC2DC)
 val Pink80        = Color(0xFFEFB8C8)
