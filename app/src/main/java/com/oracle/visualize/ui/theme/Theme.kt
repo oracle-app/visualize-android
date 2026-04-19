@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 
 // ─── Material3 color schemes ──────────────────────────────────────────────────
 
+
 private val M3DarkColorScheme = darkColorScheme(
     primary              = DarkTealPrimary,
     onPrimary            = DarkNavBarIconSelected,
@@ -62,8 +63,9 @@ fun VisualizeTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> M3DarkColorScheme
-        else      -> M3LightColorScheme
+        else -> M3LightColorScheme
     }
 
     CompositionLocalProvider(LocalAppColors provides appColors) {
