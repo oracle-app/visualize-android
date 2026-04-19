@@ -4,6 +4,7 @@ data class ShareTeam(
     val id: String,
     val name: String,
     val memberCount: Int,
-    val members: List<ShareUser> = emptyList(),
-    val isSelected: Boolean = false
+    val members: List<ShareUser> = emptyList()
+    // Note: isSelected was removed — selection is UI state,
+    // not a property of the business entity.
 )
