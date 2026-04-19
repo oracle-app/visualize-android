@@ -1,10 +1,11 @@
-package com.oracle.visualize.presentation.screens.FeedScreen
+package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.Visualization
+import kotlinx.serialization.json.JsonObject
 import java.util.Date
 
 class FeedViewModel : ViewModel() {
@@ -13,7 +14,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "1", "Felipe Bastidas",
             "GOTY (Graph Of The Year)",
-            emptyMap(),
+            JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             2,
@@ -23,7 +24,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "2", "Eduardo Cardenas",
             "Relative performance of major currencies",
-            emptyMap(),
+            JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             7,
@@ -33,7 +34,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "3", "Eduardo Cardenas",
             "Relative performance of major currencies",
-            emptyMap(),
+            JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             7,
@@ -43,7 +44,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "4", "Eduardo Cardenas",
             "Relative performance of major currencies",
-            emptyMap(),
+            JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             7,
