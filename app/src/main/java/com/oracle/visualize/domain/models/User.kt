@@ -6,8 +6,8 @@ data class User (
     val email: String,
     val userName: String,
     val profilePictureUrl: String?,
-    val themePreference: String, // Pending: Memory optimization
-    val chartTheme: String, // Pending: Memory optimization
+    val themePreference: String,
+    val chartTheme: String,
     val notificationsEnabled: Boolean,
     val tokens: List<String>
 )
