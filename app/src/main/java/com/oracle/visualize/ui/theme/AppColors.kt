@@ -6,7 +6,6 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // ─── Color set data class ─────────────────────────────────────────────────────
-// Holds all semantic colors for one theme variant (light or dark).
 
 data class VisualizeColors(
     val screenBackground: Color,
@@ -76,13 +75,11 @@ val DarkColors = VisualizeColors(
 )
 
 // ─── CompositionLocal ─────────────────────────────────────────────────────────
-// Provides AppColors throughout the composition tree.
-// Default is LightColors — VisualizeTheme overrides this.
+
 
 val LocalAppColors = compositionLocalOf<VisualizeColors> { LightColors }
 
 // ─── Accessor ─────────────────────────────────────────────────────────────────
-// Usage in any Composable: AppColors.tealPrimary, AppColors.screenBackground, etc.
 
 val AppColors: VisualizeColors
     @Composable
