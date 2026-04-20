@@ -4,8 +4,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class TeamsDatasource @Inject constructor(
+@Singleton
+class TeamDatasource @Inject constructor(
     private val firestore: FirebaseFirestore
 ){
 

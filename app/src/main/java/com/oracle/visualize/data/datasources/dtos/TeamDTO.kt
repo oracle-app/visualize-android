@@ -6,6 +6,6 @@ data class TeamDTO(
     val id: String,
     val memberCount: Int,
     val name: String,
-    val ownerID: DocumentReference,
-    val membersIDs: List<DocumentReference>
+    val ownerID: String,
+    val membersIDs: List<String>
 )

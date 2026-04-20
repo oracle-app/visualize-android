@@ -1,11 +1,11 @@
 package com.oracle.visualize.domain.usecases
 
-import com.oracle.visualize.domain.repositories.TeamsRepository
+import com.oracle.visualize.domain.repositories.TeamRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GetUsersTeamsUseCase @Inject constructor(
-    teamsRepository: TeamsRepository
+    private val teamsRepository: TeamRepository
 ) {
 }
