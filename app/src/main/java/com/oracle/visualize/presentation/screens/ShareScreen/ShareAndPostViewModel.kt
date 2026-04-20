@@ -84,6 +84,7 @@ class ShareAndPostViewModel : ViewModel() {
                 )
 
             is ShareUiEvent.ConfirmShare -> {
+                // TODO: call UseCase to persist share action
                 current
             }
         }

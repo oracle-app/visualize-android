@@ -3,47 +3,27 @@ package com.oracle.visualize.presentation.screens.ShareScreen
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
 
-// TODO: Remove when real data source (Repository / UseCase) is implemented
+// TODO: Remove when Repository / UseCase layer is implemented.
+// Mock data is kept here and passed INTO the ViewModel via loadData(),
+// keeping the ViewModel ready to receive real data from any source.
 object ShareMockData {
 
     val suggestedUsers = listOf(
-        ShareUser(
-            id = "u_diana",
-            name = "Diana Escalante",
-            email = "dianaescalante@gmail.com",
-            avatarInitials = "D",
-            avatarColor = 0xFFE8A87C
-        ),
-        ShareUser(
-            id = "u_jocelyn",
-            name = "Jocelyn Duarte",
-            email = "jocelynduarte@gmail.com",
-            avatarInitials = "J",
-            avatarColor = 0xFF7EC8C8
-        ),
-        ShareUser(
-            id = "u_eduardo",
-            name = "Eduardo Salazar",
-            email = "eduardosalazar@gmail.com",
-            avatarInitials = "E",
-            avatarColor = 0xFF8CB87C
-        )
+        ShareUser("u_diana",   "Diana Escalante", "dianaescalante@gmail.com",  "D", 0xFFE8A87C),
+        ShareUser("u_jocelyn", "Jocelyn Duarte",  "jocelynduarte@gmail.com",   "J", 0xFF7EC8C8),
+        ShareUser("u_eduardo", "Eduardo Salazar", "eduardosalazar@gmail.com",  "E", 0xFF8CB87C)
     )
 
     val myTeams = listOf(
         ShareTeam(
-            id = "team_data_1",
-            name = "Data Analyst",
-            memberCount = 2,
+            id = "team_data_1", name = "Data Analyst", memberCount = 2,
             members = listOf(
-                ShareUser("u1", "Ana",  "ana@gmail.com",  "A", 0xFFE8A87C),
-                ShareUser("u2", "Bob",  "bob@gmail.com",  "B", 0xFF7EC8C8)
+                ShareUser("u1", "Ana", "ana@gmail.com", "A", 0xFFE8A87C),
+                ShareUser("u2", "Bob", "bob@gmail.com", "B", 0xFF7EC8C8)
             )
         ),
         ShareTeam(
-            id = "team_data_2",
-            name = "Data Analyst",
-            memberCount = 5,
+            id = "team_data_2", name = "Data Analyst", memberCount = 5,
             members = listOf(
                 ShareUser("u1", "Ana",  "ana@gmail.com",  "A", 0xFFE8A87C),
                 ShareUser("u2", "Bob",  "bob@gmail.com",  "B", 0xFF7EC8C8),
@@ -56,9 +36,7 @@ object ShareMockData {
 
     val teamsImIn = listOf(
         ShareTeam(
-            id = "team_in_1",
-            name = "Data Analyst",
-            memberCount = 5,
+            id = "team_in_1", name = "Data Analyst", memberCount = 5,
             members = listOf(
                 ShareUser("u4", "Diana", "diana@gmail.com", "D", 0xFFE8C87C),
                 ShareUser("u5", "Eve",   "eve@gmail.com",   "E", 0xFF8CB87C),
@@ -66,9 +44,7 @@ object ShareMockData {
             )
         ),
         ShareTeam(
-            id = "team_in_2",
-            name = "Data Analyst",
-            memberCount = 5,
+            id = "team_in_2", name = "Data Analyst", memberCount = 5,
             members = listOf(
                 ShareUser("u4",  "Diana", "diana@gmail.com", "D", 0xFFE8C87C),
                 ShareUser("u5",  "Eve",   "eve@gmail.com",   "E", 0xFF8CB87C),
