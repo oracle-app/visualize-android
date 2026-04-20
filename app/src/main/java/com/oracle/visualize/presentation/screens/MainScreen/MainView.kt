@@ -6,22 +6,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
+import com.oracle.visualize.presentation.components.BottomNavBar
+import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
+import com.oracle.visualize.presentation.screens.ShareScreen.ShareAndPostScreen
 import com.oracle.visualize.ui.theme.ScreenBackground
 
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = viewModel()
-) {
-    //We obtain the state from View
+fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
+
+    if (currentRoute == NavRoutes.Share.route) {
+        ShareAndPostScreen(
+            onNavigateBack = { viewModel.onNavItemSelected(2) }
+        )
+        return
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -29,31 +36,32 @@ fun MainScreen(
             BottomNavBar(
                 navItems = viewModel.navItems,
                 selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected //Update the state
-
+                onItemSelected = viewModel::onNavItemSelected
             )
         },
         containerColor = ScreenBackground
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute //Update the screen type
+            currentRoute = currentRoute,
+            onNavigateBack = { viewModel.onNavItemSelected(2) }
         )
     }
 }
 
-
-
-
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    currentRoute: String
+    currentRoute: String,
+    onNavigateBack: () -> Unit = {},
+    bottomPadding: Dp = 0.dp
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
-        // Add other routes as they are implemented
+        NavRoutes.Share.route -> ShareAndPostScreen(
+            onNavigateBack = onNavigateBack,
+        )
     }
 }
