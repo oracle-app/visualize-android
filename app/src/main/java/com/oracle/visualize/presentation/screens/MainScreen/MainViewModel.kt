@@ -15,12 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
 
-    //State
-    private val route = MutableStateFlow(NavRoutes.Feed.route)
-    private val index = MutableStateFlow(2)
+    private val route = MutableStateFlow(NavRoutes.ChartSelection.route)
+    private val index = MutableStateFlow(0)
 
-
-    //SetState
     val currentRoute: StateFlow<String> = route.asStateFlow()
     val selectedIndex: StateFlow<Int> = index.asStateFlow()
 
@@ -56,5 +53,9 @@ class MainViewModel : ViewModel() {
     fun onNavItemSelected(i: Int) {
         index.value = i
         route.value = navItems[i].route
+    }
+
+    fun navigateToRoute(targetRoute: String) {
+        route.value = targetRoute
     }
 }

@@ -4,11 +4,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,7 +33,8 @@ import com.oracle.visualize.ui.theme.*
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
-    viewModel: CreateViewModel = viewModel()
+    viewModel: CreateViewModel = viewModel(),
+    onNavigateToSelection: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -110,7 +109,7 @@ fun CreatePage(
 
             if (uiState is CreateUiState.Success) {
                 Button(
-                    onClick = { /* TODO: Navigation */ },
+                    onClick = onNavigateToSelection,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

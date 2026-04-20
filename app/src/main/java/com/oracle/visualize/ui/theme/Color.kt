@@ -20,11 +20,15 @@ val LightGreen = Color(0xFFCDE9EA)
 val ScreenBackground = Color(0xFFF5F4F2)
 val TopBarColor = Color(0xFFCDE9EA)
 val TealPrimary = Color(0xFF34797C)
-val TealLight = Color(0xFFCDE9EA) // Use TopBar color as the light variant
+val TealLight = Color(0xFFCDE9EA)
 val TextDark = Color(0xFF13212C)
 val TextGray = Color(0xFF323232)
 val BorderGray = Color(0xFFCCCCCC)
 val OrangeButton = Color(0xFFE69138)
+
+// Chart Specific Colors
+val ChartBarBlue = Color(0xFF5B89D8)
+val ChartLineOrange = Color(0xFFE67E22)
 
 // Error states
 val ErrorRed = Color(0xFFD32F2F)

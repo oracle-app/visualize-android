@@ -13,31 +13,33 @@ import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
+import com.oracle.visualize.presentation.screens.ChartSelection.ChartSelectionPage
 import com.oracle.visualize.ui.theme.ScreenBackground
+
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
-    //We obtain the state from View
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(
-                navItems = viewModel.navItems,
-                selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected //Update the state
-
-            )
-        },
-        containerColor = ScreenBackground
+            if (currentRoute != NavRoutes.ChartSelection.route) {
+                BottomNavBar(
+                    navItems = viewModel.navItems,
+                    selectedIndex = selectedIndex,
+                    onItemSelected = viewModel::onNavItemSelected
+                )
+            }
+        }
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute //Update the screen type
+            currentRoute = currentRoute,
+            onNavigate = viewModel::onNavItemSelected
         )
     }
 }
@@ -48,12 +50,17 @@ fun MainScreen(
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    currentRoute: String
+    currentRoute: String,
+    onNavigate: (Int) -> Unit
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
-        // Add other routes as they are implemented
+        NavRoutes.ChartSelection.route -> ChartSelectionPage(
+            onBack = { onNavigate(2) },
+            onNavigateToShare = {}
+        )
+        else -> { }
     }
 }
