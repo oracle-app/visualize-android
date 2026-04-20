@@ -23,7 +23,6 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
-    // Share screen ocupa pantalla completa, sin navbar
     if (currentRoute == NavRoutes.Share.route) {
         ShareAndPostScreen(
             onNavigateBack = { viewModel.onNavItemSelected(2) }
@@ -63,7 +62,6 @@ fun ContentScreen(
         NavRoutes.Create.route -> CreatePage(modifier = modifier)
         NavRoutes.Share.route -> ShareAndPostScreen(
             onNavigateBack = onNavigateBack,
-            bottomPadding =  bottomPadding
         )
     }
 }
