@@ -1,23 +1,15 @@
 package com.oracle.visualize.presentation.screens.ShareScreen.components
 
 import androidx.compose.animation.animateColorAsState
-
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,12 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareTeam
-import com.oracle.visualize.ui.theme.TealPrimary
-import com.oracle.visualize.ui.theme.TextDark
-
-private val TeamUnselectedBg = Color(0xFFE5ECEB)
-private val SubtextSelected  = Color(0xFFCDE9EA)
-private val SubtextUnselected = Color(0xFF597271)
+import com.oracle.visualize.ui.theme.AppColors
 
 val ShapeTop    = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp, bottomStart = 5.dp, bottomEnd = 5.dp)
 val ShapeMiddle = RoundedCornerShape(5.dp)
@@ -43,6 +30,7 @@ enum class TeamRowPosition { SINGLE, TOP, MIDDLE, BOTTOM }
 @Composable
 fun TeamRow(
     team: ShareTeam,
+    isSelected: Boolean,        // Selection state passed from UI layer, not from entity
     onToggle: () -> Unit,
     position: TeamRowPosition = TeamRowPosition.SINGLE
 ) {
@@ -53,14 +41,10 @@ fun TeamRow(
         TeamRowPosition.SINGLE -> ShapeSingle
     }
 
-    val targetBg = if (team.isSelected) TealPrimary else TeamUnselectedBg
-    val animatedBg by animateColorAsState(
-        targetValue = targetBg,
-        animationSpec = tween(200),
-        label = "teamBg"
-    )
-    val textColor = if (team.isSelected) Color.White else TextDark
-    val subColor  = if (team.isSelected) SubtextSelected else SubtextUnselected
+    val targetBg = if (isSelected) AppColors.teamSelectedBg else AppColors.teamUnselectedBg
+    val animatedBg by animateColorAsState(targetValue = targetBg, animationSpec = tween(200), label = "teamBg")
+    val textColor = if (isSelected) Color.White else AppColors.textDark
+    val subColor  = if (isSelected) AppColors.subtextSelected else AppColors.subtextUnselected
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -68,28 +52,15 @@ fun TeamRow(
             .fillMaxWidth()
             .clip(shape)
             .background(animatedBg)
-            .clickable {
-                onToggle() }
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onToggle() }
+
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = team.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                color = textColor,
-                lineHeight = 24.sp
-            )
+            Text(text = team.name, fontSize = 16.sp, fontWeight = FontWeight.Normal, color = textColor, lineHeight = 24.sp)
             Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = "${team.memberCount} members",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = subColor,
-                lineHeight = 20.sp
-            )
+            Text(text = "${team.memberCount} members", fontSize = 14.sp, color = subColor, lineHeight = 20.sp)
         }
-        MemberAvatarStack(members = team.members, isSelected = team.isSelected)
+        MemberAvatarStack(members = team.members, isSelected = isSelected)
     }
 }
