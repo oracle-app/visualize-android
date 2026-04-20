@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.ShareScreen
 
 import androidx.lifecycle.ViewModel
-import com.oracle.visualize.domain.models.ShareAndPostState
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,90 +10,88 @@ import kotlinx.coroutines.flow.update
 
 class ShareAndPostViewModel : ViewModel() {
 
-    private val _state = MutableStateFlow(ShareAndPostState())
-    val state: StateFlow<ShareAndPostState> = _state.asStateFlow()
+    private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
+    val uiState: StateFlow<ShareUiState> = _uiState.asStateFlow()
 
-    init {
-        // TODO: Replace with real UseCase call when data layer is ready
-        _state.update {
-            it.copy(
-                suggestedUsers = ShareMockData.suggestedUsers,
-                myTeams = ShareMockData.myTeams,
-                teamsImIn = ShareMockData.teamsImIn
-            )
-        }
-    }
-
-    // Replace with real data source (UseCase / Repository) when available
-    fun loadData(myTeams: List<ShareTeam>, teamsImIn: List<ShareTeam>) {
-        _state.update { it.copy(myTeams = myTeams, teamsImIn = teamsImIn) }
-    }
-
-    fun onEmailQueryChange(query: String) {
-        _state.update { it.copy(emailQuery = query) }
-    }
-
-    fun onAddUserByEmail(email: String) {
-        if (email.isBlank()) return
-        val newUser = ShareUser(
-            id = email,
-            name = email.substringBefore("@").replaceFirstChar { it.uppercase() },
-            email = email,
-            avatarInitials = email.first().uppercase()
+    // Called from the screen entry point with data from Repository/UseCase
+    fun loadData(
+        myTeams: List<ShareTeam>,
+        teamsImIn: List<ShareTeam>,
+        suggestedUsers: List<ShareUser> = emptyList()
+    ) {
+        _uiState.value = ShareUiState.Content(
+            myTeams = myTeams,
+            teamsImIn = teamsImIn,
+            suggestedUsers = suggestedUsers
         )
-        _state.update {
-            it.copy(selectedUsers = it.selectedUsers + newUser, emailQuery = "")
-        }
     }
 
-    fun onRemoveUser(user: ShareUser) {
-        _state.update { state ->
-            state.copy(
-                selectedUsers = state.selectedUsers - user,
-                suggestedUsers = state.suggestedUsers - user
-            )
-        }
-    }
+    fun onEvent(event: ShareUiEvent) {
+        val current = _uiState.value as? ShareUiState.Content ?: return
+        _uiState.value = when (event) {
 
-    fun onToggleTeam(teamId: String, isMyTeam: Boolean) {
-        _state.update { state ->
-            if (isMyTeam) {
-                state.copy(myTeams = state.myTeams.map { team ->
-                    if (team.id == teamId) team.copy(isSelected = !team.isSelected) else team
-                })
-            } else {
-                state.copy(teamsImIn = state.teamsImIn.map { team ->
-                    if (team.id == teamId) team.copy(isSelected = !team.isSelected) else team
-                })
+            is ShareUiEvent.EmailQueryChanged ->
+                current.copy(emailQuery = event.query)
+
+            is ShareUiEvent.AddUserByEmail -> {
+                if (event.email.isBlank()) return
+                val newUser = ShareUser(
+                    id = event.email,
+                    name = event.email.substringBefore("@").replaceFirstChar { it.uppercase() },
+                    email = event.email,
+                    avatarInitials = event.email.first().uppercase()
+                )
+                val updated = current.copy(
+                    selectedUsers = current.selectedUsers + newUser,
+                    emailQuery = ""
+                )
+                updated.copy(hasChanges = computeHasChanges(updated))
+            }
+
+            is ShareUiEvent.RemoveUser -> {
+                val updated = current.copy(
+                    selectedUsers = current.selectedUsers - event.user,
+                    suggestedUsers = current.suggestedUsers - event.user
+                )
+                updated.copy(hasChanges = computeHasChanges(updated))
+            }
+
+            is ShareUiEvent.ToggleTeam -> {
+                val updated = if (event.teamId in current.selectedTeamIds) {
+                    current.copy(selectedTeamIds = current.selectedTeamIds - event.teamId)
+                } else {
+                    current.copy(selectedTeamIds = current.selectedTeamIds + event.teamId)
+                }
+                updated.copy(hasChanges = computeHasChanges(updated))
+            }
+
+            is ShareUiEvent.BackPressed -> {
+                if (current.hasChanges) {
+                    current.copy(showUnsavedChangesDialog = true)
+                } else {
+                    current // Navigation handled by the View observing hasChanges
+                }
+            }
+
+            is ShareUiEvent.DismissUnsavedChanges ->
+                current.copy(showUnsavedChangesDialog = false)
+
+            is ShareUiEvent.ConfirmLeave ->
+                current.copy(
+                    showUnsavedChangesDialog = false,
+                    selectedUsers = emptyList(),
+                    selectedTeamIds = emptySet(),
+                    hasChanges = false
+                )
+
+            is ShareUiEvent.ConfirmShare -> {
+                // TODO: call UseCase to persist share action
+                current
             }
         }
     }
 
-    fun onConfirmShare() {
-        // TODO: call UseCase to persist share action
-    }
-
-    fun onBackPressed() {
-        val hasSelections = _state.value.selectedUsers.isNotEmpty() ||
-                _state.value.myTeams.any { it.isSelected } ||
-                _state.value.teamsImIn.any { it.isSelected }
-        if (hasSelections) {
-            _state.update { it.copy(showUnsavedChangesDialog = true) }
-        }
-    }
-
-    fun onDismissUnsavedChanges() {
-        _state.update { it.copy(showUnsavedChangesDialog = false) }
-    }
-
-    fun onConfirmLeave() {
-        _state.update {
-            it.copy(
-                showUnsavedChangesDialog = false,
-                selectedUsers = emptyList(),
-                myTeams = it.myTeams.map { t -> t.copy(isSelected = false) },
-                teamsImIn = it.teamsImIn.map { t -> t.copy(isSelected = false) }
-            )
-        }
-    }
+    // ViewModel decides when there are unsaved changes — UI stays dumb
+    private fun computeHasChanges(state: ShareUiState.Content): Boolean =
+        state.selectedUsers.isNotEmpty() || state.selectedTeamIds.isNotEmpty()
 }
