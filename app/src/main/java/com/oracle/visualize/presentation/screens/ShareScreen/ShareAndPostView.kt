@@ -39,6 +39,7 @@ fun ShareAndPostScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Load mock data as if it came from a Repository — ViewModel stays clean
     LaunchedEffect(Unit) {
         viewModel.loadData(
             myTeams      = ShareMockData.myTeams,
@@ -58,7 +59,7 @@ fun ShareAndPostScreen(
             ShareAndPostContent(
                 state = state,
                 onEvent = { event ->
-
+                    // Navigation side effects handled here, not in ViewModel
                     when (event) {
                         is ShareUiEvent.BackPressed -> {
                             if (!state.hasChanges) onNavigateBack()
@@ -87,7 +88,7 @@ fun ShareAndPostScreen(
 @Composable
 fun ShareAndPostContent(
     state: ShareUiState.Content,
-    onEvent: (ShareUiEvent) -> Unit
+    onEvent: (ShareUiEvent) -> Unit   // Single event callback replaces 9+ lambdas
 ) {
     Box(modifier = Modifier.fillMaxSize().background(AppColors.screenBackground)) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -233,7 +234,7 @@ private fun ShareUserList(state: ShareUiState.Content, onEvent: (ShareUiEvent) -
 private fun ShareTeamSection(
     title: String,
     teams: List<ShareTeam>,
-    selectedTeamIds: Set<String>,
+    selectedTeamIds: Set<String>,   // Selection state lives here, not in the entity
     emptyMessage: String,
     onToggleTeam: (String) -> Unit
 ) {
@@ -259,7 +260,7 @@ private fun ShareTeamSection(
             }
             TeamRow(
                 team = team,
-                isSelected = team.id in selectedTeamIds,
+                isSelected = team.id in selectedTeamIds,  // selection from state, not entity
                 onToggle = { onToggleTeam(team.id) },
                 position = position
             )

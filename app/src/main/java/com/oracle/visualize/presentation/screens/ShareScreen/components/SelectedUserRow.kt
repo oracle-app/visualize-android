@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareUser
 
-// Figma: card height 68dp, clip RoundedCornerShape(12dp), content offset x=16,y=12
 private val CardShape   = RoundedCornerShape(12.dp)
 private val SubtextColor = Color(0xFF597271)
 private val CloseIconColor = Color(0xFFE05555)
@@ -40,7 +39,6 @@ fun SelectedUserRow(
     user: ShareUser,
     onRemove: () -> Unit
 ) {
-    // Figma: fillMaxWidth, height 68dp, clip 12dp, white bg
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,7 +46,6 @@ fun SelectedUserRow(
             .clip(CardShape)
             .background(Color.White)
     ) {
-        // Content: avatar + text, offset x=16, y=12
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -56,13 +53,11 @@ fun SelectedUserRow(
                 .requiredWidth(288.dp)
                 .requiredHeight(44.dp)
         ) {
-            // Avatar circle with initials
             UserAvatar(
                 initials = user.avatarInitials,
                 color = Color(user.avatarColor),
                 size = 40
             )
-            // Text column — offset x=56 from avatar
             Column(
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
                 modifier = Modifier
@@ -89,7 +84,6 @@ fun SelectedUserRow(
             }
         }
 
-        // Close button — Figma: offset x=339, y=20
         Row(
             horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp, Alignment.End),
             verticalAlignment = Alignment.CenterVertically,

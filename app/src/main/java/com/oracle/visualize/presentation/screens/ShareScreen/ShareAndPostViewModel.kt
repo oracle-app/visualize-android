@@ -13,7 +13,6 @@ class ShareAndPostViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
     val uiState: StateFlow<ShareUiState> = _uiState.asStateFlow()
 
-    // Called from the screen entry point with data from Repository/UseCase
     fun loadData(
         myTeams: List<ShareTeam>,
         teamsImIn: List<ShareTeam>,
@@ -69,7 +68,7 @@ class ShareAndPostViewModel : ViewModel() {
                 if (current.hasChanges) {
                     current.copy(showUnsavedChangesDialog = true)
                 } else {
-                    current // Navigation handled by the View observing hasChanges
+                    current
                 }
             }
 
@@ -85,13 +84,11 @@ class ShareAndPostViewModel : ViewModel() {
                 )
 
             is ShareUiEvent.ConfirmShare -> {
-                // TODO: call UseCase to persist share action
                 current
             }
         }
     }
 
-    // ViewModel decides when there are unsaved changes — UI stays dumb
     private fun computeHasChanges(state: ShareUiState.Content): Boolean =
         state.selectedUsers.isNotEmpty() || state.selectedTeamIds.isNotEmpty()
 }
