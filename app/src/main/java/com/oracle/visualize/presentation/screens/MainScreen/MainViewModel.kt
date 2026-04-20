@@ -9,52 +9,36 @@ import androidx.compose.material.icons.filled.Person
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.NavItem
 import com.oracle.visualize.domain.models.NavRoutes
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
 
-    //State
-    private val route = MutableStateFlow(NavRoutes.Feed.route)
-    private val index = MutableStateFlow(2)
-
-
-    //SetState
-    val currentRoute: StateFlow<String> = route.asStateFlow()
-    val selectedIndex: StateFlow<Int> = index.asStateFlow()
-
+    // NavController owns navigation state — ViewModel only defines the nav items
     val navItems = listOf(
         NavItem(
             label = "Create",
-            icon = Icons.Default.Add,
+            icon  = Icons.Default.Add,
             route = NavRoutes.Create.route
         ),
         NavItem(
             label = "Teams",
-            icon = Icons.Default.Groups,
+            icon  = Icons.Default.Groups,
             route = NavRoutes.Teams.route
         ),
         NavItem(
             label = "Feed",
-            icon = Icons.Default.Home,
+            icon  = Icons.Default.Home,
             route = NavRoutes.Feed.route
         ),
         NavItem(
             label = "Notifications",
-            icon = Icons.Default.Notifications,
+            icon  = Icons.Default.Notifications,
             badgeCount = 5,
             route = NavRoutes.Notifications.route
         ),
         NavItem(
             label = "Profile",
-            icon = Icons.Default.Person,
+            icon  = Icons.Default.Person,
             route = NavRoutes.Profile.route
         )
     )
-
-    fun onNavItemSelected(i: Int) {
-        index.value = i
-        route.value = navItems[i].route
-    }
 }
