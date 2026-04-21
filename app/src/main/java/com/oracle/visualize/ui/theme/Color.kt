@@ -10,39 +10,29 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-// Feed
-val StrongGreen = Color(0xFFA9C8C4)
-val StrongerGreen = Color(0xFF34797C)
-val Green = Color(0xFFE6EDEC)
-val LightGreen = Color(0xFFCDE9EA)
+// Below are the colors of the Visualize Brand Identity (Light Mode)
 
-// Official Figma Colors
-val ScreenBackground = Color(0xFFF5F4F2)
-val TopBarColor = Color(0xFFCDE9EA)
-val TealPrimary = Color(0xFF34797C)
-val TealLight = Color(0xFFCDE9EA) // Use TopBar color as the light variant
-val TextDark = Color(0xFF13212C)
-val TextGray = Color(0xFF323232)
-val BorderGray = Color(0xFFCCCCCC)
-val OrangeButton = Color(0xFFE69138)
+val StrongBlue = Color(0xFF34797C)
+val White = Color(0xFFFFFFFF)
+val LightBlue = Color(0xFFCDE9EA)
+val DarkGray = Color(0xFF323232)
 
-// Error states
-val ErrorRed = Color(0xFFD32F2F)
-val ErrorBackground = Color(0xFFFFEBEE)
+val NotAsDarkGray = Color(0xFF798B8A)
+val StrongOrange = Color(0xFFEB9632)
+val VeryLightGray = Color(0xFFF5F4F2)
+val NotAsLightGray = Color(0xFF597271)
+val LighterBlue = Color(0xFFE6EDEC)
+val GrayishBlue = Color(0xFFA9C8C4)
+val ErrorRed = Color(0xFFEC4848)
+val ScrimColor = Color(0xFF1A2F3F)
 
-// Navigation
-val NavBarBackground = Color(0xFFCDE9EA)
-val NavBarSelected = Color(0xFF34797C)
-val NavBarIconUnselected = Color(0xFF4A454E)
-val NavBarIconSelected = Color(0xFFFFFFFF)
+// And below are the colors of the Visualize Brand Identity (Dark Mode)
 
-/*
-the colors of the various elements of a navigation item.
-Params:
-selectedIconColor - the color to use for the icon when the item is selected.
-selectedTextColor - the color to use for the text label when the item is selected.
-selectedIndicatorColor - the color to use for the indicator when the item is selected.
-unselectedIconColor - the color to use for the icon when the item is unselected.
-unselectedTextColor - the color to use for the text label when the item is unselected.
-disabledIconColor - the color to use for the icon when the item is disabled.
-disabledTextColor - the color to use for the text label when the item is disabled.*/
+val DarkMode_StrongBlue = Color(0xFF8AC1C4)
+val DarkMode_LightBlue = Color(0xFF2C5354)
+val DarkMode_DarkGray = Color(0xFFD9D9D9)
+val DarkMode_NotAsDarkGray = Color(0xFF8FA3A3)
+val DarkMode_Background = Color(0xFF282520)
+val DarkMode_NotAsLightGray = Color(0xFF7FA9A9)
+val DarkMode_LighterBlue = Color(0xFF3D504D)
+val DarkMode_GrayishBlue = Color(0xFFBBBBBB)

@@ -56,8 +56,8 @@ fun FeedCard(item: Visualization) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondary),
-        border = BorderStroke(2.dp,MaterialTheme.colorScheme.surface)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        border = BorderStroke(2.dp,MaterialTheme.colorScheme.outline)
 
     ) {
         Column {
@@ -72,7 +72,7 @@ fun FeedCard(item: Visualization) {
                         text = item.title,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
@@ -80,12 +80,12 @@ fun FeedCard(item: Visualization) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "By ${item.ownerId}",
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                         Text(
                             text = "    •    ${formatTime(item.createdAt)}",
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                     }
@@ -104,7 +104,7 @@ fun FeedCard(item: Visualization) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.onPrimary),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Graph", color = MaterialTheme.colorScheme.onSurface)
@@ -128,7 +128,7 @@ fun FeedCard(item: Visualization) {
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(Color.White),
+                        .background(MaterialTheme.colorScheme.onPrimary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text("+${item.commentCount}", fontSize = 12.sp,
@@ -145,6 +145,6 @@ private fun UserAvatar() {
         modifier = Modifier
             .size(28.dp)
             .clip(CircleShape)
-            .background(Color.LightGray)
+            .background(MaterialTheme.colorScheme.onPrimary)
     )
 }

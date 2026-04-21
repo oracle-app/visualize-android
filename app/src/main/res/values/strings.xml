@@ -1,6 +1,64 @@
 <resources>
+
+    // Actions
+
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+
+    // Navigation Bar
+
+    <string name="nav_create">Create</string>
+    <string name="nav_teams">Teams</string>
+    <string name="nav_feed">Feed</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_profile">Profile</string>
+
+    // App Name
+
     <string name="app_name">Visualize</string>
+
+    // Activity Title Miscellaneous
+
     <string name="title_activity_feed">FeedActivity</string>
     <string name="title_activity_search_section">SearchSection</string>
     <string name="title_activity_feed_top_bar">FeedTopBar</string>
+
+    // Feed Top Bar
+
+    <string name="feed_top_bar_title">All Feed</string>
+    <string name="feed_top_bar_options_description">Options</string>
+
+    // Search Section
+
+    <string name="search_placeholder">Search by title</string>
+    <string name="search_icon_description">Search</string>
+
+    // Create View
+
+    <string name="create_top_bar_title">Create Data Visualizations</string>
+    <string name="create_description_success">Your dataset is ready! Generate visualizations to explore your data.</string>
+    <string name="create_description_uploading">Uploading your dataset…</string>
+    <string name="create_description_idle">Upload a dataset and we\'ll generate the best visualizations to help you understand your data.</string>
+    <string name="create_generate_button">Generate Visualizations</string>
+
+    <string name="dashed_selector_choose_file">Choose a .xlsx or .csv file.</string>
+    <string name="dashed_selector_min_size">Minimum file size: 100 MB</string>
+    <string name="dashed_selector_one_dataset">Only one dataset can be uploaded.</string>
+
+    <string name="dataset_requirements_title">Dataset Format Requirements</string>
+    <string name="dataset_requirements_body">Upload a table-formatted dataset with column headers in the first row.</string>
+    <string name="dataset_requirements_example_label">Example</string>
+    <string name="dataset_requirements_footer">Each row should represent a single data entry. Avoid empty rows or merged cells.</string>
+
+    <string name="table_header_date">Date</string>
+    <string name="table_header_product">Product</string>
+    <string name="table_header_sales">Sales</string>
+    <string name="table_header_region">Region</string>
+
+    // Errors
+
+    <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
+
+
+
 </resources>
