@@ -31,6 +31,10 @@ fun ChartCard(
     onSelect: () -> Unit,
     onEditTitle: () -> Unit
 ) {
+    val topBottomBackground = if (isSelected) TealPrimary else Color.White
+    val contentColor = if (isSelected) Color.White else TextDark
+    val iconColor = if (isSelected) Color.White else TextGray
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,55 +46,63 @@ fun ChartCard(
             )
             .clickable { onSelect() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(topBottomBackground)
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = visualization.title,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = TextDark,
-                    maxLines = 2,
+                    color = contentColor,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 IconButton(
                     onClick = onEditTitle,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFFF0F0F0), RoundedCornerShape(16.dp))
+                    modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit Title",
-                        modifier = Modifier.size(16.dp),
-                        tint = TextGray
+                        modifier = Modifier.size(20.dp),
+                        tint = iconColor
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .height(180.dp)
                     .background(Color(0xFFF9F9F9))
-                    .border(1.dp, BorderGray.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
-                    .padding(8.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 MockChartContent()
+            }
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(topBottomBackground)
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                LegendItem(color = ChartBarBlue, text = "Units Sold", textColor = contentColor)
+                Spacer(modifier = Modifier.width(16.dp))
+                LegendItem(color = ChartLineOrange, text = "Total Transactions", textColor = contentColor)
             }
         }
     }
@@ -178,23 +190,11 @@ fun MockChartContent() {
                 }
             }
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LegendItem(color = ChartBarBlue, text = "Units Sold")
-            Spacer(modifier = Modifier.width(16.dp))
-            LegendItem(color = ChartLineOrange, text = "Total Transactions")
-        }
     }
 }
 
 @Composable
-fun LegendItem(color: Color, text: String) {
+fun LegendItem(color: Color, text: String, textColor: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
@@ -203,6 +203,6 @@ fun LegendItem(color: Color, text: String) {
                 .background(color)
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = text, fontSize = 9.sp, color = TextDark)
+        Text(text = text, fontSize = 9.sp, color = textColor)
     }
 }

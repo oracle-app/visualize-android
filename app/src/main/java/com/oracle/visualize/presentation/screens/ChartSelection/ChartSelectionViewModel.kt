@@ -2,19 +2,16 @@ package com.oracle.visualize.presentation.screens.ChartSelection
 
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.ChartSelectionUiState
-import com.oracle.visualize.domain.models.Visualization
+import com.oracle.visualize.domain.models.MockData
 import com.oracle.visualize.domain.models.VisualizationSelection
-import com.oracle.visualize.domain.models.VisualizationType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.util.Date
-import java.util.UUID
 
 class ChartSelectionViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ChartSelectionUiState())
+    private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()
 
     init {
@@ -22,77 +19,52 @@ class ChartSelectionViewModel : ViewModel() {
     }
 
     private fun loadMockCharts() {
-
-        val mockCharts = listOf(
-            Visualization(
-                id = UUID.randomUUID().toString(),
-                ownerId = "user1",
-                title = "Commerce Activity: Units Sold vs Total Transactions",
-                type = VisualizationType.COMBINED,
-                configJson = emptyMap(),
-                sharedWith = emptyList(),
-                sharedWithGroup = emptyList(),
-                commentCount = 0,
-                hasNewActivity = false,
-                createdAt = Date()
-            ),
-            Visualization(
-                id = UUID.randomUUID().toString(),
-                ownerId = "user1",
-                title = "Units Sold vs Total Transactions",
-                type = VisualizationType.BAR,
-                configJson = emptyMap(),
-                sharedWith = emptyList(),
-                sharedWithGroup = emptyList(),
-                commentCount = 0,
-                hasNewActivity = false,
-                createdAt = Date()
-            ),
-             Visualization(
-                id = UUID.randomUUID().toString(),
-                ownerId = "user1",
-                title = "Commercial Performance Overview: Comparison Between Units Sold and Total Transaction Volume",
-                type = VisualizationType.COMBINED,
-                configJson = emptyMap(),
-                sharedWith = emptyList(),
-                sharedWithGroup = emptyList(),
-                commentCount = 0,
-                hasNewActivity = false,
-                createdAt = Date()
-            )
-        ).map { VisualizationSelection(it) }
-
-        _uiState.update { it.copy(charts = mockCharts) }
+        val mockCharts = MockData.visualizations.map { VisualizationSelection(it) }
+        _uiState.value = ChartSelectionUiState.Success(charts = mockCharts)
     }
 
     fun toggleSelection(chartId: String) {
-        _uiState.update { state ->
-            state.copy(
-                charts = state.charts.map { 
-                    if (it.visualization.id == chartId) it.copy(isSelected = !it.isSelected) 
-                    else it 
-                }
-            )
+        val currentState = _uiState.value
+        if (currentState is ChartSelectionUiState.Success) {
+            _uiState.update {
+                currentState.copy(
+                    charts = currentState.charts.map { 
+                        if (it.visualization.id == chartId) it.copy(isSelected = !it.isSelected) 
+                        else it 
+                    }
+                )
+            }
         }
     }
 
     fun updateChartTitle(chartId: String, newTitle: String) {
-        _uiState.update { state ->
-            state.copy(
-                charts = state.charts.map { 
-                    if (it.visualization.id == chartId) {
-                        it.copy(visualization = it.visualization.copy(title = newTitle))
-                    } else it 
-                }
-            )
+        val currentState = _uiState.value
+        if (currentState is ChartSelectionUiState.Success) {
+            _uiState.update {
+                currentState.copy(
+                    charts = currentState.charts.map { 
+                        if (it.visualization.id == chartId) {
+                            it.copy(visualization = it.visualization.copy(title = newTitle))
+                        } else it 
+                    }
+                )
+            }
         }
     }
 
     fun showUnsavedChangesDialog(show: Boolean) {
-        _uiState.update { it.copy(isUnsavedChangesDialogVisible = show) }
+        val currentState = _uiState.value
+        if (currentState is ChartSelectionUiState.Success) {
+            _uiState.update { currentState.copy(isUnsavedChangesDialogVisible = show) }
+        }
     }
 
     fun hasSelections(): Boolean {
-        return _uiState.value.charts.any { it.isSelected }
+        val currentState = _uiState.value
+        return if (currentState is ChartSelectionUiState.Success) {
+            currentState.charts.any { it.isSelected }
+        } else {
+            false
+        }
     }
 }

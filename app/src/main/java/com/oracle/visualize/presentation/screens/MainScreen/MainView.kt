@@ -39,7 +39,8 @@ fun MainScreen(
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
             currentRoute = currentRoute,
-            onNavigate = viewModel::onNavItemSelected
+            onNavigate = viewModel::onNavItemSelected,
+            viewModel = viewModel
         )
     }
 }
@@ -51,14 +52,18 @@ fun MainScreen(
 fun ContentScreen(
     modifier: Modifier = Modifier,
     currentRoute: String,
-    onNavigate: (Int) -> Unit
+    onNavigate: (Int) -> Unit,
+    viewModel: MainViewModel
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
-        NavRoutes.Create.route -> CreatePage(modifier = modifier)
+        NavRoutes.Create.route -> CreatePage(
+            modifier = modifier,
+            onNavigateToSelection = { viewModel.navigateToRoute(NavRoutes.ChartSelection.route) }
+        )
         NavRoutes.ChartSelection.route -> ChartSelectionPage(
-            onBack = { onNavigate(2) },
+            onBack = { viewModel.navigateToRoute(NavRoutes.Create.route) },
             onNavigateToShare = {}
         )
         else -> { }

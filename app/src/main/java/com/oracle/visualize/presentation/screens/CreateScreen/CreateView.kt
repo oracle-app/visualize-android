@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.domain.models.CreateUiState
+import com.oracle.visualize.domain.models.CreateChartUiState
 import com.oracle.visualize.presentation.screens.CreateScreen.components.FileStatusItem
 import com.oracle.visualize.ui.theme.*
 
@@ -72,8 +72,8 @@ fun CreatePage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val descriptionText = when (uiState) {
-                is CreateUiState.Success -> "Your dataset is ready! Generate visualizations to explore your data."
-                is CreateUiState.Uploading -> "Uploading your dataset..."
+                is CreateChartUiState.Success -> "Your dataset is ready! Generate visualizations to explore your data."
+                is CreateChartUiState.Uploading -> "Uploading your dataset..."
                 else -> "Upload a dataset and we'll generate the best visualizations to help you understand your data."
             }
 
@@ -87,7 +87,7 @@ fun CreatePage(
             )
 
             // File Picker Area / Status Area
-            if (uiState is CreateUiState.Idle) {
+            if (uiState is CreateChartUiState.Idle) {
                 DashedSelector(
                     onClick = {
                         // Use a broad filter to ensure Google Drive appears
@@ -101,13 +101,13 @@ fun CreatePage(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Dataset Format Requirements
-            if (uiState !is CreateUiState.Success) {
+            if (uiState !is CreateChartUiState.Success) {
                 DatasetRequirementsSection()
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            if (uiState is CreateUiState.Success) {
+            if (uiState is CreateChartUiState.Success) {
                 Button(
                     onClick = onNavigateToSelection,
                     modifier = Modifier
@@ -174,16 +174,16 @@ fun DashedSelector(onClick: () -> Unit) {
                 fontWeight = FontWeight.Medium,
                 color = TealPrimary
             )
-            Text("Minimum file size: 100 MB", fontSize = 12.sp, color = TextGray)
+            Text("Maximum file size: 100 MB", fontSize = 12.sp, color = TextGray)
             Text("Only one dataset can be uploaded.", fontSize = 12.sp, color = TextGray)
         }
     }
 }
 
 @Composable
-fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
+fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateViewModel) {
     when (val state = uiState) {
-        is CreateUiState.Uploading -> {
+        is CreateChartUiState.Uploading -> {
             FileStatusItem(
                 fileName = state.fileName,
                 fileSize = state.fileSize,
@@ -191,7 +191,7 @@ fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
                 onCancel = { viewModel.resetState() }
             )
         }
-        is CreateUiState.Success -> {
+        is CreateChartUiState.Success -> {
             FileStatusItem(
                 fileName = state.fileName,
                 fileSize = state.fileSize,
@@ -199,7 +199,7 @@ fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
                 onDelete = { viewModel.resetState() }
             )
         }
-        is CreateUiState.Error -> {
+        is CreateChartUiState.Error -> {
             FileStatusItem(
                 fileName = state.fileName ?: "Error",
                 fileSize = state.fileSize ?: "",
