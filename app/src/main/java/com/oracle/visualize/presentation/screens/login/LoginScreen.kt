@@ -1,15 +1,16 @@
 package com.oracle.visualize.presentation.screens.login
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import org.koin.compose.viewmodel.koinViewModel
+
 
 
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = koinViewModel()
+    viewModel: LoginViewModel = hiltViewModel()
     ) {
 
     // ScreenBackground 0xFFF5F4F2 -> Background

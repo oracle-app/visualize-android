@@ -4,8 +4,9 @@ import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
+import javax.inject.Inject
 
-class AuthRepositoryImpl(private val source: AuthFirebaseSource): AuthRepository {
+class AuthRepositoryImpl @Inject constructor(private val source: AuthFirebaseSource): AuthRepository {
     override suspend fun login(email: String, password: String): AuthUser {
         return source.login(email,password).toDomain()
     }

@@ -3,9 +3,10 @@ package com.oracle.visualize.data.datasources
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 
-class AuthFirebaseSource(private val auth: FirebaseAuth) {
+class AuthFirebaseSource @Inject constructor(private val auth: FirebaseAuth) {
     suspend fun login(email: String, password: String): FirebaseUser {
         val result = auth.signInWithEmailAndPassword(email,password).await()
         return result.user ?: throw Exception("Login failed")
