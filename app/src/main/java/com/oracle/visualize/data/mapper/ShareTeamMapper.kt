@@ -5,10 +5,11 @@ import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.User
 
 fun TeamDTO.toShareTeam(users: List<User>): ShareTeam {
+    val memberCount = this.membersIDs.size
     return ShareTeam(
         id = this.id,
         name = this.name,
-        memberCount = this.memberCount,
+        memberCount = memberCount,
         members = users
     )
 }

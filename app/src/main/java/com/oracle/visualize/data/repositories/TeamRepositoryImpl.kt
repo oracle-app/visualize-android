@@ -40,7 +40,22 @@ class TeamRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTeamsUserIsIn(userID: String): List<ShareTeam> {
-        TODO("Not yet implemented")
+        return coroutineScope {
+            val teamsUserIsIn: List<TeamDTO> = teamsDatasource.getTeamsUserIsIn(userID)
+
+            val deferredTeams = teamsUserIsIn.map { teamDTO ->
+                async {
+                    val deferredUsers = teamDTO.membersIDs.map { id ->
+                        async { userDatasource.getUserByID(id) }
+                    }
+                    val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
+                    val users = rawUsers.map { dto -> dto.toUser() }
+                    teamDTO.toShareTeam(users)
+
+                }
+            }
+            deferredTeams.awaitAll()
+        }
     }
 }
 

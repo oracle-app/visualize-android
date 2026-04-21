@@ -14,7 +14,7 @@ class TeamDatasource @Inject constructor(
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
         return try {
             val snapshot = firestore.collection("groups")
-                .whereArrayContains("membersID",userID)
+                .whereArrayContains("membersIDs",userID)
                 .get()
                 .await()
             snapshot.toObjects(TeamDTO::class.java)
