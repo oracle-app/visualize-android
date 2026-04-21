@@ -4,6 +4,9 @@ import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 
 class VisualizationRepository {
+    /*
+    * Mock data: Soon to be changed.
+    * */
     private val _visualizations = mutableListOf<Visualization>(
         Visualization(
             "1",
@@ -85,7 +88,7 @@ class VisualizationRepository {
         return _visualizations.filter { it.ownerId == userId }
     }
 
-    fun getGeneralVisualizationsByUser(userId: String): List<Visualization> {
+    fun getSharedVisualizationsByUser(userId: String): List<Visualization> {
         return _visualizations.filter { it.ownerId == userId
                 || it.sharedWith.contains(userId)}
     }

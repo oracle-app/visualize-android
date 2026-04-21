@@ -14,7 +14,7 @@ class FeedViewModel : ViewModel() {
     /*
     * Some examples to test:
     *
-    * private val allItems = repo.getGeneralVisualizationsByUser("Jorge Ruiz")
+    * private val allItems = repo.getSharedVisualizationsByUser("Jorge Ruiz")
     * private val allItems = repo.getPersonalVisualizations("Felipe Bastidas")
     * */
 
