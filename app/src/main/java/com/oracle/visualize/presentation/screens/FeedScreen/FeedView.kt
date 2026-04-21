@@ -29,7 +29,7 @@ fun FeedPage(
 ) {
     val searchText = feedViewModel.searchText
     val itemsList = feedViewModel.items
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

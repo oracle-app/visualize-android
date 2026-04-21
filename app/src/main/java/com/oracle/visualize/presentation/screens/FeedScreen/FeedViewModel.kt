@@ -5,52 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.Visualization
+import com.oracle.visualize.domain.repositories.VisualizationRepository
 import java.util.Date
 
 class FeedViewModel : ViewModel() {
+    private val repo = VisualizationRepository()
 
-    private val allItems = listOf(
-        Visualization(
-            "1", "Felipe Bastidas",
-            "GOTY (Graph Of The Year)",
-            emptyMap(),
-            emptyList(),
-            emptyList(),
-            2,
-            true,
-            Date(System.currentTimeMillis() - 30 * 60 * 1000)
-        ),
-        Visualization(
-            "2", "Eduardo Cardenas",
-            "Relative performance of major currencies",
-            emptyMap(),
-            emptyList(),
-            emptyList(),
-            7,
-            true,
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
-        ),
-        Visualization(
-            "3", "Eduardo Cardenas",
-            "Relative performance of major currencies",
-            emptyMap(),
-            emptyList(),
-            emptyList(),
-            7,
-            true,
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
-        ),
-        Visualization(
-            "4", "Eduardo Cardenas",
-            "Relative performance of major currencies",
-            emptyMap(),
-            emptyList(),
-            emptyList(),
-            7,
-            true,
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
-        )
-    )
+    /*
+    * Some examples to test:
+    *
+    * private val allItems = repo.getGeneralVisualizationsByUser("Jorge Ruiz")
+    * private val allItems = repo.getPersonalVisualizations("Felipe Bastidas")
+    * */
+
+    private val allItems = repo.getAllVisualizations()
 
     var searchText by mutableStateOf("")
         private set
