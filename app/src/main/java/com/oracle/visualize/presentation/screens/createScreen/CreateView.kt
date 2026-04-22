@@ -173,7 +173,7 @@ fun DashedSelector(onClick: () -> Unit) {
                 fontWeight = FontWeight.Medium,
                 color = TealPrimary
             )
-            Text("Minimum file size: 100 MB", fontSize = 12.sp, color = TextGray)
+            Text("Maximum file size: 100 MB", fontSize = 12.sp, color = TextGray)
             Text("Only one dataset can be uploaded.", fontSize = 12.sp, color = TextGray)
         }
     }
