@@ -12,21 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Visualize">
-        <activity
-            android:name=".presentation.components.FeedTopBar"
-            android:exported="false"
-            android:label="@string/title_activity_feed_top_bar"
-            android:theme="@style/Theme.Visualize" />
-        <activity
-            android:name=".presentation.components.SearchSection"
-            android:exported="false"
-            android:label="@string/title_activity_search_section"
-            android:theme="@style/Theme.Visualize" />
-        <activity
-            android:name=".FeedActivity"
-            android:exported="false"
-            android:label="@string/title_activity_feed"
-            android:theme="@style/Theme.Visualize" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

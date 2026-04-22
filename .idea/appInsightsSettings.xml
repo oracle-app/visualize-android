@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.oracle.visualize" />
-                  <option name="mobileSdkAppId" value="1:1062761066681:android:84f33a53774a7e178b6b68" />
-                  <option name="projectId" value="visualize-oracle-reto" />
-                  <option name="projectNumber" value="1062761066681" />
+                  <option name="mobileSdkAppId" value="1:925837074152:android:a1a4efe6f2105850cd735d" />
+                  <option name="projectId" value="visualize-oracle-dev" />
+                  <option name="projectNumber" value="925837074152" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
