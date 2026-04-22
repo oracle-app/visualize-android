@@ -42,6 +42,8 @@ fun FeedPage(
 
         ) {
             item{
+                Spacer(modifier = Modifier.height(22.dp))
+
                 SearchSection(
                     text = searchText,
                     onTextChange = { feedViewModel.onSearchTextChange(it) }
@@ -51,6 +53,9 @@ fun FeedPage(
             }
             items(itemsList) { item ->
                 FeedCard(item)
+            }
+            item{
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
 
