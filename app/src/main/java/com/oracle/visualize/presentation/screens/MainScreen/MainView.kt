@@ -12,21 +12,26 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
-import com.oracle.visualize.presentation.screens.ChartSelection.ChartSelectionPage
+import com.oracle.visualize.presentation.screens.createschart.CreatePage
+import com.oracle.visualize.presentation.screens.selectchart.ChartSelectionPage
 import com.oracle.visualize.ui.theme.ScreenBackground
 
-
+/**
+ * MainScreen acts as the primary navigation host for the application.
+ * It coordinates the visibility of the bottom navigation bar and the current content area.
+ */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
+    // We obtain the state from View
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
+            // Navigation bar is hidden on specific flows like chart selection
             if (currentRoute != NavRoutes.ChartSelection.route) {
                 BottomNavBar(
                     navItems = viewModel.navItems,
@@ -45,9 +50,9 @@ fun MainScreen(
     }
 }
 
-
-
-
+/**
+ * ContentScreen determines which page to display based on the [currentRoute].
+ */
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,

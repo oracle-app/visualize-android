@@ -4,9 +4,15 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * Mock data for development and testing purposes.
+ * VisualizationMockData provides a set of dummy [Visualization] objects 
+ * used to populate the UI during the development phase before the actual 
+ * backend API is integrated.
  */
-object MockData {
+object VisualizationMockData {
+    /**
+     * A list of pre-configured visualizations representing typical datasets 
+     * like sales, transactions, and commercial performance.
+     */
     val visualizations = listOf(
         Visualization(
             id = UUID.randomUUID().toString(),

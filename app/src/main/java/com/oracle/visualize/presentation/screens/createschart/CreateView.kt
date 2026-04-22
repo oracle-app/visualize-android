@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.CreateScreen
+package com.oracle.visualize.presentation.screens.createschart
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,8 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.domain.models.CreateChartUiState
-import com.oracle.visualize.presentation.screens.CreateScreen.components.FileStatusItem
+import com.oracle.visualize.presentation.screens.createschart.components.FileStatusItem
 import com.oracle.visualize.ui.theme.*
 
 /**
@@ -123,6 +122,9 @@ fun CreatePage(
     }
 }
 
+/**
+ * Visual selector for file picking with dashed border.
+ */
 @Composable
 fun DashedSelector(onClick: () -> Unit) {
     Box(
@@ -180,6 +182,9 @@ fun DashedSelector(onClick: () -> Unit) {
     }
 }
 
+/**
+ * Displays the current status of the file (Uploading, Success, or Error).
+ */
 @Composable
 fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateViewModel) {
     when (val state = uiState) {
@@ -211,6 +216,9 @@ fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateViewModel) {
     }
 }
 
+/**
+ * Explains the required format for datasets.
+ */
 @Composable
 fun DatasetRequirementsSection() {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -240,6 +248,9 @@ fun DatasetRequirementsSection() {
     }
 }
 
+/**
+ * Visual table example for guidance.
+ */
 @Composable
 fun TableExampleComponent() {
     Column(

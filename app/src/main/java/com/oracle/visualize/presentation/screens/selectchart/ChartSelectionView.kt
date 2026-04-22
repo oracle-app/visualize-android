@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.ChartSelection
+package com.oracle.visualize.presentation.screens.selectchart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,8 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.domain.models.ChartSelectionUiState
-import com.oracle.visualize.presentation.screens.ChartSelection.components.ChartCard
+import com.oracle.visualize.presentation.screens.selectchart.components.ChartCard
 import com.oracle.visualize.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +58,7 @@ fun ChartSelectionPage(
         containerColor = ScreenBackground
     ) { paddingValues ->
         when (val state = uiState) {
-            is ChartSelectionUiState.Loading -> {
+            ChartSelectionUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = TealPrimary)
                 }

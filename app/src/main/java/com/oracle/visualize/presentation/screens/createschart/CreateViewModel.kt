@@ -1,11 +1,10 @@
-package com.oracle.visualize.presentation.screens.CreateScreen
+package com.oracle.visualize.presentation.screens.createschart
 
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.models.CreateChartUiState
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,13 +13,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 
+/**
+ * ViewModel for the Chart Creation (dataset upload) screen.
+ * Handles file selection, validation, and manages the [CreateChartUiState].
+ */
 class CreateViewModel(
     private val validateDatasetUseCase: ValidateDatasetUseCase = ValidateDatasetUseCase()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CreateChartUiState>(CreateChartUiState.Idle)
+    
+    /**
+     * UI state representing the current step of the dataset upload process.
+     */
     val uiState: StateFlow<CreateChartUiState> = _uiState.asStateFlow()
 
+    /**
+     * Triggered when the user selects a file from the system picker.
+     * Initiates validation and upload simulation.
+     */
     fun onFileSelected(uri: Uri?, context: Context) {
         if (uri == null) return
 
@@ -39,6 +50,9 @@ class CreateViewModel(
         }
     }
 
+    /**
+     * Simulates the upload process with a progress timer.
+     */
     private fun startUpload(fileName: String, fileSize: String) {
         viewModelScope.launch {
             _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, 0f)
@@ -52,6 +66,9 @@ class CreateViewModel(
         }
     }
 
+    /**
+     * Resets the UI state to Idle, allowing the user to pick a new file.
+     */
     fun resetState() {
         _uiState.value = CreateChartUiState.Idle
     }

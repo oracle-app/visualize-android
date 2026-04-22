@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.ChartSelection.components
+package com.oracle.visualize.presentation.screens.selectchart.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -24,6 +24,11 @@ import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.ui.theme.*
 
+/**
+ * ChartCard displays a preview of a generated visualization.
+ * It features interactive selection states and allows title editing.
+ * Aligned with Figma design specifications (3-section layout).
+ */
 @Composable
 fun ChartCard(
     visualization: Visualization,
@@ -108,6 +113,9 @@ fun ChartCard(
     }
 }
 
+/**
+ * Renders the mock chart content including axes, grid lines, bars, and trend lines.
+ */
 @Composable
 fun MockChartContent() {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -193,6 +201,9 @@ fun MockChartContent() {
     }
 }
 
+/**
+ * Small legend item component with color indicator and text.
+ */
 @Composable
 fun LegendItem(color: Color, text: String, textColor: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
