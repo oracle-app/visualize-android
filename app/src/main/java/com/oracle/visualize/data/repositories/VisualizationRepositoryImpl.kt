@@ -1,13 +1,10 @@
 package com.oracle.visualize.data.repositories
 
 import com.oracle.visualize.data.datasources.VisualizationDataSource
-import com.oracle.visualize.domain.models.Comment
+import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import jakarta.inject.Inject
-import kotlinx.serialization.json.JsonObject
-import org.json.JSONObject
-import java.util.Date
+import javax.inject.Inject
 
 
 class VisualizationRepositoryImpl @Inject constructor(
@@ -17,32 +14,29 @@ class VisualizationRepositoryImpl @Inject constructor(
     override suspend fun createVisualization(
         authorID: String,
         title: String,
-        configJSON: JsonObject,
+        configJSON: Map<String, Any>,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     ) {
         val visualization = Visualization(
-            "5",
-            authorID,
-            title,
-            configJSON,
-            sharedWithUsers,
-            sharedWithTeams,
-            Date(System.currentTimeMillis()),
-            emptyList()
+            authorID = authorID,
+            title = title,
+            configJSON = configJSON,
+            sharedWithUsers = sharedWithUsers,
+            sharedWithTeams = sharedWithTeams
         )
         source.createVisualization(visualization)
     }
 
     override suspend fun getAllVisualizations(): List<Visualization> {
-        return source.getAllVisualizations()
+        return source.getAllVisualizations().map { it.toDomain() }
     }
 
     override suspend fun getPersonalVisualizations(userID: String): List<Visualization> {
-        return source.getPersonalVisualizations(userID)
+        return source.getPersonalVisualizations(userID).map { it.toDomain() }
     }
 
     override suspend fun getSharedVisualizationsByUser(userID: String): List<Visualization> {
-        return source.getSharedVisualizationsByUser(userID)
+        return source.getSharedVisualizationsByUser(userID).map { it.toDomain() }
     }
 }

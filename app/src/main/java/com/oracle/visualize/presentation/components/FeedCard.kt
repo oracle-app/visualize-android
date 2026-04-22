@@ -87,7 +87,7 @@ fun FeedCard(item: Visualization) {
                             fontSize = 13.sp
                         )
                         Text(
-                            text = "    •    ${formatTime(item.createdAt, context)}",
+                            text = "    •    ${formatTime(item.createdAt.toDate(), context)}",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )

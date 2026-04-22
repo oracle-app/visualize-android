@@ -5,8 +5,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.oracle.visualize.data.datasources.dtos.VisualizationDto
 import com.oracle.visualize.domain.models.Visualization
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
 
 
@@ -33,19 +34,19 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getAllVisualizations(): List<Visualization> {
+    suspend fun getAllVisualizations(): List<VisualizationDto> {
         return try {
             val snapshot = collectionRef.get().await()
-            snapshot.toObjects(Visualization::class.java)
+            snapshot.toObjects(VisualizationDto::class.java)
         } catch (ex: Exception) {
             emptyList()
         }
     }
 
-    suspend fun getSharedVisualizationsByUser(userID: String): List<Visualization> {
+    suspend fun getSharedVisualizationsByUser(userID: String): List<VisualizationDto> {
         return try {
             val snapshot = collectionRef.get().await()
-            snapshot.toObjects(Visualization::class.java).filter {
+            snapshot.toObjects(VisualizationDto::class.java).filter {
                 it.authorID == userID || it.sharedWithUsers.contains(userID)
             }
         } catch (ex: Exception) {
@@ -53,10 +54,10 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getPersonalVisualizations(userID: String): List<Visualization> {
+    suspend fun getPersonalVisualizations(userID: String): List<VisualizationDto> {
         return try {
             val snapshot = collectionRef.get().await()
-            snapshot.toObjects(Visualization::class.java).filter {
+            snapshot.toObjects(VisualizationDto::class.java).filter {
                 it.authorID == userID
             }
         } catch (ex: Exception) {

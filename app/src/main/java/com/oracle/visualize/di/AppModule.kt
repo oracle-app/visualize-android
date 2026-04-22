@@ -1,7 +1,9 @@
 package com.oracle.visualize.di
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
+import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
 import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
@@ -40,9 +42,20 @@ object FirebaseModule {
 
     @Provides
     @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore =
+        FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
     fun provideAuthFirebaseSource(
         auth: FirebaseAuth
     ): AuthFirebaseSource = AuthFirebaseSource(auth)
+
+    @Provides
+    @Singleton
+    fun provideVisualizationDataSource(
+        db: FirebaseFirestore
+    ): VisualizationDataSource = VisualizationDataSource(db)
 }
 
 @Module
