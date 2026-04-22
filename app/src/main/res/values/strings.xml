@@ -33,6 +33,17 @@
     <string name="search_placeholder">Search by title</string>
     <string name="search_icon_description">Search</string>
 
+    // FeedCard Time Formatting
+
+    <string name="time_just_now">just now</string>
+    <string name="time_mins_ago">%d min ago</string>
+    <string name="time_hours_ago">%d h ago</string>
+    <string name="time_days_ago">%d d ago</string>
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%d week ago</item>
+        <item quantity="other">%d weeks ago</item>
+    </plurals>
+
     // Create View
 
     <string name="create_top_bar_title">Create Data Visualizations</string>
