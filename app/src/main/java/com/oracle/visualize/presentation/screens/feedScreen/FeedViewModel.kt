@@ -12,6 +12,7 @@ import com.oracle.visualize.domain.usecases.GetSharedVisualizationsByUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import java.util.Date
 
 @HiltViewModel
@@ -24,44 +25,44 @@ class FeedViewModel @Inject constructor(
 
     private val allItems = listOf(
         Visualization(
-            "1", "Felipe Bastidas",
+            "1",
+            "Felipe Bastidas",
             "GOTY (Graph Of The Year)",
-            JsonObject(emptyMap()),
+            buildJsonObject {},
             emptyList(),
             emptyList(),
-            2,
-            true,
-            Date(System.currentTimeMillis() - 30 * 60 * 1000)
+            Date(System.currentTimeMillis() - 30 * 60 * 1000),
+            emptyList()
         ),
         Visualization(
-            "2", "Eduardo Cardenas",
+            "2",
+            "Eduardo Cardenas",
             "Relative performance of major currencies",
-            JsonObject(emptyMap()),
+            buildJsonObject {},
             emptyList(),
             emptyList(),
-            7,
-            true,
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+            emptyList()
         ),
         Visualization(
-            "3", "Eduardo Cardenas",
+            "3",
+            "Eduardo Cardenas",
             "Relative performance of major currencies",
-            JsonObject(emptyMap()),
+            buildJsonObject {},
             emptyList(),
             emptyList(),
-            7,
-            true,
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+            emptyList()
         ),
         Visualization(
-            "4", "Eduardo Cardenas",
+            "4",
+            "Eduardo Cardenas",
             "Relative performance of major currencies",
-            JsonObject(emptyMap()),
+            buildJsonObject {},
             emptyList(),
             emptyList(),
-            7,
-            true,
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+            emptyList()
         )
     )
 

@@ -1,13 +1,14 @@
 package com.oracle.visualize.domain.repositories
 
 import com.oracle.visualize.domain.models.Visualization
+import kotlinx.serialization.json.JsonObject
 import java.util.Date
 
 interface VisualizationRepository {
     suspend fun createVisualization(
         authorID: String,
         title: String,
-        configJSON: Map<String, Any>,
+        configJSON: JsonObject,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     )

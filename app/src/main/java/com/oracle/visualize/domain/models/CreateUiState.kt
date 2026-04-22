@@ -1,5 +1,7 @@
 package com.oracle.visualize.domain.models
 
+import androidx.annotation.StringRes
+
 /**
  * Represents the different states of the Create Data Visualizations screen.
  */
@@ -18,7 +20,7 @@ sealed interface CreateUiState {
     ) : CreateUiState
 
     data class Error(
-        val message: String,
+        @StringRes val message: Int,
         val fileName: String? = null,
         val fileSize: String? = null
     ) : CreateUiState

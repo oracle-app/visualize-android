@@ -12,10 +12,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
+import com.oracle.visualize.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +24,7 @@ fun FeedTopBar(scrollBehavior: TopAppBarScrollBehavior) {
     TopAppBar(
         title = {
             Text(
-                text = "All Feed",
+                text = stringResource(R.string.feed_top_bar_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
@@ -31,13 +32,15 @@ fun FeedTopBar(scrollBehavior: TopAppBarScrollBehavior) {
         actions = {
             Icon(
                 imageVector = Icons.Filled.KeyboardArrowDown,
-                contentDescription = "Opciones",
+                contentDescription = stringResource(R.string.feed_top_bar_options_description),
                 modifier = Modifier.padding(end = 16.dp)
             )
         },
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
     )
 }

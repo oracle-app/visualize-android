@@ -3,7 +3,9 @@ package com.oracle.visualize.di
 import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
+import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.VisualizationRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -52,4 +54,10 @@ abstract class RepositoryModule {
     abstract fun bindAuthRepository(
         impl: AuthRepositoryImpl
     ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindVisualizationRepository(
+        impl: VisualizationRepositoryImpl
+    ): VisualizationRepository
 }

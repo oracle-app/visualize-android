@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,38 +26,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import com.oracle.visualize.R
 
-fun formatTime(date: Date): String{
+fun formatTime(date: Date, context: Context): String{
     val now = Date()
     val diff = now.time - date.time
 
     val mins = TimeUnit.MILLISECONDS.toMinutes(diff)
     val hours = TimeUnit.MILLISECONDS.toHours(diff)
     val days = TimeUnit.MILLISECONDS.toDays(diff)
+    val weeks = (days / 7).toInt()
 
     return when {
-        mins < 1 -> "just now"
-        mins < 60 -> "$mins min ago"
-        hours < 24 -> "$hours h ago"
-        days < 7 -> "$days d ago"
-        else -> "${days / 7} week(s) ago"
+        mins < 1 -> context.getString(R.string.time_just_now)
+        mins < 60 -> context.getString(R.string.time_mins_ago, mins)
+        hours < 24 -> context.getString(R.string.time_hours_ago, hours)
+        days < 7 -> context.getString(R.string.time_days_ago, days)
+        else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
 @Composable
 fun FeedCard(item: Visualization) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondary),
-        border = BorderStroke(2.dp,MaterialTheme.colorScheme.surface)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        border = BorderStroke(2.dp,MaterialTheme.colorScheme.outline)
 
     ) {
         Column {
@@ -72,7 +75,7 @@ fun FeedCard(item: Visualization) {
                         text = item.title,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
@@ -84,8 +87,8 @@ fun FeedCard(item: Visualization) {
                             fontSize = 13.sp
                         )
                         Text(
-                            text = "    •    ${formatTime(item.createdAt)}",
-                            color = MaterialTheme.colorScheme.tertiary,
+                            text = "    •    ${formatTime(item.createdAt, context)}",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                     }
@@ -104,7 +107,7 @@ fun FeedCard(item: Visualization) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.onPrimary),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Graph", color = MaterialTheme.colorScheme.onSurface)
@@ -128,7 +131,7 @@ fun FeedCard(item: Visualization) {
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(Color.White),
+                        .background(MaterialTheme.colorScheme.onPrimary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text("+${item.comments.count()}", fontSize = 12.sp,
@@ -145,6 +148,6 @@ private fun UserAvatar() {
         modifier = Modifier
             .size(28.dp)
             .clip(CircleShape)
-            .background(Color.LightGray)
+            .background(MaterialTheme.colorScheme.onPrimary)
     )
 }

@@ -27,7 +27,7 @@ class VisualizationDataSource @Inject constructor(
         )
 
         try {
-            collectionRef.add(formattedVisualization)
+            collectionRef.add(formattedVisualization).await()
         } catch (ex: Exception) {
             throw ex
         }
