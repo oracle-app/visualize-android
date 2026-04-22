@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.NotificationScreen
+package com.oracle.visualize.presentation.screens.notificationScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

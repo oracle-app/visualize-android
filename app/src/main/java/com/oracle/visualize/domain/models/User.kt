@@ -2,12 +2,19 @@ package com.oracle.visualize.domain.models
 
 data class User (
     val id: String,
-    val userType: String,
+    val userType: UserType,
     val email: String,
     val userName: String,
     val profilePictureUrl: String?,
-    val themePreference: String, // Pending: Memory optimization
-    val chartTheme: String, // Pending: Memory optimization
-    val notificationsEnabled: Boolean,
-    val tokens: List<String>
+    val themePreference: ThemePreference,
+    val chartTheme: String, // Pending: Check variable Type
+    val notificationsEnabled: Boolean
 )
+
+enum class UserType {
+    ADMIN, WRITER, COSTUMER
+}
+
+enum class ThemePreference {
+    LIGHT, DARK, SYSTEM
+}

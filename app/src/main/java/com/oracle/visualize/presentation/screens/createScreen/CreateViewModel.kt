@@ -1,10 +1,20 @@
+<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateViewModel.kt
 package com.oracle.visualize.presentation.screens.createschart
+========
+package com.oracle.visualize.presentation.screens.createScreen
+>>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateViewModel.kt
 
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateViewModel.kt
+========
+import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.CreateUiState
+>>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateViewModel.kt
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,8 +52,14 @@ class CreateViewModel(
         validateDatasetUseCase(fileName, sizeInBytes).onSuccess {
             startUpload(fileName, fileSizeFormatted)
         }.onFailure { exception ->
+<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateViewModel.kt
             _uiState.value = CreateChartUiState.Error(
                 message = exception.message ?: "Unsupported format",
+========
+            Log.e("CreateViewModel", "File validation failed: ${exception.message}")
+            _uiState.value = CreateUiState.Error(
+                message = R.string.error_invalid_format,
+>>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateViewModel.kt
                 fileName = fileName,
                 fileSize = fileSizeFormatted
             )
