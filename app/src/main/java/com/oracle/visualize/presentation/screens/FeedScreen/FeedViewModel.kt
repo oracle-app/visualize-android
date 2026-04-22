@@ -9,16 +9,16 @@ import com.oracle.visualize.domain.repositories.VisualizationRepository
 import java.util.Date
 
 class FeedViewModel : ViewModel() {
-    private val repo = VisualizationRepository()
-
-    /*
-    * Some examples to test:
-    *
-    * private val allItems = repo.getSharedVisualizationsByUser("Jorge Ruiz")
-    * private val allItems = repo.getPersonalVisualizations("Felipe Bastidas")
-    * */
-
-    private val allItems = repo.getAllVisualizations()
+//    private val repo = VisualizationRepository()
+//
+//    /*
+//    * Some examples to test:
+//    *
+//    * private val allItems = repo.getSharedVisualizationsByUser("Jorge Ruiz")
+//    * private val allItems = repo.getPersonalVisualizations("Felipe Bastidas")
+//    * */
+//
+//    private val allItems = repo.getAllVisualizations()
 
     var searchText by mutableStateOf("")
         private set

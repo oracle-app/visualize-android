@@ -3,7 +3,7 @@ package com.oracle.visualize.domain.usecases
 import com.oracle.visualize.domain.models.Dataset
 import java.util.Locale
 
-/**
+/*
  * Use case to validate if a dataset file has a supported format (.csv or .xlsx).
  */
 class ValidateDatasetUseCase {

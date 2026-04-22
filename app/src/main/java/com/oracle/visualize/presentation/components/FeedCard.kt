@@ -79,7 +79,7 @@ fun FeedCard(item: Visualization) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "By ${item.ownerId}",
+                            text = "By ${item.authorID}",
                             color = MaterialTheme.colorScheme.tertiary,
                             fontSize = 13.sp
                         )
