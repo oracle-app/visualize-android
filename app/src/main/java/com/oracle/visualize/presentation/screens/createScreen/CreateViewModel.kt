@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.CreateScreen
+package com.oracle.visualize.presentation.screens.createScreen
 
 import android.content.Context
 import android.net.Uri
