@@ -10,7 +10,7 @@ class CreateVisualizationUseCase(private val repository: VisualizationRepository
         configJSON: Map<String, Any>,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
-        ) {
+    ){
         repository.createVisualization(
             authorID,
             title,

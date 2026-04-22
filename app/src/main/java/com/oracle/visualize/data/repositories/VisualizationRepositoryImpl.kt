@@ -2,10 +2,13 @@ package com.oracle.visualize.data.repositories
 
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import jakarta.inject.Inject
 import java.util.Date
 
 
-class VisualizationRepositoryImpl : VisualizationRepository {
+class VisualizationRepositoryImpl @Inject constructor(
+    private val source: VisualizationDataSource
+) : VisualizationRepository {
     // Mock data: Soon to be changed with Firebase DB connection.
     private val _visualizations = mutableListOf<Visualization>(
         Visualization(

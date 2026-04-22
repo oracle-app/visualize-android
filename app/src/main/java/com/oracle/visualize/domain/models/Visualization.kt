@@ -9,5 +9,6 @@ data class Visualization (
     val configJSON: Map<String, Any>,
     val sharedWithUsers: List<String>,
     val sharedWithTeams: List<String>,
-    val createdAt: Date
+    val createdAt: Date,
+    val comments: List<Comment>
 )

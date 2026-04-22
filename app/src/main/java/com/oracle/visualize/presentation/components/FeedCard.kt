@@ -131,7 +131,7 @@ fun FeedCard(item: Visualization) {
                         .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("+${item.commentCount}", fontSize = 12.sp,
+                    Text("+${item.comments.count()}", fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface)
                 }
             }

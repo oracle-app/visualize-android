@@ -5,20 +5,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.Visualization
-import com.oracle.visualize.domain.repositories.VisualizationRepository
-import java.util.Date
+import com.oracle.visualize.domain.usecases.CreateVisualizationUseCase
+import com.oracle.visualize.domain.usecases.GetAllVisualizationsUseCase
+import com.oracle.visualize.domain.usecases.GetPersonalVisualizationsUseCase
+import com.oracle.visualize.domain.usecases.GetSharedVisualizationsByUserUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 
-class FeedViewModel : ViewModel() {
-//    private val repo = VisualizationRepository()
-//
-//    /*
-//    * Some examples to test:
-//    *
-//    * private val allItems = repo.getSharedVisualizationsByUser("Jorge Ruiz")
-//    * private val allItems = repo.getPersonalVisualizations("Felipe Bastidas")
-//    * */
-//
-//    private val allItems = repo.getAllVisualizations()
+@HiltViewModel
+class FeedViewModel @Inject constructor(
+    private val createVisualizationUseCase: CreateVisualizationUseCase,
+    private val getAllVisualizationsUseCase: GetAllVisualizationsUseCase,
+    private val getPersonalVisualizationsUseCase: GetPersonalVisualizationsUseCase,
+    private val getSharedVisualizationsByUser: GetSharedVisualizationsByUserUseCase
+) : ViewModel() {
+
+
+    val allItems = emptyList<Visualization>()
 
     var searchText by mutableStateOf("")
         private set
@@ -34,7 +37,7 @@ class FeedViewModel : ViewModel() {
         } else {
             allItems.filter {
                 it.title.contains(newText, ignoreCase = true) ||
-                it.ownerId.contains(newText, ignoreCase = true)
+                it.authorID.contains(newText, ignoreCase = true)
             }
         }
     }
