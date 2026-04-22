@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.FeedScreen
+package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +11,8 @@ import com.oracle.visualize.domain.usecases.GetPersonalVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetSharedVisualizationsByUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.serialization.json.JsonObject
+import java.util.Date
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
@@ -20,8 +22,48 @@ class FeedViewModel @Inject constructor(
     private val getSharedVisualizationsByUser: GetSharedVisualizationsByUserUseCase
 ) : ViewModel() {
 
-
-    val allItems = emptyList<Visualization>()
+    private val allItems = listOf(
+        Visualization(
+            "1", "Felipe Bastidas",
+            "GOTY (Graph Of The Year)",
+            JsonObject(emptyMap()),
+            emptyList(),
+            emptyList(),
+            2,
+            true,
+            Date(System.currentTimeMillis() - 30 * 60 * 1000)
+        ),
+        Visualization(
+            "2", "Eduardo Cardenas",
+            "Relative performance of major currencies",
+            JsonObject(emptyMap()),
+            emptyList(),
+            emptyList(),
+            7,
+            true,
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+        ),
+        Visualization(
+            "3", "Eduardo Cardenas",
+            "Relative performance of major currencies",
+            JsonObject(emptyMap()),
+            emptyList(),
+            emptyList(),
+            7,
+            true,
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+        ),
+        Visualization(
+            "4", "Eduardo Cardenas",
+            "Relative performance of major currencies",
+            JsonObject(emptyMap()),
+            emptyList(),
+            emptyList(),
+            7,
+            true,
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+        )
+    )
 
     var searchText by mutableStateOf("")
         private set
