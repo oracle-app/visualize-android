@@ -35,27 +35,22 @@ fun FeedPage(
         topBar = { FeedTopBar(scrollBehavior = scrollBehavior) }
     ) { paddingValues ->
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp)
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                item{
-                    SearchSection(
-                        text = searchText,
-                        onTextChange = { feedViewModel.onSearchTextChange(it) }
-                    )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                items(itemsList) { item ->
-                    FeedCard(item)
-                }
+        ) {
+            item{
+                SearchSection(
+                    text = searchText,
+                    onTextChange = { feedViewModel.onSearchTextChange(it) }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            items(itemsList) { item ->
+                FeedCard(item)
             }
         }
 
