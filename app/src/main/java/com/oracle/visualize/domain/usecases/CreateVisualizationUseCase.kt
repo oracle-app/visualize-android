@@ -11,7 +11,7 @@ class CreateVisualizationUseCase @Inject constructor(
     suspend operator fun invoke(
         authorID: String,
         title: String,
-        configJSON: JsonObject,
+        configJSON: String,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     ){

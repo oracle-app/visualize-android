@@ -1,14 +1,14 @@
 package com.oracle.visualize.data.datasources
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.VisualizationDto
 import com.oracle.visualize.domain.models.Visualization
 import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.*
+import kotlin.collections.emptyList
 
 
 class VisualizationDataSource @Inject constructor(
@@ -30,37 +30,47 @@ class VisualizationDataSource @Inject constructor(
         try {
             collectionRef.add(formattedVisualization).await()
         } catch (ex: Exception) {
+            ex.printStackTrace()
             throw ex
         }
     }
-
     suspend fun getAllVisualizations(): List<VisualizationDto> {
         return try {
             val snapshot = collectionRef.get().await()
             snapshot.toObjects(VisualizationDto::class.java)
         } catch (ex: Exception) {
+            ex.printStackTrace()
             emptyList()
         }
     }
 
     suspend fun getSharedVisualizationsByUser(userID: String): List<VisualizationDto> {
         return try {
-            val snapshot = collectionRef.get().await()
-            snapshot.toObjects(VisualizationDto::class.java).filter {
-                it.authorID == userID || it.sharedWithUsers.contains(userID)
-            }
+            val snapshot = collectionRef
+                .where(
+                    Filter.or(
+                        Filter.equalTo("authorID", userID),
+                        Filter.arrayContains("sharedWithUsers", userID)
+                    )
+                )
+                .get()
+                .await()
+            snapshot.toObjects(VisualizationDto::class.java)
         } catch (ex: Exception) {
+            ex.printStackTrace()
             emptyList()
         }
     }
 
     suspend fun getPersonalVisualizations(userID: String): List<VisualizationDto> {
         return try {
-            val snapshot = collectionRef.get().await()
-            snapshot.toObjects(VisualizationDto::class.java).filter {
-                it.authorID == userID
-            }
+            val snapshot = collectionRef
+                .whereEqualTo("authorID", userID)
+                .get()
+                .await()
+            snapshot.toObjects(VisualizationDto::class.java)
         } catch (ex: Exception) {
+            ex.printStackTrace()
             emptyList()
         }
     }

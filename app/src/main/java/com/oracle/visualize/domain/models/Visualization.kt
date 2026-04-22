@@ -2,15 +2,16 @@ package com.oracle.visualize.domain.models
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
+import kotlinx.serialization.json.JsonObject
 
 data class Visualization (
     @DocumentId
-    val id: String = "",
-    val authorID: String = "",
-    val title: String = "",
-    val configJSON: Map<String, Any> = emptyMap(),
-    val sharedWithUsers: List<String> = emptyList(),
-    val sharedWithTeams: List<String> = emptyList(),
-    val createdAt: Timestamp = Timestamp.now(),
-    val comments: List<Comment> = emptyList()
+    val id: String,
+    val authorID: String,
+    val title: String,
+    val configJSON: String,
+    val sharedWithUsers: List<String>,
+    val sharedWithTeams: List<String>,
+    val createdAt: Timestamp,
+    val comments: List<Comment>
 )

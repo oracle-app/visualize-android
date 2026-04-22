@@ -13,79 +13,34 @@ import com.oracle.visualize.domain.usecases.GetSharedVisualizationsByUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
 import java.util.Date
+import kotlin.collections.emptyList
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val createVisualizationUseCase: CreateVisualizationUseCase,
     private val getAllVisualizationsUseCase: GetAllVisualizationsUseCase,
-    private val getPersonalVisualizationsUseCase: GetPersonalVisualizationsUseCase,
     private val getSharedVisualizationsByUser: GetSharedVisualizationsByUserUseCase
 ) : ViewModel() {
-/*    Mock data.
-
-    private val allItems = listOf(
-        Visualization(
-            "1",
-            "Felipe Bastidas",
-            "GOTY (Graph Of The Year)",
-            buildJsonObject {},
-            emptyList(),
-            emptyList(),
-            Date(System.currentTimeMillis() - 30 * 60 * 1000),
-            emptyList()
-        ),
-        Visualization(
-            "2",
-            "Eduardo Cardenas",
-            "Relative performance of major currencies",
-            buildJsonObject {},
-            emptyList(),
-            emptyList(),
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
-            emptyList()
-        ),
-        Visualization(
-            "3",
-            "Eduardo Cardenas",
-            "Relative performance of major currencies",
-            buildJsonObject {},
-            emptyList(),
-            emptyList(),
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
-            emptyList()
-        ),
-        Visualization(
-            "4",
-            "Eduardo Cardenas",
-            "Relative performance of major currencies",
-            buildJsonObject {},
-            emptyList(),
-            emptyList(),
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
-            emptyList()
-        )
-    ) */
-
-    // Database-fetched elements
-    private var dbItems by mutableStateOf<List<Visualization>>(emptyList())
 
     var searchText by mutableStateOf("")
+        private set
+
+    var visualizations by mutableStateOf<List<Visualization>>(emptyList())
         private set
 
     var items by mutableStateOf<List<Visualization>>(emptyList())
         private set
 
     init {
-        fetchVisualizations()
+        fetchItems()
     }
 
-    private fun fetchVisualizations() {
+    private fun fetchItems() {
         viewModelScope.launch {
             try {
-                val result = getAllVisualizationsUseCase()
-                dbItems = result
-                items = result
+                visualizations = getAllVisualizationsUseCase()
             } catch (ex: Exception) {
                 throw ex
             }
@@ -96,9 +51,9 @@ class FeedViewModel @Inject constructor(
         searchText = newText
 
         items = if (newText.isBlank()) {
-            dbItems
+            visualizations
         } else {
-            dbItems.filter {
+            visualizations.filter {
                 it.title.contains(newText, ignoreCase = true) ||
                 it.authorID.contains(newText, ignoreCase = true)
             }

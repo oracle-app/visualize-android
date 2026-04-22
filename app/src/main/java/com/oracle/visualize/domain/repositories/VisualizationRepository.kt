@@ -8,7 +8,7 @@ interface VisualizationRepository {
     suspend fun createVisualization(
         authorID: String,
         title: String,
-        configJSON: Map<String, Any>,
+        configJSON: String,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     )

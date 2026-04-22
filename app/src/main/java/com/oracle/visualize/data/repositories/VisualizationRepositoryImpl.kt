@@ -1,11 +1,12 @@
 package com.oracle.visualize.data.repositories
 
+import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
-
 
 class VisualizationRepositoryImpl @Inject constructor(
     private val source: VisualizationDataSource
@@ -14,16 +15,19 @@ class VisualizationRepositoryImpl @Inject constructor(
     override suspend fun createVisualization(
         authorID: String,
         title: String,
-        configJSON: Map<String, Any>,
+        configJSON: String,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     ) {
         val visualization = Visualization(
+            id = "",
             authorID = authorID,
             title = title,
             configJSON = configJSON,
             sharedWithUsers = sharedWithUsers,
-            sharedWithTeams = sharedWithTeams
+            sharedWithTeams = sharedWithTeams,
+            createdAt = Timestamp.now(),
+            comments = emptyList()
         )
         source.createVisualization(visualization)
     }
