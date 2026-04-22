@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.MainScreen
+package com.oracle.visualize.presentation.screens.mainScreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,10 +11,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
-import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
-import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
-
+import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.createScreen.CreatePage
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()

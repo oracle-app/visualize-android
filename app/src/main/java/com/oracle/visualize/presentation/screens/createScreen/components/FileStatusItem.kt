@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.CreateScreen.components
+package com.oracle.visualize.presentation.screens.createScreen.components
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme

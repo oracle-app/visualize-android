@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.MainScreen
+package com.oracle.visualize.presentation.screens.mainScreen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

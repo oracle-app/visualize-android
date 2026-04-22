@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.CreateScreen
+package com.oracle.visualize.presentation.screens.createScreen
 
 import android.content.Context
 import android.net.Uri
@@ -27,16 +27,17 @@ class CreateViewModel(
         if (uri == null) return
 
         val fileName = getFileName(context, uri) ?: "unknown_file"
-        val fileSize = getFileSize(context, uri) ?: "0 MB"
+        val sizeInBytes = getFileSizeBytes(context, uri)
+        val fileSizeFormatted = formatFileSize(sizeInBytes)
 
-        validateDatasetUseCase(fileName).onSuccess {
-            startUpload(fileName, fileSize)
+        validateDatasetUseCase(fileName, sizeInBytes).onSuccess {
+            startUpload(fileName, fileSizeFormatted)
         }.onFailure { exception ->
             Log.e("CreateViewModel", "File validation failed: ${exception.message}")
             _uiState.value = CreateUiState.Error(
                 message = R.string.error_invalid_format,
                 fileName = fileName,
-                fileSize = fileSize
+                fileSize = fileSizeFormatted
             )
         }
     }
@@ -69,7 +70,7 @@ class CreateViewModel(
         return name
     }
 
-    private fun getFileSize(context: Context, uri: Uri): String? {
+    private fun getFileSizeBytes(context: Context, uri: Uri): Long {
         var size: Long = 0
         context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
@@ -77,7 +78,11 @@ class CreateViewModel(
                 if (index != -1) size = cursor.getLong(index)
             }
         }
-        val mbSize = size / (1024f * 1024f)
+        return size
+    }
+
+    private fun formatFileSize(sizeInBytes: Long): String {
+        val mbSize = sizeInBytes / (1024f * 1024f)
         return String.format(Locale.ROOT, "%.1f MB", mbSize)
     }
 }

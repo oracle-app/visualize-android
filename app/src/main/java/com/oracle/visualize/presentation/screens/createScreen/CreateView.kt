@@ -1,16 +1,13 @@
-package com.oracle.visualize.presentation.screens.CreateScreen
-
+package com.oracle.visualize.presentation.screens.createScreen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -29,8 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.CreateUiState
-import com.oracle.visualize.presentation.screens.CreateScreen.components.FileStatusItem
-import com.oracle.visualize.ui.theme.*
+import com.oracle.visualize.presentation.screens.createScreen.components.FileStatusItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
