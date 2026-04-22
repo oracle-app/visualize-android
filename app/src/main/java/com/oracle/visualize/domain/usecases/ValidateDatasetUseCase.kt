@@ -7,12 +7,20 @@ import java.util.Locale
  * Use case to validate if a dataset file has a supported format (.csv or .xlsx).
  */
 class ValidateDatasetUseCase {
-    operator fun invoke(fileName: String): Result<Unit> {
+    operator fun invoke(fileName: String, fileSizeBytes: Long): Result<Unit> {
         val extension = fileName.substringAfterLast(".", "").lowercase(Locale.ROOT)
-        return if (extension == "csv" || extension == "xlsx") {
-            Result.success(Unit)
-        } else {
-            Result.failure(IllegalArgumentException("Please upload a .xlsx or .csv file to continue."))
+        val maxSizeBytes = 100 * 1024 * 1024 // 100 MB
+
+        // 1. Validate extension
+        if (extension != "csv" && extension != "xlsx") {
+            return Result.failure(IllegalArgumentException("Please upload a .xlsx or .csv file to continue."))
         }
+
+        // 2. Validate size
+        if (fileSizeBytes > maxSizeBytes) {
+            return Result.failure(IllegalArgumentException("Please upload a smaller dataset (Max 100 MB)."))
+        }
+
+        return Result.success(Unit)
     }
 }
