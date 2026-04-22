@@ -1,5 +1,7 @@
 package com.oracle.visualize.data.repositories
 
+import com.oracle.visualize.data.datasources.VisualizationDataSource
+import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import jakarta.inject.Inject
@@ -18,7 +20,25 @@ class VisualizationRepositoryImpl @Inject constructor(
             emptyMap(),
             listOf("Sebastián Garrido", "Eduardo Cardenas"),
             emptyList(),
-            Date(System.currentTimeMillis() - 30 * 60 * 1000)
+            Date(System.currentTimeMillis() - 30 * 60 * 1000),
+            listOf(
+                Comment(
+                    "1",
+                    "Felipe Bastidas",
+                    "This is a comment",
+                    Date(System.currentTimeMillis() - 30 * 60 * 1000),
+                    "",
+                    emptyList()
+                ),
+                Comment(
+                    "2",
+                    "Eduardo Cardenas",
+                    "This is a comment",
+                    Date(System.currentTimeMillis() - 30 * 60 * 1000),
+                    "",
+                    emptyList()
+                )
+            )
         ),
         Visualization(
             "2",
@@ -27,7 +47,8 @@ class VisualizationRepositoryImpl @Inject constructor(
             emptyMap(),
             listOf("Jorge Ruiz"),
             emptyList(),
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+            emptyList()
         ),
         Visualization(
             "3",
@@ -36,7 +57,8 @@ class VisualizationRepositoryImpl @Inject constructor(
             emptyMap(),
             listOf("Felipe Bastidas"),
             emptyList(),
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+            emptyList()
         ),
         Visualization(
             "4",
@@ -45,7 +67,8 @@ class VisualizationRepositoryImpl @Inject constructor(
             emptyMap(),
             listOf("Felipe Bastidas"),
             emptyList(),
-            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+            Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+            emptyList()
         )
     )
 
@@ -69,6 +92,7 @@ class VisualizationRepositoryImpl @Inject constructor(
                 sharedWithUsers,
                 sharedWithTeams,
                 Date(System.currentTimeMillis() - 2 * 60 * 60 * 1000),
+                emptyList()
             )
         )
     }

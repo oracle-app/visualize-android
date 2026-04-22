@@ -20,15 +20,16 @@ data class Group(
 
 data class Comment(
     val id: String,
-    val authorId: String,
+    val authorID: String,
     val content: String,
-    val imageUrl: String?,
-    val timestamp: Date
+    val createdAt: Date,
+    val imageUrl: String,
+    val threads: List<Thread>
 )
 
 data class Thread(
     val id: String,
-    val authorId: String,
+    val authorID: String,
     val content: String,
     val timestamp: Date
 )
