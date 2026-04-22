@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.mainScreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,8 +14,6 @@ import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.createScreen.CreatePage
-import com.oracle.visualize.ui.theme.ScreenBackground
-
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
@@ -33,7 +32,7 @@ fun MainScreen(
 
             )
         },
-        containerColor = ScreenBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
