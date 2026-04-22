@@ -4,5 +4,6 @@ data class ShareTeam(
     val id: String,
     val name: String,
     val memberCount: Int,
-    val members:List<User>
+    val members: List<ShareUser> = emptyList()
+
 )
