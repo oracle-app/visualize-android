@@ -10,7 +10,7 @@ class UserDTO (
     val userType: String = "",
     val email: String = "",
     val username: String = "",
-    val profilePictureUrl: String = "",
+    val profilePictureURL: String = "",
     val themePreference: String = "",
     val chartTheme: String = "",
     val hiddenVisualizations: List<String> = emptyList()

@@ -1,7 +1,9 @@
 package com.oracle.visualize.di
 
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
@@ -10,6 +12,8 @@ import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import com.oracle.visualize.data.repositories.UserRepositoryImpl
+import com.oracle.visualize.domain.repositories.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -28,8 +32,6 @@ object AppModule {
 //    fun providesAnyRepository(): AnyRepository {
 //        return AnyRepository()
 //    }
-
-
 
 }*/
 
@@ -58,6 +60,9 @@ object FirebaseModule {
     fun provideVisualizationDataSource(
         db: FirebaseFirestore
     ): VisualizationDataSource = VisualizationDataSource(db)
+    fun providesFirestore(): FirebaseFirestore {
+        return Firebase.firestore
+    }
 }
 
 @Module
@@ -79,6 +84,11 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTeamRepository(
-        impl: TeamRepositoryImpl
+        teamRepositoryImpl: TeamRepositoryImpl
     ): TeamRepository
+
+    @Binds
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 }

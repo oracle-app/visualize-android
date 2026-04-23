@@ -1,7 +1,5 @@
 package com.oracle.visualize.domain.models
 
-import java.net.URL
-
 data class User (
     val id: String,
     val userType: String,

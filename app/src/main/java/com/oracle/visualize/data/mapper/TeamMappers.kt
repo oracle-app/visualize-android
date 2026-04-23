@@ -1,11 +1,11 @@
 package com.oracle.visualize.data.mapper
 
-import com.oracle.visualize.data.datasources.dtos.TeamDto
+import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.domain.models.Team
 
-fun TeamDto.toDomain(): Team = Team(
+fun TeamDTO.toDomain(): Team = Team(
     id = id,
-    memberIDs = memberIDs,
+    memberIDs = membersIDs,
     name = name,
     ownerID = ownerID
 )
