@@ -11,11 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.R
 
 @Composable
 fun UserAvatar(
@@ -26,7 +28,7 @@ fun UserAvatar(
 
     SubcomposeAsyncImage(
         model = user.profilePictureURL,
-        contentDescription = "Avatar de ${user.username}",
+        contentDescription = stringResource(R.string.avatar_description, user.username),
         modifier = Modifier
             .size(size.dp)
             .clip(CircleShape),

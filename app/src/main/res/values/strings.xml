@@ -4,6 +4,9 @@
 
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="share">Share</string>
+    <string name="back">Back</string>
+    <string name="confirm">Confirm</string>
 
     // Navigation Bar
 
@@ -69,6 +72,15 @@
     //Share and Post
 
     <string name="team_member_count">%d members</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="unsaved_changes_confirmation">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="avatar_description">Avatar of %s</string>
+    <string name="my_teams">My Teams</string>
+    <string name="empty_team">You haven\'t created any teams yet.</string>
+    <string name="share_my_teams">Teams I\'m In</string>
+    <string name="share_empty_teams">You\'re not part of any teams yet.</string>
+    <string name="share_and_post">Share and Post</string>
+    <string name="input_email">Enter email</string>
 
 
     // Errors

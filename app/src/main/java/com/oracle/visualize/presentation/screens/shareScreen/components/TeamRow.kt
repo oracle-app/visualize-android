@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.shareScreen.components
 
+import com.oracle.visualize.R
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,7 +59,7 @@ fun TeamRow(
             Spacer(modifier = Modifier.height(5.dp))
             Text(text = team.name, fontSize = 16.sp, fontWeight = FontWeight.Normal, color = textColor, lineHeight = 24.sp)
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = "${team.memberCount} members", fontSize = 14.sp, color = subColor, lineHeight = 20.sp)
+            Text(text = stringResource(R.string.team_member_count, team.memberCount), fontSize = 14.sp, color = subColor, lineHeight = 20.sp)
         }
         MemberAvatarStack(members = team.members, isSelected = isSelected)
     }

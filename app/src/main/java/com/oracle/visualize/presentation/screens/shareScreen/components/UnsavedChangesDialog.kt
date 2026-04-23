@@ -16,12 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.oracle.visualize.R
+
+
 
 // Figma AC-70: overlay Color(0xFF1A2F3F) alpha 0.2, dialog offset x=50, width=312, corners=28dp
 private val OverlayColor   = Color(0xFF1A2F3F).copy(alpha = 0.2f)
@@ -57,14 +61,14 @@ fun UnsavedChangesDialog(
                         .padding(start = 24.dp, end = 24.dp, top = 24.dp)
                 ) {
                     Text(
-                        text = "Unsaved Changes",
+                        text = stringResource(R.string.unsaved_changes),
                         color = TitleColor,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Normal,
                         lineHeight = 1.33.em
                     )
                     Text(
-                        text = "You have unsaved changes. Are you sure you want to leave?",
+                        text = stringResource(R.string.unsaved_changes_confirmation),
                         color = BodyColor,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
@@ -82,7 +86,7 @@ fun UnsavedChangesDialog(
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(R.string.cancel),
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
@@ -91,7 +95,7 @@ fun UnsavedChangesDialog(
                     }
                     TextButton(onClick = onConfirmLeave) {
                         Text(
-                            text = "Share",
+                            text = stringResource(R.string.share),
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,

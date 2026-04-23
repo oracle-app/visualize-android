@@ -27,10 +27,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.presentation.screens.shareScreen.components.*
+import com.oracle.visualize.R
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.stringResource
 
-
-// ─── Entry point ──────────────────────────────────────────────────────────────
 
 @Composable
 fun ShareAndPostScreen(
@@ -76,7 +76,6 @@ fun ShareAndPostScreen(
     }
 }
 
-// ─── Main content ─────────────────────────────────────────────────────────────
 
 @Composable
 fun ShareAndPostContent(
@@ -103,7 +102,7 @@ fun ShareAndPostContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surfaceVariant) // mismo fondo gris claro que el search bar
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f), thickness = 1.dp)
                         state.suggestedUsers.forEach { user ->
@@ -117,18 +116,18 @@ fun ShareAndPostContent(
                 ShareUserList(state = state, onEvent = onEvent)
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareTeamSection(
-                    title = "My Teams",
+                    title = stringResource(R.string.my_teams),
                     teams = state.myTeams,
                     selectedTeamIds = state.selectedTeamIds,
-                    emptyMessage = "You haven't created any teams yet.",
+                    emptyMessage = stringResource(R.string.empty_team),
                     onToggleTeam = { id -> onEvent(ShareUiEvent.ToggleTeam(id, isMyTeam = true)) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareTeamSection(
-                    title = "Teams I'm In",
+                    title = stringResource(R.string.share_my_teams),
                     teams = state.teamsImIn,
                     selectedTeamIds = state.selectedTeamIds,
-                    emptyMessage = "You're not part of any teams yet.",
+                    emptyMessage = stringResource(R.string.share_empty_teams),
                     onToggleTeam = { id -> onEvent(ShareUiEvent.ToggleTeam(id, isMyTeam = false)) }
                 )
                 Spacer(modifier = Modifier.height(80.dp))
@@ -159,12 +158,12 @@ private fun ShareTopBar(onBackPressed: () -> Unit) {
             Box(modifier = Modifier.requiredSize(48.dp), contentAlignment = Alignment.Center) {
                 Box(modifier = Modifier.requiredWidth(40.dp).clip(RoundedCornerShape(100.dp)), contentAlignment = Alignment.Center) {
                     IconButton(onClick = onBackPressed, modifier = Modifier.requiredSize(40.dp)) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(24.dp))
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(24.dp))
                     }
                 }
             }
             Text(
-                text = "Share and post",
+                text = stringResource(R.string.share_and_post),
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Normal,
@@ -196,7 +195,7 @@ private fun ShareSearchBar(query: String, onQueryChange: (String) -> Unit) {
         TextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Enter email", color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 16.sp) },
+            placeholder = { Text(stringResource(R.string.input_email), color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 16.sp) },
             singleLine = true,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor   = Color.Transparent,
@@ -293,7 +292,7 @@ private fun ShareBottomBar(onConfirmShare: () -> Unit) {
         ) {
             Icon(imageVector = Icons.Default.Send, contentDescription = null, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Confirm", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(stringResource(R.string.confirm), fontSize = 16.sp, fontWeight = FontWeight.Medium)
         }
     }
 }

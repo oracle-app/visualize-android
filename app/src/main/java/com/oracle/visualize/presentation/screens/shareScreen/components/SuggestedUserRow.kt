@@ -31,7 +31,7 @@ fun SuggestedUserRow(
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 10.dp)
     ) {
-        UserAvatar(user, size = 44) // ligeramente más grande, como en la imagen
+        UserAvatar(user, size = 44)
 
         Spacer(modifier = Modifier.width(16.dp))
 
