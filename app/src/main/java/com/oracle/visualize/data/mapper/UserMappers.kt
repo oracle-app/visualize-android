@@ -1,9 +1,9 @@
 package com.oracle.visualize.data.mapper
 
-import com.oracle.visualize.data.datasources.dtos.UserDto
+import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.User
 
-fun UserDto.toDomain(): User = User(
+fun UserDTO.toDomain(): User = User(
     id = id,
     userType = userType,
     email = email,

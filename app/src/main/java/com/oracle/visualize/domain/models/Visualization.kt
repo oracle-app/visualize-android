@@ -13,5 +13,4 @@ data class Visualization (
     val sharedWithUsers: List<String>,
     val sharedWithTeams: List<String>,
     val createdAt: Timestamp,
-    val comments: List<Comment>
 )

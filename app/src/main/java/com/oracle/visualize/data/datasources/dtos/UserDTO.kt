@@ -4,7 +4,7 @@ import com.google.firebase.firestore.DocumentId
 import com.oracle.visualize.domain.models.ThemePreference
 import com.oracle.visualize.domain.models.UserType
 
-class UserDto (
+class UserDTO (
     @DocumentId
     val id: String = "",
     val userType: UserType = UserType.WRITER,

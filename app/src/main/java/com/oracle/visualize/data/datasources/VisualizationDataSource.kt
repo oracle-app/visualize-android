@@ -1,10 +1,12 @@
 package com.oracle.visualize.data.datasources
 
-import android.util.Log
-import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oracle.visualize.data.datasources.dtos.VisualizationDto
+import com.oracle.visualize.data.datasources.dtos.UserDTO
+import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.models.Visualization
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
 import kotlin.collections.emptyList
@@ -28,7 +30,6 @@ class VisualizationDataSource @Inject constructor(
                     "sharedWithUsers" to visualization.sharedWithUsers,
                     "sharedWithTeams" to visualization.sharedWithTeams,
                     "createdAt" to visualization.createdAt,
-                    "comments" to visualization.comments
                 )
 
                 visualizationsRef.add(formattedVisualization).await()
@@ -39,15 +40,15 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getAllVisualizations(): List<VisualizationDto> {
+    suspend fun getAllVisualizations(): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef.get().await()
 
-            if (visualizations.isEmpty) emptyList<VisualizationDto>()
+            if (visualizations.isEmpty) emptyList<VisualizationDTO>()
 
             visualizations.documents.mapNotNull { doc ->
                 try {
-                    doc.toObject(VisualizationDto::class.java)
+                    doc.toObject(VisualizationDTO::class.java)
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     null
@@ -59,17 +60,17 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getVisualizationsSharedWithUser(userID: String): List<VisualizationDto> {
+    suspend fun getVisualizationsSharedWithUser(userID: String): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef
                 .whereArrayContains("sharedWithUsers", userID)
                 .get().await()
 
-            if (visualizations.isEmpty) emptyList<VisualizationDto>()
+            if (visualizations.isEmpty) return emptyList()
 
             visualizations.documents.mapNotNull { doc ->
                 try {
-                    doc.toObject(VisualizationDto::class.java)
+                    doc.toObject(VisualizationDTO::class.java)
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     null
@@ -81,17 +82,17 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getPersonalVisualizations(userID: String): List<VisualizationDto> {
+    suspend fun getPersonalVisualizations(userID: String): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef
                 .whereEqualTo("authorID", userID)
                 .get().await()
 
-            if (visualizations.isEmpty) emptyList<VisualizationDto>()
+            if (visualizations.isEmpty) return emptyList()
 
             visualizations.documents.mapNotNull { doc ->
                 try {
-                    doc.toObject(VisualizationDto::class.java)
+                    doc.toObject(VisualizationDTO::class.java)
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     null
@@ -103,23 +104,23 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getSharedVisualizationsByTeamsIntegratedByUser(userID: String): List<VisualizationDto> {
+    suspend fun getSharedVisualizationsByTeamsIntegratedByUser(userID: String): List<VisualizationDTO> {
         return try {
             val teams = teamsRef.whereArrayContains("memberIDs", userID).get().await()
             val teamIDs = teams.documents.map { it.id }
 
-            if (teamIDs.isEmpty()) emptyList<VisualizationDto>()
+            if (teamIDs.isEmpty()) return emptyList()
 
             val sharedWithTeams = visualizationsRef
                 .whereArrayContainsAny("sharedWithTeams", teamIDs)
                 .get()
                 .await()
 
-            if (sharedWithTeams.isEmpty) emptyList<VisualizationDto>()
+            if (sharedWithTeams.isEmpty) emptyList<VisualizationDTO>()
 
             sharedWithTeams.documents.mapNotNull { doc ->
                 try {
-                    doc.toObject(VisualizationDto::class.java)
+                    doc.toObject(VisualizationDTO::class.java)
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     null
@@ -131,9 +132,9 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun getAllVisualizationsByUserID(userID: String): List<VisualizationDto> {
+    suspend fun getAllVisualizationsByUserID(userID: String): List<VisualizationDTO> {
         return try {
-            val finalArray = mutableListOf<VisualizationDto>()
+            val finalArray = mutableListOf<VisualizationDTO>()
             val personal = getPersonalVisualizations(userID)
             val sharedWithUsers = getVisualizationsSharedWithUser(userID)
             val sharedWithTeams = getSharedVisualizationsByTeamsIntegratedByUser(userID)
@@ -144,6 +145,39 @@ class VisualizationDataSource @Inject constructor(
         } catch (ex: Exception) {
             ex.printStackTrace()
             emptyList()
+        }
+    }
+
+    suspend fun getAllUsersVisualizationIsSharedWith(visualizationID: String): List<UserDTO> {
+        val snapshot = db.collection("visualizations")
+            .document(visualizationID)
+            .get()
+            .await()
+
+        if (!snapshot.exists()) {
+            throw Exception("This visualization ID does not exist.")
+        }
+        val visualizationDTO = snapshot.toObject(VisualizationDTO::class.java)
+            ?: throw Exception("Visualization could not be mapped.")
+        val sharedUserIDs = visualizationDTO.sharedWithUsers
+
+        return coroutineScope {
+            sharedUserIDs.map { userId ->
+                async {
+                    try {
+                        val userSnapshot = db.collection("users")
+                            .document(userId)
+                            .get()
+                            .await()
+
+                        userSnapshot.toObject(UserDTO::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+            }
+                .awaitAll()
+                .filterNotNull()
         }
     }
 }

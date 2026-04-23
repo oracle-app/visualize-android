@@ -34,6 +34,7 @@ import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.VisualizationCard
 
 fun formatTime(date: Date, context: Context): String{
     val now = Date()
@@ -53,7 +54,7 @@ fun formatTime(date: Date, context: Context): String{
     }
 }
 @Composable
-fun FeedCard(item: Visualization) {
+fun FeedCard(item: VisualizationCard) {
     val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -82,7 +83,7 @@ fun FeedCard(item: Visualization) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "By ${item.authorID}",
+                            text = "By ${item.author}",
                             color = MaterialTheme.colorScheme.tertiary,
                             fontSize = 13.sp
                         )
@@ -127,16 +128,16 @@ fun FeedCard(item: Visualization) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onPrimary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("+${item.comments.count()}", fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface)
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .size(28.dp)
+//                        .clip(CircleShape)
+//                        .background(MaterialTheme.colorScheme.onPrimary),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text("+${item.comments.count()}", fontSize = 12.sp,
+//                        color = MaterialTheme.colorScheme.onSurface)
+//                }
             }
         }
     }
