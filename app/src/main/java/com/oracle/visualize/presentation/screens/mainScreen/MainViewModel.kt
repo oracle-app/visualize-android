@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.lifecycle.ViewModel
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.NavItem
 import com.oracle.visualize.domain.models.NavRoutes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,28 +27,28 @@ class MainViewModel : ViewModel() {
 
     val navItems = listOf(
         NavItem(
-            label = "Create",
+            label = R.string.nav_create,
             icon = Icons.Default.Add,
             route = NavRoutes.Create.route
         ),
         NavItem(
-            label = "Teams",
+            label = R.string.nav_teams,
             icon = Icons.Default.Groups,
             route = NavRoutes.Teams.route
         ),
         NavItem(
-            label = "Feed",
+            label = R.string.nav_feed,
             icon = Icons.Default.Home,
             route = NavRoutes.Feed.route
         ),
         NavItem(
-            label = "Notifications",
+            label = R.string.nav_notifications,
             icon = Icons.Default.Notifications,
             badgeCount = 5,
             route = NavRoutes.Notifications.route
         ),
         NavItem(
-            label = "Profile",
+            label = R.string.nav_profile,
             icon = Icons.Default.Person,
             route = NavRoutes.Profile.route
         )
