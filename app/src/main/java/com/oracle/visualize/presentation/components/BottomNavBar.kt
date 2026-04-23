@@ -25,7 +25,9 @@ fun BottomNavBar(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
         navItems.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.route,
@@ -52,7 +54,14 @@ fun BottomNavBar(
                         Icon(imageVector = item.icon, contentDescription = stringResource(item.label))
                     }
                 },
-                label = { Text(text = stringResource(item.label)) }
+                label = { Text(text = stringResource(item.label)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    indicatorColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         }
     }
