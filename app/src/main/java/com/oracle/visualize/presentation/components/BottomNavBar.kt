@@ -11,6 +11,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.oracle.visualize.domain.models.NavItem
@@ -48,10 +49,10 @@ fun BottomNavBar(
                             }
                         }
                     ) {
-                        Icon(imageVector = item.icon, contentDescription = item.label)
+                        Icon(imageVector = item.icon, contentDescription = stringResource(item.label))
                     }
                 },
-                label = { Text(text = item.label) }
+                label = { Text(text = stringResource(item.label)) }
             )
         }
     }

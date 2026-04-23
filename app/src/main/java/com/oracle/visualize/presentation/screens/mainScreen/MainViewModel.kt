@@ -16,28 +16,28 @@ class MainViewModel : ViewModel() {
     // NavController owns navigation state — ViewModel only defines the nav items
     val navItems = listOf(
         NavItem(
-            label = "Create",
+            label = R.string.nav_create,
             icon  = Icons.Default.Add,
             route = NavRoutes.Create.route
         ),
         NavItem(
-            label = "Teams",
+            label = R.string.nav_teams,
             icon  = Icons.Default.Groups,
             route = NavRoutes.Teams.route
         ),
         NavItem(
-            label = "Feed",
+            label = R.string.nav_feed,
             icon  = Icons.Default.Home,
             route = NavRoutes.Feed.route
         ),
         NavItem(
-            label = "Notifications",
+            label = R.string.nav_notifications,
             icon  = Icons.Default.Notifications,
             badgeCount = 5,
             route = NavRoutes.Notifications.route
         ),
         NavItem(
-            label = "Profile",
+            label = R.string.nav_profile,
             icon  = Icons.Default.Person,
             route = NavRoutes.Profile.route
         )

@@ -15,9 +15,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
-import com.oracle.visualize.presentation.screens.CreateScreen.CreatePage
-import com.oracle.visualize.presentation.screens.FeedScreen.FeedPage
-import com.oracle.visualize.presentation.screens.NotificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.createScreen.CreatePage
+import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 
 
 // Bottom nav destinations — screens outside this list hide the nav bar
