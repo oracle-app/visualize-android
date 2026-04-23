@@ -27,11 +27,6 @@ import com.oracle.visualize.R
 
 
 
-// Figma AC-70: overlay Color(0xFF1A2F3F) alpha 0.2, dialog offset x=50, width=312, corners=28dp
-private val OverlayColor   = Color(0xFF1A2F3F).copy(alpha = 0.2f)
-private val DialogBg       = Color.White
-private val TitleColor     = Color(0xFF1D1B20)
-private val BodyColor      = Color(0xFF49454F)
 
 @Composable
 fun UnsavedChangesDialog(
@@ -45,14 +40,14 @@ fun UnsavedChangesDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(OverlayColor),
+                .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier
                     .fillMaxWidth(0.76f)
-                    .background(DialogBg, RoundedCornerShape(28.dp))
+                    .background(MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(28.dp))
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -62,14 +57,14 @@ fun UnsavedChangesDialog(
                 ) {
                     Text(
                         text = stringResource(R.string.unsaved_changes),
-                        color = TitleColor,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Normal,
                         lineHeight = 1.33.em
                     )
                     Text(
                         text = stringResource(R.string.unsaved_changes_confirmation),
-                        color = BodyColor,
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         lineHeight = 1.43.em
