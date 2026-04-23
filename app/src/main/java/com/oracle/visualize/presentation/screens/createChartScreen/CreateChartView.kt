@@ -36,7 +36,6 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
 fun CreatePage(
     modifier: Modifier = Modifier,
     viewModel: CreateChartViewModel = viewModel(),
-    onNavigateToSelection: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -110,7 +109,7 @@ fun CreatePage(
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = { onNavigateToSelection },
+                    onClick = { /**/ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
