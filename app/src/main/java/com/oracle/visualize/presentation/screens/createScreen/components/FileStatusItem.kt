@@ -1,5 +1,6 @@
-package com.oracle.visualize.presentation.screens.CreateScreen.components
+package com.oracle.visualize.presentation.screens.createScreen.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,9 +10,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.ui.theme.*
+import androidx.compose.ui.res.stringResource
+import com.oracle.visualize.R
 
 @Composable
 fun FileStatusItem(
@@ -29,7 +32,7 @@ fun FileStatusItem(
     fileSize: String,
     progress: Float = 0f,
     isSuccess: Boolean = false,
-    errorMessage: String? = null,
+    @StringRes errorMessage: Int? = null,
     onCancel: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
@@ -38,17 +41,17 @@ fun FileStatusItem(
             .fillMaxWidth()
             .border(
                 1.dp,
-                if (errorMessage != null) ErrorRed else BorderGray,
+                if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
                 RoundedCornerShape(8.dp)
             )
-            .background(if (errorMessage != null) ErrorBackground else Color.White)
+            .background(if (errorMessage != null) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer)
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Default.Description,
                 contentDescription = null,
-                tint = TealPrimary,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -62,20 +65,20 @@ fun FileStatusItem(
                 Text(
                     text = fileSize,
                     fontSize = 12.sp,
-                    color = TextGray
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             if (isSuccess) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.delete),
                     tint = ErrorRed,
                     modifier = Modifier.clickable { onDelete() }
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Cancel",
+                    contentDescription = stringResource(R.string.cancel),
                     modifier = Modifier.clickable { onCancel() }
                 )
             }
@@ -84,7 +87,7 @@ fun FileStatusItem(
         if (errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = errorMessage,
+                text = stringResource(errorMessage),
                 color = ErrorRed,
                 fontSize = 12.sp
             )
@@ -97,8 +100,8 @@ fun FileStatusItem(
                         .weight(1f)
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    color = TealPrimary,
-                    trackColor = TealLight
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primaryContainer
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

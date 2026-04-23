@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.FeedScreen
+package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -36,27 +35,27 @@ fun FeedPage(
         topBar = { FeedTopBar(scrollBehavior = scrollBehavior) }
     ) { paddingValues ->
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp)
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                item{
-                    SearchSection(
-                        text = searchText,
-                        onTextChange = { feedViewModel.onSearchTextChange(it) }
-                    )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                items(itemsList) { item ->
-                    FeedCard(item)
-                }
+        ) {
+            item{
+                Spacer(modifier = Modifier.height(22.dp))
+
+                SearchSection(
+                    text = searchText,
+                    onTextChange = { feedViewModel.onSearchTextChange(it) }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            items(itemsList) { item ->
+                FeedCard(item)
+            }
+            item{
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
 

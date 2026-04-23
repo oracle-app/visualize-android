@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.MainScreen
+package com.oracle.visualize.presentation.screens.mainScreen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.lifecycle.ViewModel
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.NavItem
 import com.oracle.visualize.domain.models.NavRoutes
 

@@ -1,14 +1,13 @@
-package com.oracle.visualize.presentation.screens.CreateScreen
-
+package com.oracle.visualize.presentation.screens.createScreen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,21 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.CreateUiState
-import com.oracle.visualize.presentation.screens.CreateScreen.components.FileStatusItem
-import com.oracle.visualize.ui.theme.*
+import com.oracle.visualize.presentation.screens.createScreen.components.FileStatusItem
 
-/**
- * Screen for uploading a dataset to create new visualizations.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
@@ -40,7 +36,6 @@ fun CreatePage(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    // Using GetContent for broader support of cloud providers like Google Drive
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -48,52 +43,52 @@ fun CreatePage(
         }
     )
 
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
-                        text = "Create Data Visualizations", 
+                        text = stringResource(R.string.create_top_bar_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
-                    ) 
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = TopBarColor
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         },
-        containerColor = ScreenBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val descriptionText = when (uiState) {
-                is CreateUiState.Success -> "Your dataset is ready! Generate visualizations to explore your data."
-                is CreateUiState.Uploading -> "Uploading your dataset..."
-                else -> "Upload a dataset and we'll generate the best visualizations to help you understand your data."
+                is CreateUiState.Success -> stringResource(R.string.create_description_success)
+                is CreateUiState.Uploading -> stringResource(R.string.create_description_uploading)
+                else -> stringResource(R.string.create_description_idle)
             }
 
             Text(
                 text = descriptionText,
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextGray,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             )
 
-            // File Picker Area / Status Area
             if (uiState is CreateUiState.Idle) {
                 DashedSelector(
-                    onClick = {
-                        // Use a broad filter to ensure Google Drive appears
-                        launcher.launch("*/*")
-                    }
+                    onClick = { launcher.launch("*/*") }
                 )
             } else {
                 FileStatusSection(uiState, viewModel)
@@ -101,12 +96,11 @@ fun CreatePage(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Dataset Format Requirements
             if (uiState !is CreateUiState.Success) {
                 DatasetRequirementsSection()
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             if (uiState is CreateUiState.Success) {
                 Button(
@@ -114,10 +108,14 @@ fun CreatePage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     shape = RoundedCornerShape(28.dp)
                 ) {
-                    Text("Generate Visualizations", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(
+                        stringResource(R.string.create_generate_button),
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -130,7 +128,7 @@ fun DashedSelector(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp)
-            .background(Color.White, RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -138,18 +136,18 @@ fun DashedSelector(onClick: () -> Unit) {
             width = 2f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
+        val bordercolor = MaterialTheme.colorScheme.outlineVariant
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRoundRect(
-                color = BorderGray,
+                color = bordercolor,
                 style = stroke,
                 cornerRadius = CornerRadius(8.dp.toPx())
             )
         }
+        val teal = MaterialTheme.colorScheme.onSurfaceVariant
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Custom Arrow Icon
             Canvas(modifier = Modifier.size(48.dp)) {
                 val iconSize = size.width
-                val teal = TealPrimary
                 val path = androidx.compose.ui.graphics.Path().apply {
                     moveTo(iconSize / 2, iconSize * 0.15f)
                     lineTo(iconSize * 0.8f, iconSize * 0.45f)
@@ -171,12 +169,12 @@ fun DashedSelector(onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Choose a .xlsx or .csv file.", 
+                text = stringResource(R.string.dashed_selector_choose_file),
                 fontWeight = FontWeight.Medium,
-                color = TealPrimary
+                color = teal
             )
-            Text("Minimum file size: 100 MB", fontSize = 12.sp, color = TextGray)
-            Text("Only one dataset can be uploaded.", fontSize = 12.sp, color = TextGray)
+            Text(stringResource(R.string.dashed_selector_min_size), fontSize = 12.sp, color = bordercolor)
+            Text(stringResource(R.string.dashed_selector_one_dataset), fontSize = 12.sp, color = bordercolor)
         }
     }
 }
@@ -216,27 +214,32 @@ fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
 fun DatasetRequirementsSection() {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "Dataset Format Requirements", 
-            fontWeight = FontWeight.Bold, 
+            text = stringResource(R.string.dataset_requirements_title),
+            fontWeight = FontWeight.Bold,
             fontSize = 18.sp
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Upload a table-formatted dataset with column headers in the first row.",
-            color = TextGray
+            text = stringResource(R.string.dataset_requirements_body),
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(16.dp))
-        
-        Text(text = "Example", fontSize = 12.sp, color = TextGray, fontWeight = FontWeight.Bold)
+
+        Text(
+            text = stringResource(R.string.dataset_requirements_example_label),
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         TableExampleComponent()
-        
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Each row should represent a single data entry. Avoid empty rows or merged cells.",
+            text = stringResource(R.string.dataset_requirements_footer),
             fontSize = 14.sp,
-            color = TextGray
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -246,27 +249,27 @@ fun TableExampleComponent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFE9F1F2), RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text("Date", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text("Product", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text("Sales", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text("Region", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = BorderGray.copy(alpha = 0.5f))
-        
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.onPrimary)
+
         val rows = listOf(
             listOf("Jan", "A", "120", "North"),
             listOf("Jan", "B", "95", "South"),
             listOf("Feb", "A", "150", "North")
         )
-        
+
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
-                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp)
+                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         }
