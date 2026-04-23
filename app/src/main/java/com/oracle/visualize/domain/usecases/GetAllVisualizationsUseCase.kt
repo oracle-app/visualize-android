@@ -6,7 +6,6 @@ import javax.inject.Inject
 
 class GetAllVisualizationsUseCase @Inject constructor(private val repository: VisualizationRepository) {
     suspend operator fun invoke(): List<Visualization> {
-        val visualizations = repository.getAllVisualizations()
-        return visualizations
+        return repository.getAllVisualizations()
     }
 }

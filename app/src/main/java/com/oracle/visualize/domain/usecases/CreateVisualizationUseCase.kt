@@ -1,5 +1,7 @@
 package com.oracle.visualize.domain.usecases
 
+import com.oracle.visualize.domain.models.Team
+import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject

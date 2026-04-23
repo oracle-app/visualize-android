@@ -9,6 +9,9 @@ import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.domain.models.Visualization
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+
 fun FirebaseUser.toDomain(): AuthUser = AuthUser(
     uid = uid,
     email = email ?: ""

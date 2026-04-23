@@ -8,7 +8,8 @@ data class User (
     val profilePictureUrl: String?,
     val themePreference: ThemePreference,
     val chartTheme: String, // Pending: Check variable Type
-    val notificationsEnabled: Boolean
+    val notificationsEnabled: Boolean,
+    val hiddenVisualizations: List<String>
 )
 
 enum class UserType {
