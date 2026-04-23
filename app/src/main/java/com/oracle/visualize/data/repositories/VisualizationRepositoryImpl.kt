@@ -9,6 +9,7 @@ import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
+import kotlin.String
 
 class VisualizationRepositoryImpl @Inject constructor(
     private val source: VisualizationDataSource
@@ -54,7 +55,21 @@ class VisualizationRepositoryImpl @Inject constructor(
         return source.getSharedVisualizationsByTeamsIntegratedByUser(userID).map { it.toDomain() }
     }
 
-    override suspend fun publishVisualization(visualization: Visualization, shareAndPost: Boolean) {
-        return source.publishVisualization(visualization, shareAndPost)
+    override suspend fun publishVisualization(
+        authorID: String,
+        title: String,
+        configJSON: String,
+        sharedWithUsers: List<String>?,
+        sharedWithTeams: List<String>?,
+        isPersonal: Boolean
+    ) {
+        return source.publishVisualization(
+            authorID,
+            title,
+            configJSON,
+            sharedWithUsers,
+            sharedWithTeams,
+            isPersonal
+        )
     }
 }

@@ -20,7 +20,11 @@ interface VisualizationRepository {
     suspend fun getVisualizationsSharedWithUser(userID: String): List<Visualization>
     suspend fun getSharedVisualizationsByTeamsIntegratedByUser(userID: String): List<Visualization>
     suspend fun publishVisualization(
-        visualization: Visualization,
-        shareAndPost: Boolean,
+        authorID: String,
+        title: String,
+        configJSON: String,
+        sharedWithUsers: List<String>?,
+        sharedWithTeams: List<String>?,
+        isPersonal: Boolean
     )
 }

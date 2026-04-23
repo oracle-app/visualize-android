@@ -1,14 +1,15 @@
 package com.oracle.visualize.data.datasources
 
 import android.util.Log
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.VisualizationDto
 import com.oracle.visualize.domain.models.Visualization
 import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
-import kotlin.collections.emptyList
 
+import kotlin.collections.emptyList
 
 class VisualizationDataSource @Inject constructor(
     private val db: FirebaseFirestore
@@ -147,5 +148,44 @@ class VisualizationDataSource @Inject constructor(
         }
     }
     
-    suspend fun publishVisualizations(){}
+    suspend fun publishVisualization(
+        authorID: String,
+        title: String,
+        configJSON: String,
+        sharedWithUsers: List<String>?,
+        sharedWithTeams: List<String>?,
+        isPersonal: Boolean
+    ){
+        try {
+            // Publish to personal feed
+            if (isPersonal) {
+                createVisualization(Visualization(
+                    "",
+                    authorID,
+                    title,
+                    configJSON,
+                    emptyList(),        // Not shared to users.
+                    emptyList(),       // Not shared to teams.
+                    Timestamp.now(),
+                    emptyList()
+                ))
+            }
+            // Share and post
+            else {
+                createVisualization(Visualization(
+                    "",
+                    authorID,
+                    title,
+                    configJSON,
+                    sharedWithUsers ?: emptyList(),     // May include users instead of teams.
+                    sharedWithTeams ?: emptyList(),     // May include teams instead of users.
+                    Timestamp.now(),
+                    emptyList()
+                ))
+            }
+        } catch(ex: Exception) {
+            ex.printStackTrace()
+            throw ex
+        }
+    }
 }
