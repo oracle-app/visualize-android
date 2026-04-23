@@ -2,6 +2,7 @@ package com.oracle.visualize.data.datasources
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.TeamDto
+import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.models.User
 import kotlinx.coroutines.tasks.await
@@ -13,13 +14,15 @@ class UserDataSource @Inject constructor(
     private val userRef = db.collection("users")
     private val teamRef = db.collection("teams")
 
-    suspend fun getUserByUserID(userID: String): User? {
+    suspend fun getUserByUserID(userID: String): UserDTO {
         return try {
             val snapshot = userRef.document(userID).get().await()
-            snapshot.toObject(User::class.java)
+            if(!snapshot.exists()){
+                throw Exception("This user ID does not exist.")
+            }
+            snapshot.toObject(UserDTO::class.java) ?: throw Exception()
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            null
+            throw ex
         }
     }
 
@@ -28,8 +31,7 @@ class UserDataSource @Inject constructor(
             val snapshot = teamRef.whereArrayContains("memberIDs", userID).get().await()
             snapshot.toObjects(TeamDto::class.java)
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            emptyList()
+            throw ex
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,6 +35,8 @@ import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
 
 fun formatTime(date: Date, context: Context): String{
     val now = Date()
@@ -53,7 +56,7 @@ fun formatTime(date: Date, context: Context): String{
     }
 }
 @Composable
-fun FeedCard(item: Visualization) {
+fun FeedCard(item: VisualizationCard) {
     val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -82,7 +85,7 @@ fun FeedCard(item: Visualization) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "By ${item.authorID}",
+                            text = "By ${item.author}",
                             color = MaterialTheme.colorScheme.tertiary,
                             fontSize = 13.sp
                         )
@@ -116,27 +119,13 @@ fun FeedCard(item: Visualization) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
-                modifier = Modifier.padding(start = 12.dp, bottom = 12.dp),
+                modifier = Modifier
+                    .padding(start = 12.dp, bottom = 12.dp)
+                    .heightIn(min = 41.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                UserAvatar()
-                Spacer(modifier = Modifier.width(4.dp))
-                UserAvatar()
-                Spacer(modifier = Modifier.width(4.dp))
-                UserAvatar()
-
+                MemberAvatarStackFeed(item.sharedWith)
                 Spacer(modifier = Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.onPrimary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("+${item.comments.count()}", fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface)
-                }
             }
         }
     }

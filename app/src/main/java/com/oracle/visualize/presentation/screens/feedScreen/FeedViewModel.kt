@@ -1,80 +1,72 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.models.Visualization
-import com.oracle.visualize.domain.usecases.CreateTeamUseCase
-import com.oracle.visualize.domain.usecases.CreateVisualizationUseCase
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
-import com.oracle.visualize.domain.usecases.GetAllVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import kotlin.collections.emptyList
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getAllVisualizationsUseCase: GetAllVisualizationsUseCase,
-    private val createTeamUseCase: CreateTeamUseCase,
-    private val createVisualizationUseCase: CreateVisualizationUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
 ) : ViewModel() {
 
     var searchText by mutableStateOf("")
         private set
 
-    var visualizations by mutableStateOf<List<Visualization>>(emptyList())
+    var selectedFilter by mutableStateOf(VisualizationFilter.ALL)
         private set
 
-    var items by mutableStateOf<List<Visualization>>(emptyList())
+    var items by mutableStateOf<List<VisualizationCard>>(emptyList())
         private set
+
+    private var allItems: List<VisualizationCard> = emptyList()
 
     init {
-        fetchItems()
+        fetchItems(VisualizationFilter.ALL)
     }
 
-    private fun fetchItems() {
+    private fun fetchItems(filter: VisualizationFilter) {
         viewModelScope.launch {
             try {
-                // Testing a hard-coded visualization creation.
-                createVisualizationUseCase(
-                    "Aldo Ruiz",
-                    "Visualization 1",
-                    "{}",
-                    emptyList(),
-                    listOf("c1fv242XncsZTYs2QTXV")
-                )
-
-                /*
-                // Fetch all visualizations from DB:
-                val response = getAllVisualizationsUseCase()
-                visualizations = response
-                items = response
-                */
-
-
-                val userID = "Jose"     // Hard-coded User ID for testing.
-                val response = getAllUserVisualizationsUseCase(userID)
-                visualizations = response
-                items = response
+                val userID = "oEJtQz0gdbRpTZ8ETPCy"
+                allItems = getAllUserVisualizationsUseCase.invoke(userID, filter)
+                applySearch()
+            } catch (ex: FirebaseFirestoreException) {
+                allItems = emptyList()
+                items = emptyList()
+                Log.e("Error", "Couldn't load the visualizations.")
             } catch (ex: Exception) {
                 throw ex
             }
         }
     }
 
+    fun onFilterChange(filter: VisualizationFilter) {
+        selectedFilter = filter
+        searchText = ""
+        fetchItems(filter)
+    }
+
     fun onSearchTextChange(newText: String) {
         searchText = newText
+        applySearch()
+    }
 
-        items = if (newText.isBlank()) {
-            visualizations
+    private fun applySearch() {
+        items = if (searchText.isBlank()) {
+            allItems
         } else {
-            visualizations.filter {
-                it.title.contains(newText, ignoreCase = true) ||
-                it.authorID.contains(newText, ignoreCase = true)
+            allItems.filter { item ->
+                item.title.contains(searchText, ignoreCase = true)
             }
         }
     }

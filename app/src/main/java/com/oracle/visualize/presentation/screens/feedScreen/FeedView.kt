@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
@@ -24,40 +23,44 @@ import com.oracle.visualize.presentation.components.SearchSection
 @Composable
 fun FeedPage(
     modifier: Modifier = Modifier,
-    feedViewModel: FeedViewModel = viewModel()
+    feedViewModel: FeedViewModel = hiltViewModel()
 ) {
     val searchText = feedViewModel.searchText
     val itemsList = feedViewModel.items
+    val selectedFilter = feedViewModel.selectedFilter
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { FeedTopBar(scrollBehavior = scrollBehavior) }
+        topBar = {
+            FeedTopBar(
+                scrollBehavior = scrollBehavior,
+                selectedFilter = selectedFilter,
+                onFilterSelected = { feedViewModel.onFilterChange(it) }
+            )
+        }
     ) { paddingValues ->
-
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 0.dp)
                 .padding(paddingValues)
-
         ) {
-            item{
+            item {
                 Spacer(modifier = Modifier.height(22.dp))
-
                 SearchSection(
                     text = searchText,
                     onTextChange = { feedViewModel.onSearchTextChange(it) }
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
             }
             items(itemsList) { item ->
                 FeedCard(item)
             }
-            item{
+            item {
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }
-
     }
 }

@@ -1,4 +1,5 @@
-package com.oracle.visualize.presentation.screens.createScreen
+package com.oracle.visualize.presentation.screens.createChartScreen
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
@@ -24,18 +25,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.CreateUiState
-import com.oracle.visualize.presentation.screens.createScreen.components.FileStatusItem
+import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartViewModel
+import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
+/**
+ * Screen for uploading a dataset to create new visualizations.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
-    viewModel: CreateViewModel = viewModel()
+    viewModel: CreateChartViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
+    // Using GetContent for broader support of cloud providers like Google Drive
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -72,8 +77,8 @@ fun CreatePage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val descriptionText = when (uiState) {
-                is CreateUiState.Success -> stringResource(R.string.create_description_success)
-                is CreateUiState.Uploading -> stringResource(R.string.create_description_uploading)
+                is CreateChartUiState.Success -> stringResource(R.string.create_description_success)
+                is CreateChartUiState.Uploading -> stringResource(R.string.create_description_uploading)
                 else -> stringResource(R.string.create_description_idle)
             }
 
@@ -86,25 +91,25 @@ fun CreatePage(
                     .padding(bottom = 24.dp)
             )
 
-            if (uiState is CreateUiState.Idle) {
+            if (uiState is CreateChartUiState.Idle) {
                 DashedSelector(
                     onClick = { launcher.launch("*/*") }
                 )
             } else {
-                FileStatusSection(uiState, viewModel)
+                FileStatusSection(uiState as CreateChartUiState, viewModel)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (uiState !is CreateUiState.Success) {
+            if (uiState !is CreateChartUiState.Success) {
                 DatasetRequirementsSection()
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (uiState is CreateUiState.Success) {
+            if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = { /* TODO: Navigation */ },
+                    onClick = { /**/ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -180,9 +185,9 @@ fun DashedSelector(onClick: () -> Unit) {
 }
 
 @Composable
-fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
+fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateChartViewModel) {
     when (val state = uiState) {
-        is CreateUiState.Uploading -> {
+        is CreateChartUiState.Uploading -> {
             FileStatusItem(
                 fileName = state.fileName,
                 fileSize = state.fileSize,
@@ -190,7 +195,7 @@ fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
                 onCancel = { viewModel.resetState() }
             )
         }
-        is CreateUiState.Success -> {
+        is CreateChartUiState.Success -> {
             FileStatusItem(
                 fileName = state.fileName,
                 fileSize = state.fileSize,
@@ -198,7 +203,7 @@ fun FileStatusSection(uiState: CreateUiState, viewModel: CreateViewModel) {
                 onDelete = { viewModel.resetState() }
             )
         }
-        is CreateUiState.Error -> {
+        is CreateChartUiState.Error -> {
             FileStatusItem(
                 fileName = state.fileName ?: "Error",
                 fileSize = state.fileSize ?: "",

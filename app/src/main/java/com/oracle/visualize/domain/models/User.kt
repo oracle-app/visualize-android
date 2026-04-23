@@ -2,13 +2,12 @@ package com.oracle.visualize.domain.models
 
 data class User (
     val id: String,
-    val userType: UserType,
+    val userType: String,
     val email: String,
-    val userName: String,
-    val profilePictureUrl: String?,
-    val themePreference: ThemePreference,
+    val username: String,
+    val profilePictureURL: String,
+    val themePreference: String,
     val chartTheme: String, // Pending: Check variable Type
-    val notificationsEnabled: Boolean,
     val hiddenVisualizations: List<String>
 )
 

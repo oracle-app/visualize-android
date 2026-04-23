@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.createScreen
+package com.oracle.visualize.presentation.screens.createChartScreen
 
 import android.content.Context
 import android.net.Uri
@@ -6,8 +6,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.CreateUiState
+import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartUiState
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
+import com.oracle.visualize.R
 
-class CreateViewModel(
+
+class CreateChartViewModel(
     private val validateDatasetUseCase: ValidateDatasetUseCase = ValidateDatasetUseCase()
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<CreateUiState>(CreateUiState.Idle)
-    val uiState: StateFlow<CreateUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<CreateChartUiState>(CreateChartUiState.Idle)
+    val uiState: StateFlow<CreateChartUiState> = _uiState.asStateFlow()
 
     fun onFileSelected(uri: Uri?, context: Context) {
         if (uri == null) return
@@ -34,7 +35,7 @@ class CreateViewModel(
             startUpload(fileName, fileSizeFormatted)
         }.onFailure { exception ->
             Log.e("CreateViewModel", "File validation failed: ${exception.message}")
-            _uiState.value = CreateUiState.Error(
+            _uiState.value = CreateChartUiState.Error(
                 message = R.string.error_invalid_format,
                 fileName = fileName,
                 fileSize = fileSizeFormatted
@@ -44,19 +45,19 @@ class CreateViewModel(
 
     private fun startUpload(fileName: String, fileSize: String) {
         viewModelScope.launch {
-            _uiState.value = CreateUiState.Uploading(fileName, fileSize, 0f)
+            _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, 0f)
             for (progressValue in 1..100) {
                 delay(15) 
-                if (_uiState.value is CreateUiState.Uploading) {
-                    _uiState.value = CreateUiState.Uploading(fileName, fileSize, progressValue / 100f)
+                if (_uiState.value is CreateChartUiState.Uploading) {
+                    _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, progressValue / 100f)
                 }
             }
-            _uiState.value = CreateUiState.Success(fileName, fileSize)
+            _uiState.value = CreateChartUiState.Success(fileName, fileSize)
         }
     }
 
     fun resetState() {
-        _uiState.value = CreateUiState.Idle
+        _uiState.value = CreateChartUiState.Idle
     }
 
     private fun getFileName(context: Context, uri: Uri): String? {

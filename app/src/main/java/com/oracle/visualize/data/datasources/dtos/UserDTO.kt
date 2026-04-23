@@ -4,15 +4,14 @@ import com.google.firebase.firestore.DocumentId
 import com.oracle.visualize.domain.models.ThemePreference
 import com.oracle.visualize.domain.models.UserType
 
-class UserDto (
+class UserDTO (
     @DocumentId
     val id: String = "",
-    val userType: UserType = UserType.WRITER,
+    val userType: String = "",
     val email: String = "",
-    val userName: String = "",
-    val profilePictureUrl: String? = null,
-    val themePreference: ThemePreference = ThemePreference.SYSTEM,
+    val username: String = "",
+    val profilePictureURL: String = "",
+    val themePreference: String = "",
     val chartTheme: String = "",
-    val notificationsEnabled: Boolean = true,
     val hiddenVisualizations: List<String> = emptyList()
 )
