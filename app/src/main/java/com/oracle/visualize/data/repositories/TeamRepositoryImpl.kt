@@ -5,7 +5,7 @@ import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.mapper.toShareTeam
-import com.oracle.visualize.data.mapper.toUser
+import com.oracle.visualize.data.mapper.toShareUser
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.repositories.TeamRepository
 import kotlinx.coroutines.async
@@ -29,7 +29,7 @@ class TeamRepositoryImpl @Inject constructor(
                         async { userDatasource.getUserByID(id) }
                     }
                     val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
-                    val users = rawUsers.map { dto -> dto.toUser() }
+                    val users = rawUsers.map { dto -> dto.toShareUser() }
                     teamDTO.toShareTeam(users)
 
                 }
@@ -49,7 +49,7 @@ class TeamRepositoryImpl @Inject constructor(
                         async { userDatasource.getUserByID(id) }
                     }
                     val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
-                    val users = rawUsers.map { dto -> dto.toUser() }
+                    val users = rawUsers.map { dto -> dto.toShareUser() }
                     teamDTO.toShareTeam(users)
 
                 }

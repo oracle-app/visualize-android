@@ -31,6 +31,24 @@ class UserDatasource @Inject constructor(
         }
     }
 
+    suspend fun getUserSuggestionsForSearch(email: String): List<UserDTO> {
+        try {
+            val snapshot = firestore.collection("users")
+                .whereGreaterThanOrEqualTo("email", email)
+                .whereLessThanOrEqualTo("email", email + "\uf8ff")
+                .limit(5)
+                .get()
+                .await()
+            if (snapshot.isEmpty){
+                return emptyList()
+            } else {
+                return snapshot.toObjects(UserDTO::class.java)
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
 }
 
 //suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {

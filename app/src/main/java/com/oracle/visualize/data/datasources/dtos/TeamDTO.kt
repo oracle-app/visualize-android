@@ -1,10 +1,11 @@
 package com.oracle.visualize.data.datasources.dtos
 
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentId
 
 data class TeamDTO(
-    val id: String,
-    val name: String,
-    val ownerID: String,
-    val membersIDs: List<String>
+    @DocumentId
+    val id: String = "",
+    val name: String = "",
+    val ownerID: String = "",
+    val membersIDs: List<String> = listOf()
 )

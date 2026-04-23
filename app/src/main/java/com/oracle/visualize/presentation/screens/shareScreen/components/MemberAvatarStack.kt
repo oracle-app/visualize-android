@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.ShareScreen.components
+package com.oracle.visualize.presentation.screens.shareScreen.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,17 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareUser
 
-private val AVATAR_SIZE = 29.dp
-private val AVATAR_OFFSET = 15.dp
-private val AVATAR_BORDER = Color(0xFFE6EDEC)
-
-private val AVATAR_COLORS = listOf(
-    Color(0xFFE8A87C),
-    Color(0xFF7EC8C8),
-    Color(0xFFB8D4E8),
-    Color(0xFFE8C87C),
-    Color(0xFF8CB87C)
-)
+private val AVATAR_SIZE    = 29.dp
+private val AVATAR_OFFSET  = 15.dp
+private val AVATAR_BORDER  = Color(0xFFE6EDEC)
 
 @Composable
 fun MemberAvatarStack(
@@ -48,7 +40,6 @@ fun MemberAvatarStack(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.wrapContentWidth()
     ) {
-        // Stacked avatars box — width = offset*(n-1) + avatarSize
         val stackWidth = if (displayCount > 0)
             AVATAR_OFFSET * (displayCount - 1) + AVATAR_SIZE
         else 0.dp
@@ -63,16 +54,14 @@ fun MemberAvatarStack(
                     modifier = Modifier
                         .offset(x = AVATAR_OFFSET * index)
                         .requiredSize(AVATAR_SIZE)
-                        .clip(CircleShape)
-                        .background(AVATAR_COLORS[index % AVATAR_COLORS.size])
-                        .border(BorderStroke(1.dp, AVATAR_BORDER), CircleShape),
-                    contentAlignment = Alignment.Center
+                        .border(BorderStroke(1.dp, AVATAR_BORDER), CircleShape)
                 ) {
-                    Text(
-                        text = members.getOrNull(index)?.avatarInitials ?: "",
-                        style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Bold),
-                        color = Color.White
-                    )
+                    members.getOrNull(index)?.let { user ->
+                        UserAvatar(
+                            user = user,
+                            size = AVATAR_SIZE.value.toInt()
+                        )
+                    }
                 }
             }
         }

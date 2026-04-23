@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.ShareScreen
+package com.oracle.visualize.presentation.screens.shareScreen
 
 import com.oracle.visualize.domain.models.ShareUser
 

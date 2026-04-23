@@ -1,13 +1,11 @@
-package com.oracle.visualize.presentation.screens.ShareScreen.components
+package com.oracle.visualize.presentation.screens.shareScreen.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -53,6 +51,7 @@ fun TeamRow(
             .clip(shape)
             .background(animatedBg)
             .clickable { onToggle() }
+            .padding(horizontal = 16.dp, vertical = 8.dp)
 
     ) {
         Column(modifier = Modifier.weight(1f)) {

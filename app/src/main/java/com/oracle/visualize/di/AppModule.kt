@@ -7,8 +7,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
+import com.oracle.visualize.data.repositories.UserRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -63,5 +65,12 @@ abstract class RepositoryModule {
     ): AuthRepository
 
     @Binds
-    abstract fun bindTeamRepository(teamRepositoryImpl: TeamRepositoryImpl): TeamRepository
+    abstract fun bindTeamRepository(
+        teamRepositoryImpl: TeamRepositoryImpl
+    ): TeamRepository
+
+    @Binds
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 }

@@ -1,17 +1,14 @@
-package com.oracle.visualize.presentation.screens.ShareScreen.components
+package com.oracle.visualize.presentation.screens.shareScreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -44,7 +41,6 @@ fun SelectedUserRow(
             .fillMaxWidth()
             .requiredHeight(68.dp)
             .clip(CardShape)
-            .background(Color.White)
     ) {
         Box(
             modifier = Modifier
@@ -54,8 +50,7 @@ fun SelectedUserRow(
                 .requiredHeight(44.dp)
         ) {
             UserAvatar(
-                initials = user.avatarInitials,
-                color = Color(user.avatarColor),
+                user,
                 size = 40
             )
             Column(
@@ -67,7 +62,7 @@ fun SelectedUserRow(
                     .requiredHeight(44.dp)
             ) {
                 Text(
-                    text = user.name,
+                    text = user.username,
                     color = Color(0xFF1D1B20),
                     fontSize = 16.sp,
                     lineHeight = 1.5.em,

@@ -1,10 +1,12 @@
-package com.oracle.visualize.presentation.screens.ShareScreen
+package com.oracle.visualize.presentation.screens.shareScreen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,30 +25,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.domain.models.ShareTeam
-import com.oracle.visualize.domain.models.ShareUser
-import com.oracle.visualize.presentation.screens.ShareScreen.components.*
+import com.oracle.visualize.presentation.screens.shareScreen.components.*
 import com.oracle.visualize.ui.theme.AppColors
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 @Composable
 fun ShareAndPostScreen(
-    viewModel: ShareAndPostViewModel = viewModel(),
+    viewModel: ShareAndPostViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Load mock data as if it came from a Repository — ViewModel stays clean
-    LaunchedEffect(Unit) {
-        viewModel.loadData(
-            myTeams      = ShareMockData.myTeams,
-            teamsImIn    = ShareMockData.teamsImIn,
-            suggestedUsers = ShareMockData.suggestedUsers
-        )
-    }
 
     when (val state = uiState) {
         is ShareUiState.Loading -> {
@@ -106,6 +100,20 @@ fun ShareAndPostContent(
                     query = state.emailQuery,
                     onQueryChange = { onEvent(ShareUiEvent.EmailQueryChanged(it)) }
                 )
+                if (state.suggestedUsers.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(AppColors.searchBarBg) // mismo fondo gris claro que el search bar
+                    ) {
+                        HorizontalDivider(color = AppColors.textMuted.copy(alpha = 0.3f), thickness = 1.dp)
+                        state.suggestedUsers.forEach { user ->
+                            SuggestedUserRow(user = user) {
+                                onEvent(ShareUiEvent.AddUserByEmail(user.email))
+                            }
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(12.dp))
                 ShareUserList(state = state, onEvent = onEvent)
                 Spacer(modifier = Modifier.height(16.dp))
@@ -211,7 +219,7 @@ private fun ShareSearchBar(query: String, onQueryChange: (String) -> Unit) {
 
 @Composable
 private fun ShareUserList(state: ShareUiState.Content, onEvent: (ShareUiEvent) -> Unit) {
-    val displayUsers = if (state.selectedUsers.isNotEmpty()) state.selectedUsers else state.suggestedUsers
+    val displayUsers = state.selectedUsers
     if (displayUsers.isEmpty()) return
 
     val visibleUsers = remember { mutableStateListOf(*displayUsers.toTypedArray()) }
@@ -287,6 +295,49 @@ private fun ShareBottomBar(onConfirmShare: () -> Unit) {
             Icon(imageVector = Icons.Default.Send, contentDescription = null, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(8.dp))
             Text("Confirm", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+@Composable
+fun ShareScreenContent(
+    state: ShareUiState.Content,
+    onEvent: (ShareUiEvent) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+
+        // 1. Buscador
+        ShareSearchBar(
+            query = state.emailQuery,
+            onQueryChange = { onEvent(ShareUiEvent.EmailQueryChanged(it)) }
+        )
+
+        // 2. Lista de sugerencias (Resultados del Debounce)
+        if (state.suggestedUsers.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White, RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+            ) {
+                state.suggestedUsers.forEach { user ->
+                    SuggestedUserRow(user) {
+                        onEvent(ShareUiEvent.AddUserByEmail(user.email))
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // 3. Usuarios seleccionados (Los que ya tienen el botón Close)
+        Text("Selected Users", fontWeight = FontWeight.Bold)
+        LazyColumn {
+            items(state.selectedUsers) { user ->
+                SelectedUserRow(user) {
+                    onEvent(ShareUiEvent.RemoveUser(user))
+                }
+            }
         }
     }
 }
