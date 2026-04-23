@@ -1,23 +1,20 @@
 package com.oracle.visualize.data.repositories
 
 import com.google.firebase.Timestamp
-import com.oracle.visualize.data.datasources.UserDataSource
+import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
-import com.oracle.visualize.domain.models.Team
-import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import kotlinx.serialization.json.JsonObject
 import javax.inject.Inject
 
 class VisualizationRepositoryImpl @Inject constructor(
     private val visualizationDataSource: VisualizationDataSource,
-    private val userDataSource: UserDataSource
+    private val userDatasource: UserDatasource
 ) : VisualizationRepository {
 
     override suspend fun createVisualization(
@@ -64,11 +61,11 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
 
         val visualizationCards = mutableListOf<VisualizationCard>()
-        val user = userDataSource.getUserByID(userID)
+        val user = userDatasource.getUserByID(userID)
         val hiddenVisualizations = user.hiddenVisualizations
 
         for (dto in dtos) {
-            val author = userDataSource.getUserByID(dto.authorID)
+            val author = userDatasource.getUserByID(dto.authorID)
             val users = visualizationDataSource.getAllUsersVisualizationIsSharedWith(dto.id)
             val sharedUsers = users.map { it.toDomain() }
             val card = dto.toVisualizationCard(author.username,sharedUsers)

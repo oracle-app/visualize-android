@@ -149,8 +149,8 @@ fun ShareAndPostContent(
 
 @Composable
 private fun ShareTopBar(onBackPressed: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)) {
-        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+    Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).statusBarsPadding()) {
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().requiredHeight(64.dp).padding(start = 4.dp)
