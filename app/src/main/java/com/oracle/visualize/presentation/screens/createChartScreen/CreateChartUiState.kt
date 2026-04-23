@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.createScreen
+package com.oracle.visualize.presentation.screens.createChartScreen
 
 /**
  * Represents the different states of the Create Data Visualizations screen.

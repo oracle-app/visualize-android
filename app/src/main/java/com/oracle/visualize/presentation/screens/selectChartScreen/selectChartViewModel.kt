@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class ChartSelectionViewModel : ViewModel() {
+class selectChartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()
@@ -18,7 +18,7 @@ class ChartSelectionViewModel : ViewModel() {
     }
 
     private fun loadMockCharts() {
-        val mockCharts = MockData.visualizations.map { VisualizationSelection(it) }
+        val mockCharts = selectChartMockData.visualizations.map { VisualizationSelection(it) }
         _uiState.value = ChartSelectionUiState.Success(charts = mockCharts)
     }
 

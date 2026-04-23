@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,18 +21,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.domain.models.ChartSelectionUiState
 import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
 import com.oracle.visualize.ui.theme.*
+import com.oracle.visualize.R
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartSelectionPage(
     onBack: () -> Unit,
     onNavigateToShare: () -> Unit,
-    viewModel: ChartSelectionViewModel = viewModel()
+    viewModel: selectChartViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf<String?>(null) }
     var tempTitle by remember { mutableStateOf("") }
-    
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -40,14 +43,14 @@ fun ChartSelectionPage(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Choose visualization",
+                        text = stringResource(R.string.chart_selection_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.icon_back))
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -82,13 +85,13 @@ fun ChartSelectionPage(
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = "Your Visualizations Are Ready!",
+                                text = stringResource(R.string.chart_selection_ready_title),
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
-                                text = "We've generated several charts based on your dataset.",
+                                text = stringResource(R.string.chart_selection_ready_subtitle),
                                 color = Color.White.copy(alpha = 0.9f),
                                 fontSize = 12.sp
                             )
@@ -97,7 +100,7 @@ fun ChartSelectionPage(
 
                     item {
                         Text(
-                            text = "Choose the chart that best represents the insights you want to share.",
+                            text = stringResource(R.string.chart_selection_prompt),
                             modifier = Modifier.padding(16.dp),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 14.sp
@@ -127,26 +130,22 @@ fun ChartSelectionPage(
                         ) {
                             Button(
                                 onClick = {},
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp),
+                                modifier = Modifier.weight(1f).height(48.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text("Post to personal feed", color = Color.White, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_post_personal), color = Color.White, fontSize = 12.sp)
                             }
 
                             Button(
                                 onClick = onNavigateToShare,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp),
+                                modifier = Modifier.weight(1f).height(48.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text("Share and post", color = Color.White, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_share_and_post), color = Color.White, fontSize = 12.sp)
                             }
                         }
                     }
@@ -155,12 +154,12 @@ fun ChartSelectionPage(
                 if (showEditDialog != null) {
                     AlertDialog(
                         onDismissRequest = { showEditDialog = null },
-                        title = { Text("Edit Chart Title", fontWeight = FontWeight.Bold) },
+                        title = { Text(stringResource(R.string.dialog_edit_title), fontWeight = FontWeight.Bold) },
                         text = {
                             OutlinedTextField(
                                 value = tempTitle,
                                 onValueChange = { tempTitle = it },
-                                label = { Text("New Title") },
+                                label = { Text(stringResource(R.string.dialog_edit_title_label)) },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         },
@@ -169,12 +168,12 @@ fun ChartSelectionPage(
                                 showEditDialog?.let { viewModel.updateChartTitle(it, tempTitle) }
                                 showEditDialog = null
                             }) {
-                                Text("Confirm", color = MaterialTheme.colorScheme.primary)
+                                Text(stringResource(R.string.confirm), color = MaterialTheme.colorScheme.primary)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { showEditDialog = null }) {
-                                Text("Cancel", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     )
@@ -183,19 +182,19 @@ fun ChartSelectionPage(
                 if (state.isUnsavedChangesDialogVisible) {
                     AlertDialog(
                         onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                        title = { Text("Unsaved Changes", fontWeight = FontWeight.Bold) },
-                        text = { Text("You have unsaved changes. Are you sure you want to leave?") },
+                        title = { Text(stringResource(R.string.dialog_unsaved_title), fontWeight = FontWeight.Bold) },
+                        text = { Text(stringResource(R.string.dialog_unsaved_message)) },
                         confirmButton = {
-                            TextButton(onClick = { 
+                            TextButton(onClick = {
                                 viewModel.showUnsavedChangesDialog(false)
                                 onBack()
                             }) {
-                                Text("Leave", color = ErrorRed)
+                                Text(stringResource(R.string.dialog_leave), color = ErrorRed)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
-                                Text("Cancel", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     )

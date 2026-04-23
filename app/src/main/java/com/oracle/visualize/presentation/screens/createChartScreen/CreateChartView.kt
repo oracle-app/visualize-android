@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.createScreen
+package com.oracle.visualize.presentation.screens.createChartScreen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.CreateScreen.CreateViewModel
-import com.oracle.visualize.presentation.screens.createScreen.components.FileStatusItem
+import com.oracle.visualize.presentation.screens.CreateScreen.CreateChartViewModel
+import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
 /**
  * Screen for uploading a dataset to create new visualizations.
@@ -35,7 +35,7 @@ import com.oracle.visualize.presentation.screens.createScreen.components.FileSta
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
-    viewModel: CreateViewModel = viewModel(),
+    viewModel: CreateChartViewModel = viewModel(),
     onNavigateToSelection: () -> Unit
 ) {
     val context = LocalContext.current
@@ -186,7 +186,7 @@ fun DashedSelector(onClick: () -> Unit) {
 }
 
 @Composable
-fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateViewModel) {
+fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateChartViewModel) {
     when (val state = uiState) {
         is CreateChartUiState.Uploading -> {
             FileStatusItem(

@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.createScreen.components
+package com.oracle.visualize.presentation.screens.createChartScreen.components
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp

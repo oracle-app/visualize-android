@@ -6,7 +6,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.presentation.screens.createScreen.CreateChartUiState
+import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartUiState
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import java.util.Locale
 import com.oracle.visualize.R
 
 
-class CreateViewModel(
+class CreateChartViewModel(
     private val validateDatasetUseCase: ValidateDatasetUseCase = ValidateDatasetUseCase()
 ) : ViewModel() {
 

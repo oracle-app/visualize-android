@@ -4,6 +4,8 @@
 
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="confirm">Confirm</string>
+
 
     // Navigation Bar
 
@@ -66,10 +68,33 @@
     <string name="table_header_sales">Sales</string>
     <string name="table_header_region">Region</string>
 
+    // Chart Selection Screen
+
+    <string name="chart_selection_title">Choose visualization</string>
+    <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
+    <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
+    <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
+    <string name="chart_selection_post_personal">Post to personal feed</string>
+    <string name="chart_selection_share_and_post">Share and post</string>
+
+    // Edit Chart Title Dialog
+
+    <string name="dialog_edit_title">Edit Chart Title</string>
+    <string name="dialog_edit_title_label">New Title</string>
+
+    // Unsaved Changes Dialog
+
+    <string name="dialog_unsaved_title">Unsaved Changes</string>
+    <string name="dialog_unsaved_message">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="dialog_leave">Leave</string>
+
     // Errors
 
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
+    // Icon
+
+    <string name="icon_back">Back</string>
 
 
 </resources>
