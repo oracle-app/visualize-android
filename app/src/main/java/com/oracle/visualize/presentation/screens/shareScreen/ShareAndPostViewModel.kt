@@ -29,7 +29,7 @@ class ShareAndPostViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     // Hardcoded User ID for testing purposes. This is binded to a development environment
     // which only members of the GH organization have access to.
-     val userID = "e9Nk8XrxHJAtwN3Hf2FL"
+    val userID = "e9Nk8XrxHJAtwN3Hf2FL"
     init {
         loadData()
         setupSearchDebounce()

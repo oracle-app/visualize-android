@@ -50,6 +50,7 @@ fun FeedTopBar(
     )
 
     TopAppBar(
+        windowInsets = TopAppBarDefaults.windowInsets,
         title = {
             Text(
                 text = filterLabels[selectedFilter] ?: stringResource(R.string.feed_top_bar_title),
