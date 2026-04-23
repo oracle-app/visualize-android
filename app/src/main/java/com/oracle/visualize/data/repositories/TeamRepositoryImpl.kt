@@ -1,13 +1,13 @@
 package com.oracle.visualize.data.repositories
 
-import com.oracle.visualize.data.datasources.TeamDataSource
+import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.repositories.TeamRepository
 import javax.inject.Inject
 
 class TeamRepositoryImpl @Inject constructor(
-    private val source: TeamDataSource
+    private val source: TeamDatasource
 ) : TeamRepository {
         override suspend fun createTeam(
         memberIDs: List<String>,

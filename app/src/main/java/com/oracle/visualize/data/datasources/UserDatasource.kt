@@ -3,12 +3,10 @@ package com.oracle.visualize.data.datasources
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.TeamDto
 import com.oracle.visualize.data.datasources.dtos.UserDTO
-import com.oracle.visualize.domain.models.Team
-import com.oracle.visualize.domain.models.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class UserDataSource @Inject constructor(
+class UserDatasource @Inject constructor(
     private val db: FirebaseFirestore
 ) {
     private val userRef = db.collection("users")
