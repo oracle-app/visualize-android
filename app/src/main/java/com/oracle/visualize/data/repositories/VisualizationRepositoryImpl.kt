@@ -64,11 +64,11 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
 
         val visualizationCards = mutableListOf<VisualizationCard>()
-        val user = userDataSource.getUserByUserID(userID)
+        val user = userDataSource.getUserByID(userID)
         val hiddenVisualizations = user.hiddenVisualizations
 
         for (dto in dtos) {
-            val author = userDataSource.getUserByUserID(dto.authorID)
+            val author = userDataSource.getUserByID(dto.authorID)
             val users = visualizationDataSource.getAllUsersVisualizationIsSharedWith(dto.id)
             val sharedUsers = users.map { it.toDomain() }
             val card = dto.toVisualizationCard(author.username,sharedUsers)

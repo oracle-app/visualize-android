@@ -9,7 +9,7 @@ import javax.inject.Singleton
 import kotlin.jvm.java
 
 @Singleton
-class UserDatasource @Inject constructor(
+class UserDataSource @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
