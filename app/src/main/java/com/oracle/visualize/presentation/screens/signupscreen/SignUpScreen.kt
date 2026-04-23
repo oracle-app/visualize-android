@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.loginScreen
+package com.oracle.visualize.presentation.screens.signupscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AuthButton
 import com.oracle.visualize.presentation.components.AuthIllustration
@@ -39,33 +39,35 @@ import com.oracle.visualize.presentation.components.AuthTextField
 import com.oracle.visualize.presentation.components.ErrorBanner
 
 /**
- * Login screen matching the Figma design.
- * Shows a decorative illustration header, email/password fields,
- * error banner, log in button, and sign up link.
+ * Sign Up screen matching the Figma design.
+ * Collects name, email, password, and confirm password fields.
+ * Validates locally and shows field-level or general error banners.
  *
- * Observes [LoginViewModel.uiState] and delegates all events to the ViewModel.
+ * Observes [SignUpViewModel.uiState] for loading, error, and success states.
  */
 @Composable
-fun LoginScreen(
-    onNavigateToHome: () -> Unit,
-    onNavigateToSignUp: () -> Unit,
-    onNavigateToResetPassword: () -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
+fun SignUpScreen(
+    onNavigateToLogin: () -> Unit,
+    onSignUpSuccess: () -> Unit,
+    viewModel: SignUpViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
     val hasError = uiState.error != null
 
-    // Clear error when user edits fields
-    LaunchedEffect(email, password) {
+    // Clear error when user edits any field
+    LaunchedEffect(name, email, password, confirmPassword) {
         if (hasError) viewModel.clearError()
     }
 
     // Navigate on success
     LaunchedEffect(uiState.success) {
-        if (uiState.success) onNavigateToHome()
+        if (uiState.success) onSignUpSuccess()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -77,7 +79,7 @@ fun LoginScreen(
                 .background(MaterialTheme.colorScheme.outline)
         )
 
-        // White card body
+        // Card body
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,14 +98,13 @@ fun LoginScreen(
         ) {
             Spacer(Modifier.height(40.dp))
 
-            // Decorative illustration
             AuthIllustration()
 
             Spacer(Modifier.height(8.dp))
 
             // Title
             Text(
-                text = stringResource(id = R.string.login_screen_title),
+                text = stringResource(id = R.string.signup_screen_title),
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -115,100 +116,106 @@ fun LoginScreen(
 
             // Subtitle
             Text(
-                text = stringResource(id = R.string.login_screen_subtitle),
+                text = stringResource(id = R.string.signup_screen_subtitle),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = 24.dp)
             )
+
+            // Name field
+            AuthTextField(
+                value = name,
+                onValueChange = { name = it },
+                placeholder = stringResource(id = R.string.signup_screen_input_name),
+                hasError = hasError
+            )
+
+            Spacer(Modifier.height(16.dp))
 
             // Email field
             AuthTextField(
                 value = email,
                 onValueChange = { email = it },
-                placeholder = stringResource(id = R.string.login_screen_input_email),
+                placeholder = stringResource(id = R.string.signup_screen_input_email),
                 hasError = hasError
             )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
 
             // Password field
             AuthTextField(
                 value = password,
                 onValueChange = { password = it },
-                placeholder = stringResource(id = R.string.login_screen_input_password),
+                placeholder = stringResource(id = R.string.signup_screen_input_password),
                 isPassword = true,
                 passwordVisible = passwordVisible,
                 onTogglePassword = { passwordVisible = !passwordVisible },
                 hasError = hasError
             )
 
+            Spacer(Modifier.height(16.dp))
+
+            // Confirm password field
+            AuthTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                placeholder = stringResource(id = R.string.signup_screen_input_confirm_password),
+                isPassword = true,
+                passwordVisible = confirmPasswordVisible,
+                onTogglePassword = { confirmPasswordVisible = !confirmPasswordVisible },
+                hasError = hasError
+            )
+
             // Error banner
             ErrorBanner(
-                message = viewModel.mapError(uiState.error),
+                message = uiState.error ?: "",
                 visible = hasError
             )
 
-            Spacer(Modifier.height(12.dp))
-
-            // Forgot password link
-            TextButton(
-                onClick = onNavigateToResetPassword,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.login_screen_forgot_password),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-
             Spacer(Modifier.height(32.dp))
 
-            // Log in button
+            // Sign up button
             AuthButton(
-                text = stringResource(id = R.string.login_screen_button_login),
-                onClick = { viewModel.login(email, password) },
+                text = stringResource(id = R.string.signup_screen_button_signup),
+                onClick = {
+                    viewModel.signUp(
+                        name = name,
+                        email = email,
+                        password = password,
+                        confirmPassword = confirmPassword
+                    )
+                },
                 isLoading = uiState.isLoading
             )
 
             Spacer(Modifier.height(24.dp))
 
-            // Sign up link row
-            SignUpLinkRow(onNavigateToSignUp = onNavigateToSignUp)
+            // Login link row
+            LoginLinkRow(onNavigateToLogin = onNavigateToLogin)
 
-            Spacer(Modifier.weight(1f))
-
-            // Version label
-            Text(
-                text = stringResource(id = R.string.app_version),
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
+            Spacer(Modifier.height(32.dp))
         }
     }
 }
 
 /**
- * Row showing "Do not have an account?" text with an orange "Sign Up" button.
+ * Row showing "Already have an account?" with an orange "Log in" button.
  */
 @Composable
-private fun SignUpLinkRow(onNavigateToSignUp: () -> Unit) {
+private fun LoginLinkRow(onNavigateToLogin: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = stringResource(id = R.string.login_screen_text_signup),
+            text = stringResource(id = R.string.signup_screen_text_login),
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onBackground
         )
         TextButton(
-            onClick = onNavigateToSignUp,
+            onClick = onNavigateToLogin,
             contentPadding = PaddingValues(0.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.login_screen_button_signup),
+                text = stringResource(id = R.string.signup_screen_button_login),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.secondary

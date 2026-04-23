@@ -30,7 +30,9 @@ val DarkOrange = Color(0xFFE18212)
 val PalePink = Color(0xFFFFDAD6)
 val Red = Color(0xFFBA1A1A)
 val DarkGrayishPurple  = Color(0xFF49454F)
-
+val SuccessGreen = Color(0xFF4CAF50)
+val SoftTeal = Color(0xFFB2DFDB)
+val LightOrange = Color(0xFFFFF3E0)
 
 // And below are the colors of the Visualize Brand Identity (Dark Mode)
 

@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Orange squiggle placeholder -->
+    <path
+        android:pathData="M20,80 Q30,20 50,60 T80,40 T110,60"
+        android:strokeWidth="6"
+        android:strokeColor="#EB9632"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M10,90 Q40,30 60,70 T100,50"
+        android:strokeWidth="4"
+        android:strokeColor="#E18212"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round" />
+    <!-- Small dots -->
+    <path
+        android:pathData="M45,55 A3,3 0 1,1 45.01,55"
+        android:fillColor="#EB9632" />
+    <path
+        android:pathData="M75,45 A3,3 0 1,1 75.01,45"
+        android:fillColor="#E18212" />
+</vector>

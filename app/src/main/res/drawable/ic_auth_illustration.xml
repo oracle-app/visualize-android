@@ -1,0 +1,36 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="140dp"
+    android:viewportWidth="240"
+    android:viewportHeight="140">
+    <!-- Decorative orange wavy lines for auth screen headers -->
+    <path
+        android:pathData="M0,100 Q40,20 80,70 T160,40 T240,80"
+        android:strokeWidth="5"
+        android:strokeColor="#EB9632"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M0,110 Q60,40 100,80 T180,50 T240,90"
+        android:strokeWidth="3"
+        android:strokeColor="#E18212"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M20,120 Q50,60 90,90 T170,60 T230,100"
+        android:strokeWidth="4"
+        android:strokeColor="#EB9632"
+        android:fillColor="@android:color/transparent"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.5" />
+    <!-- Decorative dots -->
+    <path
+        android:pathData="M70,65 A4,4 0 1,1 70.01,65"
+        android:fillColor="#EB9632" />
+    <path
+        android:pathData="M150,50 A4,4 0 1,1 150.01,50"
+        android:fillColor="#E18212" />
+    <path
+        android:pathData="M110,85 A3,3 0 1,1 110.01,85"
+        android:fillColor="#EB9632" />
+</vector>

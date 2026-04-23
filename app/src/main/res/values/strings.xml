@@ -83,8 +83,58 @@
     <string name="login_screen_error_password_required">Password is required</string>
     <string name="login_screen_hide_password">Hide password</string>
     <string name="login_screen_show_password">Show password</string>
+    <string name="login_screen_forgot_password">Forgot your password?</string>
+    <string name="login_screen_subtitle">Please enter your credentials to log in.</string>
 
+    // Splash Screen
 
+    <string name="splash_tagline">Create, Visualize, and share AI powered\ndata insights effortlessly</string>
+    <string name="splash_login_button">Log in</string>
+    <string name="splash_signup_button">Sign up</string>
 
+    // Sign Up Screen
+
+    <string name="signup_screen_title">Create your account</string>
+    <string name="signup_screen_subtitle">Fill in your information to create an account.</string>
+    <string name="signup_screen_input_name">Name</string>
+    <string name="signup_screen_input_email">Email</string>
+    <string name="signup_screen_input_password">Password</string>
+    <string name="signup_screen_input_confirm_password">Confirm password</string>
+    <string name="signup_screen_button_signup">Sign up</string>
+    <string name="signup_screen_text_login">Already have an account?</string>
+    <string name="signup_screen_button_login">Log in</string>
+    <string name="signup_screen_error_name_required">Name is required</string>
+    <string name="signup_screen_error_password_mismatch">Passwords do not match</string>
+    <string name="signup_screen_error_password_short">Password must be at least 6 characters</string>
+
+    // Reset Password Screen
+
+    <string name="reset_password_title">Reset password</string>
+    <string name="reset_password_subtitle">Enter the email address associated with your account.</string>
+    <string name="reset_password_input_email">Email</string>
+    <string name="reset_password_button_send">Send</string>
+
+    // Check Email Screen
+
+    <string name="check_email_title">Check your email</string>
+    <string name="check_email_subtitle">Please enter the 4 digit code sent to your email address.</string>
+    <string name="check_email_resend">Didn\'t receive the code?</string>
+    <string name="check_email_resend_link">Resend</string>
+    <string name="check_email_button_verify">Verify and proceed</string>
+    <string name="check_email_button_confirm">Confirm</string>
+
+    // New Password Screen
+
+    <string name="new_password_title">Reset password</string>
+    <string name="new_password_subtitle">Please enter your new password.</string>
+    <string name="new_password_input_password">Password</string>
+    <string name="new_password_input_confirm">Confirm password</string>
+    <string name="new_password_button_confirm">Confirm</string>
+
+    // General Auth Errors
+
+    <string name="auth_error_unexpected">An unexpected error occurred.</string>
+    <string name="auth_error_network">No internet connection.</string>
+    <string name="auth_error_too_many_attempts">Too many attempts. Try again later.</string>
 
 </resources>
