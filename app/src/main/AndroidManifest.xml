@@ -1,31 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <queries>
+        <package android:name="com.google.android.gms" />
+        <intent>
+            <action android:name="com.google.android.gms.common.api.GoogleApiActivity" />
+        </intent>
+    </queries>
     <application
+        android:name=".di.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_visualize_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_visualize_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Visualize">
-        <activity
-            android:name=".presentation.components.FeedTopBar"
-            android:exported="false"
-            android:label="@string/title_activity_feed_top_bar"
-            android:theme="@style/Theme.Visualize" />
-        <activity
-            android:name=".presentation.components.SearchSection"
-            android:exported="false"
-            android:label="@string/title_activity_search_section"
-            android:theme="@style/Theme.Visualize" />
-        <activity
-            android:name=".FeedActivity"
-            android:exported="false"
-            android:label="@string/title_activity_feed"
-            android:theme="@style/Theme.Visualize" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

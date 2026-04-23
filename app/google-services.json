@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1062761066681",
-    "project_id": "visualize-oracle-reto",
-    "storage_bucket": "visualize-oracle-reto.firebasestorage.app"
+    "project_number": "925837074152",
+    "project_id": "visualize-oracle-dev",
+    "storage_bucket": "visualize-oracle-dev.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1062761066681:android:84f33a53774a7e178b6b68",
+        "mobilesdk_app_id": "1:925837074152:android:a1a4efe6f2105850cd735d",
         "android_client_info": {
           "package_name": "com.oracle.visualize"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD0O9gWgM6XMYmQJ8prTokizAfyXOajcGM"
+          "current_key": "AIzaSyA-vS5q2mFeLt6ukTAm1ocbef5etL4ZzAU"
         }
       ],
       "services": {

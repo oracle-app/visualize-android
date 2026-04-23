@@ -1,15 +1,15 @@
 package com.oracle.visualize.domain.models
 
-import java.util.Date
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
 data class Visualization (
+    @DocumentId
     val id: String,
-    val ownerId: String,
+    val authorID: String,
     val title: String,
-    val configJson: Map<String, Any>,
-    val sharedWith: List<String>,
-    val sharedWithGroup: List<String>,
-    val commentCount: Int,
-    val hasNewActivity: Boolean,
-    val createdAt: Date
+    val configJSON: String,
+    val sharedWithUsers: List<String>,
+    val sharedWithTeams: List<String>,
+    val createdAt: Timestamp,
 )
