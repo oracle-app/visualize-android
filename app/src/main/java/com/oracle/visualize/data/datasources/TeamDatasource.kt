@@ -1,46 +1,51 @@
 package com.oracle.visualize.data.datasources
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oracle.visualize.data.datasources.dtos.TeamDTO
+import com.oracle.visualize.data.datasources.dtos.TeamDto
+import com.oracle.visualize.domain.models.Team
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TeamDatasource @Inject constructor(
-    private val firestore: FirebaseFirestore
+class TeamDataSource @Inject constructor(
+    private val db: FirebaseFirestore
 ){
+    private val teamsRef = db.collection("teams")
 
-    suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
-        Log.d("TeamDatasource", "Fetching teams for userID: $userID")
-        return try {
-            val snapshot = firestore.collection("teams")
-                .whereArrayContains("membersIDs",userID)
-                .get()
-                .await()
-            Log.d("TeamDatasource", "Got ${snapshot.size()} teams")
-            snapshot.toObjects(TeamDTO::class.java)
+    suspend fun createTeam(
+        memberIDs: List<String>,
+        name: String,
+        ownerID: String
+    ) {
+        try {
+            if (ownerID.isNotEmpty() && name.isNotEmpty() &&
+                memberIDs.isNotEmpty()) {
 
-        } catch (e: Exception){
-            Log.e("TeamDatasource", "Error getting teams user is in: ${e.message}")
-            emptyList()
+                val formattedVisualization = hashMapOf(
+                    "memberIDs" to memberIDs,
+                    "name" to name,
+                    "ownerID" to ownerID
+                )
+
+                teamsRef.add(formattedVisualization).await()
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            throw ex
         }
     }
 
-    suspend fun getTeamsUserOwns(userID: String): List<TeamDTO> {
+    suspend fun getTeamByTeamID(teamID: String): TeamDto? {
         return try {
-            Log.d("TeamDatasource", "Fetching teams for userID: $userID")
-            val snapshot = firestore.collection("teams")
-                .whereEqualTo("ownerID", userID)
-                .get()
-                .await()
-            Log.d("TeamDatasource", "Got ${snapshot.size()} teams")
-            snapshot.toObjects(TeamDTO::class.java)
-        } catch (e: Exception) {
-            Log.e("TeamDatasource", "Error getting teams user is in: ${e.message}")
-            emptyList()
+            val teamSnapshot = teamsRef.document(teamID)
+                .get().await()
+            if (teamSnapshot.exists()){
+                teamSnapshot.toObject(TeamDto::class.java)
+            } else {
+                null
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            null
         }
     }
-
 }
