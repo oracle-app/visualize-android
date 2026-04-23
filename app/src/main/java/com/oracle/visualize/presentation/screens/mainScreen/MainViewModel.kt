@@ -13,7 +13,17 @@ import com.oracle.visualize.domain.models.NavRoutes
 
 class MainViewModel : ViewModel() {
 
+<<<<<<< feature/change_viz_management_to_jetpack_navigation
     // NavController owns navigation state — ViewModel only defines the nav items
+=======
+    //State
+    private val route = MutableStateFlow(NavRoutes.Share.route)
+    private val index = MutableStateFlow(2)
+
+    val currentRoute: StateFlow<String> = route.asStateFlow()
+    val selectedIndex: StateFlow<Int> = index.asStateFlow()
+
+>>>>>>> develop
     val navItems = listOf(
         NavItem(
             label = R.string.nav_create,
@@ -42,4 +52,17 @@ class MainViewModel : ViewModel() {
             route = NavRoutes.Profile.route
         )
     )
+<<<<<<< feature/change_viz_management_to_jetpack_navigation
 }
+=======
+
+    fun onNavItemSelected(i: Int) {
+        index.value = i
+        route.value = navItems[i].route
+    }
+
+    fun navigateToRoute(targetRoute: String) {
+        route.value = targetRoute
+    }
+}
+>>>>>>> develop
