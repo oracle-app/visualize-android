@@ -28,6 +28,8 @@ class FeedViewModel @Inject constructor(
     var items by mutableStateOf<List<VisualizationCard>>(emptyList())
         private set
 
+    private var allItems: List<VisualizationCard> = emptyList()
+
     init {
         fetchItems(VisualizationFilter.ALL)
     }
@@ -35,9 +37,11 @@ class FeedViewModel @Inject constructor(
     private fun fetchItems(filter: VisualizationFilter) {
         viewModelScope.launch {
             try {
-                val userID = "Aldo Ruiz"
-                items = getAllUserVisualizationsUseCase.invoke(userID, filter)
+                val userID = "oEJtQz0gdbRpTZ8ETPCy"
+                allItems = getAllUserVisualizationsUseCase.invoke(userID, filter)
+                applySearch()
             } catch (ex: FirebaseFirestoreException) {
+                allItems = emptyList()
                 items = emptyList()
                 Log.e("Error", "Couldn't load the visualizations.")
             } catch (ex: Exception) {
@@ -54,5 +58,16 @@ class FeedViewModel @Inject constructor(
 
     fun onSearchTextChange(newText: String) {
         searchText = newText
+        applySearch()
+    }
+
+    private fun applySearch() {
+        items = if (searchText.isBlank()) {
+            allItems
+        } else {
+            allItems.filter { item ->
+                item.title.contains(searchText, ignoreCase = true)
+            }
+        }
     }
 }

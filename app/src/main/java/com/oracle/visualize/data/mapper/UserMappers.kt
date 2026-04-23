@@ -7,10 +7,9 @@ fun UserDTO.toDomain(): User = User(
     id = id,
     userType = userType,
     email = email,
-    userName = userName,
-    profilePictureUrl = profilePictureUrl,
+    username = username,
+    profilePictureURL = profilePictureUrl,
     themePreference = themePreference,
     chartTheme = chartTheme,
-    notificationsEnabled = notificationsEnabled,
     hiddenVisualizations = hiddenVisualizations
 )

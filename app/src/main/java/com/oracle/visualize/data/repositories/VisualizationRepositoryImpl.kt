@@ -71,7 +71,7 @@ class VisualizationRepositoryImpl @Inject constructor(
             val author = userDataSource.getUserByUserID(dto.authorID)
             val users = visualizationDataSource.getAllUsersVisualizationIsSharedWith(dto.id)
             val sharedUsers = users.map { it.toDomain() }
-            val card = dto.toVisualizationCard(author.userName,sharedUsers)
+            val card = dto.toVisualizationCard(author.username,sharedUsers)
             visualizationCards += card
         }
         val filteredCards = visualizationCards.filter { card ->

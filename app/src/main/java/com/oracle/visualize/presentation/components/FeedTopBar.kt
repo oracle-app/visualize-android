@@ -1,6 +1,11 @@
 package com.oracle.visualize.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -20,6 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,21 +71,35 @@ fun FeedTopBar(
 
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.width(200.dp).background(Color.White) // ancho fijo como en el screenshot
             ) {
                 VisualizationFilter.entries.forEach { filter ->
+                    val isSelected = filter == selectedFilter
+
                     DropdownMenuItem(
                         text = {
                             Text(
                                 text = filterLabels[filter] ?: filter.name,
-                                fontWeight = if (filter == selectedFilter) FontWeight.Bold
-                                else FontWeight.Normal
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                fontSize = 16.sp
                             )
                         },
                         onClick = {
                             onFilterSelected(filter)
                             expanded = false
-                        }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 5.dp)
+                            .background(
+                                color = if (isSelected)
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                else
+                                    Color.White
+                            )
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
                     )
                 }
             }

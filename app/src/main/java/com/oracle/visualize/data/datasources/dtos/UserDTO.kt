@@ -7,12 +7,11 @@ import com.oracle.visualize.domain.models.UserType
 class UserDTO (
     @DocumentId
     val id: String = "",
-    val userType: UserType = UserType.WRITER,
+    val userType: String = "",
     val email: String = "",
-    val userName: String = "",
-    val profilePictureUrl: String? = null,
-    val themePreference: ThemePreference = ThemePreference.SYSTEM,
+    val username: String = "",
+    val profilePictureUrl: String = "",
+    val themePreference: String = "",
     val chartTheme: String = "",
-    val notificationsEnabled: Boolean = true,
     val hiddenVisualizations: List<String> = emptyList()
 )
