@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "925837074152",
+    "project_id": "visualize-oracle-dev",
+    "storage_bucket": "visualize-oracle-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925837074152:android:a1a4efe6f2105850cd735d",
+        "android_client_info": {
+          "package_name": "com.oracle.visualize"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-vS5q2mFeLt6ukTAm1ocbef5etL4ZzAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

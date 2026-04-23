@@ -4,6 +4,9 @@
 
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="share">Share</string>
+    <string name="back">Back</string>
+    <string name="confirm">Confirm</string>
 
     // Navigation Bar
 
@@ -53,7 +56,7 @@
     <string name="create_generate_button">Generate Visualizations</string>
 
     <string name="dashed_selector_choose_file">Choose a .xlsx or .csv file.</string>
-    <string name="dashed_selector_min_size">Minimum file size: 100 MB</string>
+    <string name="dashed_selector_min_size">Maximum file size: 100 MB</string>
     <string name="dashed_selector_one_dataset">Only one dataset can be uploaded.</string>
 
     <string name="dataset_requirements_title">Dataset Format Requirements</string>
@@ -66,9 +69,26 @@
     <string name="table_header_sales">Sales</string>
     <string name="table_header_region">Region</string>
 
+    //Share and Post
+
+    <string name="team_member_count">%d members</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="unsaved_changes_confirmation">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="avatar_description">Avatar of %s</string>
+    <string name="my_teams">My Teams</string>
+    <string name="empty_team">You haven\'t created any teams yet.</string>
+    <string name="share_my_teams">Teams I\'m In</string>
+    <string name="share_empty_teams">You\'re not part of any teams yet.</string>
+    <string name="share_and_post">Share and Post</string>
+    <string name="input_email">Enter email</string>
+
+
     // Errors
 
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
+
+    //Icon Descriptions
+    <string name="icon_remove_user">Remove User</string>
 
 
 
