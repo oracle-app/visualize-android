@@ -39,6 +39,7 @@ class FeedViewModel @Inject constructor(
     private fun fetchItems() {
         viewModelScope.launch {
             try {
+                /*
                 // Testing a hard-coded visualization creation.
                 createVisualizationUseCase(
                     "Aldo Ruiz",
@@ -47,6 +48,7 @@ class FeedViewModel @Inject constructor(
                     emptyList(),
                     listOf("c1fv242XncsZTYs2QTXV")
                 )
+                */
 
                 /*
                 // Fetch all visualizations from DB:
