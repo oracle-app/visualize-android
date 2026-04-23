@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.models.Visualization
+import com.oracle.visualize.domain.usecases.CreateTeamUseCase
 import com.oracle.visualize.domain.usecases.CreateVisualizationUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetAllVisualizationsUseCase
@@ -16,8 +17,9 @@ import kotlin.collections.emptyList
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val createVisualizationUseCase: CreateVisualizationUseCase,
     private val getAllVisualizationsUseCase: GetAllVisualizationsUseCase,
+    private val createTeamUseCase: CreateTeamUseCase,
+    private val createVisualizationUseCase: CreateVisualizationUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
 ) : ViewModel() {
 
@@ -37,12 +39,23 @@ class FeedViewModel @Inject constructor(
     private fun fetchItems() {
         viewModelScope.launch {
             try {
+                // Testing a hard-coded visualization creation.
+                createVisualizationUseCase(
+                    "Aldo Ruiz",
+                    "Visualization 1",
+                    "{}",
+                    emptyList(),
+                    listOf("c1fv242XncsZTYs2QTXV")
+                )
+
                 /*
                 // Fetch all visualizations from DB:
                 val response = getAllVisualizationsUseCase()
                 visualizations = response
                 items = response
                 */
+
+
                 val userID = "Jose"     // Hard-coded User ID for testing.
                 val response = getAllUserVisualizationsUseCase(userID)
                 visualizations = response

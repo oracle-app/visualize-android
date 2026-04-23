@@ -5,8 +5,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
+import com.oracle.visualize.data.repositories.TeamRepositoryImpl
 import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import dagger.Binds
 import dagger.Module
@@ -73,4 +75,10 @@ abstract class RepositoryModule {
     abstract fun bindVisualizationRepository(
         impl: VisualizationRepositoryImpl
     ): VisualizationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTeamRepository(
+        impl: TeamRepositoryImpl
+    ): TeamRepository
 }
