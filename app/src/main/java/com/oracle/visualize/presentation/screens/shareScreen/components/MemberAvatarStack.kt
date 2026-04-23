@@ -26,7 +26,6 @@ import com.oracle.visualize.domain.models.ShareUser
 
 private val AVATAR_SIZE    = 29.dp
 private val AVATAR_OFFSET  = 15.dp
-private val AVATAR_BORDER  = Color(0xFFE6EDEC)
 
 @Composable
 fun MemberAvatarStack(
@@ -54,7 +53,7 @@ fun MemberAvatarStack(
                     modifier = Modifier
                         .offset(x = AVATAR_OFFSET * index)
                         .requiredSize(AVATAR_SIZE)
-                        .border(BorderStroke(1.dp, AVATAR_BORDER), CircleShape)
+                        .border(BorderStroke(1.dp, Color.White), CircleShape)
                 ) {
                     members.getOrNull(index)?.let { user ->
                         UserAvatar(
@@ -75,7 +74,7 @@ fun MemberAvatarStack(
                     .background(
                         if (isSelected) Color.White.copy(alpha = 0.25f) else Color.White
                     )
-                    .border(BorderStroke(1.dp, AVATAR_BORDER), CircleShape),
+                    .border(BorderStroke(1.dp, Color.White), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

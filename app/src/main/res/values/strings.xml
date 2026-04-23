@@ -66,9 +66,17 @@
     <string name="table_header_sales">Sales</string>
     <string name="table_header_region">Region</string>
 
+    //Share and Post
+
+    <string name="team_member_count">%d members</string>
+
+
     // Errors
 
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
+
+    //Icon Descriptions
+    <string name="icon_remove_user">Remove User</string>
 
 
 

@@ -14,22 +14,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
 
 private val CardShape   = RoundedCornerShape(12.dp)
-private val SubtextColor = Color(0xFF597271)
-private val CloseIconColor = Color(0xFFE05555)
+
 
 @Composable
 fun SelectedUserRow(
@@ -63,14 +65,14 @@ fun SelectedUserRow(
             ) {
                 Text(
                     text = user.username,
-                    color = Color(0xFF1D1B20),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontSize = 16.sp,
                     lineHeight = 1.5.em,
                     fontWeight = FontWeight.Normal
                 )
                 Text(
                     text = user.email,
-                    color = SubtextColor,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontSize = 14.sp,
                     lineHeight = 1.43.em,
                     maxLines = 1,
@@ -92,8 +94,8 @@ fun SelectedUserRow(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Remove user",
-                    tint = CloseIconColor,
+                    contentDescription = stringResource(R.string.icon_remove_user),
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.requiredSize(16.dp)
                 )
             }
