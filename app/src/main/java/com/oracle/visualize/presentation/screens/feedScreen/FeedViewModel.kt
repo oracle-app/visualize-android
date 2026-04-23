@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.Visualization
+import com.oracle.visualize.domain.models.VisualizationType
 import kotlinx.serialization.json.JsonObject
 import java.util.Date
 
@@ -14,6 +15,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "1", "Felipe Bastidas",
             "GOTY (Graph Of The Year)",
+            VisualizationType.BAR,
             JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
@@ -24,6 +26,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "2", "Eduardo Cardenas",
             "Relative performance of major currencies",
+            VisualizationType.LINE,
             JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
@@ -34,6 +37,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "3", "Eduardo Cardenas",
             "Relative performance of major currencies",
+            VisualizationType.PIE,
             JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
@@ -44,6 +48,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "4", "Eduardo Cardenas",
             "Relative performance of major currencies",
+            VisualizationType.COMBINED,
             JsonObject(emptyMap()),
             emptyList(),
             emptyList(),

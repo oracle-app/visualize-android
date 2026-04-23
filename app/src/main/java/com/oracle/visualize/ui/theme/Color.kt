@@ -26,6 +26,17 @@ val GrayishBlue = Color(0xFFA9C8C4)
 val ErrorRed = Color(0xFFEC4848)
 val ScrimColor = Color(0xFF1A2F3F)
 
+val TextDark = Color(0xFF13212C)
+val ChartBarBlue = StrongBlue
+val ChartLineOrange = StrongOrange
+
+// Semantic names used in the app
+val TealPrimary = StrongBlue
+val ScreenBackground = VeryLightGray
+val TextGray = DarkGray
+val OrangeButton = StrongOrange
+val TopBarColor = LightBlue
+
 // And below are the colors of the Visualize Brand Identity (Dark Mode)
 
 val DarkMode_StrongBlue = Color(0xFF8AC1C4)

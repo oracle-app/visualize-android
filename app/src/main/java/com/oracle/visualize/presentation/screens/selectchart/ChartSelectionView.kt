@@ -13,13 +13,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.selectchart.components.ChartCard
 import com.oracle.visualize.ui.theme.*
 
+/**
+ * ChartSelectionPage allows users to pick which visualizations they want to post.
+ * Uses Material 3 standards for scrolling and theming to support Dark Mode.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartSelectionPage(
@@ -39,7 +45,7 @@ fun ChartSelectionPage(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Choose visualization",
+                        text = stringResource(R.string.choose_visualization),
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
                     )
@@ -51,21 +57,21 @@ fun ChartSelectionPage(
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = TopBarColor
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         },
-        containerColor = ScreenBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         when (val state = uiState) {
             ChartSelectionUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = TealPrimary)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
             is ChartSelectionUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.message, color = ErrorRed)
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
                 }
             }
             is ChartSelectionUiState.Success -> {
@@ -78,18 +84,18 @@ fun ChartSelectionPage(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(TealPrimary)
+                                .background(MaterialTheme.colorScheme.primary)
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = "Your Visualizations Are Ready!",
-                                color = Color.White,
+                                text = stringResource(R.string.visualizations_ready_title),
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
-                                text = "We've generated several charts based on your dataset.",
-                                color = Color.White.copy(alpha = 0.9f),
+                                text = stringResource(R.string.visualizations_ready_desc),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                                 fontSize = 12.sp
                             )
                         }
@@ -97,9 +103,9 @@ fun ChartSelectionPage(
 
                     item {
                         Text(
-                            text = "Choose the chart that best represents the insights you want to share.",
+                            text = stringResource(R.string.select_insight_desc),
                             modifier = Modifier.padding(16.dp),
-                            color = TextGray,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                             fontSize = 14.sp
                         )
                     }
@@ -130,11 +136,15 @@ fun ChartSelectionPage(
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text("Post to personal feed", color = Color.White, fontSize = 12.sp)
+                                Text(
+                                    text = stringResource(R.string.post_to_feed), 
+                                    color = MaterialTheme.colorScheme.onSecondary, 
+                                    fontSize = 12.sp
+                                )
                             }
 
                             Button(
@@ -142,11 +152,15 @@ fun ChartSelectionPage(
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = OrangeButton),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text("Share and post", color = Color.White, fontSize = 12.sp)
+                                Text(
+                                    text = stringResource(R.string.share_and_post), 
+                                    color = MaterialTheme.colorScheme.onSecondary, 
+                                    fontSize = 12.sp
+                                )
                             }
                         }
                     }
@@ -155,12 +169,12 @@ fun ChartSelectionPage(
                 if (showEditDialog != null) {
                     AlertDialog(
                         onDismissRequest = { showEditDialog = null },
-                        title = { Text("Edit Chart Title", fontWeight = FontWeight.Bold) },
+                        title = { Text(stringResource(R.string.edit_chart_title), fontWeight = FontWeight.Bold) },
                         text = {
                             OutlinedTextField(
                                 value = tempTitle,
                                 onValueChange = { tempTitle = it },
-                                label = { Text("New Title") },
+                                label = { Text(stringResource(R.string.new_title_label)) },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         },
@@ -169,12 +183,12 @@ fun ChartSelectionPage(
                                 showEditDialog?.let { viewModel.updateChartTitle(it, tempTitle) }
                                 showEditDialog = null
                             }) {
-                                Text("Confirm", color = TealPrimary)
+                                Text(stringResource(R.string.confirm_btn), color = MaterialTheme.colorScheme.primary)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { showEditDialog = null }) {
-                                Text("Cancel", color = TextGray)
+                                Text(stringResource(R.string.cancel_btn), color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     )
@@ -183,19 +197,19 @@ fun ChartSelectionPage(
                 if (state.isUnsavedChangesDialogVisible) {
                     AlertDialog(
                         onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                        title = { Text("Unsaved Changes", fontWeight = FontWeight.Bold) },
-                        text = { Text("You have unsaved changes. Are you sure you want to leave?") },
+                        title = { Text(stringResource(R.string.unsaved_changes_title), fontWeight = FontWeight.Bold) },
+                        text = { Text(stringResource(R.string.unsaved_changes_desc)) },
                         confirmButton = {
                             TextButton(onClick = { 
                                 viewModel.showUnsavedChangesDialog(false)
                                 onBack()
                             }) {
-                                Text("Leave", color = ErrorRed)
+                                Text(stringResource(R.string.leave_btn), color = MaterialTheme.colorScheme.error)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
-                                Text("Cancel", color = TextGray)
+                                Text(stringResource(R.string.cancel_btn), color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     )

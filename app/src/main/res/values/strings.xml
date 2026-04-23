@@ -1,40 +1,68 @@
 <resources>
+    <string name="app_name">Visualize</string>
 
-    // Actions
-
-    <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
-
-    // Navigation Bar
-
+    <!-- Navigation -->
     <string name="nav_create">Create</string>
     <string name="nav_teams">Teams</string>
     <string name="nav_feed">Feed</string>
     <string name="nav_notifications">Notifications</string>
     <string name="nav_profile">Profile</string>
 
-    // App Name
+    <!-- General Actions -->
+    <string name="cancel_btn">Cancel</string>
+    <string name="delete_btn">Delete</string>
+    <string name="confirm_btn">Confirm</string>
+    <string name="leave_btn">Leave</string>
+    <string name="error_label">Error</string>
+    <string name="success_label">Success</string>
 
-    <string name="app_name">Visualize</string>
+    <!-- Create Screen -->
+    <string name="create_top_bar_title">Create Data Visualizations</string>
+    <string name="create_description_success">Your dataset is ready! Generate visualizations to explore your data.</string>
+    <string name="create_description_uploading">Uploading your dataset…</string>
+    <string name="create_description_idle">Upload a dataset and we\'ll generate the best visualizations to help you understand your data.</string>
+    <string name="create_generate_button">Generate Visualizations</string>
+    <string name="dashed_selector_choose_file">Choose a .xlsx or .csv file.</string>
+    <string name="dashed_selector_max_size">Maximum file size: 100 MB</string>
+    <string name="dashed_selector_one_dataset">Only one dataset can be uploaded.</string>
+    <string name="dataset_requirements_title">Dataset Format Requirements</string>
+    <string name="dataset_requirements_body">Upload a table-formatted dataset with column headers in the first row.</string>
+    <string name="dataset_requirements_example_label">Example</string>
+    <string name="dataset_requirements_footer">Each row should represent a single data entry. Avoid empty rows or merged cells.</string>
+    <string name="table_header_date">Date</string>
+    <string name="table_header_product">Product</string>
+    <string name="table_header_sales">Sales</string>
+    <string name="table_header_region">Region</string>
 
-    // Activity Title Miscellaneous
+    <!-- Table Example Data -->
+    <string name="example_val_jan">Jan</string>
+    <string name="example_val_feb">Feb</string>
+    <string name="example_val_a">A</string>
+    <string name="example_val_b">B</string>
+    <string name="example_val_north">North</string>
+    <string name="example_val_south">South</string>
 
-    <string name="title_activity_feed">FeedActivity</string>
-    <string name="title_activity_search_section">SearchSection</string>
-    <string name="title_activity_feed_top_bar">FeedTopBar</string>
+    <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
-    // Feed Top Bar
+    <!-- Chart Selection Screen -->
+    <string name="choose_visualization">Choose visualization</string>
+    <string name="visualizations_ready_title">Your Visualizations Are Ready!</string>
+    <string name="visualizations_ready_desc">We\'ve generated several charts based on your dataset.</string>
+    <string name="select_insight_desc">Choose the chart that best represents the insights you want to share.</string>
+    <string name="post_to_feed">Post to personal feed</string>
+    <string name="share_and_post">Share and post</string>
+    <string name="edit_chart_title">Edit Chart Title</string>
+    <string name="new_title_label">New Title</string>
+    <string name="unsaved_changes_title">Unsaved Changes</string>
+    <string name="unsaved_changes_desc">You have unsaved changes. Are you sure you want to leave?</string>
 
+    <!-- Feed & UI Components -->
     <string name="feed_top_bar_title">All Feed</string>
     <string name="feed_top_bar_options_description">Options</string>
-
-    // Search Section
-
     <string name="search_placeholder">Search by title</string>
     <string name="search_icon_description">Search</string>
 
-    // FeedCard Time Formatting
-
+    <!-- Time Formatting -->
     <string name="time_just_now">just now</string>
     <string name="time_mins_ago">%d min ago</string>
     <string name="time_hours_ago">%d h ago</string>
@@ -43,33 +71,4 @@
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
-
-    // Create View
-
-    <string name="create_top_bar_title">Create Data Visualizations</string>
-    <string name="create_description_success">Your dataset is ready! Generate visualizations to explore your data.</string>
-    <string name="create_description_uploading">Uploading your dataset…</string>
-    <string name="create_description_idle">Upload a dataset and we\'ll generate the best visualizations to help you understand your data.</string>
-    <string name="create_generate_button">Generate Visualizations</string>
-
-    <string name="dashed_selector_choose_file">Choose a .xlsx or .csv file.</string>
-    <string name="dashed_selector_min_size">Minimum file size: 100 MB</string>
-    <string name="dashed_selector_one_dataset">Only one dataset can be uploaded.</string>
-
-    <string name="dataset_requirements_title">Dataset Format Requirements</string>
-    <string name="dataset_requirements_body">Upload a table-formatted dataset with column headers in the first row.</string>
-    <string name="dataset_requirements_example_label">Example</string>
-    <string name="dataset_requirements_footer">Each row should represent a single data entry. Avoid empty rows or merged cells.</string>
-
-    <string name="table_header_date">Date</string>
-    <string name="table_header_product">Product</string>
-    <string name="table_header_sales">Sales</string>
-    <string name="table_header_region">Region</string>
-
-    // Errors
-
-    <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
-
-
-
 </resources>

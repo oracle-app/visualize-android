@@ -13,46 +13,58 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.createScreen.CreatePage
+import com.oracle.visualize.presentation.screens.createschart.CreatePage
+import com.oracle.visualize.presentation.screens.selectchart.ChartSelectionPage
+
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
 ) {
-    //We obtain the state from View
+    // We obtain the state from ViewModel to drive the View
     val currentRoute by viewModel.currentRoute.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(
-                navItems = viewModel.navItems,
-                selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected //Update the state
-
-            )
+            // Hide navbar on ChartSelection screen
+            if (currentRoute != NavRoutes.ChartSelection.route) {
+                BottomNavBar(
+                    navItems = viewModel.navItems,
+                    selectedIndex = selectedIndex,
+                    onItemSelected = viewModel::onNavItemSelected
+                )
+            }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute //Update the screen type
+            currentRoute = currentRoute,
+            onNavigate = viewModel::onNavItemSelected,
+            viewModel = viewModel
         )
     }
 }
 
-
-
-
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    currentRoute: String
+    currentRoute: String,
+    onNavigate: (Int) -> Unit,
+    viewModel: MainViewModel
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
-        NavRoutes.Create.route -> CreatePage(modifier = modifier)
-        // Add other routes as they are implemented
+        NavRoutes.Create.route -> CreatePage(
+            modifier = modifier,
+            onNavigateToSelection = { viewModel.navigateToRoute(NavRoutes.ChartSelection.route) }
+        )
+        NavRoutes.ChartSelection.route -> ChartSelectionPage(
+            onBack = { viewModel.navigateToRoute(NavRoutes.Create.route) },
+            onNavigateToShare = { /* TODO */ }
+        )
+        else -> { }
     }
 }

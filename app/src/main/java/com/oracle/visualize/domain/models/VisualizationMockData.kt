@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.models
 
+import kotlinx.serialization.json.JsonObject
 import java.util.Date
 import java.util.UUID
 
@@ -19,7 +20,7 @@ object VisualizationMockData {
             ownerId = "user1",
             title = "Commerce Activity: Units Sold vs Total Transactions",
             type = VisualizationType.COMBINED,
-            configJson = emptyMap(),
+            configJson = JsonObject(emptyMap()),
             sharedWith = emptyList(),
             sharedWithGroup = emptyList(),
             commentCount = 0,
@@ -31,7 +32,7 @@ object VisualizationMockData {
             ownerId = "user1",
             title = "Units Sold vs Total Transactions",
             type = VisualizationType.BAR,
-            configJson = emptyMap(),
+            configJson = JsonObject(emptyMap()),
             sharedWith = emptyList(),
             sharedWithGroup = emptyList(),
             commentCount = 0,
@@ -43,7 +44,7 @@ object VisualizationMockData {
             ownerId = "user1",
             title = "Commercial Performance Overview: Comparison Between Units Sold and Total Transaction Volume",
             type = VisualizationType.COMBINED,
-            configJson = emptyMap(),
+            configJson = JsonObject(emptyMap()),
             sharedWith = emptyList(),
             sharedWithGroup = emptyList(),
             commentCount = 0,

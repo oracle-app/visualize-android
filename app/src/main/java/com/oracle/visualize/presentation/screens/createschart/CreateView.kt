@@ -1,21 +1,12 @@
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
 package com.oracle.visualize.presentation.screens.createschart
 
-========
-package com.oracle.visualize.presentation.screens.createScreen
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
-========
-import androidx.compose.foundation.verticalScroll
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,15 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
-import com.oracle.visualize.presentation.screens.createschart.components.FileStatusItem
-import com.oracle.visualize.ui.theme.*
-========
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.CreateUiState
-import com.oracle.visualize.presentation.screens.createScreen.components.FileStatusItem
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
+import com.oracle.visualize.presentation.screens.createschart.components.FileStatusItem
 
+/**
+ * CreatePage is the entry point for users to upload their datasets.
+ * Fully compatible with Material Design 3, Dark Mode and localized strings.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
@@ -57,17 +46,15 @@ fun CreatePage(
         }
     )
 
-    val scrollState = rememberScrollState()
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
+                title = { 
                     Text(
-                        text = stringResource(R.string.create_top_bar_title),
+                        text = stringResource(R.string.create_top_bar_title), 
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
-                    )
+                    ) 
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -81,20 +68,13 @@ fun CreatePage(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val descriptionText = when (uiState) {
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
-                is CreateChartUiState.Success -> "Your dataset is ready! Generate visualizations to explore your data."
-                is CreateChartUiState.Uploading -> "Uploading your dataset..."
-                else -> "Upload a dataset and we'll generate the best visualizations to help you understand your data."
-========
-                is CreateUiState.Success -> stringResource(R.string.create_description_success)
-                is CreateUiState.Uploading -> stringResource(R.string.create_description_uploading)
+                is CreateChartUiState.Success -> stringResource(R.string.create_description_success)
+                is CreateChartUiState.Uploading -> stringResource(R.string.create_description_uploading)
                 else -> stringResource(R.string.create_description_idle)
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
             }
 
             Text(
@@ -106,12 +86,7 @@ fun CreatePage(
                     .padding(bottom = 24.dp)
             )
 
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
-            // File Picker Area / Status Area
             if (uiState is CreateChartUiState.Idle) {
-========
-            if (uiState is CreateUiState.Idle) {
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
                 DashedSelector(
                     onClick = { launcher.launch("*/*") }
                 )
@@ -121,16 +96,11 @@ fun CreatePage(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
-            // Dataset Format Requirements
             if (uiState !is CreateChartUiState.Success) {
-========
-            if (uiState !is CreateUiState.Success) {
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
                 DatasetRequirementsSection()
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
@@ -138,12 +108,14 @@ fun CreatePage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
                     shape = RoundedCornerShape(28.dp)
                 ) {
                     Text(
-                        stringResource(R.string.create_generate_button),
-                        color = MaterialTheme.colorScheme.onSecondary,
+                        text = stringResource(R.string.create_generate_button),
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -152,16 +124,16 @@ fun CreatePage(
     }
 }
 
-/**
- * Visual selector for file picking with dashed border.
- */
 @Composable
 fun DashedSelector(onClick: () -> Unit) {
+    val borderColor = MaterialTheme.colorScheme.outline
+    val iconColor = MaterialTheme.colorScheme.primary
+    
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp)
-            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -169,15 +141,13 @@ fun DashedSelector(onClick: () -> Unit) {
             width = 2f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
-        val bordercolor = MaterialTheme.colorScheme.outlineVariant
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRoundRect(
-                color = bordercolor,
+                color = borderColor,
                 style = stroke,
                 cornerRadius = CornerRadius(8.dp.toPx())
             )
         }
-        val teal = MaterialTheme.colorScheme.onSurfaceVariant
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Canvas(modifier = Modifier.size(48.dp)) {
                 val iconSize = size.width
@@ -187,14 +157,14 @@ fun DashedSelector(onClick: () -> Unit) {
                     lineTo(iconSize * 0.2f, iconSize * 0.45f)
                     close()
                 }
-                drawPath(path, teal)
+                drawPath(path, iconColor)
                 drawRect(
-                    color = teal,
+                    color = iconColor,
                     topLeft = Offset(iconSize * 0.42f, iconSize * 0.45f),
                     size = Size(iconSize * 0.16f, iconSize * 0.25f)
                 )
                 drawRect(
-                    color = teal,
+                    color = iconColor,
                     topLeft = Offset(iconSize * 0.2f, iconSize * 0.75f),
                     size = Size(iconSize * 0.6f, iconSize * 0.08f)
                 )
@@ -202,48 +172,48 @@ fun DashedSelector(onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.dashed_selector_choose_file),
+                text = stringResource(R.string.dashed_selector_choose_file), 
                 fontWeight = FontWeight.Medium,
-                color = teal
+                color = MaterialTheme.colorScheme.primary
             )
-<<<<<<<< HEAD:app/src/main/java/com/oracle/visualize/presentation/screens/createschart/CreateView.kt
-            Text("Maximum file size: 100 MB", fontSize = 12.sp, color = TextGray)
-            Text("Only one dataset can be uploaded.", fontSize = 12.sp, color = TextGray)
-========
-            Text(stringResource(R.string.dashed_selector_min_size), fontSize = 12.sp, color = bordercolor)
-            Text(stringResource(R.string.dashed_selector_one_dataset), fontSize = 12.sp, color = bordercolor)
->>>>>>>> origin/develop:app/src/main/java/com/oracle/visualize/presentation/screens/createScreen/CreateView.kt
+            Text(
+                text = stringResource(R.string.dashed_selector_max_size), 
+                fontSize = 12.sp, 
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = stringResource(R.string.dashed_selector_one_dataset), 
+                fontSize = 12.sp, 
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
 
-/**
- * Displays the current status of the file (Uploading, Success, or Error).
- */
 @Composable
 fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateViewModel) {
-    when (val state = uiState) {
+    when (uiState) {
         is CreateChartUiState.Uploading -> {
             FileStatusItem(
-                fileName = state.fileName,
-                fileSize = state.fileSize,
-                progress = state.progress,
+                fileName = uiState.fileName,
+                fileSize = uiState.fileSize,
+                progress = uiState.progress,
                 onCancel = { viewModel.resetState() }
             )
         }
         is CreateChartUiState.Success -> {
             FileStatusItem(
-                fileName = state.fileName,
-                fileSize = state.fileSize,
+                fileName = uiState.fileName,
+                fileSize = uiState.fileSize,
                 isSuccess = true,
                 onDelete = { viewModel.resetState() }
             )
         }
         is CreateChartUiState.Error -> {
             FileStatusItem(
-                fileName = state.fileName ?: "Error",
-                fileSize = state.fileSize ?: "",
-                errorMessage = state.message,
+                fileName = uiState.fileName ?: stringResource(R.string.error_label),
+                fileSize = uiState.fileSize ?: "",
+                errorMessage = uiState.message,
                 onCancel = { viewModel.resetState() }
             )
         }
@@ -251,16 +221,14 @@ fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateViewModel) {
     }
 }
 
-/**
- * Explains the required format for datasets.
- */
 @Composable
 fun DatasetRequirementsSection() {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = stringResource(R.string.dataset_requirements_title),
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
+            text = stringResource(R.string.dataset_requirements_title), 
+            fontWeight = FontWeight.Bold, 
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -268,17 +236,17 @@ fun DatasetRequirementsSection() {
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(16.dp))
-
+        
         Text(
-            text = stringResource(R.string.dataset_requirements_example_label),
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onBackground,
+            text = stringResource(R.string.dataset_requirements_example_label), 
+            fontSize = 12.sp, 
+            color = MaterialTheme.colorScheme.onSurfaceVariant, 
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
-
+        
         TableExampleComponent()
-
+        
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.dataset_requirements_footer),
@@ -288,9 +256,6 @@ fun DatasetRequirementsSection() {
     }
 }
 
-/**
- * Visual table example for guidance.
- */
 @Composable
 fun TableExampleComponent() {
     Column(
@@ -300,23 +265,30 @@ fun TableExampleComponent() {
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.onPrimary)
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
+        
+        val jan = stringResource(R.string.example_val_jan)
+        val feb = stringResource(R.string.example_val_feb)
+        val a = stringResource(R.string.example_val_a)
+        val b = stringResource(R.string.example_val_b)
+        val north = stringResource(R.string.example_val_north)
+        val south = stringResource(R.string.example_val_south)
 
         val rows = listOf(
-            listOf("Jan", "A", "120", "North"),
-            listOf("Jan", "B", "95", "South"),
-            listOf("Feb", "A", "150", "North")
+            listOf(jan, a, "120", north),
+            listOf(jan, b, "95", south),
+            listOf(feb, a, "150", north)
         )
-
+        
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
-                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
