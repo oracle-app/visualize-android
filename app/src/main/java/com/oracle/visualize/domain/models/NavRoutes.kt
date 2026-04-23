@@ -7,4 +7,5 @@ sealed class NavRoutes(val route: String) {
     object Teams : NavRoutes("teams")
     object Create : NavRoutes("create")
     object ChartSelection : NavRoutes("chart_selection")
+    object Share : NavRoutes("share")
 }
