@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 
+
 private val DarkColorScheme = darkColorScheme(
     primary = StrongBlue,
     onPrimary = White,
@@ -69,7 +70,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun VisualizeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {

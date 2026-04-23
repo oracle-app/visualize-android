@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class MainViewModel : ViewModel() {
 
     //State
-    private val route = MutableStateFlow(NavRoutes.Feed.route)
+    private val route = MutableStateFlow(NavRoutes.Share.route)
     private val index = MutableStateFlow(2)
 
 
