@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,7 +22,6 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.oracle.visualize.ui.theme.TealPrimary
 
 // Figma AC-70: overlay Color(0xFF1A2F3F) alpha 0.2, dialog offset x=50, width=312, corners=28dp
 private val OverlayColor   = Color(0xFF1A2F3F).copy(alpha = 0.2f)
@@ -83,7 +83,7 @@ fun UnsavedChangesDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = "Cancel",
-                            color = TealPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             lineHeight = 1.43.em
@@ -92,7 +92,7 @@ fun UnsavedChangesDialog(
                     TextButton(onClick = onConfirmLeave) {
                         Text(
                             text = "Share",
-                            color = TealPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             lineHeight = 1.43.em

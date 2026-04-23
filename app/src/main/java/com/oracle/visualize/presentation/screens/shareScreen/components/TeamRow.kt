@@ -6,17 +6,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareTeam
-import com.oracle.visualize.ui.theme.AppColors
 
 val ShapeTop    = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp, bottomStart = 5.dp, bottomEnd = 5.dp)
 val ShapeMiddle = RoundedCornerShape(5.dp)
@@ -39,10 +38,10 @@ fun TeamRow(
         TeamRowPosition.SINGLE -> ShapeSingle
     }
 
-    val targetBg = if (isSelected) AppColors.teamSelectedBg else AppColors.teamUnselectedBg
+    val targetBg = if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.surfaceVariant
     val animatedBg by animateColorAsState(targetValue = targetBg, animationSpec = tween(200), label = "teamBg")
-    val textColor = if (isSelected) Color.White else AppColors.textDark
-    val subColor  = if (isSelected) AppColors.subtextSelected else AppColors.subtextUnselected
+    val textColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+    val subColor  = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.onBackground
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

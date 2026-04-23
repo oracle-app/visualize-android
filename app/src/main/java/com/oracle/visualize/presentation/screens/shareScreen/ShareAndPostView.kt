@@ -5,8 +5,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,7 +27,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.presentation.screens.shareScreen.components.*
-import com.oracle.visualize.ui.theme.AppColors
+import androidx.compose.material3.MaterialTheme
+
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
@@ -44,9 +43,9 @@ fun ShareAndPostScreen(
 
     when (val state = uiState) {
         is ShareUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize().background(AppColors.screenBackground),
+            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = AppColors.tealPrimary)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
         is ShareUiState.Content -> {
@@ -69,9 +68,9 @@ fun ShareAndPostScreen(
             )
         }
         is ShareUiState.Error -> {
-            Box(modifier = Modifier.fillMaxSize().background(AppColors.screenBackground),
+            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center) {
-                Text(text = state.message, color = AppColors.errorRed)
+                Text(text = state.message, color = MaterialTheme.colorScheme.error)
             }
         }
     }
@@ -84,7 +83,7 @@ fun ShareAndPostContent(
     state: ShareUiState.Content,
     onEvent: (ShareUiEvent) -> Unit   // Single event callback replaces 9+ lambdas
 ) {
-    Box(modifier = Modifier.fillMaxSize().background(AppColors.screenBackground)) {
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
 
             ShareTopBar(onBackPressed = { onEvent(ShareUiEvent.BackPressed) })
@@ -104,9 +103,9 @@ fun ShareAndPostContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(AppColors.searchBarBg) // mismo fondo gris claro que el search bar
+                            .background(MaterialTheme.colorScheme.surfaceVariant) // mismo fondo gris claro que el search bar
                     ) {
-                        HorizontalDivider(color = AppColors.textMuted.copy(alpha = 0.3f), thickness = 1.dp)
+                        HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f), thickness = 1.dp)
                         state.suggestedUsers.forEach { user ->
                             SuggestedUserRow(user = user) {
                                 onEvent(ShareUiEvent.AddUserByEmail(user.email))
@@ -151,7 +150,7 @@ fun ShareAndPostContent(
 
 @Composable
 private fun ShareTopBar(onBackPressed: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().background(AppColors.topBarColor)) {
+    Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)) {
         Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -160,13 +159,13 @@ private fun ShareTopBar(onBackPressed: () -> Unit) {
             Box(modifier = Modifier.requiredSize(48.dp), contentAlignment = Alignment.Center) {
                 Box(modifier = Modifier.requiredWidth(40.dp).clip(RoundedCornerShape(100.dp)), contentAlignment = Alignment.Center) {
                     IconButton(onClick = onBackPressed, modifier = Modifier.requiredSize(40.dp)) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = AppColors.textDark, modifier = Modifier.size(24.dp))
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(24.dp))
                     }
                 }
             }
             Text(
                 text = "Share and post",
-                color = AppColors.textDark,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Normal,
                 lineHeight = 1.29.em,
@@ -188,25 +187,25 @@ private fun ShareSearchBar(query: String, onQueryChange: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth().height(56.dp)
             .clip(RoundedCornerShape(28.dp))
-            .background(AppColors.searchBarBg)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 4.dp)
     ) {
         Box(modifier = Modifier.requiredSize(48.dp), contentAlignment = Alignment.Center) {
-            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = AppColors.textMuted, modifier = Modifier.size(24.dp))
+            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.size(24.dp))
         }
         TextField(
             value = query,
             onValueChange = onQueryChange,
-            placeholder = { Text("Enter email", color = AppColors.textMuted, fontSize = 16.sp) },
+            placeholder = { Text("Enter email", color = MaterialTheme.colorScheme.onSecondaryContainer, fontSize = 16.sp) },
             singleLine = true,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor   = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
                 focusedIndicatorColor   = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                cursorColor             = AppColors.tealPrimary,
-                focusedTextColor        = AppColors.textDark,
-                unfocusedTextColor      = AppColors.textDark
+                cursorColor             = MaterialTheme.colorScheme.primary,
+                focusedTextColor        = MaterialTheme.colorScheme.onSecondaryContainer,
+                unfocusedTextColor      = MaterialTheme.colorScheme.onPrimaryContainer
             ),
             modifier = Modifier.weight(1f),
             textStyle = LocalTextStyle.current.copy(fontSize = 16.sp)
@@ -247,13 +246,13 @@ private fun ShareTeamSection(
     onToggleTeam: (String) -> Unit
 ) {
     Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Medium,
-        color = AppColors.sectionTitle, lineHeight = 1.5.em,
+        color = MaterialTheme.colorScheme.onPrimaryContainer, lineHeight = 1.5.em,
         modifier = Modifier.requiredWidth(380.dp))
     Spacer(modifier = Modifier.height(8.dp))
 
     if (teams.isEmpty()) {
         Box(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
-            Text(text = emptyMessage, fontSize = 13.sp, color = AppColors.textGray)
+            Text(text = emptyMessage, fontSize = 13.sp, color = MaterialTheme.colorScheme.error)
         }
         return
     }
@@ -282,14 +281,14 @@ private fun ShareTeamSection(
 private fun ShareBottomBar(onConfirmShare: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().requiredHeight(136.dp)
-            .background(AppColors.topBarColor).padding(horizontal = 16.dp),
+            .background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
             onClick = onConfirmShare,
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = AppColors.orangeButton, contentColor = Color.White),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = Color.White),
             modifier = Modifier.requiredWidth(184.dp).requiredHeight(56.dp)
         ) {
             Icon(imageVector = Icons.Default.Send, contentDescription = null, modifier = Modifier.size(24.dp))
@@ -299,45 +298,3 @@ private fun ShareBottomBar(onConfirmShare: () -> Unit) {
     }
 }
 
-@Composable
-fun ShareScreenContent(
-    state: ShareUiState.Content,
-    onEvent: (ShareUiEvent) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-
-        // 1. Buscador
-        ShareSearchBar(
-            query = state.emailQuery,
-            onQueryChange = { onEvent(ShareUiEvent.EmailQueryChanged(it)) }
-        )
-
-        // 2. Lista de sugerencias (Resultados del Debounce)
-        if (state.suggestedUsers.isNotEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White, RoundedCornerShape(8.dp))
-                    .padding(8.dp)
-            ) {
-                state.suggestedUsers.forEach { user ->
-                    SuggestedUserRow(user) {
-                        onEvent(ShareUiEvent.AddUserByEmail(user.email))
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 3. Usuarios seleccionados (Los que ya tienen el botón Close)
-        Text("Selected Users", fontWeight = FontWeight.Bold)
-        LazyColumn {
-            items(state.selectedUsers) { user ->
-                SelectedUserRow(user) {
-                    onEvent(ShareUiEvent.RemoveUser(user))
-                }
-            }
-        }
-    }
-}
