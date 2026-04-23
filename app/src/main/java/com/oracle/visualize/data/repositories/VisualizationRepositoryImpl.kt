@@ -53,4 +53,8 @@ class VisualizationRepositoryImpl @Inject constructor(
     override suspend fun getSharedVisualizationsByTeamsIntegratedByUser(userID: String): List<Visualization> {
         return source.getSharedVisualizationsByTeamsIntegratedByUser(userID).map { it.toDomain() }
     }
+
+    override suspend fun publishVisualization(visualization: Visualization, shareAndPost: Boolean) {
+        return source.publishVisualization(visualization, shareAndPost)
+    }
 }
