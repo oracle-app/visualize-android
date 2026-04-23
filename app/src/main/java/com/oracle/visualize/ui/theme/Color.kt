@@ -25,6 +25,12 @@ val LighterBlue = Color(0xFFE6EDEC)
 val GrayishBlue = Color(0xFFA9C8C4)
 val ErrorRed = Color(0xFFEC4848)
 val ScrimColor = Color(0xFF1A2F3F)
+val VeryDarkBlue = Color(0xFF13212C)
+val DarkOrange = Color(0xFFE18212)
+val PalePink = Color(0xFFFFDAD6)
+val Red = Color(0xFFBA1A1A)
+val DarkGrayishPurple  = Color(0xFF49454F)
+
 
 // And below are the colors of the Visualize Brand Identity (Dark Mode)
 

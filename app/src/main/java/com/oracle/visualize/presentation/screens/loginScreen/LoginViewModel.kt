@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.login
+package com.oracle.visualize.presentation.screens.loginScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,4 +35,15 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
+
+    fun mapError(raw: String?): String = when {
+        raw == null                     -> "An unexpected error occurred."
+        raw.contains("password")        -> "Incorrect password. Please try again."
+        raw.contains("no user record")  -> "No account found with this email."
+        raw.contains("badly formatted") -> "Please enter a valid email address."
+        raw.contains("blocked")         -> "Too many attempts. Try again later."
+        raw.contains("network")         -> "No internet connection."
+        else                            -> "Login failed. Please check your credentials."
+    }
+
 }
