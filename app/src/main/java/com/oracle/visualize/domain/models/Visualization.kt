@@ -1,19 +1,15 @@
 package com.oracle.visualize.domain.models
 
-import kotlinx.serialization.json.JsonObject
-import java.util.Date
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
-/**
- * Represents a data visualization generated from a dataset.
- */
-data class Visualization(
+data class Visualization (
+    @DocumentId
     val id: String,
-    val ownerId: String,
+    val authorID: String,
     val title: String,
-    //val configJson: JsonObject,
-    val sharedWith: List<String>,
-    val sharedWithGroup: List<String>,
-    val commentCount: Int,
-    val hasNewActivity: Boolean,
-    val createdAt: Date
+    val configJSON: String,
+    val sharedWithUsers: List<String>,
+    val sharedWithTeams: List<String>,
+    val createdAt: Timestamp,
 )

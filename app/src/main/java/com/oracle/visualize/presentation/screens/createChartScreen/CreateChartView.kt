@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.CreateScreen.CreateChartViewModel
+import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartViewModel
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
 /**

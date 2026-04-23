@@ -1,7 +1,7 @@
 package com.oracle.visualize.data.datasources
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oracle.visualize.data.datasources.dtos.TeamDTO
+import com.oracle.visualize.data.datasources.dtos.TeamDto
 import com.oracle.visualize.domain.models.Team
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -34,36 +34,18 @@ class TeamDataSource @Inject constructor(
         }
     }
 
-    suspend fun getTeamByTeamID(teamID: String): TeamDTO? {
+    suspend fun getTeamByTeamID(teamID: String): TeamDto? {
         return try {
             val teamSnapshot = teamsRef.document(teamID)
                 .get().await()
             if (teamSnapshot.exists()){
-                teamSnapshot.toObject(TeamDTO::class.java)
+                teamSnapshot.toObject(TeamDto::class.java)
             } else {
                 null
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
             null
-        }
-    }
-
-    suspend fun getTeamsUserOwns(userID: String): List<TeamDTO> {
-        return try {
-            val snapshot = teamsRef.whereEqualTo("ownerID", userID).get().await()
-            snapshot.toObjects(TeamDTO::class.java)
-        } catch (ex: Exception) {
-            emptyList()
-        }
-    }
-
-    suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
-        return try {
-            val snapshot = teamsRef.whereArrayContains("memberIDs", userID).get().await()
-            snapshot.toObjects(TeamDTO::class.java)
-        } catch (ex: Exception) {
-            emptyList()
         }
     }
 }

@@ -1,16 +1,17 @@
 package com.oracle.visualize.data.datasources.dtos
 
 import com.google.firebase.firestore.DocumentId
+import com.oracle.visualize.domain.models.ThemePreference
+import com.oracle.visualize.domain.models.UserType
 
-data class UserDTO(
+class UserDTO (
     @DocumentId
     val id: String = "",
+    val userType: String = "",
     val email: String = "",
     val username: String = "",
-    val userType: String = "",
     val profilePictureURL: String = "",
     val themePreference: String = "",
-    val notificationsEnabled: String = "",
     val chartTheme: String = "",
-    val token: List<String> = listOf()
+    val hiddenVisualizations: List<String> = emptyList()
 )

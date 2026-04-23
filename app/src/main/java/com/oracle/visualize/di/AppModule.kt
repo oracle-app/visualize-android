@@ -5,11 +5,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
+import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
-import com.oracle.visualize.data.repositories.UserRepositoryImpl
+import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
+import com.oracle.visualize.domain.repositories.VisualizationRepository
+import com.oracle.visualize.data.repositories.UserRepositoryImpl
 import com.oracle.visualize.domain.repositories.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -43,12 +46,20 @@ object FirebaseModule {
 
     @Provides
     @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore =
+        FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
     fun provideAuthFirebaseSource(
         auth: FirebaseAuth
     ): AuthFirebaseSource = AuthFirebaseSource(auth)
 
     @Provides
     @Singleton
+    fun provideVisualizationDataSource(
+        db: FirebaseFirestore
+    ): VisualizationDataSource = VisualizationDataSource(db)
     fun providesFirestore(): FirebaseFirestore {
         return Firebase.firestore
     }
@@ -65,6 +76,13 @@ abstract class RepositoryModule {
     ): AuthRepository
 
     @Binds
+    @Singleton
+    abstract fun bindVisualizationRepository(
+        impl: VisualizationRepositoryImpl
+    ): VisualizationRepository
+
+    @Binds
+    @Singleton
     abstract fun bindTeamRepository(
         teamRepositoryImpl: TeamRepositoryImpl
     ): TeamRepository

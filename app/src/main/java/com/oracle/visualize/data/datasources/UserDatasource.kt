@@ -6,9 +6,10 @@ import com.oracle.visualize.data.datasources.dtos.UserDTO
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.jvm.java
 
 @Singleton
-class UserDatasource @Inject constructor(
+class UserDataSource @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
@@ -28,6 +29,15 @@ class UserDatasource @Inject constructor(
 
         } catch (e: Exception) {
             throw e
+        }
+    }
+
+    suspend fun getTeamsIntegratedByUser(userID: String): List<TeamDTO> {
+        return try {
+            val snapshot = firestore.collection("teams").whereArrayContains("memberIDs", userID).get().await()
+            snapshot.toObjects(TeamDTO::class.java)
+        } catch (ex: Exception) {
+            throw ex
         }
     }
 
