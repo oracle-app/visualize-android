@@ -14,7 +14,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "1", "Felipe Bastidas",
             "GOTY (Graph Of The Year)",
-            JsonObject(emptyMap()),
+            //JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             2,
@@ -24,7 +24,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "2", "Eduardo Cardenas",
             "Relative performance of major currencies",
-            JsonObject(emptyMap()),
+            //JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             7,
@@ -34,7 +34,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "3", "Eduardo Cardenas",
             "Relative performance of major currencies",
-            JsonObject(emptyMap()),
+            //JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             7,
@@ -44,7 +44,7 @@ class FeedViewModel : ViewModel() {
         Visualization(
             "4", "Eduardo Cardenas",
             "Relative performance of major currencies",
-            JsonObject(emptyMap()),
+            //JsonObject(emptyMap()),
             emptyList(),
             emptyList(),
             7,

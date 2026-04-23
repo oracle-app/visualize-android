@@ -20,8 +20,6 @@ class MainViewModel : ViewModel() {
     private val route = MutableStateFlow(NavRoutes.Share.route)
     private val index = MutableStateFlow(2)
 
-
-    //SetState
     val currentRoute: StateFlow<String> = route.asStateFlow()
     val selectedIndex: StateFlow<Int> = index.asStateFlow()
 
@@ -57,5 +55,9 @@ class MainViewModel : ViewModel() {
     fun onNavItemSelected(i: Int) {
         index.value = i
         route.value = navItems[i].route
+    }
+
+    fun navigateToRoute(targetRoute: String) {
+        route.value = targetRoute
     }
 }

@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.mainScreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,7 +12,10 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
-import com.oracle.visualize.presentation.screens.createScreen.CreatePage
+import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
+import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
+
+
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel()
@@ -25,18 +27,20 @@ fun MainScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(
-                navItems = viewModel.navItems,
-                selectedIndex = selectedIndex,
-                onItemSelected = viewModel::onNavItemSelected //Update the state
-
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
+            if (currentRoute != NavRoutes.ChartSelection.route) {
+                BottomNavBar(
+                    navItems = viewModel.navItems,
+                    selectedIndex = selectedIndex,
+                    onItemSelected = viewModel::onNavItemSelected
+                )
+            }
+        }
     ) { innerPadding ->
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
-            currentRoute = currentRoute //Update the screen type
+            currentRoute = currentRoute,
+            onNavigate = viewModel::onNavItemSelected,
+            viewModel = viewModel
         )
     }
 }
@@ -47,12 +51,21 @@ fun MainScreen(
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    currentRoute: String
+    currentRoute: String,
+    onNavigate: (Int) -> Unit,
+    viewModel: MainViewModel
 ) {
     when (currentRoute) {
         NavRoutes.Feed.route -> FeedPage(modifier = modifier)
         NavRoutes.Notifications.route -> NotificationPage(modifier = modifier)
-        NavRoutes.Create.route -> CreatePage(modifier = modifier)
-        // Add other routes as they are implemented
+        NavRoutes.Create.route -> CreatePage(
+            modifier = modifier,
+            onNavigateToSelection = { viewModel.navigateToRoute(NavRoutes.ChartSelection.route) }
+        )
+        NavRoutes.ChartSelection.route -> ChartSelectionPage(
+            onBack = { viewModel.navigateToRoute(NavRoutes.Create.route) },
+            onNavigateToShare = {}
+        )
+        else -> { }
     }
 }
