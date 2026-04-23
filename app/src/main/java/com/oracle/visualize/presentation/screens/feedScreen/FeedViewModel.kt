@@ -37,7 +37,8 @@ class FeedViewModel @Inject constructor(
     private fun fetchItems() {
         viewModelScope.launch {
             try {
-                /* For testing:
+                /*
+                // Fetch all visualizations from DB:
                 val response = getAllVisualizationsUseCase()
                 visualizations = response
                 items = response
