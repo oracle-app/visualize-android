@@ -56,7 +56,7 @@
     <string name="create_generate_button">Generate Visualizations</string>
 
     <string name="dashed_selector_choose_file">Choose a .xlsx or .csv file.</string>
-    <string name="dashed_selector_min_size">Minimum file size: 100 MB</string>
+    <string name="dashed_selector_min_size">Maximum file size: 100 MB</string>
     <string name="dashed_selector_one_dataset">Only one dataset can be uploaded.</string>
 
     <string name="dataset_requirements_title">Dataset Format Requirements</string>
