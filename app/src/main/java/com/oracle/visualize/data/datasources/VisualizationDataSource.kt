@@ -215,4 +215,24 @@ class VisualizationDataSource @Inject constructor(
             throw ex
         }
     }
+
+    suspend fun deleteUsersAccessToVisualization(visualizationID: String, userIDs: List<String>){
+        try {
+            visualizationsRef.document(visualizationID)
+                .update("sharedWithUsers", FieldValue.arrayRemove(*userIDs.toTypedArray()))
+                .await()
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
+
+    suspend fun deleteTeamsAccessToVisualization(visualizationID: String, teamIDs: List<String>){
+        try {
+            visualizationsRef.document(visualizationID)
+                .update("sharedWithTeams", FieldValue.arrayRemove(*teamIDs.toTypedArray()))
+                .await()
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
 }
