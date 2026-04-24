@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
 ) : ViewModel() {
 
     var searchText by mutableStateOf("")

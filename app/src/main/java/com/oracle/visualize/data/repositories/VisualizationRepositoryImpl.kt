@@ -76,4 +76,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
         return visualizationCards
     }
+    override suspend fun deleteVisualization(visualizationID: String) {
+        visualizationDataSource.deleteVisualization(visualizationID)
+    }
 }

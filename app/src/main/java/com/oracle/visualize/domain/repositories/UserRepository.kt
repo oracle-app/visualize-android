@@ -8,5 +8,5 @@ interface UserRepository {
     suspend fun getUserByUserID(userId: String): User?
     suspend fun getTeamsIntegratedByUser(userId: String): List<Team>
     suspend fun getUserSuggestionsByEmail(email: String): List<ShareUser>
-
+    suspend fun hideVisualization(userId: String, visualizationId: String)
 }
