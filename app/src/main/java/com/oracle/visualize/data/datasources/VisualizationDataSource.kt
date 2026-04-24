@@ -178,4 +178,27 @@ class VisualizationDataSource @Inject constructor(
                 .filterNotNull()
         }
     }
+
+    suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
+        try {
+            val batch = db.batch()
+            for (v in visualizations) {
+                if (v.authorID.isNotEmpty() && v.title.isNotEmpty() && v.configJSON.isNotEmpty()) {
+                    val doc = visualizationsRef.document()
+                    val formattedVisualization = hashMapOf(
+                        "authorID" to v.authorID,
+                        "title" to v.title,
+                        "configJSON" to v.configJSON,
+                        "sharedWithUsers" to v.sharedWithUsers,
+                        "sharedWithTeams" to v.sharedWithTeams,
+                        "createdAt" to v.createdAt,
+                    )
+                    batch.set(doc, formattedVisualization)
+                }
+            }
+            batch.commit().await()
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
 }

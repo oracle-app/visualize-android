@@ -76,4 +76,8 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
         return visualizationCards
     }
+
+    override suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
+        visualizationDataSource.publishVisualizationsInBulk(visualizations)
+    }
 }

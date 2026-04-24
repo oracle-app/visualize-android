@@ -18,4 +18,5 @@ interface VisualizationRepository {
     )
     suspend fun getAllVisualizations(): List<Visualization>
     suspend fun getAllVisualizationsByUserID(userID: String, filter: VisualizationFilter): List<VisualizationCard>
+    suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>)
 }
