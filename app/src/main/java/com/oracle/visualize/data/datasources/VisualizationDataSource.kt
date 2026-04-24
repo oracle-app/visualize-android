@@ -36,7 +36,6 @@ class VisualizationDataSource @Inject constructor(
                 visualizationsRef.add(formattedVisualization).await()
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
             throw ex
         }
     }
@@ -56,7 +55,6 @@ class VisualizationDataSource @Inject constructor(
                 }
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
             emptyList()
         }
     }
@@ -78,7 +76,6 @@ class VisualizationDataSource @Inject constructor(
                 }
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
             emptyList()
         }
     }
@@ -100,7 +97,6 @@ class VisualizationDataSource @Inject constructor(
                 }
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
             emptyList()
         }
     }
@@ -142,7 +138,6 @@ class VisualizationDataSource @Inject constructor(
             finalArray.addAll(sharedWithTeams)
             finalArray
         } catch (ex: Exception) {
-            ex.printStackTrace()
             emptyList()
         }
     }
@@ -197,7 +192,26 @@ class VisualizationDataSource @Inject constructor(
             batch.delete(visualizationsRef.document(visualizationID))
             batch.commit().await()
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            throw ex
+        }
+    }
+
+    suspend fun shareVisualizationWithUsers(visualizationID: String, userIDs: List<String>){
+        try {
+            visualizationsRef.document(visualizationID)
+                .update("sharedWithUsers", FieldValue.arrayUnion(*userIDs.toTypedArray()))
+                .await()
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
+
+    suspend fun shareVisualizationWithTeams(visualizationID: String, teamIDs: List<String>){
+        try {
+            visualizationsRef.document(visualizationID)
+                .update("sharedWithTeams", FieldValue.arrayUnion(*teamIDs.toTypedArray()))
+                .await()
+        } catch (ex: Exception) {
             throw ex
         }
     }
