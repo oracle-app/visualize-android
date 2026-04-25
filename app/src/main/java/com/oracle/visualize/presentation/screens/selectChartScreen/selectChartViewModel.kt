@@ -1,27 +1,36 @@
-package com.oracle.visualize.presentation.screens.selectChartScreen
+package com.oracle.visualize.presentation.screens.selectchartscreen
 
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.ChartSelectionUiState
-import com.oracle.visualize.domain.models.VisualizationSelection
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class selectChartViewModel : ViewModel() {
+/**
+ * ViewModel for the Chart Selection screen.
+ * Manages the state of suggested charts and user selections.
+ */
+class SelectChartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()
 
     init {
-        loadMockCharts()
+        loadSuggestedCharts()
     }
 
-    private fun loadMockCharts() {
-        val mockCharts = selectChartMockData.visualizations.map { VisualizationSelection(it) }
+    private fun loadSuggestedCharts() {
+        // Load data from mock source for now
+        val mockCharts = SelectChartMockData.visualizations.map { 
+            ChartSelectionUiState.VisualizationSelection(it) 
+        }
         _uiState.value = ChartSelectionUiState.Success(charts = mockCharts)
     }
 
+    /**
+     * Toggles the selection status of a chart.
+     */
     fun toggleSelection(chartId: String) {
         val currentState = _uiState.value
         if (currentState is ChartSelectionUiState.Success) {
@@ -36,6 +45,9 @@ class selectChartViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Updates the title of a specific chart.
+     */
     fun updateChartTitle(chartId: String, newTitle: String) {
         val currentState = _uiState.value
         if (currentState is ChartSelectionUiState.Success) {
@@ -51,6 +63,9 @@ class selectChartViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Controls the visibility of the unsaved changes warning.
+     */
     fun showUnsavedChangesDialog(show: Boolean) {
         val currentState = _uiState.value
         if (currentState is ChartSelectionUiState.Success) {
@@ -58,6 +73,9 @@ class selectChartViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Checks if at least one chart is selected for publishing.
+     */
     fun hasSelections(): Boolean {
         val currentState = _uiState.value
         return if (currentState is ChartSelectionUiState.Success) {

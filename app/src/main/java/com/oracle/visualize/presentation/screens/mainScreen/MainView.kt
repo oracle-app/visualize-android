@@ -17,7 +17,8 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
-
+import com.oracle.visualize.presentation.screens.selectchartscreen.SelectChartView
+import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 
 // Bottom nav destinations — screens outside this list hide the nav bar
 private val bottomNavRoutes = setOf(
@@ -28,6 +29,9 @@ private val bottomNavRoutes = setOf(
     NavRoutes.Profile.route
 )
 
+/**
+ * The main container screen that manages the bottom navigation and the NavHost.
+ */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel(),
@@ -61,6 +65,9 @@ fun MainScreen(
 
 // ─── NavHost ──────────────────────────────────────────────────────────────────
 
+/**
+ * Manages the navigation between different screens of the application.
+ */
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -68,6 +75,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
+        // Set the start destination. Change this to other routes (e.g., NavRoutes.ChartSelection.route) for testing purposes.
         startDestination = NavRoutes.Feed.route,
         modifier = modifier
     ) {
@@ -76,17 +84,30 @@ fun AppNavHost(
         }
 
         composable(NavRoutes.Create.route) {
-            CreatePage(modifier = Modifier.fillMaxSize())
+            CreatePage(
+                onNavigateToSelection = {
+                    navController.navigate(NavRoutes.ChartSelection.route)
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         composable(NavRoutes.Notifications.route) {
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
 
-        /* Share screen — no bottom bar, navigates back to Feed
+        composable(NavRoutes.ChartSelection.route) {
+            SelectChartView(
+                onBack = { navController.popBackStack() },
+                onNavigateToShare = { navController.navigate(NavRoutes.Share.route) }
+            )
+        }
+
         composable(NavRoutes.Share.route) {
-                // TODO: Add TeamsPage when implemented
-        }*/
+            ShareAndPostScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
 
         // Teams and Profile — placeholders until screens are implemented
         composable(NavRoutes.Teams.route) {
