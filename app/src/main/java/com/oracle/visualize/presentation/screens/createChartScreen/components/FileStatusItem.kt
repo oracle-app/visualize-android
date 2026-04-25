@@ -40,17 +40,17 @@ fun FileStatusItem(
             .fillMaxWidth()
             .border(
                 1.dp,
-                if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
+                if (errorMessage != null) RED_900 else BLACK,
                 RoundedCornerShape(8.dp)
             )
-            .background(if (errorMessage != null) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer)
+            .background(if (errorMessage != null) RED_50 else GREY_50)
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Default.Description,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = BLACK,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -59,25 +59,27 @@ fun FileStatusItem(
                     text = fileName,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    maxLines = 1
+                    maxLines = 1,
+                    color = BLACK
                 )
                 Text(
                     text = fileSize,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = BLACK
                 )
             }
             if (isSuccess) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.delete),
-                    tint = ErrorRed,
+                    tint = RED_900,
                     modifier = Modifier.clickable { onDelete() }
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(R.string.cancel),
+                    tint = BLACK,
                     modifier = Modifier.clickable { onCancel() }
                 )
             }
@@ -87,7 +89,7 @@ fun FileStatusItem(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(errorMessage),
-                color = ErrorRed,
+                color = RED_900,
                 fontSize = 12.sp
             )
         } else if (!isSuccess) {
@@ -99,14 +101,15 @@ fun FileStatusItem(
                         .weight(1f)
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.primaryContainer
+                    color = TEAL_700,
+                    trackColor = TEAL_200
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "${(progress * 100).toInt()}%",
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = BLACK
                 )
             }
         }

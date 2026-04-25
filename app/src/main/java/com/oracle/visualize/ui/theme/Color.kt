@@ -2,30 +2,26 @@ package com.oracle.visualize.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Google Palette Colors
+ */
+val DEEP_TEAL_900 = Color(0xFF1E5655)
+val CORAL_500 = Color(0xFFE26C45)
+val BLUE_GREY_900 = Color(0xFF1A2F3F)
+val BLUE_GREY_400 = Color(0xFF798B8A)
+val BLUE_GREY_50 = Color(0xFFE6EDEC)
+val GREY_50 = Color(0xFFF8FBFB)
+val SURFACE_WHITE = Color(0xFFFFFFFF)
+val ORANGE_500 = Color(0xFFFF9800)
+val RED_50 = Color(0xFFFDE2E1)
+val RED_900 = Color(0xFFB71C1C)
+val DARK_RED = Color(0xFFB71C1C)
 
-// Below are the colors of the Visualize Brand Identity (Light Mode)
-
-val StrongBlue = Color(0xFF34797C)
-val White = Color(0xFFFFFFFF)
-val LightBlue = Color(0xFFCDE9EA)
-val DarkGray = Color(0xFF323232)
-
-val NotAsDarkGray = Color(0xFF798B8A)
-val StrongOrange = Color(0xFFEB9632)
-val VeryLightGray = Color(0xFFF5F4F2)
-val NotAsLightGray = Color(0xFF597271)
-val LighterBlue = Color(0xFFE6EDEC)
-val GrayishBlue = Color(0xFFA9C8C4)
-val ErrorRed = Color(0xFFEC4848)
-val ScrimColor = Color(0xFF1A2F3F)
-
-// And below are the colors of the Visualize Brand Identity (Dark Mode)
-
-val DarkMode_StrongBlue = Color(0xFF8AC1C4)
-val DarkMode_LightBlue = Color(0xFF2C5354)
-val DarkMode_DarkGray = Color(0xFFD9D9D9)
-val DarkMode_NotAsDarkGray = Color(0xFF8FA3A3)
-val DarkMode_Background = Color(0xFF282520)
-val DarkMode_NotAsLightGray = Color(0xFF7FA9A9)
-val DarkMode_LighterBlue = Color(0xFF3D504D)
-val DarkMode_GrayishBlue = Color(0xFFBBBBBB)
+// Standard Palette (Generic names allowed for basic shades)
+val PURPLE_200 = Color(0xFFBB86FC)
+val PURPLE_500 = Color(0xFF6200EE)
+val PURPLE_700 = Color(0xFF3700B3)
+val TEAL_200 = Color(0xFF03DAC5)
+val TEAL_700 = Color(0xFF018786)
+val BLACK = Color(0xFF000000)
+val WHITE = Color(0xFFFFFFFF)

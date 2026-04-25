@@ -8,63 +8,30 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-
-
 private val DarkColorScheme = darkColorScheme(
-    primary = StrongBlue,
-    onPrimary = White,
-    primaryContainer = DarkMode_LightBlue,
-    onPrimaryContainer = DarkMode_DarkGray,
-
-    secondary = StrongOrange,
-    onSecondary = White,
-
-    secondaryContainer = Color.Transparent,
-    onSecondaryContainer = DarkMode_NotAsLightGray,
-
-    background = DarkMode_Background,
-    onBackground = DarkMode_NotAsLightGray,
-    surface = DarkMode_Background,
-    onSurface = DarkMode_NotAsLightGray,
-
-    surfaceVariant = DarkMode_LighterBlue,
-    onSurfaceVariant = DarkMode_StrongBlue,
-
-    outline = DarkMode_GrayishBlue,
-    outlineVariant = DarkMode_NotAsDarkGray,
-    error = ErrorRed,
-    onError = White,
-    scrim = ScrimColor
+    primary = TEAL_200,
+    onPrimary = BLACK,
+    secondary = PURPLE_200,
+    tertiary = TEAL_700,
+    background = BLACK,
+    surface = BLACK,
+    onBackground = WHITE,
+    onSurface = WHITE,
+    error = RED_900
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = StrongBlue,
-    onPrimary = White,
-    primaryContainer = LightBlue,
-    onPrimaryContainer = DarkGray,
-
-    secondary = StrongOrange,
-    onSecondary = White,
-
-    secondaryContainer = White,
-    onSecondaryContainer = NotAsLightGray,
-
-    background = VeryLightGray,
-    onBackground = NotAsLightGray,
-    surface = VeryLightGray,
-    onSurface = NotAsLightGray,
-
-    surfaceVariant = LighterBlue,
-    onSurfaceVariant = StrongBlue,
-
-    outline = GrayishBlue,
-    outlineVariant = NotAsDarkGray,
-    error = ErrorRed,
-    onError = White,
-    scrim = ScrimColor
+    primary = TEAL_700,
+    onPrimary = WHITE,
+    secondary = PURPLE_500,
+    tertiary = TEAL_200,
+    background = WHITE,
+    surface = GREY_50,
+    onBackground = BLACK,
+    onSurface = BLACK,
+    error = RED_900
 )
 
 @Composable
@@ -78,7 +45,6 @@ fun VisualizeTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

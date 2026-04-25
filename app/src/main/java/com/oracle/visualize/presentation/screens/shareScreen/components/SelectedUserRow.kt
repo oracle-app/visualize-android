@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.ui.theme.*
 
 private val CardShape   = RoundedCornerShape(12.dp)
 
@@ -65,14 +66,14 @@ fun SelectedUserRow(
             ) {
                 Text(
                     text = user.username,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = BLACK,
                     fontSize = 16.sp,
                     lineHeight = 1.5.em,
                     fontWeight = FontWeight.Normal
                 )
                 Text(
                     text = user.email,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = BLACK,
                     fontSize = 14.sp,
                     lineHeight = 1.43.em,
                     maxLines = 1,
@@ -94,8 +95,8 @@ fun SelectedUserRow(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(R.string.icon_remove_user),
-                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = stringResource(R.string.back),
+                    tint = DARK_RED,
                     modifier = Modifier.requiredSize(16.dp)
                 )
             }

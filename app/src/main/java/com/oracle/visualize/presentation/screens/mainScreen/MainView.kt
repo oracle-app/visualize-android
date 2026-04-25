@@ -17,6 +17,10 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.login.LoginScreen
+import com.oracle.visualize.presentation.screens.login.ResetPasswordScreen
+import com.oracle.visualize.presentation.screens.registration.RegistrationScreen
+import com.oracle.visualize.presentation.screens.registration.VerificationScreen
 
 
 // Bottom nav destinations — screens outside this list hide the nav bar
@@ -68,9 +72,47 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Feed.route,
+        startDestination = NavRoutes.Login.route,
         modifier = modifier
     ) {
+        composable(NavRoutes.Login.route) {
+            LoginScreen(
+                onNavigateToRegistration = {
+                    navController.navigate(NavRoutes.Registration.route)
+                },
+                onNavigateToResetPassword = {
+                    navController.navigate(NavRoutes.ForgotPassword.route)
+                }
+            )
+        }
+
+        composable(NavRoutes.ForgotPassword.route) {
+            ResetPasswordScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(NavRoutes.Registration.route) {
+            RegistrationScreen(
+                onNavigateToLogin = {
+                    navController.navigate(NavRoutes.Login.route)
+                },
+                onNavigateToVerification = {
+                    navController.navigate(NavRoutes.Verification.route)
+                }
+            )
+        }
+
+        composable(NavRoutes.Verification.route) {
+            VerificationScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable(NavRoutes.Feed.route) {
             FeedPage(modifier = Modifier.fillMaxSize())
         }
@@ -82,11 +124,6 @@ fun AppNavHost(
         composable(NavRoutes.Notifications.route) {
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
-
-        /* Share screen — no bottom bar, navigates back to Feed
-        composable(NavRoutes.Share.route) {
-                // TODO: Add TeamsPage when implemented
-        }*/
 
         // Teams and Profile — placeholders until screens are implemented
         composable(NavRoutes.Teams.route) {
