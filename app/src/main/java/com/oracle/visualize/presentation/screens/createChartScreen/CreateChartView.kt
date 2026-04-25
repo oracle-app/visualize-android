@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartViewModel
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
 /**
@@ -36,11 +35,11 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
 fun CreatePage(
     modifier: Modifier = Modifier,
     viewModel: CreateChartViewModel = viewModel(),
+    onNavigateToSelection: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    // Using GetContent for broader support of cloud providers like Google Drive
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -109,7 +108,7 @@ fun CreatePage(
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = { /**/ },
+                    onClick = onNavigateToSelection,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -127,6 +126,7 @@ fun CreatePage(
     }
 }
 
+// ... Resto de componentes (DashedSelector, FileStatusSection, etc. se mantienen igual)
 @Composable
 fun DashedSelector(onClick: () -> Unit) {
     Box(
