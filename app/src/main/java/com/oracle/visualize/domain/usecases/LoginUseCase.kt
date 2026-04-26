@@ -2,7 +2,6 @@ package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
-import android.util.Patterns
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(private val authRepository: AuthRepository) {
