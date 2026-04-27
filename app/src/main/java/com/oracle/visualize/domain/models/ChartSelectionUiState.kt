@@ -12,12 +12,12 @@ sealed interface ChartSelectionUiState {
     ) : ChartSelectionUiState
 
     data class Error(val message: String) : ChartSelectionUiState
-}
 
-/**
- * Wrapper for Visualization with selection state.
- */
-data class VisualizationSelection(
-    val visualization: Visualization,
-    val isSelected: Boolean = false
-)
+    /**
+     * Wrapper for Visualization with selection state.
+     */
+    data class VisualizationSelection(
+        val visualization: Visualization,
+        val isSelected: Boolean = false
+    )
+}

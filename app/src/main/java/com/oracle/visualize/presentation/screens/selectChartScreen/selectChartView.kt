@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.selectChartScreen
+package com.oracle.visualize.presentation.screens.selectchartscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,22 +17,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.domain.models.ChartSelectionUiState
-import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
-import com.oracle.visualize.ui.theme.*
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.ChartSelectionUiState
+import com.oracle.visualize.presentation.screens.selectchartscreen.components.ChartCard
 
-
+/**
+ * Screen that displays suggested charts as interactive cards.
+ * Users can select one or more charts and edit their titles before publishing.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChartSelectionPage(
+fun SelectChartView(
     onBack: () -> Unit,
     onNavigateToShare: () -> Unit,
-    viewModel: selectChartViewModel = viewModel()
+    viewModel: SelectChartViewModel = viewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    var showEditDialog by remember { mutableStateOf<String?>(null) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var chartIdToEdit by remember { mutableStateOf<String?>(null) }
     var tempTitle by remember { mutableStateOf("") }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -44,18 +47,28 @@ fun ChartSelectionPage(
                 title = {
                     Text(
                         text = stringResource(R.string.chart_selection_title),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.icon_back))
+                    IconButton(onClick = {
+                        if (viewModel.hasSelections()) {
+                            viewModel.showUnsavedChangesDialog(true)
+                        } else {
+                            onBack()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.icon_back)
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         },
@@ -63,20 +76,22 @@ fun ChartSelectionPage(
         when (val state = uiState) {
             is ChartSelectionUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    CircularProgressIndicator()
                 }
             }
             is ChartSelectionUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.message, color = ErrorRed)
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
                 }
             }
             is ChartSelectionUiState.Success -> {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
+                        .padding(paddingValues),
+                    contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
+                    // Header Section
                     item {
                         Column(
                             modifier = Modifier
@@ -86,27 +101,29 @@ fun ChartSelectionPage(
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_title),
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_subtitle),
-                                color = Color.White.copy(alpha = 0.9f),
-                                fontSize = 12.sp
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
 
+                    // Prompt Section
                     item {
                         Text(
                             text = stringResource(R.string.chart_selection_prompt),
                             modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 14.sp
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
 
+                    // Interactive Chart Cards
                     items(state.charts) { selection ->
                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                             ChartCard(
@@ -115,12 +132,13 @@ fun ChartSelectionPage(
                                 onSelect = { viewModel.toggleSelection(selection.visualization.id) },
                                 onEditTitle = {
                                     tempTitle = selection.visualization.title
-                                    showEditDialog = selection.visualization.id
+                                    chartIdToEdit = selection.visualization.id
                                 }
                             )
                         }
                     }
 
+                    // Action Buttons
                     item {
                         Row(
                             modifier = Modifier
@@ -129,13 +147,16 @@ fun ChartSelectionPage(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Button(
-                                onClick = {},
+                                onClick = { /* Logic for personal feed */ },
                                 modifier = Modifier.weight(1f).height(48.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_post_personal), color = Color.White, fontSize = 12.sp)
+                                Text(
+                                    text = stringResource(R.string.chart_selection_post_personal),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
                             }
 
                             Button(
@@ -145,16 +166,20 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_share_and_post), color = Color.White, fontSize = 12.sp)
+                                Text(
+                                    text = stringResource(R.string.chart_selection_share_and_post),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
                             }
                         }
                     }
                 }
 
-                if (showEditDialog != null) {
+                // Edit Title Dialog
+                if (chartIdToEdit != null) {
                     AlertDialog(
-                        onDismissRequest = { showEditDialog = null },
-                        title = { Text(stringResource(R.string.dialog_edit_title), fontWeight = FontWeight.Bold) },
+                        onDismissRequest = { chartIdToEdit = null },
+                        title = { Text(stringResource(R.string.dialog_edit_title)) },
                         text = {
                             OutlinedTextField(
                                 value = tempTitle,
@@ -165,36 +190,37 @@ fun ChartSelectionPage(
                         },
                         confirmButton = {
                             TextButton(onClick = {
-                                showEditDialog?.let { viewModel.updateChartTitle(it, tempTitle) }
-                                showEditDialog = null
+                                chartIdToEdit?.let { viewModel.updateChartTitle(it, tempTitle) }
+                                chartIdToEdit = null
                             }) {
-                                Text(stringResource(R.string.confirm), color = MaterialTheme.colorScheme.primary)
+                                Text(stringResource(R.string.confirm))
                             }
                         },
                         dismissButton = {
-                            TextButton(onClick = { showEditDialog = null }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                            TextButton(onClick = { chartIdToEdit = null }) {
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     )
                 }
 
+                // Unsaved Changes Dialog
                 if (state.isUnsavedChangesDialogVisible) {
                     AlertDialog(
                         onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                        title = { Text(stringResource(R.string.dialog_unsaved_title), fontWeight = FontWeight.Bold) },
+                        title = { Text(stringResource(R.string.dialog_unsaved_title)) },
                         text = { Text(stringResource(R.string.dialog_unsaved_message)) },
                         confirmButton = {
                             TextButton(onClick = {
                                 viewModel.showUnsavedChangesDialog(false)
                                 onBack()
                             }) {
-                                Text(stringResource(R.string.dialog_leave), color = ErrorRed)
+                                Text(stringResource(R.string.dialog_leave), color = MaterialTheme.colorScheme.error)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     )
