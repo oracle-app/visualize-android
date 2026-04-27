@@ -24,7 +24,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     ) {
-        val visualization = Visualization(
+        val visualization = VisualizationDTO(
             id = "",
             authorID = authorID,
             title = title,

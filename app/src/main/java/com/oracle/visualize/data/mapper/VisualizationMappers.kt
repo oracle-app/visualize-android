@@ -16,6 +16,16 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
     createdAt = createdAt,
 )
 
+fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
+    id = id,
+    authorID = authorID,
+    title = title,
+    configJSON = configJSON,
+    sharedWithUsers = sharedWithUsers,
+    sharedWithTeams = sharedWithTeams,
+    createdAt = createdAt,
+)
+
 fun VisualizationDTO.toVisualizationCard(authorName: String, sharedUsers: List<User>): VisualizationCard {
     return VisualizationCard(
         id = this.id,

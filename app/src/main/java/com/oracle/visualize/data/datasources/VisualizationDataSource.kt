@@ -18,7 +18,7 @@ class VisualizationDataSource @Inject constructor(
     private val visualizationsRef = db.collection("visualizations")
     private val teamsRef = db.collection("teams")
 
-    internal fun formatVisualization(visualization: Visualization): Map<String, Any> {
+    internal fun formatVisualization(visualization: VisualizationDTO): Map<String, Any> {
         return hashMapOf(
             "authorID" to visualization.authorID,
             "title" to visualization.title,
@@ -28,15 +28,10 @@ class VisualizationDataSource @Inject constructor(
             "createdAt" to visualization.createdAt,
         )
     }
-    suspend fun createVisualization(visualization: Visualization) {
+    suspend fun createVisualization(visualization: VisualizationDTO) {
         try {
-            if (visualization.authorID.isNotEmpty() && visualization.title.isNotEmpty() &&
-                visualization.configJSON.isNotEmpty()) {
-
-                val formattedVisualization = formatVisualization(visualization)
-
-                visualizationsRef.add(formattedVisualization).await()
-            }
+            val formattedVisualization = formatVisualization(visualization)
+            visualizationsRef.add(formattedVisualization).await()
         } catch (ex: Exception) {
             ex.printStackTrace()
             throw ex
@@ -46,9 +41,7 @@ class VisualizationDataSource @Inject constructor(
     suspend fun getAllVisualizations(): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef.get().await()
-
             if (visualizations.isEmpty) emptyList<VisualizationDTO>()
-
             visualizations.documents.mapNotNull { doc ->
                 try {
                     doc.toObject(VisualizationDTO::class.java)
@@ -182,15 +175,9 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
+    suspend fun publishVisualizationsInBulk(visualizations: List<VisualizationDTO>) {
         try {
-            val validVis = visualizations.filter { v ->
-                v.authorID.isNotEmpty() && v.title.isNotEmpty() && v.configJSON.isNotEmpty()
-            }
-
-            if (validVis.isEmpty()) { return }
-
-            validVis.chunked(500).forEach { chunk ->
+            visualizations.chunked(500).forEach { chunk ->
                 val batch = db.batch()
                 for (v in chunk) {
                     val doc = visualizationsRef.document()
