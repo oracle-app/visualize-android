@@ -7,6 +7,6 @@ data class FeedUIState(
     val items: List<VisualizationCard> = emptyList(),
     val searchText: String = "",
     val selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
-    val isLoading: Boolean = true, // Extra: agregamos loading
-    val errorMessage: String? = null // Extra: agregamos manejo de error
+    val isLoading: Boolean = true,
+    val errorMessage: String? = null
 )
