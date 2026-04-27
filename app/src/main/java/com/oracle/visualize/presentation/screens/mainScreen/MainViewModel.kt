@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.NavItem
 import com.oracle.visualize.domain.models.NavRoutes
+import dagger.hilt.android.lifecycle.HiltViewModel
 
+@HiltViewModel
 class MainViewModel : ViewModel() {
 
     // NavController owns navigation state — ViewModel only defines the nav items

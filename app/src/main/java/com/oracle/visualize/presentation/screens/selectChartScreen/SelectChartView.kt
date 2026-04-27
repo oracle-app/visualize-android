@@ -42,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ChartSelectionUiState
@@ -54,7 +55,7 @@ import com.oracle.visualize.ui.theme.ErrorRed
 fun ChartSelectionPage(
     onBack: () -> Unit,
     onNavigateToShare: () -> Unit,
-    viewModel: SelectChartViewModel = viewModel()
+    viewModel: SelectChartViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf<String?>(null) }

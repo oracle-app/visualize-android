@@ -4,15 +4,17 @@ import com.oracle.visualize.data.repositories.TeamRepositoryImpl
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.repositories.TeamRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class CreateTeamUseCase @Inject constructor(
-    private val repository: TeamRepository
+    private val teamRepository: TeamRepository
 ){
     suspend operator fun invoke(
         memberIDs: List<String>,
         name: String,
         ownerID: String
     ) {
-        repository.createTeam(memberIDs, name, ownerID)
+        teamRepository.createTeam(memberIDs, name, ownerID)
     }
 }

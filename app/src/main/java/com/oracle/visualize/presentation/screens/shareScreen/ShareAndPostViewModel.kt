@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.shareScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.models.ShareUser
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
@@ -41,7 +39,7 @@ class ShareAndPostViewModel @Inject constructor(
                 .debounce(500)
                 .filter { it.isNotBlank() }
                 .collect { query ->
-                    val results = getUserSuggestionsUseCase.execute(query.lowercase().trim())
+                    val results = getUserSuggestionsUseCase.invoke(query.lowercase().trim())
                     updateSuggestions(results)
                 }
         }

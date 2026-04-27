@@ -8,7 +8,7 @@ import javax.inject.Inject
 import kotlin.String
 
 class CreateVisualizationUseCase @Inject constructor(
-    private val repository: VisualizationRepository
+    private val visualizationRepository: VisualizationRepository
 ) {
     suspend operator fun invoke(
         authorID: String,
@@ -17,7 +17,7 @@ class CreateVisualizationUseCase @Inject constructor(
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     ){
-        repository.createVisualization(
+        visualizationRepository.createVisualization(
             authorID,
             title,
             configJSON,

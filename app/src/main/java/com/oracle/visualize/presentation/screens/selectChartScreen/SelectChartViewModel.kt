@@ -3,11 +3,13 @@ package com.oracle.visualize.presentation.screens.selectChartScreen
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.ChartSelectionUiState
 import com.oracle.visualize.domain.models.VisualizationSelection
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+@HiltViewModel
 class SelectChartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)

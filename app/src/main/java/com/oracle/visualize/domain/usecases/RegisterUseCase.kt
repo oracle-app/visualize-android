@@ -3,8 +3,13 @@ package com.oracle.visualize.domain.usecases
 import android.util.Patterns
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RegisterUseCase(private val repository: AuthRepository) {
+@Singleton
+class RegisterUseCase @Inject constructor(
+    private val authRepository: AuthRepository
+) {
 
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
 
@@ -17,6 +22,6 @@ class RegisterUseCase(private val repository: AuthRepository) {
         if (password.length < 6) {
             throw IllegalArgumentException("Password must be at least 6 characters")
         }
-        return repository.register(email,password)
+        return authRepository.register(email,password)
     }
 }
