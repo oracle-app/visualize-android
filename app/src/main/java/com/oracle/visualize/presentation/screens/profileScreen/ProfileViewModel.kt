@@ -12,7 +12,7 @@ import androidx.compose.runtime.setValue
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor() : ViewModel() {
-    
+
     var profileImage by mutableStateOf<Int>(R.drawable.profile_placeholder)
         private set
 
