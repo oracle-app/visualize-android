@@ -13,7 +13,7 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
     configJSON = configJSON,
     sharedWithUsers = sharedWithUsers,
     sharedWithTeams = sharedWithTeams,
-    createdAt = createdAt,
+    createdAt = createdAt.toDate(),
 )
 
 fun VisualizationDTO.toVisualizationCard(authorName: String, sharedUsers: List<User>): VisualizationCard {
@@ -21,7 +21,7 @@ fun VisualizationDTO.toVisualizationCard(authorName: String, sharedUsers: List<U
         id = this.id,
         title = this.title,
         author = authorName,
-        createdAt = this.createdAt,
+        createdAt = this.createdAt.toDate(),
         configJSON = this.configJSON,
         sharedWith = sharedUsers
     )

@@ -1,6 +1,5 @@
 package com.oracle.visualize.data.repositories
 
-import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
@@ -10,6 +9,7 @@ import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import java.util.Date
 import javax.inject.Inject
 
 class VisualizationRepositoryImpl @Inject constructor(
@@ -31,7 +31,7 @@ class VisualizationRepositoryImpl @Inject constructor(
             configJSON = configJSON,
             sharedWithUsers = sharedWithUsers,
             sharedWithTeams = sharedWithTeams,
-            createdAt = Timestamp.now(),
+            createdAt = Date(),
         )
         visualizationDataSource.createVisualization(visualization)
     }
