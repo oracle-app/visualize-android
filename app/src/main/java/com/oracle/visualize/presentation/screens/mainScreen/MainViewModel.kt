@@ -10,8 +10,11 @@ import androidx.lifecycle.ViewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.NavItem
 import com.oracle.visualize.domain.models.NavRoutes
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor() : ViewModel() {
 
     // NavController owns navigation state — ViewModel only defines the nav items
     val navItems = listOf(
