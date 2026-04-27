@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class selectChartViewModel : ViewModel() {
+class SelectChartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()

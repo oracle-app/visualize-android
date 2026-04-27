@@ -1,6 +1,6 @@
 package com.oracle.visualize.domain.models
 
-import java.sql.Date
+import java.util.Date
 
 data class Visualization (
     val id: String,

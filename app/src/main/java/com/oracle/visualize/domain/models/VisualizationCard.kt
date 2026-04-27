@@ -1,7 +1,7 @@
 package com.oracle.visualize.domain.models
 
-import com.google.firebase.Timestamp
-import java.sql.Date
+import java.util.Date
+
 
 data class VisualizationCard(
     val id: String,
