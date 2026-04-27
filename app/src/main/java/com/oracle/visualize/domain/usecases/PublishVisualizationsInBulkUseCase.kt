@@ -8,6 +8,6 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
     private val repository: VisualizationRepository
 ){
     suspend operator fun invoke(visualizations: List<Visualization>) {
-        repository.publishVisualizations(visualizations)
+        repository.publishVisualizationsInBulk(visualizations)
     }
 }
