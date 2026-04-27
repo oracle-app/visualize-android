@@ -105,12 +105,28 @@
 
     // Errors
 
+
+    <string name="error_unknown">Unknown</string>
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>
     <string name="icon_back">Back</string>
+
+    // Profile Page
+
+    <string name="version_declaration">Version</string>
+    <string name="chart_theme_title">Chart theme</string>
+    <string name="about_title">About</string>
+    <string name="developer">Developed by ----</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="licenses">Licenses and open source libraries</string>
+
+        // Descriptions
+
+    <string name="edit_image_description">Edit Profile Image</string>
+    <string name="profile_img_description">Profile Image</string>
 
 
 </resources>

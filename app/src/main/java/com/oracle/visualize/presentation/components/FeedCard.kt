@@ -86,7 +86,7 @@ fun FeedCard(item: VisualizationCard) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "By ${item.author}",
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                         Text(

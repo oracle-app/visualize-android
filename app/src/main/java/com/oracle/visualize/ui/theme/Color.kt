@@ -29,3 +29,38 @@ val DarkMode_Background = Color(0xFF282520)
 val DarkMode_NotAsLightGray = Color(0xFF7FA9A9)
 val DarkMode_LighterBlue = Color(0xFF3D504D)
 val DarkMode_GrayishBlue = Color(0xFFBBBBBB)
+
+
+// This is where the Chart Theme colors are defined.
+
+// Theme 1.
+
+val Theme1_1 = Color(0xFF003566)
+val Theme1_2 = Color(0xFF0096C7)
+val Theme1_3 = Color(0xFF0FEED0)
+val Theme1_4 = Color(0xFF00BFD8)
+val Theme1_5 = Color(0xFF52E1FF)
+
+// Theme 2.
+
+val Theme2_1 = Color(0xFFCA4D3C)
+val Theme2_2 = Color(0xFF4190AC)
+val Theme2_3 = Color(0xFFEB9632)
+val Theme2_4 = Color(0xFF4C825C)
+val Theme2_5 = Color(0xFFA890B6)
+
+// Theme 3.
+
+val Theme3_1 = Color(0xFF4A7FF7)
+val Theme3_2 = Color(0xFFAE8DF5)
+val Theme3_3 = Color(0xFFF3B86B)
+val Theme3_4 = Color(0xFF2EC4B6)
+val Theme3_5 = Color(0xFF42423E)
+
+// Theme 4.
+
+val Theme4_1 = Color(0xFFC9184A)
+val Theme4_2 = Color(0xFFFF4D6D)
+val Theme4_3 = Color(0xFFFF85A1)
+val Theme4_4 = Color(0xFFFF99C8)
+val Theme4_5 = Color(0xFFF72585)
