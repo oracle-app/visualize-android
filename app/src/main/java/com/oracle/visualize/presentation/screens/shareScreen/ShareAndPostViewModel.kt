@@ -1,25 +1,23 @@
 package com.oracle.visualize.presentation.screens.shareScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.models.ShareUser
-import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
-import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
+import com.oracle.visualize.domain.repositories.TeamRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ShareAndPostViewModel @Inject constructor(
-    private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
-    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase
+    private val teamRepository: TeamRepository,
+    private val userRepository: UserRepository
 ) : ViewModel(
 
 ) {
@@ -41,7 +39,7 @@ class ShareAndPostViewModel @Inject constructor(
                 .debounce(500)
                 .filter { it.isNotBlank() }
                 .collect { query ->
-                    val results = getUserSuggestionsUseCase.execute(query.lowercase().trim())
+                    val results = userRepository.getUserSuggestionsByEmail(query.lowercase().trim())
                     updateSuggestions(results)
                 }
         }
@@ -51,8 +49,8 @@ class ShareAndPostViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = ShareUiState.Loading
             try {
-                val myTeams = getUsersTeamsUseCase.getTeamsUserOwns(userID)
-                val teamsImIn = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
+                val myTeams = teamRepository.getTeamsOwnedByUser(userID)
+                val teamsImIn = teamRepository.getTeamsUserIsIn(userID)
                 val suggestedUsers = emptyList<ShareUser>()
 
 

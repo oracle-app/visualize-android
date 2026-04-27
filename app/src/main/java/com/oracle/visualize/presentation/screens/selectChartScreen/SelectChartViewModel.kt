@@ -2,16 +2,16 @@ package com.oracle.visualize.presentation.screens.selectchartscreen
 
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.domain.models.ChartSelectionUiState
+import com.oracle.visualize.domain.models.VisualizationSelection
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * ViewModel for the Chart Selection screen.
- * Manages the state of suggested charts and user selections.
- */
-class SelectChartViewModel : ViewModel() {
+@HiltViewModel
+class SelectChartViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()
