@@ -6,6 +6,7 @@ import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
+import com.oracle.visualize.data.mapper.toVisualizationDTO
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
@@ -78,6 +79,7 @@ class VisualizationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
-        visualizationDataSource.publishVisualizationsInBulk(visualizations)
+        val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
+        visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
     }
 }
