@@ -9,7 +9,7 @@ import javax.inject.Singleton
 class GetUserSuggestionsUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend fun execute(query: String): List<ShareUser> {
+    suspend fun invoke(query: String): List<ShareUser> {
         return userRepository.getUserSuggestionsByEmail(query)
     }
 }

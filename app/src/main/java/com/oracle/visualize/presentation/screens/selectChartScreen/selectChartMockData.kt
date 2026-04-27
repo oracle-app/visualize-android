@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.selectChartScreen
 
 import com.oracle.visualize.domain.models.Visualization
 import com.google.firebase.Timestamp
+import java.util.Date
 import java.util.UUID
 
 /**
@@ -16,7 +17,7 @@ object selectChartMockData {
             configJSON = "{}",
             sharedWithUsers = emptyList(),
             sharedWithTeams = emptyList(),
-            createdAt = Timestamp.now()
+            createdAt = Date()
         ),
         Visualization(
             id = UUID.randomUUID().toString(),
@@ -25,7 +26,7 @@ object selectChartMockData {
             configJSON = "{}",
             sharedWithUsers = emptyList(),
             sharedWithTeams = emptyList(),
-            createdAt = Timestamp.now()
+            createdAt = Date()
         ),
         Visualization(
             id = UUID.randomUUID().toString(),
@@ -34,7 +35,7 @@ object selectChartMockData {
             configJSON = "{}",
             sharedWithUsers = emptyList(),
             sharedWithTeams = emptyList(),
-            createdAt = Timestamp.now()
+            createdAt = Date()
         )
     )
 }
