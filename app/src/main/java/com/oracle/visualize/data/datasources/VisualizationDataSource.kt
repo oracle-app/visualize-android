@@ -18,19 +18,22 @@ class VisualizationDataSource @Inject constructor(
     private val visualizationsRef = db.collection("visualizations")
     private val teamsRef = db.collection("teams")
 
+    internal fun formatVisualization(visualization: Visualization): Map<String, Any> {
+        return hashMapOf(
+            "authorID" to visualization.authorID,
+            "title" to visualization.title,
+            "configJSON" to visualization.configJSON,
+            "sharedWithUsers" to visualization.sharedWithUsers,
+            "sharedWithTeams" to visualization.sharedWithTeams,
+            "createdAt" to visualization.createdAt,
+        )
+    }
     suspend fun createVisualization(visualization: Visualization) {
         try {
             if (visualization.authorID.isNotEmpty() && visualization.title.isNotEmpty() &&
                 visualization.configJSON.isNotEmpty()) {
 
-                val formattedVisualization = hashMapOf(
-                    "authorID" to visualization.authorID,
-                    "title" to visualization.title,
-                    "configJSON" to visualization.configJSON,
-                    "sharedWithUsers" to visualization.sharedWithUsers,
-                    "sharedWithTeams" to visualization.sharedWithTeams,
-                    "createdAt" to visualization.createdAt,
-                )
+                val formattedVisualization = formatVisualization(visualization)
 
                 visualizationsRef.add(formattedVisualization).await()
             }
@@ -181,22 +184,21 @@ class VisualizationDataSource @Inject constructor(
 
     suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
         try {
-            val batch = db.batch()
-            for (v in visualizations) {
-                if (v.authorID.isNotEmpty() && v.title.isNotEmpty() && v.configJSON.isNotEmpty()) {
+            val validVis = visualizations.filter { v ->
+                v.authorID.isNotEmpty() && v.title.isNotEmpty() && v.configJSON.isNotEmpty()
+            }
+
+            if (validVis.isEmpty()) { return }
+
+            validVis.chunked(500).forEach { chunk ->
+                val batch = db.batch()
+                for (v in chunk) {
                     val doc = visualizationsRef.document()
-                    val formattedVisualization = hashMapOf(
-                        "authorID" to v.authorID,
-                        "title" to v.title,
-                        "configJSON" to v.configJSON,
-                        "sharedWithUsers" to v.sharedWithUsers,
-                        "sharedWithTeams" to v.sharedWithTeams,
-                        "createdAt" to v.createdAt,
-                    )
+                    val formattedVisualization = formatVisualization(v)
                     batch.set(doc, formattedVisualization)
                 }
+                batch.commit().await()
             }
-            batch.commit().await()
         } catch (ex: Exception) {
             throw ex
         }
