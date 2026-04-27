@@ -1,5 +1,6 @@
 package com.oracle.visualize.data.datasources
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
@@ -60,15 +61,25 @@ class UserDatasource @Inject constructor(
     }
 
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
-    return try {
-        val snapshot = firestore.collection("groups")
-            .whereArrayContains("membersID",userID)
-            .get()
-            .await()
-        snapshot.toObjects(TeamDTO::class.java)
-        } catch (e: Exception){
-            emptyList()
-        }
+        return try {
+            val snapshot = firestore.collection("groups")
+                .whereArrayContains("membersID",userID)
+                .get()
+                .await()
+            snapshot.toObjects(TeamDTO::class.java)
+            } catch (e: Exception){
+                emptyList()
+            }
     }
 
+    suspend fun hideVisualization(userId: String, visualizationId: String) {
+        try {
+            val user = firestore.collection("users")
+                .document(userId)
+                .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
+                .await()
+        } catch(e: Exception) {
+            throw e
+        }
+    }
 }

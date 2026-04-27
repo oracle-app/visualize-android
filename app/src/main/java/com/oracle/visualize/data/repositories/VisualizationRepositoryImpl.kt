@@ -76,4 +76,29 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
         return visualizationCards
     }
+    override suspend fun deleteVisualization(visualizationID: String) {
+        visualizationDataSource.deleteVisualization(visualizationID)
+    }
+
+    override suspend fun shareVisualizationWithUsers(visualizationID: String, userIDs: List<String>) {
+        visualizationDataSource.shareVisualizationWithUsers(visualizationID, userIDs)
+    }
+
+    override suspend fun shareVisualizationWithTeams(visualizationID: String, teamIDs: List<String>) {
+        visualizationDataSource.shareVisualizationWithTeams(visualizationID, teamIDs)
+    }
+
+    override suspend fun deleteUsersAccessToVisualization(
+        visualizationID: String,
+        userIDs: List<String>
+    ) {
+        visualizationDataSource.deleteUsersAccessToVisualization(visualizationID, userIDs)
+    }
+
+    override suspend fun deleteTeamsAccessToVisualization(
+        visualizationID: String,
+        teamIDs: List<String>
+    ) {
+        visualizationDataSource.deleteTeamsAccessToVisualization(visualizationID, teamIDs)
+    }
 }

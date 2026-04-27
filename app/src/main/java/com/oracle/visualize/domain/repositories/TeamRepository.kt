@@ -8,5 +8,4 @@ interface TeamRepository {
     suspend fun getTeamsOwnedByUser(userID: String): List<ShareTeam>
 
     suspend fun getTeamsUserIsIn(userID: String): List<ShareTeam>
-
 }
