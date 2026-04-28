@@ -40,13 +40,31 @@ fun MainScreen(
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
+    // Determine the current destination object from the backstack to pass to the UI
+    val currentDestination = viewModel.navItems.find { item ->
+        backStackEntry?.destination?.hasRoute(item.destination::class) == true
+    }?.destination
+
     val showBottomBar = backStackEntry?.destination?.hasRoute(NavRoutes::class) == true
             && bottomNavDestinations.any { backStackEntry?.destination?.hasRoute(it) == true }
 
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                BottomNavBar(navItems = viewModel.navItems, navController = navController)
+                BottomNavBar(
+                    navItems = viewModel.navItems,
+                    currentDestination = currentDestination,
+                    onItemSelected = { destination ->
+                        navController.navigate(destination) {
+                            // Centralized navigation logic
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             }
         }
     ) { innerPadding ->
@@ -63,7 +81,7 @@ fun MainScreen(
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Feed, // Passing the object, not a string
+        startDestination = NavRoutes.Feed,
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
