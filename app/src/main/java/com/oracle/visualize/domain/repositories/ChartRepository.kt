@@ -4,5 +4,5 @@ import android.net.Uri
 import com.oracle.visualize.domain.models.Chart
 
 interface ChartRepository {
-    suspend fun getCharts(file: Uri?): List<Chart>
+    suspend fun getChartOptionsFromFile(file: Uri?): Result<List<Chart<*>>>
 }
