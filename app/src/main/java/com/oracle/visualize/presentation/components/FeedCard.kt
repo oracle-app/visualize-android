@@ -111,10 +111,13 @@ fun FeedCard(item: VisualizationCard) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .background(MaterialTheme.colorScheme.onPrimary),
+                    .background(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(all = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Text("Graph", color = MaterialTheme.colorScheme.onSurface)
                 ChartRender(
                     VerticalBarChart(
                         chartTitle = "Mock Chart",
@@ -124,6 +127,11 @@ fun FeedCard(item: VisualizationCard) {
                             "field3" to 30f,
                             "field4" to 40f,
                             "field5" to 50f,
+                            "field6" to 10f,
+                            "field7" to 20f,
+                            "field8" to 30f,
+                            "field9" to 40f,
+                            "field10" to 50f,
                         ),
                         fieldNames = mapOf(
                             "field1" to "Jan",
@@ -131,6 +139,11 @@ fun FeedCard(item: VisualizationCard) {
                             "field3" to "Mar",
                             "field4" to "Apr",
                             "field5" to "May",
+                            "field6" to "Jun",
+                            "field7" to "Jul",
+                            "field8" to "Aug",
+                            "field9" to "Sep",
+                            "field10" to "Oct",
                         ),
                     )
                 )

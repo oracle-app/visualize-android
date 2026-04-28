@@ -51,7 +51,7 @@ fun ChartRender(chart: Chart<*>) {
             XYGraph(
                 xAxisModel = remember { CategoryAxisModel(labels) },
                 yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
-                yAxisTitle = chart.chartTitle
+                yAxisTitle = ""
             ) {
                 VerticalBarPlot(
                     xData = labels,
