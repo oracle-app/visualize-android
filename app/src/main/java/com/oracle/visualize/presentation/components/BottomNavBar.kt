@@ -4,8 +4,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
-import com.oracle.visualize.domain.models.NavItem
-import com.oracle.visualize.domain.models.NavRoutes
+import com.oracle.visualize.presentation.navigation.NavItem
+import com.oracle.visualize.presentation.navigation.NavRoutes
 
 /**
  * A stateless UI component for the Bottom Navigation Bar.

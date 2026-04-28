@@ -8,8 +8,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.lifecycle.ViewModel
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.NavItem
-import com.oracle.visualize.domain.models.NavRoutes
+import com.oracle.visualize.presentation.navigation.NavItem
+import com.oracle.visualize.presentation.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 
