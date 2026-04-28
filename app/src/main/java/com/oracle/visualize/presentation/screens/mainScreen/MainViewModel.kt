@@ -45,7 +45,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         NavItem(
             label = R.string.nav_profile,
             icon  = Icons.Default.Person,
-            destination = NavRoutes.Profile
+            destination = NavRoutes.Profile(userId = "placeholder") // Needs to be changed to the current user ID
         )
     )
 }

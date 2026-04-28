@@ -35,7 +35,7 @@ fun MainScreen(
         backStackEntry?.destination?.hasRoute(item.destination::class) == true
     }?.destination
 
-    val showBottomBar = backStackEntry?.destination?.hasRoute(NavRoutes.MainTab::class) == true
+    val showBottomBar = currentDestination != null
 
     Scaffold(
         bottomBar = {

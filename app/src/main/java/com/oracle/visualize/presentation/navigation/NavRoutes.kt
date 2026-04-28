@@ -7,7 +7,10 @@ import kotlinx.serialization.Serializable
  * This replaces string-based route matching with class-based matching.
  */
 // En tu archivo de rutas (NavRoutes.kt)
+@Serializable
 sealed interface NavRoutes {
+
+    @Serializable
     sealed interface MainTab : NavRoutes
 
     @Serializable
