@@ -35,6 +35,7 @@ import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
 
@@ -90,7 +91,7 @@ fun FeedCard(item: VisualizationCard) {
                             fontSize = 13.sp
                         )
                         Text(
-                            text = "    •    ${formatTime(item.createdAt.toDate(), context)}",
+                            text = "    •    ${formatTime(item.createdAt, context)}",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
@@ -113,7 +114,26 @@ fun FeedCard(item: VisualizationCard) {
                     .background(MaterialTheme.colorScheme.onPrimary),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Graph", color = MaterialTheme.colorScheme.onSurface)
+                // Text("Graph", color = MaterialTheme.colorScheme.onSurface)
+                ChartRender(
+                    VerticalBarChart(
+                        chartTitle = "Mock Chart",
+                        data = mapOf(
+                            "field1" to 10f,
+                            "field2" to 20f,
+                            "field3" to 30f,
+                            "field4" to 40f,
+                            "field5" to 50f,
+                        ),
+                        fieldNames = mapOf(
+                            "field1" to "Jan",
+                            "field2" to "Feb",
+                            "field3" to "Mar",
+                            "field4" to "Apr",
+                            "field5" to "May",
+                        ),
+                    )
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))

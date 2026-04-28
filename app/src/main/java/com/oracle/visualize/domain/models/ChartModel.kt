@@ -5,7 +5,7 @@ import com.oracle.visualize.domain.models.enums.ChartTypes
 sealed class Chart<T>(
     val chartTitle: String,
     val chartType: ChartTypes,
-    val data: T,                   // Cast chart data to any type.
+    val data: T,
     val fieldNames: Map<String, String>
 )
 
