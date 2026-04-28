@@ -42,14 +42,13 @@ fun ProfileHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier.padding(top = 64.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             Image(
                 painter = profileImage,
                 contentDescription = stringResource(R.string.profile_img_description),
                 modifier = Modifier
-                    .size(128.dp)
+                    .size(180.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
@@ -57,7 +56,7 @@ fun ProfileHeader(
             OutlinedIconButton(
                 onClick = onEditClick,
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(48.dp)
                     .offset(x = (-6).dp, y = (-6).dp),
                 colors = IconButtonDefaults.outlinedIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -76,7 +75,7 @@ fun ProfileHeader(
 
         Text(
             text = userName,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
 
@@ -84,7 +83,7 @@ fun ProfileHeader(
 
         Text(
             text = email,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
     }
