@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components
 
+import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.domain.models.VerticalBarChart
 
 val mockVerticalChart = VerticalBarChart(
@@ -28,4 +29,22 @@ val mockVerticalChart = VerticalBarChart(
         "field9" to "Sep",
         "field10" to "Oct",
     ),
+)
+
+val mockPieChart = PieChartModel(
+    chartTitle = "Mock Chart",
+    data = listOf(
+        10f,
+        20f,
+        30f,
+        40f,
+        50f
+    ),
+    fieldNames = mapOf(
+        "field1" to "Jan",
+        "field2" to "Feb",
+        "field3" to "Mar",
+        "field4" to "Apr",
+        "field5" to "May",
+    )
 )

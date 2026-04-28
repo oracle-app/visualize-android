@@ -105,20 +105,28 @@ fun FeedCard(item: VisualizationCard) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(all = 12.dp),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 20.dp)
             ) {
-                ChartRender(
-                    chart = mockVerticalChart
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(all = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ChartRender(
+                        // chart = mockPieChart
+                        chart = mockVerticalChart
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))

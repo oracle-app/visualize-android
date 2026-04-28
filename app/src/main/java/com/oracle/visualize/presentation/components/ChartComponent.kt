@@ -1,25 +1,24 @@
 package com.oracle.visualize.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.Chart
-import com.oracle.visualize.domain.models.HorizontalBarChart
-import com.oracle.visualize.domain.models.LineChart
+import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.domain.models.VerticalBarChart
 import io.github.koalaplot.core.bar.DefaultBar
-import io.github.koalaplot.core.bar.HorizontalBarPlot
 import io.github.koalaplot.core.bar.VerticalBarPlot
-import io.github.koalaplot.core.style.LineStyle
+import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.DefaultPoint
 import io.github.koalaplot.core.xygraph.XYGraph
-import io.github.koalaplot.core.xygraph.autoScaleXRange
-import io.github.koalaplot.core.xygraph.autoScaleYRange
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 
 private fun buildLineChartData(xData: List<Float>, yData: List<Float>): List<DefaultPoint<Float, Float>> {
@@ -66,6 +65,8 @@ fun ChartRender(chart: Chart<*>) {
             }
         }
 
+//        TODO("Still need to fix Horizontal and Line Charts")
+//
 //        is HorizontalBarChart -> {
 //            val data = chart.data
 //            val values = data.values.toList()
@@ -125,6 +126,15 @@ fun ChartRender(chart: Chart<*>) {
 //                }
 //            }
 //        }
+
+        is PieChartModel -> {
+            PieChart(
+                chart.data,
+                label = {
+                    i -> Text(text = chart.data[i].toString())
+                }
+            )
+        }
 
         else -> {
             throw IllegalArgumentException("Invalid chart type")

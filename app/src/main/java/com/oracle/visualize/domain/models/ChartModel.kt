@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.models
 
+import androidx.compose.runtime.Composable
 import com.oracle.visualize.domain.models.enums.ChartTypes
 
 sealed class Chart<T>(
@@ -27,16 +28,16 @@ class StackedBarChart(
     fieldNames: Map<String, String>
 ) : Chart<Map<String, List<Float>>>(chartTitle, ChartTypes.STACKED_BAR, data, fieldNames)
 
-class LineChart(
+class LineChartModel(
     chartTitle: String,
     data: Map<Float, Float>,
     fieldNames: Map<String, String>
 ) : Chart<Map<Float, Float>>(chartTitle, ChartTypes.LINE, data, fieldNames)
 
-class PieChart(
+class PieChartModel(
     chartTitle: String,
     data: List<Float>,
-    fieldNames: Map<String, String>
+    fieldNames: Map<String, String>,
 ) : Chart<List<Float>>(chartTitle, ChartTypes.PIE, data, fieldNames)
 
 class DonutChart(

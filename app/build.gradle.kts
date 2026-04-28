@@ -77,6 +77,5 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation("io.github.koalaplot:koalaplot-core:0.11.0")
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation(libs.koalaplot.core)
 }
