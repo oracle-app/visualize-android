@@ -3,14 +3,13 @@ package com.oracle.visualize.data.datasources
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
-import kotlin.collections.emptyList
-
+import javax.inject.Inject
 
 class VisualizationDataSource @Inject constructor(
     private val db: FirebaseFirestore
@@ -31,32 +30,28 @@ class VisualizationDataSource @Inject constructor(
                     "sharedWithTeams" to visualization.sharedWithTeams,
                     "createdAt" to visualization.createdAt,
                 )
-
                 visualizationsRef.add(formattedVisualization).await()
+            } else {
+                throw AppError.ValidationError("AuthorID, title, and configJSON cannot be empty")
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to create visualization: ${ex.message}")
         }
     }
 
     suspend fun getAllVisualizations(): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef.get().await()
+            if (visualizations.isEmpty) return emptyList()
 
-            if (visualizations.isEmpty) emptyList<VisualizationDTO>()
-
-            visualizations.documents.mapNotNull { doc ->
-                try {
-                    doc.toObject(VisualizationDTO::class.java)
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    null
-                }
+            visualizations.documents.map { doc ->
+                doc.toObject(VisualizationDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            emptyList()
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch all visualizations: ${ex.message}")
         }
     }
 
@@ -68,17 +63,13 @@ class VisualizationDataSource @Inject constructor(
 
             if (visualizations.isEmpty) return emptyList()
 
-            visualizations.documents.mapNotNull { doc ->
-                try {
-                    doc.toObject(VisualizationDTO::class.java)
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    null
-                }
+            visualizations.documents.map { doc ->
+                doc.toObject(VisualizationDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            emptyList()
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch shared visualizations: ${ex.message}")
         }
     }
 
@@ -90,17 +81,13 @@ class VisualizationDataSource @Inject constructor(
 
             if (visualizations.isEmpty) return emptyList()
 
-            visualizations.documents.mapNotNull { doc ->
-                try {
-                    doc.toObject(VisualizationDTO::class.java)
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    null
-                }
+            visualizations.documents.map { doc ->
+                doc.toObject(VisualizationDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            emptyList()
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch personal visualizations: ${ex.message}")
         }
     }
 
@@ -118,15 +105,13 @@ class VisualizationDataSource @Inject constructor(
 
             if (sharedWithTeams.isEmpty) return emptyList()
 
-            sharedWithTeams.documents.mapNotNull { doc ->
-                try {
-                    doc.toObject(VisualizationDTO::class.java)
-                } catch (ex: Exception) {
-                    throw ex
-                }
+            sharedWithTeams.documents.map { doc ->
+                doc.toObject(VisualizationDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
             }
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch team visualizations: ${ex.message}")
         }
     }
 
@@ -136,46 +121,55 @@ class VisualizationDataSource @Inject constructor(
             val personal = getPersonalVisualizations(userID)
             val sharedWithUsers = getVisualizationsSharedWithUser(userID)
             val sharedWithTeams = getSharedVisualizationsByTeamsIntegratedByUser(userID)
+
             finalArray.addAll(personal)
             finalArray.addAll(sharedWithUsers)
             finalArray.addAll(sharedWithTeams)
             finalArray
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            emptyList()
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to aggregate visualizations: ${ex.message}")
         }
     }
 
     suspend fun getAllUsersVisualizationIsSharedWith(visualizationID: String): List<UserDTO> {
-        val snapshot = db.collection("visualizations")
-            .document(visualizationID)
-            .get()
-            .await()
+        return try {
+            val snapshot = db.collection("visualizations")
+                .document(visualizationID)
+                .get()
+                .await()
 
-        if (!snapshot.exists()) {
-            throw Exception("This visualization ID does not exist.")
-        }
-        val visualizationDTO = snapshot.toObject(VisualizationDTO::class.java)
-            ?: throw Exception("Visualization could not be mapped.")
-        val sharedUserIDs = visualizationDTO.sharedWithUsers.filter { it.isNotBlank() }
+            if (!snapshot.exists()) {
+                throw AppError.NotFound("This visualization ID does not exist.")
+            }
 
-        return coroutineScope {
-            sharedUserIDs.map { userId ->
-                async {
-                    try {
+            val visualizationDTO = snapshot.toObject(VisualizationDTO::class.java)
+                ?: throw AppError.ParsingError("Visualization could not be mapped.")
+
+            val sharedUserIDs = visualizationDTO.sharedWithUsers.filter { it.isNotBlank() }
+
+            coroutineScope {
+                sharedUserIDs.map { userId ->
+                    async {
                         val userSnapshot = db.collection("users")
                             .document(userId)
                             .get()
                             .await()
 
-                        userSnapshot.toObject(UserDTO::class.java)
-                    } catch (e: Exception) {
-                        throw e
+                        if (userSnapshot.exists()) {
+                            userSnapshot.toObject(UserDTO::class.java)
+                                ?: throw AppError.ParsingError("Failed to map UserDTO: $userId")
+                        } else {
+                            null
+                        }
                     }
                 }
+                    .awaitAll()
+                    .filterNotNull()
             }
-                .awaitAll()
-                .filterNotNull()
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch shared users: ${ex.message}")
         }
     }
 }
