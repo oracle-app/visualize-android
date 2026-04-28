@@ -1,12 +1,9 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.FirebaseFirestoreException
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
@@ -15,8 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
@@ -34,23 +31,37 @@ class FeedViewModel @Inject constructor(
 
     private fun fetchItems(filter: VisualizationFilter) {
         viewModelScope.launch {
-            // Ponemos la pantalla en modo carga
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            try {
-                val userID = "oEJtQz0gdbRpTZ8ETPCy"
-                allItems = getAllUserVisualizationsUseCase.invoke(userID, filter)
-                applySearch()
-            } catch (ex: FirebaseFirestoreException) {
-                allItems = emptyList()
-                // Actualizamos el estado con el error
-                _uiState.update {
-                    it.copy(isLoading = false, items = emptyList(), errorMessage = "Couldn't load the visualizations.")
+            // TODO: Get from Auth Repository
+            val userID = "oEJtQz0gdbRpTZ8ETPCy"
+
+            getAllUserVisualizationsUseCase(userID, filter).fold(
+                onSuccess = { visualizations ->
+                    allItems = visualizations
+                    applySearch()
+                },
+                onFailure = { error ->
+                    allItems = emptyList()
+
+                    val uiErrorMessage = when (error) {
+                        is AppError.NetworkError -> "Connection error. Please check your internet."
+                        is AppError.ParsingError -> "There was a problem reading some visualizations."
+                        is AppError.NotFound -> "No visualizations found."
+                        else -> "An unexpected error occurred. Please try again."
+                    }
+
+                    Log.e("FeedViewModel", "Error fetching visualizations: ${error.message}", error)
+
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            items = emptyList(),
+                            errorMessage = uiErrorMessage
+                        )
+                    }
                 }
-                Log.e("Error", "Couldn't load the visualizations.")
-            } catch (ex: Exception) {
-                throw ex
-            }
+            )
         }
     }
 
