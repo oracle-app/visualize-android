@@ -6,14 +6,14 @@ import kotlinx.serialization.Serializable
  * Defines the navigation graph destinations using type-safe objects.
  * This replaces string-based route matching with class-based matching.
  */
-sealed class NavRoutes {
-    @Serializable object Feed : NavRoutes()
-    @Serializable object Notifications : NavRoutes()
-    @Serializable object Teams : NavRoutes()
-    @Serializable object Create : NavRoutes()
-    @Serializable object ChartSelection : NavRoutes()
-    @Serializable object Share : NavRoutes()
+// En tu archivo de rutas (NavRoutes.kt)
+sealed interface NavRoutes {
+    sealed interface MainTab : NavRoutes
 
-    // Example of a typed argument:
-    @Serializable data class Profile(val userId: String? = null) : NavRoutes()
+    @Serializable object Feed : MainTab
+    @Serializable object Create : MainTab
+    @Serializable object Notifications : MainTab
+    @Serializable object Teams : MainTab
+    @Serializable data class Profile(val userId: String) : MainTab
+
 }

@@ -22,15 +22,6 @@ import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 
 
-// Bottom nav destinations — screens outside this list hide the nav bar
-private val bottomNavDestinations = setOf(
-    NavRoutes.Feed::class,
-    NavRoutes.Create::class,
-    NavRoutes.Notifications::class,
-    NavRoutes.Teams::class,
-    NavRoutes.Profile::class
-)
-
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
@@ -40,13 +31,11 @@ fun MainScreen(
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
-    // Determine the current destination object from the backstack to pass to the UI
     val currentDestination = viewModel.navItems.find { item ->
         backStackEntry?.destination?.hasRoute(item.destination::class) == true
     }?.destination
 
-    val showBottomBar = backStackEntry?.destination?.hasRoute(NavRoutes::class) == true
-            && bottomNavDestinations.any { backStackEntry?.destination?.hasRoute(it) == true }
+    val showBottomBar = backStackEntry?.destination?.hasRoute(NavRoutes.MainTab::class) == true
 
     Scaffold(
         bottomBar = {
@@ -56,7 +45,6 @@ fun MainScreen(
                     currentDestination = currentDestination,
                     onItemSelected = { destination ->
                         navController.navigate(destination) {
-                            // Centralized navigation logic
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -70,7 +58,8 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+            // Mejora: Usa el padding completo para evitar problemas visuales
+            modifier = Modifier.padding(innerPadding)
         )
     }
 }
