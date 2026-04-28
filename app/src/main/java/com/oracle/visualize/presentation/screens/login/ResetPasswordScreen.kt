@@ -25,11 +25,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.login.components.LoginTextField
+import com.oracle.visualize.presentation.screens.registration.components.CodeInputGroup
 import com.oracle.visualize.ui.theme.*
 
 /**
  * ResetPasswordScreen: Dumb View for requesting a password reset or setting a new one.
  * It manages the multi-step flow (Email, Verification, New Password) based on the ViewModel state.
+ * Fully adapted for Dark Mode and Visualize Brand Identity.
  *
  * @param viewModel ViewModel that manages the reset password process.
  * @param onNavigateBack Callback to navigate back to the previous screen.
@@ -44,7 +46,7 @@ fun ResetPasswordScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SURFACE_WHITE)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
@@ -66,7 +68,7 @@ fun ResetPasswordScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
-                color = SURFACE_WHITE,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
                 Column(
@@ -84,7 +86,7 @@ fun ResetPasswordScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(R.string.back),
-                                tint = BLACK
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -95,7 +97,7 @@ fun ResetPasswordScreen(
                         text = stringResource(R.string.reset_password_title),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
-                        color = BLACK
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Spacer(modifier = Modifier.height(25.dp))
@@ -107,7 +109,7 @@ fun ResetPasswordScreen(
                             ResetPasswordStep.NEW_PASSWORD -> stringResource(R.string.reset_password_new_password_description)
                         },
                         fontSize = 16.sp,
-                        color = BLACK,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 24.dp)
                     )
@@ -130,7 +132,7 @@ fun ResetPasswordScreen(
 
                     Text(
                         text = stringResource(R.string.registration_version),
-                        color = BLACK,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
@@ -162,13 +164,23 @@ private fun ResetPasswordContent(
             )
         }
         ResetPasswordStep.VERIFICATION -> {
-            LoginTextField(
-                value = uiState.code,
-                onValueChange = viewModel::onCodeChange,
-                label = "Verification Code",
-                error = uiState.codeError?.let { stringResource(it) },
-                keyboardType = KeyboardType.Number
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CodeInputGroup(
+                    code = uiState.code,
+                    onCodeChange = viewModel::onCodeChange,
+                    isError = uiState.codeError != null
+                )
+                
+                if (uiState.codeError != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(uiState.codeError!!),
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         }
         ResetPasswordStep.NEW_PASSWORD -> {
             Column {
@@ -198,7 +210,7 @@ private fun ResetPasswordContent(
 
                 Text(
                     text = stringResource(R.string.reset_password_password_helper),
-                    color = BLACK,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
@@ -228,14 +240,16 @@ private fun ResetPasswordButton(
             }
         },
         modifier = Modifier
-            .fillMaxWidth(0.6f)
+            .fillMaxWidth(0.65f)
             .height(64.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = TEAL_700),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
         shape = RoundedCornerShape(32.dp)
     ) {
         if (uiState.isLoading) {
             CircularProgressIndicator(
-                color = WHITE,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(24.dp)
             )
         } else {

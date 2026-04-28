@@ -29,11 +29,7 @@ import com.oracle.visualize.ui.theme.*
 
 /**
  * LoginScreen: Entry point for user authentication.
- * Follows the "Dumb View" pattern where the UI reacts to state from the ViewModel.
- * 
- * @param viewModel ViewModel that handles the business logic for login.
- * @param onNavigateToRegistration Callback to navigate to the registration screen.
- * @param onNavigateToResetPassword Callback to navigate to the reset password screen.
+ * Fully adapted for Dark Mode and Visualize Brand Identity.
  */
 @Composable
 fun LoginScreen(
@@ -43,11 +39,17 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize().background(GREY_50)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth().height(240.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp),
             contentScale = ContentScale.Crop
         )
 
@@ -59,22 +61,26 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(140.dp))
 
             Surface(
-                modifier = Modifier.fillMaxSize().weight(1f),
-                color = GREY_50,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // 70dp spacing from top of surface to title as per architectural guide
+                    // 70dp spacing from top of surface to title
                     Spacer(modifier = Modifier.height(70.dp))
 
                     Text(
                         text = stringResource(R.string.login_welcome_title),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
-                        color = BLUE_GREY_900,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
 
@@ -104,7 +110,7 @@ fun LoginScreen(
                     Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                         Text(
                             text = stringResource(R.string.login_forgot_password),
-                            color = CORAL_500,
+                            color = MaterialTheme.colorScheme.secondary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
@@ -120,12 +126,19 @@ fun LoginScreen(
 
                     Button(
                         onClick = { viewModel.login() },
-                        modifier = Modifier.fillMaxWidth(0.65f).height(64.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = DEEP_TEAL_900),
+                        modifier = Modifier
+                            .fillMaxWidth(0.65f)
+                            .height(64.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
                         shape = RoundedCornerShape(32.dp)
                     ) {
                         if (uiState.isLoading) {
-                            CircularProgressIndicator(color = WHITE, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(24.dp)
+                            )
                         } else {
                             Text(
                                 text = stringResource(R.string.login_button),
@@ -143,13 +156,13 @@ fun LoginScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.login_no_account_prompt),
-                            color = BLUE_GREY_400,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 16.sp
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(R.string.login_signup_link),
-                            color = CORAL_500,
+                            color = MaterialTheme.colorScheme.secondary,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable { onNavigateToRegistration() }.padding(4.dp),
@@ -161,7 +174,7 @@ fun LoginScreen(
 
                     Text(
                         text = stringResource(R.string.registration_version),
-                        color = BLUE_GREY_400,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(bottom = 24.dp)
                     )

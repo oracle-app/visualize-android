@@ -21,6 +21,7 @@ import com.oracle.visualize.ui.theme.*
 
 /**
  * Reusable text field component for login and registration screens.
+ * Supports Dark Mode by using MaterialTheme color schemes.
  * 
  * @param value Current text value.
  * @param onValueChange Callback when text changes.
@@ -44,23 +45,42 @@ fun LoginTextField(
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
     val isError = error != null
-    val containerColor = if (isError) RED_50 else BLUE_GREY_50
-    val indicatorColor = if (isError) RED_900 else BLUE_GREY_900
+    val containerColor = if (isError) {
+        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+    
+    val indicatorColor = if (isError) {
+        MaterialTheme.colorScheme.error
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         TextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(label, color = BLUE_GREY_400, fontSize = 14.sp) },
-            visualTransformation = if (isPassword && !isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+            label = { 
+                Text(
+                    text = label, 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                    fontSize = 14.sp
+                ) 
+            },
+            visualTransformation = if (isPassword && !isPasswordVisible) {
+                PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
+            },
             trailingIcon = {
                 if (isPassword) {
                     IconButton(onClick = onToggleVisibility) {
                         Icon(
                             imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                             contentDescription = null,
-                            tint = BLUE_GREY_900
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -69,11 +89,11 @@ fun LoginTextField(
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = containerColor,
                 unfocusedContainerColor = containerColor,
-                errorContainerColor = RED_50,
+                errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
                 focusedIndicatorColor = indicatorColor,
                 unfocusedIndicatorColor = indicatorColor,
-                errorIndicatorColor = RED_900,
-                cursorColor = BLUE_GREY_900
+                errorIndicatorColor = MaterialTheme.colorScheme.error,
+                cursorColor = MaterialTheme.colorScheme.primary
             ),
             isError = isError,
             singleLine = true,
@@ -81,8 +101,8 @@ fun LoginTextField(
         )
         if (isError) {
             Text(
-                text = error,
-                color = RED_900,
+                text = error!!,
+                color = MaterialTheme.colorScheme.error,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 2.dp, top = 2.dp)

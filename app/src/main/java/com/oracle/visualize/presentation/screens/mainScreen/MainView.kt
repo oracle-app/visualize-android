@@ -21,6 +21,7 @@ import com.oracle.visualize.presentation.screens.login.LoginScreen
 import com.oracle.visualize.presentation.screens.login.ResetPasswordScreen
 import com.oracle.visualize.presentation.screens.registration.RegistrationScreen
 import com.oracle.visualize.presentation.screens.registration.VerificationScreen
+import com.oracle.visualize.presentation.screens.splash.SplashScreen
 
 
 // Bottom nav destinations — screens outside this list hide the nav bar
@@ -72,9 +73,20 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Login.route,
+        startDestination = NavRoutes.Splash.route,
         modifier = modifier
     ) {
+        composable(NavRoutes.Splash.route) {
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate(NavRoutes.Login.route)
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(NavRoutes.Registration.route)
+                }
+            )
+        }
+
         composable(NavRoutes.Login.route) {
             LoginScreen(
                 onNavigateToRegistration = {

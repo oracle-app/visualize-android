@@ -90,6 +90,11 @@
     <string name="share_and_post">Share and Post</string>
     <string name="input_email">Enter email</string>
 
+    // Password Validation
+    <string name="error_password_too_short">Password must be at least 8 characters long</string>
+    <string name="error_password_no_digit">Password must include at least one number</string>
+    <string name="error_password_no_symbol">Password must include at least one symbol</string>
+
     // Registration Screen
     <string name="registration_title">Create your account</string>
     <string name="registration_name_label">Name</string>
@@ -127,6 +132,7 @@
     <string name="login_forgot_password">Forgot my password</string>
     <string name="login_error_email_required">Email is required</string>
     <string name="login_error_password_required">Password is required</string>
+    <string name="login_error_password_invalid">Invalid password complexity</string>
 
     // Reset Password Screen
     <string name="reset_password_title">Reset Password</string>
@@ -140,7 +146,12 @@
     <string name="reset_password_confirm_button">Confirm</string>
     <string name="reset_password_error_email_required">Email is required</string>
     <string name="reset_password_error_password_required">Password is required</string>
+    <string name="reset_password_error_password_invalid">Password must be at least 8 characters long and include a number and a symbol</string>
     <string name="reset_password_error_confirm_password_required">Confirm password is required</string>
+
+    // Splash Screen
+    <string name="splash_subtitle">Turn data into decisions.</string>
+    <string name="splash_description">Create, choose, and share AI-powered graphs in seconds. Fast, simple, and secure.</string>
 
     // Generic Errors
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>

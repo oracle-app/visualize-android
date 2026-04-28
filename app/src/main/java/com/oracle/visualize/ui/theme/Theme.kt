@@ -8,30 +8,69 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
+/**
+ * Dark Color Scheme using Visualize Brand Identity.
+ * Mapped to provide high contrast for "negro" (dark) text and elements.
+ */
 private val DarkColorScheme = darkColorScheme(
-    primary = TEAL_200,
-    onPrimary = BLACK,
-    secondary = PURPLE_200,
-    tertiary = TEAL_700,
-    background = BLACK,
-    surface = BLACK,
-    onBackground = WHITE,
-    onSurface = WHITE,
-    error = RED_900
+    primary = DARK_MODE_STRONG_BLUE,
+    onPrimary = WHITE,
+    primaryContainer = DARK_MODE_LIGHT_BLUE,
+    onPrimaryContainer = DARK_MODE_DARK_GRAY,
+
+    secondary = STRONG_ORANGE,
+    onSecondary = WHITE,
+
+    secondaryContainer = Color.Transparent,
+    onSecondaryContainer = DARK_MODE_NOT_AS_LIGHT_GRAY,
+
+    background = DARK_MODE_BACKGROUND,
+    onBackground = DARK_MODE_DARK_GRAY,
+    surface = DARK_MODE_BACKGROUND,
+    onSurface = DARK_MODE_DARK_GRAY,
+
+    surfaceVariant = DARK_MODE_LIGHTER_BLUE,
+    onSurfaceVariant = DARK_MODE_NOT_AS_DARK_GRAY,
+
+    outline = DARK_MODE_GRAYISH_BLUE,
+    outlineVariant = DARK_MODE_NOT_AS_DARK_GRAY,
+    error = ERROR_RED,
+    onError = WHITE,
+    scrim = SCRIM_COLOR
 )
 
+/**
+ * Light Color Scheme using Visualize Brand Identity.
+ * Adjusts onBackground/onSurface to DARK_GRAY to match the "negro" requirement for titles.
+ */
 private val LightColorScheme = lightColorScheme(
-    primary = TEAL_700,
+    primary = STRONG_BLUE,
     onPrimary = WHITE,
-    secondary = PURPLE_500,
-    tertiary = TEAL_200,
-    background = WHITE,
-    surface = GREY_50,
-    onBackground = BLACK,
-    onSurface = BLACK,
-    error = RED_900
+    primaryContainer = LIGHT_BLUE,
+    onPrimaryContainer = DARK_GRAY,
+
+    secondary = STRONG_ORANGE,
+    onSecondary = WHITE,
+
+    secondaryContainer = WHITE,
+    onSecondaryContainer = NOT_AS_LIGHT_GRAY,
+
+    background = VERY_LIGHT_GRAY,
+    onBackground = DARK_GRAY,
+    surface = VERY_LIGHT_GRAY,
+    onSurface = DARK_GRAY,
+
+    surfaceVariant = LIGHTER_BLUE,
+    onSurfaceVariant = NOT_AS_DARK_GRAY,
+
+    outline = GRAYISH_BLUE,
+    outlineVariant = NOT_AS_DARK_GRAY,
+    error = ERROR_RED,
+    onError = WHITE,
+    scrim = SCRIM_COLOR
 )
 
 @Composable

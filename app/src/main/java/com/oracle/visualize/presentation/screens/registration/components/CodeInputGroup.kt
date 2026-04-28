@@ -1,13 +1,13 @@
 package com.oracle.visualize.presentation.screens.registration.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +21,7 @@ import com.oracle.visualize.ui.theme.*
 /**
  * Reusable component for entering a multi-digit verification code.
  * Displays 4 boxes with an underline indicator and a hidden text field for input.
+ * Fully adapted for Dark Mode and Visualize Brand Identity.
  * 
  * @param code The current entered code.
  * @param onCodeChange Callback when the code changes.
@@ -45,8 +46,18 @@ fun CodeInputGroup(
         ) {
             repeat(4) { index ->
                 val char = if (index < code.length) code[index].toString() else ""
-                val containerColor = if (isError) RED_50 else BLUE_GREY_50
-                val indicatorColor = if (isError) RED_900 else BLACK
+                
+                val containerColor = if (isError) {
+                    MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                }
+                
+                val indicatorColor = if (isError) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
 
                 Surface(
                     modifier = Modifier.size(width = 64.dp, height = 80.dp),
@@ -58,7 +69,7 @@ fun CodeInputGroup(
                             text = char,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = BLUE_GREY_900
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Box(
                             modifier = Modifier

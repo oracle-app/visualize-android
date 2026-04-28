@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.oracle.visualize.R
 
 data class RegistrationUiState(
     val name: String = "",
@@ -45,11 +46,27 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.update { it.copy(password = password, passwordError = null) }
+        _uiState.update { currentState ->
+            val nextError = if (currentState.passwordError != null) {
+                getPasswordError(password)
+            } else {
+                null
+            }
+            currentState.copy(password = password, passwordError = nextError)
+        }
     }
 
     fun onConfirmPasswordChange(confirmPassword: String) {
-        _uiState.update { it.copy(confirmPassword = confirmPassword, confirmPasswordError = null) }
+        _uiState.update { currentState ->
+            val nextError = if (currentState.confirmPasswordError != null) {
+                if (confirmPassword.isEmpty()) R.string.registration_error_confirm_password_required
+                else if (currentState.password != confirmPassword) R.string.registration_error_passwords_mismatch
+                else null
+            } else {
+                null
+            }
+            currentState.copy(confirmPassword = confirmPassword, confirmPasswordError = nextError)
+        }
     }
 
     fun togglePasswordVisibility() {
@@ -58,6 +75,18 @@ class RegistrationViewModel @Inject constructor(
 
     fun toggleConfirmPasswordVisibility() {
         _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
+    }
+
+    /**
+     * Validates password complexity: 8 chars, 1 digit, 1 symbol.
+     * Returns the string resource ID of the specific error or null if valid.
+     */
+    private fun getPasswordError(password: String): Int? {
+        if (password.isBlank()) return R.string.registration_error_password_required
+        if (password.length < 8) return R.string.error_password_too_short
+        if (!password.any { it.isDigit() }) return R.string.error_password_no_digit
+        if (!password.any { !it.isLetterOrDigit() }) return R.string.error_password_no_symbol
+        return null
     }
 
     fun validateInputs(): Boolean {
@@ -72,30 +101,31 @@ class RegistrationViewModel @Inject constructor(
         ) }
 
         if (state.name.isBlank()) {
-            _uiState.update { it.copy(nameError = com.oracle.visualize.R.string.registration_error_name_required) }
+            _uiState.update { it.copy(nameError = R.string.registration_error_name_required) }
             hasError = true
         }
 
         if (state.email.isBlank()) {
-            _uiState.update { it.copy(emailError = com.oracle.visualize.R.string.registration_error_email_required) }
+            _uiState.update { it.copy(emailError = R.string.registration_error_email_required) }
             hasError = true
         } else if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            _uiState.update { it.copy(emailError = com.oracle.visualize.R.string.registration_error_email_required) } 
+            _uiState.update { it.copy(emailError = R.string.registration_error_email_required) } 
             hasError = true
         }
 
-        if (state.password.isBlank()) {
-            _uiState.update { it.copy(passwordError = com.oracle.visualize.R.string.registration_error_password_required) }
+        val passError = getPasswordError(state.password)
+        if (passError != null) {
+            _uiState.update { it.copy(passwordError = passError) }
             hasError = true
         }
 
         if (state.confirmPassword.isBlank()) {
-            _uiState.update { it.copy(confirmPasswordError = com.oracle.visualize.R.string.registration_error_confirm_password_required) }
+            _uiState.update { it.copy(confirmPasswordError = R.string.registration_error_confirm_password_required) }
             hasError = true
         } else if (state.password != state.confirmPassword) {
             _uiState.update { it.copy(
-                passwordError = com.oracle.visualize.R.string.registration_error_passwords_mismatch,
-                confirmPasswordError = com.oracle.visualize.R.string.registration_error_passwords_mismatch
+                passwordError = R.string.registration_error_passwords_mismatch,
+                confirmPasswordError = R.string.registration_error_passwords_mismatch
             ) }
             hasError = true
         }

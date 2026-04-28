@@ -32,6 +32,7 @@ import com.oracle.visualize.ui.theme.*
 /**
  * VerificationScreen: Dumb View for code verification.
  * Follows MVVM where the View only observes state and delegates events.
+ * Fully adapted for Dark Mode and Visualize Brand Identity.
  * 
  * @param viewModel ViewModel handling the verification logic.
  * @param onNavigateBack Callback to return to the previous screen.
@@ -46,7 +47,7 @@ fun VerificationScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(GREY_50)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
@@ -68,7 +69,7 @@ fun VerificationScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
-                color = GREY_50,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
                 VerificationContent(
@@ -111,7 +112,7 @@ private fun VerificationContent(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back),
-                    tint = BLACK
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -122,7 +123,7 @@ private fun VerificationContent(
             text = stringResource(R.string.verification_title),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = BLUE_GREY_900
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(25.dp))
@@ -130,7 +131,7 @@ private fun VerificationContent(
         Text(
             text = stringResource(R.string.verification_description),
             fontSize = 16.sp,
-            color = BLUE_GREY_400,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 24.dp)
         )
@@ -151,7 +152,7 @@ private fun VerificationContent(
             uiState.codeError?.let { errorRes ->
                 Text(
                     text = stringResource(errorRes),
-                    color = RED_900,
+                    color = MaterialTheme.colorScheme.error,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.align(Alignment.CenterStart)
@@ -174,12 +175,14 @@ private fun VerificationContent(
             modifier = Modifier
                 .fillMaxWidth(0.65f)
                 .height(64.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = TEAL_700),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            ),
             shape = RoundedCornerShape(32.dp)
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(
-                    color = WHITE,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
                 )
             } else {
@@ -195,7 +198,7 @@ private fun VerificationContent(
 
         Text(
             text = stringResource(R.string.registration_version),
-            color = BLUE_GREY_400,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 24.dp)
         )
@@ -214,7 +217,7 @@ private fun ResendCodeSection(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = stringResource(R.string.verification_resend_prompt),
-            color = BLUE_GREY_400,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp
         )
         Spacer(modifier = Modifier.width(4.dp))
@@ -223,7 +226,7 @@ private fun ResendCodeSection(
                 stringResource(R.string.verification_countdown, timer)
             else
                 stringResource(R.string.verification_resend_link),
-            color = ORANGE_500,
+            color = MaterialTheme.colorScheme.secondary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable(enabled = isEnabled) { onResend() },
@@ -245,7 +248,7 @@ private fun ResendWaitMessage(isVisible: Boolean) {
     ) {
         AnimatedVisibility(visible = isVisible) {
             Surface(
-                color = WHITE,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 8.dp,
                 shape = RoundedCornerShape(4.dp),
                 modifier = Modifier.padding(horizontal = 24.dp)
@@ -254,7 +257,7 @@ private fun ResendWaitMessage(isVisible: Boolean) {
                     text = stringResource(R.string.verification_resend_wait),
                     modifier = Modifier.padding(16.dp),
                     fontSize = 14.sp,
-                    color = BLACK
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

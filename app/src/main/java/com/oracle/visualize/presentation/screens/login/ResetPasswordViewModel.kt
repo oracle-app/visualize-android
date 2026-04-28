@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.oracle.visualize.R
 
 /**
  * State for the Reset Password flow.
@@ -52,11 +53,27 @@ class ResetPasswordViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.update { it.copy(password = password, passwordError = null) }
+        _uiState.update { currentState ->
+            val nextError = if (currentState.passwordError != null) {
+                getPasswordError(password)
+            } else {
+                null
+            }
+            currentState.copy(password = password, passwordError = nextError)
+        }
     }
 
     fun onConfirmPasswordChange(confirmPassword: String) {
-        _uiState.update { it.copy(confirmPassword = confirmPassword, confirmPasswordError = null) }
+        _uiState.update { currentState ->
+            val nextError = if (currentState.confirmPasswordError != null) {
+                if (confirmPassword.isEmpty()) R.string.reset_password_error_confirm_password_required
+                else if (currentState.password != confirmPassword) R.string.registration_error_passwords_mismatch
+                else null
+            } else {
+                null
+            }
+            currentState.copy(confirmPassword = confirmPassword, confirmPasswordError = nextError)
+        }
     }
 
     fun togglePasswordVisibility() {
@@ -67,10 +84,21 @@ class ResetPasswordViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(isConfirmPasswordVisible = !it.isConfirmPasswordVisible) }
     }
 
+    /**
+     * Validates password complexity: 8 chars, 1 digit, 1 symbol.
+     * Returns the string resource ID of the error or null if valid.
+     */
+    private fun getPasswordError(password: String): Int? {
+        if (password.length < 8) return R.string.error_password_too_short
+        if (!password.any { it.isDigit() }) return R.string.error_password_no_digit
+        if (!password.any { !it.isLetterOrDigit() }) return R.string.error_password_no_symbol
+        return null
+    }
+
     fun sendResetLink() {
         val state = _uiState.value
         if (state.email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            _uiState.update { it.copy(emailError = com.oracle.visualize.R.string.reset_password_error_email_required) }
+            _uiState.update { it.copy(emailError = R.string.reset_password_error_email_required) }
             return
         }
 
@@ -83,7 +111,7 @@ class ResetPasswordViewModel @Inject constructor() : ViewModel() {
 
     fun verifyCode() {
         if (_uiState.value.code.length < 4) {
-            _uiState.update { it.copy(codeError = com.oracle.visualize.R.string.verification_error_code_required) }
+            _uiState.update { it.copy(codeError = R.string.verification_error_code_required) }
             return
         }
 
@@ -98,17 +126,19 @@ class ResetPasswordViewModel @Inject constructor() : ViewModel() {
         val state = _uiState.value
         var hasError = false
 
-        if (state.password.isBlank()) {
-            _uiState.update { it.copy(passwordError = com.oracle.visualize.R.string.reset_password_error_password_required) }
+        val passError = getPasswordError(state.password)
+        if (passError != null) {
+            _uiState.update { it.copy(passwordError = passError) }
             hasError = true
         }
+
         if (state.confirmPassword.isBlank()) {
-            _uiState.update { it.copy(confirmPasswordError = com.oracle.visualize.R.string.reset_password_error_confirm_password_required) }
+            _uiState.update { it.copy(confirmPasswordError = R.string.reset_password_error_confirm_password_required) }
             hasError = true
         } else if (state.password != state.confirmPassword) {
             _uiState.update { it.copy(
-                passwordError = com.oracle.visualize.R.string.registration_error_passwords_mismatch,
-                confirmPasswordError = com.oracle.visualize.R.string.registration_error_passwords_mismatch
+                passwordError = R.string.registration_error_passwords_mismatch,
+                confirmPasswordError = R.string.registration_error_passwords_mismatch
             ) }
             hasError = true
         }
@@ -119,7 +149,6 @@ class ResetPasswordViewModel @Inject constructor() : ViewModel() {
             _uiState.update { it.copy(isLoading = true) }
             delay(1500)
             _uiState.update { it.copy(isLoading = false) }
-            // Logic to navigate back to login would be handled in the View via a shared event or similar
         }
     }
 }

@@ -30,6 +30,7 @@ import com.oracle.visualize.ui.theme.*
 /**
  * RegistrationScreen: Dumb View for user account creation.
  * Follows MVVM and architectural spacing standards.
+ * Fully adapted for Dark Mode and Visualize Brand Identity.
  * 
  * @param viewModel ViewModel handling registration logic.
  * @param onNavigateToLogin Callback to go back to login.
@@ -43,11 +44,17 @@ fun RegistrationScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize().background(GREY_50)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth().height(240.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp),
             contentScale = ContentScale.Crop
         )
 
@@ -59,8 +66,10 @@ fun RegistrationScreen(
             Spacer(modifier = Modifier.height(140.dp))
 
             Surface(
-                modifier = Modifier.fillMaxSize().weight(1f),
-                color = GREY_50,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
                 RegistrationContent(
@@ -85,7 +94,9 @@ private fun RegistrationContent(
     onNavigateToVerification: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 70dp spacing from top of surface as per architectural guide
@@ -95,7 +106,7 @@ private fun RegistrationContent(
             text = stringResource(R.string.registration_title),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = BLUE_GREY_900,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
 
@@ -147,9 +158,11 @@ private fun RegistrationContent(
 
         Text(
             text = stringResource(R.string.reset_password_password_helper),
-            color = BLUE_GREY_400,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 12.sp,
-            modifier = Modifier.fillMaxWidth().padding(start = 2.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 2.dp),
             textAlign = TextAlign.Start
         )
 
@@ -161,12 +174,19 @@ private fun RegistrationContent(
                     onNavigateToVerification()
                 }
             },
-            modifier = Modifier.fillMaxWidth(0.65f).height(64.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = DEEP_TEAL_900),
+            modifier = Modifier
+                .fillMaxWidth(0.65f)
+                .height(64.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            ),
             shape = RoundedCornerShape(32.dp)
         ) {
             if (uiState.isLoading) {
-                CircularProgressIndicator(color = WHITE, modifier = Modifier.size(24.dp))
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(24.dp)
+                )
             } else {
                 Text(
                     text = stringResource(R.string.registration_signup_button),
@@ -184,16 +204,18 @@ private fun RegistrationContent(
         ) {
             Text(
                 text = stringResource(R.string.registration_already_have_account),
-                color = BLUE_GREY_400,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(R.string.registration_login_link),
-                color = CORAL_500,
+                color = MaterialTheme.colorScheme.secondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { onNavigateToLogin() }.padding(4.dp),
+                modifier = Modifier
+                    .clickable { onNavigateToLogin() }
+                    .padding(4.dp),
                 textDecoration = TextDecoration.Underline
             )
         }
@@ -202,7 +224,7 @@ private fun RegistrationContent(
 
         Text(
             text = stringResource(R.string.registration_version),
-            color = BLUE_GREY_400,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 24.dp)
         )
