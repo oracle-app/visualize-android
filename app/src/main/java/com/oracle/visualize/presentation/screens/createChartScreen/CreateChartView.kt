@@ -8,12 +8,29 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -28,10 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.SelectedDataset
-import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartViewModel
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
 /**
@@ -40,6 +55,7 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
+    onNavigateToSelection: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CreateChartViewModel = hiltViewModel(),
 ) {
@@ -86,9 +102,9 @@ fun CreatePage(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val descriptionText = when (uiState) {
-                is CreateChartUiState.Success -> stringResource(R.string.create_description_success)
-                is CreateChartUiState.Uploading -> stringResource(R.string.create_description_uploading)
+            val descriptionText = when {
+                uiState.isSuccess -> stringResource(R.string.create_description_success)
+                uiState.isUploading -> stringResource(R.string.create_description_uploading)
                 else -> stringResource(R.string.create_description_idle)
             }
 
@@ -101,23 +117,23 @@ fun CreatePage(
                     .padding(bottom = 24.dp)
             )
 
-            if (uiState is CreateChartUiState.Idle) {
+            if (uiState.isIdle) {
                 DashedSelector(
                     onClick = { launcher.launch("*/*") }
                 )
             } else {
-                FileStatusSection(uiState as CreateChartUiState, viewModel)
+                FileStatusSection(uiState, viewModel)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (uiState !is CreateChartUiState.Success) {
+            if (!uiState.isSuccess) {
                 DatasetRequirementsSection()
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (uiState is CreateChartUiState.Success) {
+            if (uiState.isSuccess) {
                 Button(
                     onClick = onNavigateToSelection,
                     modifier = Modifier
@@ -137,7 +153,9 @@ fun CreatePage(
     }
 }
 
-// Additional components (DashedSelector, FileStatusSection, etc. remain unchanged)
+/**
+ * Visual component for the file selector with a dashed border.
+ */
 @Composable
 fun DashedSelector(onClick: () -> Unit) {
     Box(
@@ -195,37 +213,38 @@ fun DashedSelector(onClick: () -> Unit) {
     }
 }
 
+/**
+ * Displays the status of the file (Uploading, Success, or Error).
+ */
 @Composable
 fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateChartViewModel) {
-    when (val state = uiState) {
-        is CreateChartUiState.Uploading -> {
-            FileStatusItem(
-                fileName = state.fileName,
-                fileSize = state.fileSize,
-                progress = state.progress,
-                onCancel = { viewModel.resetState() }
-            )
-        }
-        is CreateChartUiState.Success -> {
-            FileStatusItem(
-                fileName = state.fileName,
-                fileSize = state.fileSize,
-                isSuccess = true,
-                onDelete = { viewModel.resetState() }
-            )
-        }
-        is CreateChartUiState.Error -> {
-            FileStatusItem(
-                fileName = state.fileName ?: "Error",
-                fileSize = state.fileSize ?: "",
-                errorMessage = state.message,
-                onCancel = { viewModel.resetState() }
-            )
-        }
-        else -> {}
+    if (uiState.isUploading) {
+        FileStatusItem(
+            fileName = uiState.fileName ?: "",
+            fileSize = uiState.fileSize ?: "",
+            progress = uiState.uploadProgress,
+            onCancel = { viewModel.resetState() }
+        )
+    } else if (uiState.isSuccess) {
+        FileStatusItem(
+            fileName = uiState.fileName ?: "",
+            fileSize = uiState.fileSize ?: "",
+            isSuccess = true,
+            onDelete = { viewModel.resetState() }
+        )
+    } else if (uiState.error != null) {
+        FileStatusItem(
+            fileName = uiState.fileName ?: "Error",
+            fileSize = uiState.fileSize ?: "",
+            errorMessage = uiState.error,
+            onCancel = { viewModel.resetState() }
+        )
     }
 }
 
+/**
+ * Displays requirements for the dataset to be uploaded.
+ */
 @Composable
 fun DatasetRequirementsSection() {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -260,6 +279,9 @@ fun DatasetRequirementsSection() {
     }
 }
 
+/**
+ * Example table component showing a preview of a valid dataset structure.
+ */
 @Composable
 fun TableExampleComponent() {
     Column(
@@ -292,6 +314,9 @@ fun TableExampleComponent() {
     }
 }
 
+/**
+ * Helper to extract the file name from a Uri.
+ */
 private fun getFileName(context: Context, uri: Uri): String? {
     var name: String? = null
     context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
@@ -303,6 +328,9 @@ private fun getFileName(context: Context, uri: Uri): String? {
     return name
 }
 
+/**
+ * Helper to extract the file size in bytes from a Uri.
+ */
 private fun getFileSizeBytes(context: Context, uri: Uri): Long {
     var size: Long = 0
     context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
