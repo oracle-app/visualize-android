@@ -55,6 +55,11 @@ fun formatTime(date: Date, context: Context): String{
         else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
+/**
+ * A card component used in the feed to display a visualization's summary.
+ *
+ * @param item The [VisualizationCard] data to display.
+ */
 @Composable
 fun FeedCard(item: VisualizationCard) {
     val context = LocalContext.current

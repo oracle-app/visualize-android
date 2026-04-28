@@ -8,6 +8,9 @@ import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import kotlinx.serialization.json.JsonObject
 import java.util.Date
 
+/**
+ * Interface defining the operations for visualization management.
+ */
 interface VisualizationRepository {
     suspend fun createVisualization(
         authorID: String,

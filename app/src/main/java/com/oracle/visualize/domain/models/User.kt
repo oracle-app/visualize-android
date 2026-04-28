@@ -1,5 +1,8 @@
 package com.oracle.visualize.domain.models
 
+/**
+ * Domain model representing a User.
+ */
 data class User (
     val id: String,
     val userType: UserType,

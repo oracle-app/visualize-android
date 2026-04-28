@@ -29,6 +29,12 @@ import com.oracle.visualize.domain.models.User
 private val AVATAR_SIZE    = 33.dp
 private val AVATAR_OFFSET  = 16.dp
 
+/**
+ * Composable that displays a stack of user avatars.
+ * Used in the feed to show who a visualization is shared with.
+ *
+ * @param members List of [User] whose avatars will be displayed.
+ */
 @Composable
 fun MemberAvatarStackFeed(
     members: List<User>,

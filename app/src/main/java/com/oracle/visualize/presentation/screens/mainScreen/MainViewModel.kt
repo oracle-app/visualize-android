@@ -13,6 +13,10 @@ import com.oracle.visualize.presentation.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 
+/**
+ * ViewModel for the Main screen (container for bottom navigation).
+ * Provides the list of navigation items.
+ */
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 

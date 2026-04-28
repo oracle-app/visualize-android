@@ -22,6 +22,13 @@ import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 
 
+/**
+ * Main container screen that sets up the navigation host and bottom bar.
+ *
+ * @param viewModel The [MainViewModel] providing navigation items.
+ * @param onToggleTheme Callback to toggle the app theme.
+ * @param isDarkMode Boolean indicating if dark mode is enabled.
+ */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),

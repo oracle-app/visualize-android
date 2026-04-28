@@ -6,6 +6,12 @@ import com.oracle.visualize.domain.exceptions.AppError
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Use case for registering a new user.
+ * Performs validation on email and password before calling the [AuthRepository].
+ *
+ * @property authRepository The repository used for authentication operations.
+ */
 @Singleton
 class RegisterUseCase @Inject constructor(
     private val authRepository: AuthRepository

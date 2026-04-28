@@ -8,11 +8,25 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Data source for user-related operations using Firestore.
+ *
+ * @property firestore The [FirebaseFirestore] instance used for database operations.
+ */
 @Singleton
 class UserDatasource @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
 
+    /**
+     * Fetches a user by their unique identifier.
+     *
+     * @param userID The unique ID of the user.
+     * @return The [UserDTO] representing the user.
+     * @throws AppError.ParsingError If the document exists but cannot be parsed.
+     * @throws AppError.NotFound If the user does not exist.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getUserByID(userID: String): UserDTO {
         try {
             val snapshot = firestore.collection("users")
@@ -32,6 +46,13 @@ class UserDatasource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches teams that the specified user is a member of.
+     *
+     * @param userID The unique ID of the user.
+     * @return A list of [TeamDTO] objects.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getTeamsIntegratedByUser(userID: String): List<TeamDTO> {
         return try {
             val snapshot = firestore.collection("teams").whereArrayContains("memberIDs", userID).get().await()
@@ -42,6 +63,13 @@ class UserDatasource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches user suggestions based on a partial email address.
+     *
+     * @param email The partial email string to search for.
+     * @return A list of [UserDTO] objects matching the search criteria.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getUserSuggestionsForSearch(email: String): List<UserDTO> {
         return try {
             val snapshot = firestore.collection("users")
@@ -62,6 +90,14 @@ class UserDatasource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches groups (teams) that the specified user is in.
+     * Note: Uses "groups" collection; verify if it should be "teams".
+     *
+     * @param userID The unique ID of the user.
+     * @return A list of [TeamDTO] objects.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
         return try {
             val snapshot = firestore.collection("groups") // Nota: Revisa si esto debería ser "teams" o "groups"

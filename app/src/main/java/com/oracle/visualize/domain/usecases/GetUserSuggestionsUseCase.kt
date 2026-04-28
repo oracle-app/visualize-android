@@ -6,6 +6,11 @@ import com.oracle.visualize.domain.repositories.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Use case to fetch user suggestions based on an email query.
+ *
+ * @property userRepository The repository to fetch user data from.
+ */
 @Singleton
 class GetUserSuggestionsUseCase @Inject constructor(
     private val userRepository: UserRepository

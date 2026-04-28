@@ -15,6 +15,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Feed screen.
+ * Handles fetching visualizations based on filters and search queries.
+ *
+ * @property getAllUserVisualizationsUseCase Use case to fetch visualizations for a user.
+ */
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase

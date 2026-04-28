@@ -48,6 +48,11 @@ private fun getMaxYBarChart(series: List<ChartDataSeries>): Float {
 /*
 * CAUTION: Implement the rendering algorithm when the charts microservice JSON is defined.
 * */
+/**
+ * Renders a chart based on the provided [Chart] data using KoalaPlot.
+ *
+ * @param chart The chart configuration and data to render.
+ */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun RenderChart(chart: Chart) {

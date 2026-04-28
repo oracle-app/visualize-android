@@ -11,12 +11,24 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/**
+ * Data source for visualization-related operations using Firestore.
+ *
+ * @property db The [FirebaseFirestore] instance used for database operations.
+ */
 class VisualizationDataSource @Inject constructor(
     private val db: FirebaseFirestore
 ) {
     private val visualizationsRef = db.collection("visualizations")
     private val teamsRef = db.collection("teams")
 
+    /**
+     * Creates a new visualization in the database.
+     *
+     * @param visualization The [Visualization] domain model to be saved.
+     * @throws AppError.ValidationError If required fields are empty.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun createVisualization(visualization: Visualization) {
         try {
             if (visualization.authorID.isNotEmpty() && visualization.title.isNotEmpty() &&
@@ -40,6 +52,13 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches all visualizations from the database.
+     *
+     * @return A list of [VisualizationDTO] objects.
+     * @throws AppError.ParsingError If any document cannot be parsed.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getAllVisualizations(): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef.get().await()
@@ -55,6 +74,14 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches visualizations shared directly with a specific user.
+     *
+     * @param userID The unique ID of the user.
+     * @return A list of [VisualizationDTO] objects.
+     * @throws AppError.ParsingError If any document cannot be parsed.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getVisualizationsSharedWithUser(userID: String): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef
@@ -73,6 +100,14 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches visualizations created by a specific user.
+     *
+     * @param userID The unique ID of the user.
+     * @return A list of [VisualizationDTO] objects authored by the user.
+     * @throws AppError.ParsingError If any document cannot be parsed.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getPersonalVisualizations(userID: String): List<VisualizationDTO> {
         return try {
             val visualizations = visualizationsRef
@@ -91,6 +126,14 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches visualizations shared with any team that the user is a member of.
+     *
+     * @param userID The unique ID of the user.
+     * @return A list of [VisualizationDTO] objects shared with the user's teams.
+     * @throws AppError.ParsingError If any document cannot be parsed.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getSharedVisualizationsByTeamsIntegratedByUser(userID: String): List<VisualizationDTO> {
         return try {
             val teams = teamsRef.whereArrayContains("membersIDs", userID).get().await()
@@ -115,6 +158,13 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Aggregates all visualizations relevant to a user (personal, shared with user, shared with teams).
+     *
+     * @param userID The unique ID of the user.
+     * @return A list of [VisualizationDTO] objects.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getAllVisualizationsByUserID(userID: String): List<VisualizationDTO> {
         return try {
             val finalArray = mutableListOf<VisualizationDTO>()
@@ -132,6 +182,15 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Fetches all users that a specific visualization is shared with.
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @return A list of [UserDTO] objects representing the users.
+     * @throws AppError.NotFound If the visualization ID does not exist.
+     * @throws AppError.ParsingError If documentation mapping fails.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun getAllUsersVisualizationIsSharedWith(visualizationID: String): List<UserDTO> {
         return try {
             val snapshot = db.collection("visualizations")

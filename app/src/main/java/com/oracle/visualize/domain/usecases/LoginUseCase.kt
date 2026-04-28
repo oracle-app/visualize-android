@@ -6,6 +6,12 @@ import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.exceptions.AppError
 import javax.inject.Inject
 
+/**
+ * Use case for logging in a user.
+ * Validates the email and password before attempting to authenticate via [AuthRepository].
+ *
+ * @property authRepository The repository used for authentication.
+ */
 class LoginUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()

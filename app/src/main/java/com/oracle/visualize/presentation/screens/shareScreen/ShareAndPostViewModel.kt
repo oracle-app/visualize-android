@@ -16,6 +16,13 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Share and Post screen.
+ * Manages team selections and user search suggestions for sharing visualizations.
+ *
+ * @property teamRepository Repository to fetch team information.
+ * @property getUserSuggestionsUseCase Use case to search for users by email.
+ */
 @HiltViewModel
 class ShareAndPostViewModel @Inject constructor(
     private val teamRepository: TeamRepository, // Opcional: Podrías crear UseCases para esto también
