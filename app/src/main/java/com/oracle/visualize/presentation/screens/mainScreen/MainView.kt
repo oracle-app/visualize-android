@@ -20,6 +20,7 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 
 
 /**
