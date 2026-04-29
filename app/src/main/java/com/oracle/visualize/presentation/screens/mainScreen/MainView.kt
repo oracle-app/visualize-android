@@ -7,15 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.oracle.visualize.presentation.navigation.NavRoutes
+ import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
@@ -66,7 +64,6 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            // Mejora: Usa el padding completo para evitar problemas visuales
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -97,8 +94,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             // TODO: Implement TeamsPage
         }
 
-        composable<NavRoutes.Profile> { backStackEntry ->
-            val profile = backStackEntry.toRoute<NavRoutes.Profile>()
+        composable<NavRoutes.Profile> {
+            ProfilePage(modifier = Modifier.fillMaxSize())
             // TODO: Pass profile.userId to ProfilePage
         }
     }

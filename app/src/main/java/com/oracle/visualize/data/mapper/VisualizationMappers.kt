@@ -4,7 +4,6 @@ import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
-import kotlin.collections.map
 
 /**
  * Extension function to map [VisualizationDTO] to [Visualization] domain model.

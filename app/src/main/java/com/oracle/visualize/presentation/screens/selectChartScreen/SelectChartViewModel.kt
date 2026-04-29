@@ -25,7 +25,7 @@ class SelectChartViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadMockCharts() {
-        val mockCharts = selectChartMockData.visualizations.map { VisualizationSelection(it) }
+        val mockCharts = SelectChartMockData.visualizations.map { VisualizationSelection(it) }
         _uiState.value = ChartSelectionUiState.Success(charts = mockCharts)
     }
 

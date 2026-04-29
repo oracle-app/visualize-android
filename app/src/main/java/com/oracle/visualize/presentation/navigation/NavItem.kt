@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.oracle.visualize.presentation.navigation.NavRoutes
 
 /**
  * UI model representing a single item in the application's top-level navigation (e.g., Bottom Bar).

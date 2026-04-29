@@ -1,6 +1,5 @@
 package com.oracle.visualize.domain.usecases
 
-import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.repositories.UserRepository
 import javax.inject.Inject
