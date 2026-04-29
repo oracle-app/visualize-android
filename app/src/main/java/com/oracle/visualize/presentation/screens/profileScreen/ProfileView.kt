@@ -182,7 +182,7 @@ fun ProfilePage(
                         border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.onError,
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.error
                         ),
                         modifier = Modifier
