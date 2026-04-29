@@ -1,12 +1,8 @@
 package com.oracle.visualize.domain.repositories
 
-import com.oracle.visualize.domain.models.Team
-import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
-import kotlinx.serialization.json.JsonObject
-import java.util.Date
 
 /**
  * Interface defining the operations for visualization management.
