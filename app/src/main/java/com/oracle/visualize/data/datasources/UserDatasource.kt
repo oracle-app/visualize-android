@@ -110,4 +110,8 @@ class UserDatasource @Inject constructor(
             throw AppError.NetworkError("Error fetching user groups: ${e.message}")
         }
     }
+
+    suspend fun saveUserProfile(uid: String, user: UserDTO){
+        firestore.collection("users").document(uid).set(user).await()
+    }
 }
