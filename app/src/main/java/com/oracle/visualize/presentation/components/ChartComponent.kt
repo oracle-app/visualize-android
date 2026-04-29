@@ -137,7 +137,7 @@ fun ChartRender(chart: Chart<*>) {
         }
 
         else -> {
-            throw IllegalArgumentException("Invalid chart type")
+            Text("Invalid chart type was detected")
         }
     }
 }

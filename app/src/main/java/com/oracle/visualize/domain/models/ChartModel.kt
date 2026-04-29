@@ -1,6 +1,5 @@
 package com.oracle.visualize.domain.models
 
-import androidx.compose.runtime.Composable
 import com.oracle.visualize.domain.models.enums.ChartTypes
 
 sealed class Chart<T>(
