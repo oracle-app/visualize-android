@@ -22,5 +22,7 @@ class AuthRepositoryImpl @Inject constructor(private val source: AuthFirebaseSou
 
     override fun logout() = source.logout()
 
-    override fun getCurrentUser(): AuthUser? = source.getCurrentUser()?.toDomain()
+    override fun getCurrentUser(): AuthUser? {
+      return source.getCurrentUser()?.toDomain()
+    }
 }
