@@ -32,6 +32,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.stringResource
 
 
+/**
+ * Screen for sharing a visualization with users or teams.
+ *
+ * @param viewModel The [ShareAndPostViewModel] that manages the sharing state.
+ * @param onNavigateBack Callback to navigate back.
+ */
 @Composable
 fun ShareAndPostScreen(
     viewModel: ShareAndPostViewModel = hiltViewModel(),

@@ -9,12 +9,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Represents the UI state for the Login screen.
+ *
+ * @property isLoading Indicates if a login operation is in progress.
+ * @property error Contains an error message if the login fails.
+ * @property success Indicates if the login was successful.
+ */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val success: Boolean = false
 )
 
+/**
+ * ViewModel for the Login screen.
+ * Manages the UI state and orchestrates the login process using [LoginUseCase].
+ *
+ * @property loginUseCase The use case for performing the login operation.
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase): ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())

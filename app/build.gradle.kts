@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)

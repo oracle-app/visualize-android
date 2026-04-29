@@ -4,8 +4,9 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/*
- * Use case to validate if a dataset file has a supported format (.csv or .xlsx).
+/**
+ * Use case to validate if a dataset file has a supported format (.csv or .xlsx)
+ * and its size is within the allowed limits.
  */
 @Singleton
 class ValidateDatasetUseCase @Inject constructor() {

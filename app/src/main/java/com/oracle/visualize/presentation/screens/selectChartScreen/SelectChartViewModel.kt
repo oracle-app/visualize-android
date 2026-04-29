@@ -10,6 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * ViewModel for the Select Chart screen.
+ * Manages the selection of visualizations from a list.
+ */
 @HiltViewModel
 class SelectChartViewModel @Inject constructor() : ViewModel() {
 
@@ -21,7 +25,7 @@ class SelectChartViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadMockCharts() {
-        val mockCharts = selectChartMockData.visualizations.map { VisualizationSelection(it) }
+        val mockCharts = SelectChartMockData.visualizations.map { VisualizationSelection(it) }
         _uiState.value = ChartSelectionUiState.Success(charts = mockCharts)
     }
 
