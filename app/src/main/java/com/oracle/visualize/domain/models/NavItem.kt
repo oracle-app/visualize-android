@@ -3,8 +3,11 @@ package com.oracle.visualize.domain.models
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
+/**
+ * NavItem: Data model for Bottom Navigation items.
+ */
 data class NavItem(
-    @StringRes val label: Int,
+    @get:StringRes val label: Int,
     val icon: ImageVector,
     val badgeCount: Int = 0,
     val route: String

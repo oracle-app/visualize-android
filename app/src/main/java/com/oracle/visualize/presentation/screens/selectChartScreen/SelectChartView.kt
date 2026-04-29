@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,11 +50,7 @@ fun ChartSelectionPage(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, 
-                            contentDescription = stringResource(R.string.icon_back), 
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.icon_back))
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -89,13 +86,13 @@ fun ChartSelectionPage(
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_title),
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = WHITE,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_subtitle),
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                                color = WHITE.copy(alpha = 0.9f),
                                 fontSize = 12.sp
                             )
                         }
@@ -138,11 +135,7 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(
-                                    text = stringResource(R.string.chart_selection_post_personal), 
-                                    color = MaterialTheme.colorScheme.onPrimary, 
-                                    fontSize = 12.sp
-                                )
+                                Text(stringResource(R.string.chart_selection_post_personal), color = WHITE, fontSize = 12.sp)
                             }
 
                             Button(
@@ -152,11 +145,7 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(
-                                    text = stringResource(R.string.chart_selection_share_and_post), 
-                                    color = MaterialTheme.colorScheme.onPrimary, 
-                                    fontSize = 12.sp
-                                )
+                                Text(stringResource(R.string.chart_selection_share_and_post), color = WHITE, fontSize = 12.sp)
                             }
                         }
                     }
