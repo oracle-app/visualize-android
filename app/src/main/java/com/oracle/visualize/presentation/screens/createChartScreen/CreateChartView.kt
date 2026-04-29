@@ -36,6 +36,9 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
 
 /**
  * Screen for uploading a dataset to create new visualizations.
+ *
+ * @param modifier Modifier for the layout.
+ * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

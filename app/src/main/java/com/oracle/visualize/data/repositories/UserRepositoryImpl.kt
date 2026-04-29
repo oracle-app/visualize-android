@@ -12,6 +12,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
+/**
+ * Implementation of [UserRepository] to manage user-specific data.
+ *
+ * @property userDatasource Data source for user operations in Firestore.
+ */
 class UserRepositoryImpl @Inject constructor(
     private val userDatasource: UserDatasource
 ) : UserRepository {

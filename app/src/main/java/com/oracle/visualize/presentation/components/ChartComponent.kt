@@ -34,6 +34,17 @@ private fun generateColors(n: Int): List<Color> {
     }
 }
 
+
+/*
+* CAUTION: Implement the rendering algorithm when the charts microservice JSON is defined.
+* */
+
+/**
+ * Renders a chart based on the provided [Chart] data using KoalaPlot.
+ *
+ * @param chart The chart configuration and data to render.
+ */
+ 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun ChartRender(chart: Chart<*>) {

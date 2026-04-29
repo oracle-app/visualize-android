@@ -34,6 +34,13 @@ import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 
+/**
+ * A top bar component for the feed screen that includes a title and a filter dropdown menu.
+ *
+ * @param scrollBehavior Scroll behavior for the top app bar.
+ * @param selectedFilter The currently selected filter.
+ * @param onFilterSelected Callback when a filter is selected.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedTopBar(

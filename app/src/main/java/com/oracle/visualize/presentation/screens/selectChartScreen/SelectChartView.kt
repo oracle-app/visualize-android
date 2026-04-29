@@ -49,6 +49,13 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.components.Ch
 import com.oracle.visualize.ui.theme.ErrorRed
 
 
+/**
+ * Screen for selecting visualizations to post or share.
+ *
+ * @param onBack Callback to navigate back.
+ * @param onNavigateToShare Callback to navigate to the share screen.
+ * @param viewModel The [SelectChartViewModel] that manages chart selections.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartSelectionPage(

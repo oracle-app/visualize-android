@@ -15,6 +15,12 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Create Chart screen.
+ * Handles file selection, validation, and simulated upload progress.
+ *
+ * @property validateDatasetUseCase Use case to validate the selected dataset.
+ */
 @HiltViewModel
 class CreateChartViewModel @Inject constructor(
     private val validateDatasetUseCase: ValidateDatasetUseCase

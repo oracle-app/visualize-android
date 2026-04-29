@@ -8,6 +8,12 @@ import androidx.navigation.NavController
 
 
 
+/**
+ * Composable representing the Login screen.
+ *
+ * @param navController NavController for navigating between screens.
+ * @param viewModel The [LoginViewModel] that manages the login state.
+ */
 @Composable
 fun LoginScreen(
     navController: NavController,

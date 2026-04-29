@@ -6,6 +6,11 @@ import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import kotlin.collections.map
 
+/**
+ * Extension function to map [VisualizationDTO] to [Visualization] domain model.
+ *
+ * @return A [Visualization] object.
+ */
 fun VisualizationDTO.toDomain(): Visualization = Visualization(
     id = id,
     authorID = authorID,
@@ -16,6 +21,14 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
     createdAt = createdAt.toDate(),
 )
 
+/**
+ * Extension function to map [VisualizationDTO] to [VisualizationCard] domain model.
+ * Used for displaying a summary of the visualization in lists/feeds.
+ *
+ * @param authorName The name of the visualization's author.
+ * @param sharedUsers List of [User] objects representing who the visualization is shared with.
+ * @return A [VisualizationCard] object.
+ */
 fun VisualizationDTO.toVisualizationCard(authorName: String, sharedUsers: List<User>): VisualizationCard {
     return VisualizationCard(
         id = this.id,
