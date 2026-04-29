@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.ChartSelectionUiState
 import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
 import com.oracle.visualize.ui.theme.ErrorRed
 

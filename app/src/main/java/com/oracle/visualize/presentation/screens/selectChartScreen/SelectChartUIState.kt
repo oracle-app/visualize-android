@@ -1,4 +1,6 @@
-package com.oracle.visualize.domain.models
+package com.oracle.visualize.presentation.screens.selectChartScreen
+
+import com.oracle.visualize.domain.models.Visualization
 
 /**
  * Represents the UI state for the Chart Selection screen.
