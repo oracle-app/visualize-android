@@ -25,8 +25,8 @@ import kotlinx.coroutines.launch
  */
 @HiltViewModel
 class ShareAndPostViewModel @Inject constructor(
-    private val teamRepository: TeamRepository, // Opcional: Podrías crear UseCases para esto también
-    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase // Inyectamos el UseCase
+    private val teamRepository: TeamRepository,
+    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
@@ -75,7 +75,7 @@ class ShareAndPostViewModel @Inject constructor(
                     suggestedUsers = suggestedUsers
                 )
             } catch (e: Exception) {
-                // Traducimos el error técnico a un mensaje amigable
+                // Translates technical error
                 val errorMessage = when (e) {
                     is AppError.NetworkError -> "Connection error. Please check your internet."
                     is AppError.ParsingError -> "There was a problem reading your teams."

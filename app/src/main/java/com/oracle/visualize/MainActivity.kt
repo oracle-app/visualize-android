@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             VisualizeTheme {
-                ShareAndPostScreen()
+                MainScreen()
             }
         }
     }

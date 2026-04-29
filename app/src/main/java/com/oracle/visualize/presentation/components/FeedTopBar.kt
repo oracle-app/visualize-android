@@ -77,10 +77,11 @@ fun FeedTopBar(
                 )
             }
 
+            @Suppress("SpellCheckingInspection")
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.width(200.dp).background(Color.White) // ancho fijo como en el screenshot
+                modifier = Modifier.width(200.dp).background(MaterialTheme.colorScheme.primary)
             ) {
                 VisualizationFilter.entries.forEach { filter ->
                     val isSelected = filter == selectedFilter
@@ -104,7 +105,7 @@ fun FeedTopBar(
                                 color = if (isSelected)
                                     MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
                                 else
-                                    Color.White
+                                    MaterialTheme.colorScheme.primaryContainer
                             )
                             .clip(RoundedCornerShape(10.dp)),
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)

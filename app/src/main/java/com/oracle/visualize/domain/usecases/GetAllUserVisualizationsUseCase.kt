@@ -16,7 +16,7 @@ import javax.inject.Singleton
 class GetAllUserVisualizationsUseCase @Inject constructor(
     private val visualizationRepository: VisualizationRepository
 ){
-    // Cambiamos el tipo de retorno a Result<List<VisualizationCard>>
+    // Return type Result<List<VisualizationCard>>
     suspend operator fun invoke(userID: String, filter: VisualizationFilter): Result<List<VisualizationCard>> {
 
         if (userID.isBlank()) {

@@ -20,7 +20,7 @@ class RegisterUseCase @Inject constructor(
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
 
     suspend operator fun invoke(email: String, password: String): Result<AuthUser> {
-        // 1. Validaciones usando Fail Fast con Result
+        // 1. Validations using Fail Fast with Result
         if (email.isBlank()) {
             return Result.failure(AppError.ValidationError("Email is required"))
         }

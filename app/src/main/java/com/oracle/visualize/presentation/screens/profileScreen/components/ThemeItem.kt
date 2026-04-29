@@ -23,13 +23,12 @@ fun ThemeItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var borderColor: Color
     val shape = RoundedCornerShape(35)
 
-    if(isSelected.equals(true)) {
-        borderColor = MaterialTheme.colorScheme.onPrimaryContainer
+    val borderColor: Color = if(isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
     } else {
-        borderColor = Color.Transparent
+        Color.Transparent
     }
 
     Row(

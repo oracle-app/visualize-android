@@ -65,7 +65,7 @@ fun MemberAvatarStackFeed(
                         )
                     }
                 }
-                // Dibujamos en orden inverso para que el primero quede encima
+                // We draw in reverse order so the first one ends up on top
                 repeat(displayCount) { index ->
                     val memberIndex = displayCount - 1 - index
                     Box(

@@ -66,7 +66,6 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            // Mejora: Usa el padding completo para evitar problemas visuales
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -97,8 +96,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             // TODO: Implement TeamsPage
         }
 
-        composable<NavRoutes.Profile> { backStackEntry ->
-            val profile = backStackEntry.toRoute<NavRoutes.Profile>()
+        composable<NavRoutes.Profile> {
+            ProfilePage(modifier = Modifier.fillMaxSize())
             // TODO: Pass profile.userId to ProfilePage
         }
     }
