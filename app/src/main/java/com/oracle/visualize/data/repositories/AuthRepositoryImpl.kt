@@ -1,9 +1,11 @@
 package com.oracle.visualize.data.repositories
 
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.mapper.toDomain
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
 import javax.inject.Inject
@@ -23,19 +25,28 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun register(name: String, email: String, password: String): AuthUser {
+        try {
 
-        // 1. Register in Firebase Auth (Receive a DTO or data model)
-        val authUserDTO = authDataSource.register(email, password)
+            // 1. Register in Firebase Auth (Receive a DTO or data model)
+            val authUserDTO = authDataSource.register(email, password)
 
-        // 2. Map to the Domain Entity
-        val authUser = authUserDTO.toDomain()
+            // 2. Map to the Domain Entity
+            val authUser = authUserDTO.toDomain()
 
-        // 3. Persist the profile in Firestore using the raw ID (String)
-        val userDto = UserDTO(username = name, email = email)
-        userDataSource.saveUserProfile(authUser.uid, userDto)
+            // 3. Persist the profile in Firestore using the raw ID (String)
+            val userDto = UserDTO(username = name, email = email)
+            userDataSource.saveUserProfile(authUser.uid, userDto)
 
-        // 4. Return the raw entity to fulfill the contract
-        return authUser
+            // 4. Return the raw entity to fulfill the contract
+            return authUser
+
+        } catch (e: FirebaseAuthUserCollisionException){
+            throw AppError.EmailAlreadyExists()
+
+        } catch (e: Exception){
+            throw AppError.AuthFailed(e.message ?: "Register error")
+        }
+
     }
 
     override fun logout() = authDataSource.logout()

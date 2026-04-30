@@ -4,7 +4,6 @@ import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.exceptions.AppError
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Use case for registering a new user.
