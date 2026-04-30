@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +17,8 @@ import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.teamsScreen.CreateEditTeamPage
+import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 
 
 // Bottom nav destinations — screens outside this list hide the nav bar
@@ -26,7 +27,9 @@ private val bottomNavRoutes = setOf(
     NavRoutes.Create.route,
     NavRoutes.Notifications.route,
     NavRoutes.Teams.route,
-    NavRoutes.Profile.route
+    NavRoutes.Profile.route,
+    "create_team",
+    "edit_team/{teamId}"
 )
 
 @Composable
@@ -89,9 +92,25 @@ fun AppNavHost(
                 // TODO: Add TeamsPage when implemented
         }*/
 
-        // Teams and Profile — placeholders until screens are implemented
+        // Teams section
         composable(NavRoutes.Teams.route) {
-            // TODO: Add TeamsPage when implemented
+            TeamsPage(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateToCreate = { navController.navigate("create_team") },
+                onNavigateToEdit = { teamId -> navController.navigate("edit_team/$teamId") }
+            )
+        }
+
+        composable("create_team") {
+            CreateEditTeamPage(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("edit_team/{teamId}") {
+            CreateEditTeamPage(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(NavRoutes.Profile.route) {
