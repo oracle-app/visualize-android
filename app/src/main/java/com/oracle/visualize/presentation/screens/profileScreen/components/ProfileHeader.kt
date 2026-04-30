@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 
@@ -22,18 +23,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
+import coil3.compose.AsyncImage
 
 @Composable
 fun ProfileHeader(
     modifier: Modifier = Modifier,
     userName: String,
     email: String,
-    profileImage: Painter,
+    profileImageUrl: String,
     onEditClick: () -> Unit
 ) {
     Column(
@@ -43,14 +45,18 @@ fun ProfileHeader(
         Box(
             contentAlignment = Alignment.BottomEnd
         ) {
-            Image(
-                painter = profileImage,
+            AsyncImage(
+                model = profileImageUrl,
                 contentDescription = stringResource(R.string.profile_img_description),
                 modifier = Modifier
                     .size(180.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(R.drawable.profile_placeholder),
+                error = painterResource(R.drawable.profile_placeholder)
             )
+
+            Log.d("ProfileHeader", "Image URL received: $profileImageUrl")
 
             OutlinedIconButton(
                 onClick = onEditClick,

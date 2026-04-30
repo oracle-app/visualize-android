@@ -9,7 +9,7 @@ sealed interface ProfileUiState {
     data class Ready(
         val username: String,
         val eMail: String,
-        val image: Int,
+        val image: String,
         val chartTheme: ChartPalette
     ) : ProfileUiState
 }

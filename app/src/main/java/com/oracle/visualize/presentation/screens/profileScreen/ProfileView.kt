@@ -29,13 +29,20 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oracle.visualize.presentation.components.AppDropdownMenu
 import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeItem
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
+import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
+import androidx.compose.runtime.setValue
+
+
+// This is where everything is assembled.
 
 @Composable
 fun ProfilePage(
@@ -104,12 +111,29 @@ fun ProfilePage(
 
                     // Profile picture, username and email.
 
-                    ProfileHeader(
-                        userName = userName,
-                        email = email,
-                        profileImage = painterResource(id = profileImage),
-                        onEditClick = { /* implement select image later*/ }
-                    )
+                    var expanded by remember { mutableStateOf(false) }
+
+                    Box {
+                        ProfileHeader(
+                            userName = userName,
+                            email = email,
+                            profileImageUrl = profileImage,
+
+                            // Upon clicking, it displays the dropdown menu.
+
+                            onEditClick = { expanded = true }
+                        )
+
+                        AppDropdownMenu(
+                            expanded = expanded,
+                            onDismiss = { expanded = false },
+                            items = listOf(
+                                stringResource(R.string.take_photo) to { /* launch camera */ },
+                                stringResource(R.string.choose_photo) to { /* launch gallery */ },
+                                stringResource(R.string.delete_photo) to { /* delete pfp */ }
+                            )
+                        )
+                    }
 
                     // Spacer between profile header and cards.
 
@@ -202,29 +226,3 @@ fun ProfilePage(
     }
 }
 
-@Composable
-fun SettingsCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            content()
-        }
-    }
-}
