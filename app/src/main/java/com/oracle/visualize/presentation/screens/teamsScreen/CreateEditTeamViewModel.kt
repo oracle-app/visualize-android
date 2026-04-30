@@ -8,7 +8,6 @@ import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
 import com.oracle.visualize.domain.usecases.UpdateTeamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,11 +29,10 @@ class CreateEditTeamViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
 
-    // teamId arg: null = create mode, non-null = edit mode
     private val teamIdArg: String? = savedStateHandle["teamId"]
 
-    // Hardcoded User ID for testing — matching TeamsMockData
-    private val userID = "user1"
+    // Real userID for persistence
+    private val userID = "e9Nk8XrxHJAtwN3Hf2FL"
 
     init {
         loadInitialData()
@@ -44,11 +42,14 @@ class CreateEditTeamViewModel @Inject constructor(
     private fun loadInitialData() {
         viewModelScope.launch {
             _uiState.value = CreateEditTeamUiState.Loading
-            delay(500) // Simulate delay
             try {
                 if (teamIdArg != null) {
-                    // Edit mode — load existing team from Mock Data
-                    val allTeams = TeamsMockData.myTeams + TeamsMockData.teamsImIn
+                    // MockData usage (commented out)
+                    // val allTeams = TeamsMockData.myTeams + TeamsMockData.teamsImIn
+                    // val team = allTeams.find { it.id == teamIdArg }
+
+                    // REAL USE CASE CALL (Firestore)
+                    val allTeams = getUsersTeamsUseCase.getTeamsUserOwns(userID)
                     val team = allTeams.find { it.id == teamIdArg }
                     
                     _uiState.value = CreateEditTeamUiState.Content(
@@ -56,14 +57,13 @@ class CreateEditTeamViewModel @Inject constructor(
                         teamName = team?.name ?: "",
                         members = team?.members ?: emptyList(),
                         ownerID = userID,
-                        suggestions = TeamsMockData.users.take(4)
+                        suggestions = emptyList() // Mock: TeamsMockData.users.take(4)
                     )
                 } else {
                     // Create mode
                     _uiState.value = CreateEditTeamUiState.Content(
                         ownerID = userID,
-                        members = listOf(TeamsMockData.users[0]), // Diana as owner
-                        suggestions = TeamsMockData.users.take(4)
+                        // Mock: members = listOf(TeamsMockData.users[0])
                     )
                 }
             } catch (e: Exception) {
@@ -75,7 +75,7 @@ class CreateEditTeamViewModel @Inject constructor(
     private fun setupSearchDebounce() {
         viewModelScope.launch {
             _searchQuery
-                .debounce(300)
+                .debounce(500)
                 .collect { query ->
                     val current = _uiState.value as? CreateEditTeamUiState.Content ?: return@collect
                     if (query.isBlank()) {
@@ -83,15 +83,24 @@ class CreateEditTeamViewModel @Inject constructor(
                         return@collect
                     }
                     
-                    val results = TeamsMockData.users.filter { 
-                        it.email.contains(query, ignoreCase = true) || 
-                        it.username.contains(query, ignoreCase = true)
+                    try {
+                        // MockData usage (commented out)
+                        /* 
+                        val results = TeamsMockData.users.filter { 
+                            it.email.contains(query, ignoreCase = true) || 
+                            it.username.contains(query, ignoreCase = true)
+                        }
+                        */
+
+                        // REAL USE CASE CALL
+                        val results = getUserSuggestionsUseCase.invoke(query.lowercase().trim())
+                        val filtered = results.filter { suggestion ->
+                            current.members.none { it.id == suggestion.id }
+                        }
+                        _uiState.value = current.copy(searchResults = filtered)
+                    } catch (e: Exception) {
+                        // Log error
                     }
-                    
-                    val filtered = results.filter { suggestion ->
-                        current.members.none { it.id == suggestion.id }
-                    }
-                    _uiState.value = current.copy(searchResults = filtered)
                 }
         }
     }
@@ -108,22 +117,17 @@ class CreateEditTeamViewModel @Inject constructor(
             }
 
             is CreateEditTeamUiEvent.AddMember -> {
-                val alreadyAdded = current.members.any { it.id == event.user.id }
-                if (!alreadyAdded) {
-                    _uiState.value = current.copy(
-                        members = current.members + event.user,
-                        searchQuery = "",
-                        searchResults = emptyList()
-                    )
-                    _searchQuery.value = ""
-                }
+                _uiState.value = current.copy(
+                    members = current.members + event.user,
+                    searchQuery = "",
+                    searchResults = emptyList()
+                )
+                _searchQuery.value = ""
             }
 
             is CreateEditTeamUiEvent.RemoveMember -> {
                 if (event.user.id != current.ownerID) {
-                    _uiState.value = current.copy(
-                        members = current.members - event.user
-                    )
+                    _uiState.value = current.copy(members = current.members - event.user)
                 }
             }
 
@@ -136,17 +140,19 @@ class CreateEditTeamViewModel @Inject constructor(
             _uiState.value = state.copy(nameError = "Team name cannot be empty")
             return
         }
-        if (state.members.isEmpty()) {
-            _uiState.value = state.copy(nameError = "Add at least one member")
-            return
-        }
         viewModelScope.launch {
             _uiState.value = state.copy(isSubmitting = true)
-            delay(1000) 
             try {
-                // Actualizamos el MockData global para que el cambio sea persistente en la sesión
-                TeamsMockData.addTeam(state.teamName.trim(), state.members)
+                val memberIDs = state.members.map { it.id }
+                if (state.isEditMode) {
+                    updateTeamUseCase.invoke(state.teamId!!, memberIDs, state.teamName.trim())
+                } else {
+                    // MockData usage (commented out)
+                    // TeamsMockData.addTeam(state.teamName.trim(), state.members)
 
+                    // REAL USE CASE CALL (Firestore)
+                    createTeamUseCase.invoke(memberIDs, state.teamName.trim(), state.ownerID)
+                }
                 _uiState.value = CreateEditTeamUiState.Success
             } catch (e: Exception) {
                 _uiState.value = state.copy(
