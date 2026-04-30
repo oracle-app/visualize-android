@@ -1,11 +1,12 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +39,8 @@ import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeI
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
 import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlin.let
 
 
 // This is where everything is assembled.
@@ -49,6 +50,14 @@ fun ProfilePage(
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+
+    // EDIT THIS LATER TO ASSIGN THE TAKEN IMAGE TO AN EMPTY VALUE IN VIEWMODEL
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        bitmap?.let { null }
+    }
 
     // This is where the UI state is fetched.
 
@@ -128,7 +137,7 @@ fun ProfilePage(
                             expanded = expanded,
                             onDismiss = { expanded = false },
                             items = listOf(
-                                stringResource(R.string.take_photo) to { /* launch camera */ },
+                                stringResource(R.string.take_photo) to { cameraLauncher.launch(null) },
                                 stringResource(R.string.choose_photo) to { /* launch gallery */ },
                                 stringResource(R.string.delete_photo) to { /* delete pfp */ }
                             )
