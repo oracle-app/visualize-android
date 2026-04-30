@@ -5,12 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -29,6 +25,12 @@ import com.oracle.visualize.domain.models.User
 private val AVATAR_SIZE    = 33.dp
 private val AVATAR_OFFSET  = 16.dp
 
+/**
+ * Composable that displays a stack of user avatars.
+ * Used in the feed to show who a visualization is shared with.
+ *
+ * @param members List of [User] whose avatars will be displayed.
+ */
 @Composable
 fun MemberAvatarStackFeed(
     members: List<User>,
@@ -59,7 +61,7 @@ fun MemberAvatarStackFeed(
                         )
                     }
                 }
-                // Dibujamos en orden inverso para que el primero quede encima
+                // We draw in reverse order so the first one ends up on top
                 repeat(displayCount) { index ->
                     val memberIndex = displayCount - 1 - index
                     Box(

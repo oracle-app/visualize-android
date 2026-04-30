@@ -34,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartUiState
 import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeItem
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
 

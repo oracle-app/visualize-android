@@ -5,6 +5,12 @@ import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.models.User
 
+/**
+ * Extension function to map [TeamDTO] to [ShareTeam] domain model.
+ *
+ * @param users List of [ShareUser] who are members of the team.
+ * @return A [ShareTeam] object containing team details and its members.
+ */
 fun TeamDTO.toShareTeam(users: List<ShareUser>): ShareTeam {
     val memberCount = this.membersIDs.size
     return ShareTeam(

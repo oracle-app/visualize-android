@@ -12,6 +12,14 @@ import com.oracle.visualize.domain.repositories.VisualizationRepository
 import java.util.Date
 import javax.inject.Inject
 
+/**
+ * Implementation of [VisualizationRepository] that manages visualization data.
+ * It combines data from [VisualizationDataSource] and [UserDatasource] to create
+ * comprehensive [VisualizationCard] objects for the UI.
+ *
+ * @property visualizationDataSource Data source for visualization operations.
+ * @property userDatasource Data source for user information.
+ */
 class VisualizationRepositoryImpl @Inject constructor(
     private val visualizationDataSource: VisualizationDataSource,
     private val userDatasource: UserDatasource

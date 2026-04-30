@@ -7,7 +7,7 @@ sealed interface ProfileUiState {
     object Idle : ProfileUiState
 
     data class Ready(
-        val Username: String,
+        val username: String,
         val eMail: String,
         val image: Int,
         val chartTheme: ChartPalette
