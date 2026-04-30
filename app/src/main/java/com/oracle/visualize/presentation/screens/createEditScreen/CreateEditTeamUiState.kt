@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.teamsScreen
+package com.oracle.visualize.presentation.screens.createEditScreen
 
 import com.oracle.visualize.domain.models.ShareUser
 

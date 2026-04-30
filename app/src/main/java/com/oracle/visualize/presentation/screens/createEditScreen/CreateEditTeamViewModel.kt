@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.teamsScreen
+package com.oracle.visualize.presentation.screens.createEditScreen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,6 +7,7 @@ import com.oracle.visualize.domain.usecases.CreateTeamUseCase
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
 import com.oracle.visualize.domain.usecases.UpdateTeamUseCase
+import com.oracle.visualize.presentation.screens.teamsScreen.TeamsMockData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

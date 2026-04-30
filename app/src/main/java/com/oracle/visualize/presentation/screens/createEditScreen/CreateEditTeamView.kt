@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.teamsScreen
+package com.oracle.visualize.presentation.screens.createEditScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
