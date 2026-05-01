@@ -1,8 +1,8 @@
 package com.oracle.visualize.usecases
 
-import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.RegisterUseCase
+import com.oracle.visualize.fixtures.UserFixtures
 import io.mockk.coEvery
 import io.mockk.coVerify
 import junit.framework.TestCase.assertEquals
@@ -41,13 +41,12 @@ class RegisterUseCaseTest {
     //Email Validation
 
     @Test
-    fun `blank email returns ValidationError and does not call repository`() = runTest {
+    fun blankEmail_returnsValidationError_doesNotCallRepository() = runTest {
         // given
         val blankEmail = ""
-        val anyPassword = "123456"
 
         // when
-        val result = registerUseCase(blankEmail, anyPassword)
+        val result = registerUseCase(blankEmail, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
@@ -56,13 +55,12 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `invalid email format returns ValidationError and does not call repository`() = runTest {
+    fun invalidEmailFormat_returnsValidationError_doesNotCallRepository() = runTest {
         // given
         val invalidEmail = "notanemail"
-        val anyPassword = "123456"
 
         // when
-        val result = registerUseCase(invalidEmail, anyPassword)
+        val result = registerUseCase(invalidEmail, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
@@ -71,31 +69,28 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `email without TLD returns ValidationError and does not call repository`() = runTest {
+    fun emailWithoutTLD_returnsValidationError_doesNotCallRepository() = runTest {
         // given
         val emailWithoutTLD = "test@test"
-        val anyPassword = "123456"
 
         // when
-        val result = registerUseCase(emailWithoutTLD, anyPassword)
+        val result = registerUseCase(emailWithoutTLD, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
         assertTrue(result.exceptionOrNull() is AppError.ValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any()) }
     }
-
 
     //Password Validation
 
     @Test
-    fun `blank password returns ValidationError and does not call repository`() = runTest {
+    fun blankPassword_returnsValidationError_doesNotCallRepository() = runTest {
         // given
-        val validEmail = "test@test.com"
         val blankPassword = ""
 
         // when
-        val result = registerUseCase(validEmail, blankPassword)
+        val result = registerUseCase(UserFixtures.VALID_EMAIL, blankPassword)
 
         // then
         assertTrue(result.isFailure)
@@ -104,13 +99,12 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `password shorter than 6 characters returns ValidationError and does not call repository`() = runTest {
+    fun passwordShorterThan6Chars_returnsValidationError_doesNotCallRepository() = runTest {
         // given
-        val validEmail = "test@test.com"
         val shortPassword = "12345" // 5 chars — boundary value just below minimum
 
         // when
-        val result = registerUseCase(validEmail, shortPassword)
+        val result = registerUseCase(UserFixtures.VALID_EMAIL, shortPassword)
 
         // then
         assertTrue(result.isFailure)
@@ -119,68 +113,62 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `password of exactly 6 characters passes validation and calls repository`() = runTest {
-        // given
-        val validEmail = "test@test.com"
-        val boundaryPassword = "123456" // exactly 6 chars — boundary value at minimum
-        val fakeUser = AuthUser(uid = "123", email = validEmail)
-        coEvery { authRepository.register(any(), any()) } returns fakeUser
+    fun passwordOfExactly6Chars_passesValidation_callsRepository() = runTest {
+        // given - boundary value: exactly at the minimum
+        coEvery { authRepository.register(any(), any()) } returns UserFixtures.fakeAuthUser
 
         // when
-        val result = registerUseCase(validEmail, boundaryPassword)
+        val result = registerUseCase(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isSuccess)
-        coVerify(exactly = 1) { authRepository.register(validEmail, boundaryPassword) }
+        coVerify(exactly = 1) {
+            authRepository.register(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
+        }
     }
 
     @Test
-    fun `password over 6 characters passes validation and calls repository`() = runTest {
-        // given
-        val validEmail = "test@test.com"
-        val boundaryPassword = "12345689400"
-        val fakeUser = AuthUser(uid = "123", email = validEmail)
-        coEvery { authRepository.register(any(), any()) } returns fakeUser
+    fun passwordOver6Chars_passesValidation_callsRepository() = runTest {
+        // given - boundary value: safely above minimum
+        val longPassword = "12345678900"
+        coEvery { authRepository.register(any(), any()) } returns UserFixtures.fakeAuthUser
 
         // when
-        val result = registerUseCase(validEmail, boundaryPassword)
+        val result = registerUseCase(UserFixtures.VALID_EMAIL, longPassword)
 
         // then
         assertTrue(result.isSuccess)
-        coVerify(exactly = 1) { authRepository.register(validEmail, boundaryPassword) }
+        coVerify(exactly = 1) { authRepository.register(UserFixtures.VALID_EMAIL, longPassword) }
     }
-
-
 
     //Repository
 
     @Test
-    fun `valid credentials return Result success with AuthUser`() = runTest {
+    fun validCredentials_returnsResultSuccess_withAuthUser() = runTest {
         // given
-        val validEmail = "test@test.com"
-        val validPassword = "123456"
-        val fakeUser = AuthUser(uid = "123", email = validEmail)
-        coEvery { authRepository.register(validEmail, validPassword) } returns fakeUser
+        coEvery {
+            authRepository.register(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
+        } returns UserFixtures.fakeAuthUser
 
         // when
-        val result = registerUseCase(validEmail, validPassword)
+        val result = registerUseCase(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isSuccess)
-        assertEquals(fakeUser, result.getOrNull())
-        coVerify(exactly = 1) { authRepository.register(validEmail, validPassword) }
+        assertEquals(UserFixtures.fakeAuthUser, result.getOrNull())
+        coVerify(exactly = 1) {
+            authRepository.register(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
+        }
     }
 
     @Test
-    fun `repository exception is caught and returned as Result failure`() = runTest {
+    fun repositoryThrows_returnsResultFailure() = runTest {
         // given
-        val validEmail = "test@test.com"
-        val validPassword = "123456"
         val exception = Exception("Email already in use")
         coEvery { authRepository.register(any(), any()) } throws exception
 
         // when
-        val result = registerUseCase(validEmail, validPassword)
+        val result = registerUseCase(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)

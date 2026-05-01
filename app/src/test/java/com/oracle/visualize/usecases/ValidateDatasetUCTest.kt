@@ -1,6 +1,7 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
+import com.oracle.visualize.fixtures.DatasetFixtures
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
 
@@ -16,39 +17,36 @@ class ValidateDatasetUCTest {
     //Extension validation
 
     @Test
-    fun `csv file with valid size returns success`() {
+    fun csvFile_withValidSize_returnsSuccess() {
         // given
-        val fileName = "data.csv"
-        val validSize = 1 * 1024 * 1024L // 1 MB
+        val validSize = DatasetFixtures.VALID_SIZE
 
         // when
-        val result = validateDataset(fileName, validSize)
+        val result = validateDataset(DatasetFixtures.VALID_CSV_NAME, validSize)
 
         // then
         assertTrue(result.isSuccess)
     }
 
     @Test
-    fun `xlsx file with valid size returns success`() {
+    fun xlsxFile_withValidSize_returnsSuccess() {
         // given
-        val fileName = "data.xlsx"
-        val validSize = 1 * 1024 * 1024L // 1 MB
+        val validSize = DatasetFixtures.VALID_SIZE
 
         // when
-        val result = validateDataset(fileName, validSize)
+        val result = validateDataset(DatasetFixtures.VALID_XLSX_NAME, validSize)
 
         // then
         assertTrue(result.isSuccess)
     }
 
     @Test
-    fun `unsupported extension returns IllegalArgumentException`() {
+    fun unsupportedExtension_returnsIllegalArgumentException() {
         // given
-        val fileName = "data.pdf"
-        val validSize = 1 * 1024 * 1024L // 1 MB
+        val unsupportedFile = "data.pdf"
 
         // when
-        val result = validateDataset(fileName, validSize)
+        val result = validateDataset(unsupportedFile, DatasetFixtures.VALID_SIZE)
 
         // then
         assertTrue(result.isFailure)
@@ -56,13 +54,12 @@ class ValidateDatasetUCTest {
     }
 
     @Test
-    fun `no extension returns IllegalArgumentException`() {
+    fun noExtension_returnsIllegalArgumentException() {
         // given
-        val fileName = "datafile"
-        val validSize = 1 * 1024 * 1024L
+        val noExtensionFile = "datafile"
 
         // when
-        val result = validateDataset(fileName, validSize)
+        val result = validateDataset(noExtensionFile, DatasetFixtures.VALID_SIZE)
 
         // then
         assertTrue(result.isFailure)
@@ -70,13 +67,25 @@ class ValidateDatasetUCTest {
     }
 
     @Test
-    fun `uppercase extension is accepted`() {
+    fun blankFileName_returnsIllegalArgumentException() {
+        // given
+        val blankFileName = ""
+
+        // when
+        val result = validateDataset(blankFileName, DatasetFixtures.VALID_SIZE)
+
+        // then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+    }
+
+    @Test
+    fun uppercaseExtension_isAccepted_returnsSuccess() {
         // given - extension is lowercased internally via lowercase(Locale.ROOT)
-        val fileName = "data.CSV"
-        val validSize = 1 * 1024 * 1024L
+        val uppercaseExtension = "data.CSV"
 
         // when
-        val result = validateDataset(fileName, validSize)
+        val result = validateDataset(uppercaseExtension, DatasetFixtures.VALID_SIZE)
 
         // then
         assertTrue(result.isSuccess)
@@ -85,39 +94,30 @@ class ValidateDatasetUCTest {
     //Size Validation
 
     @Test
-    fun `csv file at exactly 100 MB returns success`() {
-        // given
-        val fileName = "data.csv"
-        val exactLimit = 100 * 1024 * 1024L // exactly 100 MB
-
-        // when
-        val result = validateDataset(fileName, exactLimit)
+    fun csvFile_atExactly100MB_returnsSuccess() {
+        // given - boundary size: exactly at the limit
+        val result = validateDataset(DatasetFixtures.VALID_CSV_NAME, DatasetFixtures.MAX_SIZE)
 
         // then
         assertTrue(result.isSuccess)
     }
 
     @Test
-    fun `xlsx file at exactly 100 MB returns success`() {
-        // given
-        val fileName = "data.xlsx"
-        val exactLimit = 100 * 1024 * 1024L // exactly 100 MB
-
-        // when
-        val result = validateDataset(fileName, exactLimit)
+    fun xlsxFile_atExactly100MB_returnsSuccess() {
+        // given - size: exactly at the limit
+        val result = validateDataset(DatasetFixtures.VALID_XLSX_NAME, DatasetFixtures.MAX_SIZE)
 
         // then
         assertTrue(result.isSuccess)
     }
 
     @Test
-    fun `file one byte over 100 MB returns IllegalArgumentException`() {
+    fun file_oneByteOver100MB_returnsIllegalArgumentException() {
         // given
-        val fileName = "data.csv"
-        val oneByteOver = (100 * 1024 * 1024L) + 1
+        val oneByteOver = DatasetFixtures.MAX_SIZE + 1
 
         // when
-        val result = validateDataset(fileName, oneByteOver)
+        val result = validateDataset(DatasetFixtures.VALID_CSV_NAME, oneByteOver)
 
         // then
         assertTrue(result.isFailure)
@@ -125,13 +125,12 @@ class ValidateDatasetUCTest {
     }
 
     @Test
-    fun `file 100 bytes over 100 MB returns IllegalArgumentException`() {
+    fun file_100BytesOver100MB_returnsIllegalArgumentException() {
         // given
-        val fileName = "data.csv"
-        val oneByteOver = (100 * 1024 * 1024L) + 100
+        val hundredBytesOver = DatasetFixtures.MAX_SIZE + 100
 
         // when
-        val result = validateDataset(fileName, oneByteOver)
+        val result = validateDataset(DatasetFixtures.VALID_CSV_NAME, hundredBytesOver)
 
         // then
         assertTrue(result.isFailure)
@@ -139,16 +138,16 @@ class ValidateDatasetUCTest {
     }
 
     @Test
-    fun `empty file returns failure`() {
+    fun emptyFile_returnsIllegalArgumentException() {
         // given
-        val fileName = "data.csv"
         val emptyFile = 0L
 
         // when
-        val result = validateDataset(fileName, emptyFile)
+        val result = validateDataset(DatasetFixtures.VALID_CSV_NAME, emptyFile)
 
         // then
         assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
     }
 
 }

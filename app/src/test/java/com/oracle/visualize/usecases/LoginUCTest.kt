@@ -1,7 +1,6 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.LoginUseCase
 import io.mockk.MockKAnnotations
@@ -13,6 +12,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import com.oracle.visualize.fixtures.UserFixtures
 
 /**
  * Unit tests for [LoginUseCase].
@@ -39,13 +39,12 @@ class LoginUCTest {
     //Email Validation
 
     @Test
-    fun `blank email returns ValidationError and does not call repository`() = runTest {
+    fun blankEmail_returnsValidationError_doesNotCallRepository() = runTest {
         // given
         val blankEmail = ""
-        val anyPassword = "123456"
 
         // when
-        val result = loginUseCase(blankEmail, anyPassword)
+        val result = loginUseCase(blankEmail, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
@@ -54,13 +53,12 @@ class LoginUCTest {
     }
 
     @Test
-    fun `invalid email format returns ValidationError and does not call repository`() = runTest {
+    fun invalidEmailFormat_returnsValidationError_doesNotCallRepository() = runTest {
         // given
         val invalidEmail = "notanemail"
-        val anyPassword = "123456"
 
         // when
-        val result = loginUseCase(invalidEmail, anyPassword)
+        val result = loginUseCase(invalidEmail, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
@@ -69,13 +67,12 @@ class LoginUCTest {
     }
 
     @Test
-    fun `email without TLD returns ValidationError and does not call repository`() = runTest {
+    fun emailWithoutTLD_returnsValidationError_doesNotCallRepository() = runTest {
         // given
         val emailWithoutTLD = "test@test"
-        val anyPassword = "123456"
 
         // when
-        val result = loginUseCase(emailWithoutTLD, anyPassword)
+        val result = loginUseCase(emailWithoutTLD, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
@@ -87,13 +84,12 @@ class LoginUCTest {
     //Password Validation
 
     @Test
-    fun `blank password returns ValidationError and does not call repository`() = runTest {
+    fun blankPassword_returnsValidationError_doesNotCallRepository() = runTest {
         // given
-        val validEmail = "test@test.com"
         val blankPassword = ""
 
         // when
-        val result = loginUseCase(validEmail, blankPassword)
+        val result = loginUseCase(UserFixtures.VALID_EMAIL, blankPassword)
 
         // then
         assertTrue(result.isFailure)
@@ -101,43 +97,40 @@ class LoginUCTest {
         coVerify(exactly = 0) { authRepository.login(any(), any()) }
     }
 
-    //Repository
+    //Repository Calls
 
     @Test
-    fun `valid credentials return Result success with AuthUser`() = runTest {
+    fun validCredentials_returnsResultSuccess_withAuthUser() = runTest {
         // given
-        val validEmail = "test@test.com"
-        val validPassword = "123456"
-        val fakeUser = AuthUser(uid = "123", email = validEmail)
-        coEvery { authRepository.login(validEmail, validPassword) } returns fakeUser
+        coEvery {
+            authRepository.login(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
+        } returns UserFixtures.fakeAuthUser
 
         // when
-        val result = loginUseCase(validEmail, validPassword)
+        val result = loginUseCase(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(
             "Expected success but got: ${result.exceptionOrNull()?.message}",
             result.isSuccess
         )
-        assertEquals(fakeUser, result.getOrNull())
-        coVerify(exactly = 1) { authRepository.login(validEmail, validPassword) }
+        assertEquals(UserFixtures.fakeAuthUser, result.getOrNull())
+        coVerify(exactly = 1) {
+            authRepository.login(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
+        }
     }
 
     @Test
-    fun `repository exception is caught and returned as Result failure`() = runTest {
+    fun invalidCredentials_returnsResultFailure_throwsFailure() = runTest {
         // given
-        val validEmail = "test@test.com"
-        val validPassword = "123456"
         val exception = Exception("Invalid credentials")
         coEvery { authRepository.login(any(), any()) } throws exception
 
         // when
-        val result = loginUseCase(validEmail, validPassword)
+        val result = loginUseCase(UserFixtures.VALID_EMAIL, UserFixtures.VALID_PASSWORD)
 
         // then
         assertTrue(result.isFailure)
         assertEquals(exception, result.exceptionOrNull())
     }
-
-
 }

@@ -34,7 +34,7 @@ class LogOutUCTest {
     }
 
     @Test
-    fun `calls repository once`() {
+    fun callRepository() {
         // No values given
         every { authRepository.logout() } just Runs
 
