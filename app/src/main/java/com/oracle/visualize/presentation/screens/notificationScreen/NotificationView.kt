@@ -12,6 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+/**
+ * Placeholder screen for notifications.
+ */
 @Composable
 fun NotificationPage(modifier: Modifier = Modifier) {
     Column(

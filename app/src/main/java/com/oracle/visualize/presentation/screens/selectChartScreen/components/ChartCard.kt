@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.Visualization
-import com.oracle.visualize.ui.theme.*
 
 @Composable
 fun ChartCard(

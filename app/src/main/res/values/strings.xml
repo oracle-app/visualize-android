@@ -1,13 +1,16 @@
 <resources>
 
     // Actions
+
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="confirm">Confirm</string>
     <string name="share">Share</string>
     <string name="back">Back</string>
 
+
     // Navigation Bar
+
     <string name="nav_create">Create</string>
     <string name="nav_teams">Teams</string>
     <string name="nav_feed">Feed</string>
@@ -15,22 +18,27 @@
     <string name="nav_profile">Profile</string>
 
     // App Name
+
     <string name="app_name">Visualize</string>
 
     // Activity Title Miscellaneous
+
     <string name="title_activity_feed">FeedActivity</string>
     <string name="title_activity_search_section">SearchSection</string>
     <string name="title_activity_feed_top_bar">FeedTopBar</string>
 
     // Feed Top Bar
+
     <string name="feed_top_bar_title">All Feed</string>
     <string name="feed_top_bar_options_description">Options</string>
 
     // Search Section
+
     <string name="search_placeholder">Search by title</string>
     <string name="search_icon_description">Search</string>
 
     // FeedCard Time Formatting
+
     <string name="time_just_now">just now</string>
     <string name="time_mins_ago">%d min ago</string>
     <string name="time_hours_ago">%d h ago</string>
@@ -41,6 +49,7 @@
     </plurals>
 
     // Create View
+
     <string name="create_top_bar_title">Create Data Visualizations</string>
     <string name="create_description_success">Your dataset is ready! Generate visualizations to explore your data.</string>
     <string name="create_description_uploading">Uploading your dataset…</string>
@@ -62,6 +71,7 @@
     <string name="table_header_region">Region</string>
 
     // Chart Selection Screen
+
     <string name="chart_selection_title">Choose visualization</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
@@ -70,15 +80,17 @@
     <string name="chart_selection_share_and_post">Share and post</string>
 
     // Edit Chart Title Dialog
+
     <string name="dialog_edit_title">Edit Chart Title</string>
     <string name="dialog_edit_title_label">New Title</string>
 
     // Unsaved Changes Dialog
+
     <string name="dialog_unsaved_title">Unsaved Changes</string>
     <string name="dialog_unsaved_message">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="dialog_leave">Leave</string>
+    //Share and Post
 
-    // Share and Post
     <string name="team_member_count">%d members</string>
     <string name="unsaved_changes">Unsaved Changes</string>
     <string name="unsaved_changes_confirmation">You have unsaved changes. Are you sure you want to leave?</string>
@@ -158,5 +170,33 @@
 
     // Icon descriptions
     <string name="icon_back">Back</string>
+
+</resources>
+
+
+    // Errors
+
+    <string name="error_unknown">Unknown</string>
+    <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
+
+
+    //Icon Descriptions
+    <string name="icon_remove_user">Remove User</string>
+    <string name="icon_back">Back</string>
+
+    // Profile Page
+
+    <string name="version_declaration">Version</string>
+    <string name="chart_theme_title">Chart theme</string>
+    <string name="about_title">About</string>
+    <string name="developer">Developed by ----</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="licenses">Licenses and open source libraries</string>
+
+    // Descriptions
+
+    <string name="edit_image_description">Edit Profile Image</string>
+    <string name="profile_img_description">Profile Image</string>
+
 
 </resources>
