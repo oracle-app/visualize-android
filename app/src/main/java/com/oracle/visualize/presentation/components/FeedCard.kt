@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
 
@@ -119,7 +120,7 @@ fun FeedCard(item: VisualizationCard) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp)
+                        .height(200.dp)
                         .background(
                             color = MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(12.dp)
@@ -127,10 +128,7 @@ fun FeedCard(item: VisualizationCard) {
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    ChartRender(
-                        // chart = mockPieChart
-                        chart = mockVerticalChart
-                    )
+                    ChartRenderFeedCard(chart = item.chart as Any as Chart<*>)
                 }
             }
 

@@ -12,5 +12,6 @@ data class VisualizationCard(
     val author: String,
     val createdAt: Date,
     val sharedWith: List<User>,
-    val configJSON: String
+    val configJSON: String,
+    val chart: Any
 )

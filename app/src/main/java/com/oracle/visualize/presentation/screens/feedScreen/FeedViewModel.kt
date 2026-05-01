@@ -15,6 +15,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// ** Uncomment the library of the mock chart you want to try out. **
+
+// import com.oracle.visualize.presentation.components.mockHorizontalBarChart
+// import com.oracle.visualize.presentation.components.mockVerticalBarChart
+// import com.oracle.visualize.presentation.components.mockStackedBarChart
+// import com.oracle.visualize.presentation.components.mockLineChart
+// import com.oracle.visualize.presentation.components.mockScatterChart
+// import com.oracle.visualize.presentation.components.mockPieChart
+// import com.oracle.visualize.presentation.components.mockDonutChart
+import com.oracle.visualize.presentation.components.mockAreaChart
+
 /**
  * ViewModel for the Feed screen.
  * Handles fetching visualizations based on filters and search queries.
@@ -83,10 +94,27 @@ class FeedViewModel @Inject constructor(
 
     private fun applySearch() {
         val currentSearch = _uiState.value.searchText
+
+        /* Mock of a chart model for an item's feed card.
+        * You can modify the mock data at RenderChartMock.kt.
+        * CAUTION: Only should use one model per item for not
+        * to break the component.
+        * */
+        val itemsWithMockCharts = allItems.map { item ->
+            // item.copy(chart = mockVerticalBarChart)
+            // item.copy(chart = mockHorizontalBarChart)
+            // item.copy(chart = mockStackedBarChart)
+            // item.copy(chart = mockPieChart)
+            // item.copy(chart = mockDonutChart)
+            // item.copy(chart = mockLineChart)
+            // item.copy(chart = mockScatterChart)
+            item.copy(chart = mockAreaChart)
+        }
+
         val filteredItems = if (currentSearch.isBlank()) {
-            allItems
+            itemsWithMockCharts
         } else {
-            allItems.filter { item ->
+            itemsWithMockCharts.filter { item ->
                 item.title.contains(currentSearch, ignoreCase = true)
             }
         }
