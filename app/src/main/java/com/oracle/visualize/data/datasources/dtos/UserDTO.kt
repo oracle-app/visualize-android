@@ -1,8 +1,7 @@
 package com.oracle.visualize.data.datasources.dtos
 
 import com.google.firebase.firestore.DocumentId
-import com.oracle.visualize.domain.models.ThemePreference
-import com.oracle.visualize.domain.models.UserType
+
 
 /**
  * Data Transfer Object representing a user in the database.
