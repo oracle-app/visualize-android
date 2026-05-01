@@ -1,14 +1,38 @@
 package com.oracle.visualize.presentation.screens.selectChartScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,11 +41,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.oracle.visualize.domain.models.ChartSelectionUiState
-import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
-import com.oracle.visualize.ui.theme.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
+import com.oracle.visualize.ui.theme.ErrorRed
 
 
 /**
@@ -36,9 +60,9 @@ import com.oracle.visualize.R
 fun ChartSelectionPage(
     onBack: () -> Unit,
     onNavigateToShare: () -> Unit,
-    viewModel: SelectChartViewModel = viewModel()
+    viewModel: SelectChartViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showEditDialog by remember { mutableStateOf<String?>(null) }
     var tempTitle by remember { mutableStateOf("") }
 
@@ -62,7 +86,7 @@ fun ChartSelectionPage(
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         },
@@ -75,7 +99,7 @@ fun ChartSelectionPage(
             }
             is ChartSelectionUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Text(text = state.message, color = ErrorRed)
                 }
             }
             is ChartSelectionUiState.Success -> {
@@ -93,13 +117,13 @@ fun ChartSelectionPage(
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_title),
-                                color = WHITE,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_subtitle),
-                                color = WHITE.copy(alpha = 0.9f),
+                                color = Color.White.copy(alpha = 0.9f),
                                 fontSize = 12.sp
                             )
                         }
@@ -109,7 +133,7 @@ fun ChartSelectionPage(
                         Text(
                             text = stringResource(R.string.chart_selection_prompt),
                             modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 14.sp
                         )
                     }
@@ -138,21 +162,21 @@ fun ChartSelectionPage(
                             Button(
                                 onClick = {},
                                 modifier = Modifier.weight(1f).height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_post_personal), color = WHITE, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_post_personal), color = Color.White, fontSize = 12.sp)
                             }
 
                             Button(
                                 onClick = onNavigateToShare,
                                 modifier = Modifier.weight(1f).height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_share_and_post), color = WHITE, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_share_and_post), color = Color.White, fontSize = 12.sp)
                             }
                         }
                     }
@@ -180,7 +204,7 @@ fun ChartSelectionPage(
                         },
                         dismissButton = {
                             TextButton(onClick = { showEditDialog = null }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface)
+                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     )
@@ -196,12 +220,12 @@ fun ChartSelectionPage(
                                 viewModel.showUnsavedChangesDialog(false)
                                 onBack()
                             }) {
-                                Text(stringResource(R.string.dialog_leave), color = MaterialTheme.colorScheme.error)
+                                Text(stringResource(R.string.dialog_leave), color = ErrorRed)
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onSurface)
+                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     )

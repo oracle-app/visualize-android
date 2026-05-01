@@ -1,8 +1,6 @@
 package com.oracle.visualize.presentation.screens.selectChartScreen
 
 import androidx.lifecycle.ViewModel
-import com.oracle.visualize.domain.models.ChartSelectionUiState
-import com.oracle.visualize.domain.models.VisualizationSelection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

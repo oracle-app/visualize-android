@@ -58,5 +58,7 @@ class AuthFirebaseSource @Inject constructor(private val auth: FirebaseAuth) {
      *
      * @return The current [FirebaseUser] or null if no user is logged in.
      */
-    fun getCurrentUser(): FirebaseUser? = auth.currentUser
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
+    }
 }
