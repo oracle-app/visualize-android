@@ -18,10 +18,11 @@ import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
-import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
-
+import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
+import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 
 /**
  * Main container screen that sets up the navigation host and bottom bar.
@@ -77,22 +78,25 @@ fun MainScreen(
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Feed,
+        startDestination = NavRoutes.SelectChart,
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
             FeedPage(
                 modifier = Modifier.fillMaxSize(),
                 onVisualizationClick = { visualizationId ->
-                    navController.navigate(
-                        NavRoutes.FullScreen(visualizationId)
-                    )
+                    navController.navigate(NavRoutes.FullScreen(visualizationId))
                 }
             )
         }
 
         composable<NavRoutes.Create> {
-            CreatePage(modifier = Modifier.fillMaxSize())
+            CreatePage(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateToSelectChart = {
+                    navController.navigate(NavRoutes.SelectChart)
+                }
+            )
         }
 
         composable<NavRoutes.Notifications> {
@@ -110,17 +114,25 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.FullScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
-
             FullVisualizationPage(
                 visualizationId = route.visualizationId,
                 modifier = Modifier.fillMaxSize(),
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onThreadsClick = {
-                }
+                onBackClick = { navController.popBackStack() },
+                onThreadsClick = {}
             )
         }
 
+        composable<NavRoutes.SelectChart> {
+            ChartSelectionPage(
+                onBack = { navController.popBackStack() },
+                onNavigateToShare = { navController.navigate(NavRoutes.ShareAndPost) }
+            )
+        }
+
+        composable<NavRoutes.ShareAndPost> {
+            ShareAndPostScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
     }
 }
