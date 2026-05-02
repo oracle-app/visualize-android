@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.registration.components
+package com.oracle.visualize.presentation.screens.registrationScreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource

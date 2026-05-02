@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.registration
+package com.oracle.visualize.presentation.screens.verificationScreen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -12,7 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,73 +25,81 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.registration.components.CodeInputGroup
-import com.oracle.visualize.ui.theme.*
+import com.oracle.visualize.presentation.screens.registrationScreen.components.CodeInputGroup
 
 /**
- * VerificationScreen: Dumb View for code verification.
+ * VerificationView: Dumb View for code verification.
  * Follows MVVM where the View only observes state and delegates events.
  * Fully adapted for Dark Mode and Visualize Brand Identity.
  * 
  * @param viewModel ViewModel handling the verification logic.
  * @param onNavigateBack Callback to return to the previous screen.
+ * @param onVerificationSuccess Callback to proceed after verification.
  */
 @Composable
-fun VerificationScreen(
+fun VerificationView(
     viewModel: VerificationViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onVerificationSuccess: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp),
-            contentScale = ContentScale.Crop
-        )
+    LaunchedEffect(uiState) {
+        if (uiState is VerificationUiState.Success) {
+            onVerificationSuccess()
+        }
+    }
 
-        Column(
+    if (uiState is VerificationUiState.Content) {
+        val state = uiState as VerificationUiState.Content
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Spacer(modifier = Modifier.height(140.dp))
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                contentScale = ContentScale.Crop
+            )
 
-            Surface(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f),
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                VerificationContent(
-                    uiState = uiState,
-                    onNavigateBack = onNavigateBack,
-                    onCodeChange = viewModel::onCodeChange,
-                    onResendCode = viewModel::resendCode,
-                    onVerify = viewModel::verify
-                )
-            }
-        }
+                Spacer(modifier = Modifier.height(140.dp))
 
-        ResendWaitMessage(isVisible = uiState.showResendWaitMessage)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
+                ) {
+                    VerificationContent(
+                        state = state,
+                        onNavigateBack = onNavigateBack,
+                        onCodeChange = viewModel::onCodeChange,
+                        onResendCode = viewModel::resendCode,
+                        onVerify = viewModel::verify
+                    )
+                }
+            }
+
+            ResendWaitMessage(isVisible = state.showResendWaitMessage)
+        }
     }
 }
 
-/**
- * Main content of the verification screen.
- */
 @Composable
 private fun VerificationContent(
-    uiState: VerificationUiState,
+    state: VerificationUiState.Content,
     onNavigateBack: () -> Unit,
     onCodeChange: (String) -> Unit,
     onResendCode: () -> Unit,
@@ -139,9 +147,9 @@ private fun VerificationContent(
         Spacer(modifier = Modifier.height(48.dp))
 
         CodeInputGroup(
-            code = uiState.code,
+            code = state.code,
             onCodeChange = onCodeChange,
-            isError = uiState.codeError != null
+            isError = state.codeError != null
         )
 
         Box(
@@ -149,7 +157,7 @@ private fun VerificationContent(
                 .fillMaxWidth(0.85f)
                 .padding(top = 8.dp)
         ) {
-            uiState.codeError?.let { errorRes ->
+            state.codeError?.let { errorRes ->
                 Text(
                     text = stringResource(errorRes),
                     color = MaterialTheme.colorScheme.error,
@@ -163,8 +171,8 @@ private fun VerificationContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         ResendCodeSection(
-            timer = uiState.resendTimer,
-            isEnabled = uiState.isResendEnabled,
+            timer = state.resendTimer,
+            isEnabled = state.isResendEnabled,
             onResend = onResendCode
         )
 
@@ -180,7 +188,7 @@ private fun VerificationContent(
             ),
             shape = RoundedCornerShape(32.dp)
         ) {
-            if (uiState.isLoading) {
+            if (state.isLoading) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
@@ -205,9 +213,6 @@ private fun VerificationContent(
     }
 }
 
-/**
- * Section for resending the verification code.
- */
 @Composable
 private fun ResendCodeSection(
     timer: Int,
@@ -235,9 +240,6 @@ private fun ResendCodeSection(
     }
 }
 
-/**
- * Floating message displayed when the user needs to wait to resend.
- */
 @Composable
 private fun ResendWaitMessage(isVisible: Boolean) {
     Box(

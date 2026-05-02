@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.splash
+package com.oracle.visualize.presentation.screens.splashScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,10 +18,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
-import com.oracle.visualize.ui.theme.*
 
 /**
- * SplashScreen: Entry point for the application.
+ * SplashView: Entry point for the application.
  * Fully adapted for Dark Mode and Visualize Brand Identity.
  * Features a large, prominent logo and absolute bottom positioning for version text.
  * 
@@ -29,7 +28,7 @@ import com.oracle.visualize.ui.theme.*
  * @param onNavigateToSignUp Callback to navigate to the signup screen.
  */
 @Composable
-fun SplashScreen(
+fun SplashView(
     onNavigateToLogin: () -> Unit,
     onNavigateToSignUp: () -> Unit
 ) {

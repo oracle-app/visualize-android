@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.login.components
+package com.oracle.visualize.presentation.screens.loginScreen.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

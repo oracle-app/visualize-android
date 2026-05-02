@@ -16,30 +16,30 @@ import androidx.compose.ui.platform.LocalContext
  * Mapped to provide high contrast for "negro" (dark) text and elements.
  */
 private val DarkColorScheme = darkColorScheme(
-    primary = DARK_MODE_STRONG_BLUE,
-    onPrimary = WHITE,
-    primaryContainer = DARK_MODE_LIGHT_BLUE,
-    onPrimaryContainer = DARK_MODE_DARK_GRAY,
+    primary = DarkMode_StrongBlue,
+    onPrimary = White,
+    primaryContainer = DarkMode_LightBlue,
+    onPrimaryContainer = DarkMode_DarkGray,
 
-    secondary = STRONG_ORANGE,
-    onSecondary = WHITE,
+    secondary = StrongOrange,
+    onSecondary = White,
 
     secondaryContainer = Color.Transparent,
-    onSecondaryContainer = DARK_MODE_NOT_AS_LIGHT_GRAY,
+    onSecondaryContainer = DarkMode_NotAsLightGray,
 
-    background = DARK_MODE_BACKGROUND,
-    onBackground = DARK_MODE_DARK_GRAY,
-    surface = DARK_MODE_BACKGROUND,
-    onSurface = DARK_MODE_DARK_GRAY,
+    background = DarkMode_Background,
+    onBackground = DarkMode_DarkGray,
+    surface = DarkMode_Background,
+    onSurface = DarkMode_DarkGray,
 
-    surfaceVariant = DARK_MODE_LIGHTER_BLUE,
-    onSurfaceVariant = DARK_MODE_NOT_AS_DARK_GRAY,
+    surfaceVariant = DarkMode_LighterBlue,
+    onSurfaceVariant = DarkMode_NotAsDarkGray,
 
-    outline = DARK_MODE_GRAYISH_BLUE,
-    outlineVariant = DARK_MODE_NOT_AS_DARK_GRAY,
-    error = ERROR_RED,
-    onError = WHITE,
-    scrim = SCRIM_COLOR
+    outline = DarkMode_GrayishBlue,
+    outlineVariant = DarkMode_NotAsDarkGray,
+    error = ErrorRed,
+    onError = White,
+    scrim = ScrimColor
 )
 
 /**
@@ -47,30 +47,30 @@ private val DarkColorScheme = darkColorScheme(
  * Adjusts onBackground/onSurface to DARK_GRAY to match the "negro" requirement for titles.
  */
 private val LightColorScheme = lightColorScheme(
-    primary = STRONG_BLUE,
-    onPrimary = WHITE,
-    primaryContainer = LIGHT_BLUE,
-    onPrimaryContainer = DARK_GRAY,
+    primary = StrongBlue,
+    onPrimary = White,
+    primaryContainer = LightBlue,
+    onPrimaryContainer = DarkGray,
 
-    secondary = STRONG_ORANGE,
-    onSecondary = WHITE,
+    secondary = StrongOrange,
+    onSecondary = White,
 
-    secondaryContainer = WHITE,
-    onSecondaryContainer = NOT_AS_LIGHT_GRAY,
+    secondaryContainer = White,
+    onSecondaryContainer = NotAsLightGray,
 
-    background = VERY_LIGHT_GRAY,
-    onBackground = DARK_GRAY,
-    surface = VERY_LIGHT_GRAY,
-    onSurface = DARK_GRAY,
+    background = VeryLightGray,
+    onBackground = DarkGray,
+    surface = VeryLightGray,
+    onSurface = DarkGray,
 
-    surfaceVariant = LIGHTER_BLUE,
-    onSurfaceVariant = NOT_AS_DARK_GRAY,
+    surfaceVariant = LighterBlue,
+    onSurfaceVariant = NotAsDarkGray,
 
-    outline = GRAYISH_BLUE,
-    outlineVariant = NOT_AS_DARK_GRAY,
-    error = ERROR_RED,
-    onError = WHITE,
-    scrim = SCRIM_COLOR
+    outline = GrayishBlue,
+    outlineVariant = NotAsDarkGray,
+    error = ErrorRed,
+    onError = White,
+    scrim = ScrimColor
 )
 
 @Composable

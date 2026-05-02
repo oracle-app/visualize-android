@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.login
+package com.oracle.visualize.presentation.screens.loginScreen
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
@@ -13,36 +13,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.oracle.visualize.R
 
-/**
- * State for the Login screen.
- */
-data class LoginUiState(
-    val email: String = "",
-    val password: String = "",
-    val emailError: Int? = null,
-    val passwordError: Int? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val success: Boolean = false,
-    val isPasswordVisible: Boolean = false
-)
-
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Content())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
+    private fun updateContent(update: (LoginUiState.Content) -> LoginUiState) {
+        _uiState.update { state ->
+            if (state is LoginUiState.Content) update(state) else state
+        }
+    }
+
     fun onEmailChange(email: String) {
-        _uiState.update { it.copy(email = email, emailError = null) }
+        updateContent { it.copy(email = email, emailError = null) }
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.update { currentState ->
-            // If an error is already showing, we re-validate reactively.
-            // If the password becomes correct, the error disappears.
+        updateContent { currentState ->
             val nextError = if (currentState.passwordError != null) {
                 getPasswordError(password)
             } else {
@@ -53,13 +43,9 @@ class LoginViewModel @Inject constructor(
     }
 
     fun togglePasswordVisibility() {
-        _uiState.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
+        updateContent { it.copy(isPasswordVisible = !it.isPasswordVisible) }
     }
 
-    /**
-     * Validates password complexity: 8 chars, 1 digit, 1 symbol.
-     * Returns the string resource ID of the specific error or null if valid.
-     */
     private fun getPasswordError(password: String): Int? {
         if (password.isBlank()) return R.string.login_error_password_required
         if (password.length < 8) return R.string.error_password_too_short
@@ -68,47 +54,44 @@ class LoginViewModel @Inject constructor(
         return null
     }
 
-    /**
-     * Resets any existing validation errors.
-     */
     private fun resetErrors() {
-        _uiState.update { it.copy(emailError = null, passwordError = null) }
+        updateContent { it.copy(emailError = null, passwordError = null) }
     }
 
     fun login() {
-        val state = _uiState.value
+        val state = _uiState.value as? LoginUiState.Content ?: return
         var hasError = false
         
         resetErrors()
 
         if (state.email.isBlank()) {
-            _uiState.update { it.copy(emailError = R.string.login_error_email_required) }
+            updateContent { it.copy(emailError = R.string.login_error_email_required) }
             hasError = true
         } else if (!Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            _uiState.update { it.copy(emailError = R.string.login_error_email_required) }
+            updateContent { it.copy(emailError = R.string.login_error_email_required) }
             hasError = true
         }
 
         val passError = getPasswordError(state.password)
         if (passError != null) {
-            _uiState.update { it.copy(passwordError = passError) }
+            updateContent { it.copy(passwordError = passError) }
             hasError = true
         }
 
         if (hasError) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            updateContent { it.copy(isLoading = true, errorMessage = null) }
             try {
                 loginUseCase(state.email, state.password)
-                _uiState.update { it.copy(isLoading = false, success = true) }
+                _uiState.value = LoginUiState.Success
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
+                updateContent { it.copy(isLoading = false, errorMessage = e.message) }
             }
         }
     }
 
     fun clearError() {
-        _uiState.update { it.copy(error = null) }
+        updateContent { it.copy(errorMessage = null) }
     }
 }

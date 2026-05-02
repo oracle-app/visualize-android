@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.registration
+package com.oracle.visualize.presentation.screens.registrationScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,61 +23,69 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.login.components.LoginTextField
-import com.oracle.visualize.ui.theme.*
+import com.oracle.visualize.presentation.screens.loginScreen.components.LoginTextField
 
 /**
- * RegistrationScreen: Dumb View for user account creation.
+ * RegistrationView: Dumb View for user account creation.
  * Follows MVVM and architectural spacing standards.
  * Fully adapted for Dark Mode and Visualize Brand Identity.
  * 
  * @param viewModel ViewModel handling registration logic.
  * @param onNavigateToLogin Callback to go back to login.
- * @param onNavigateToVerification Callback to proceed to verification.
+ * @param onRegistrationSuccess Callback to proceed to verification or next screen.
  */
 @Composable
-fun RegistrationScreen(
+fun RegistrationView(
     viewModel: RegistrationViewModel = hiltViewModel(),
     onNavigateToLogin: () -> Unit,
-    onNavigateToVerification: () -> Unit
+    onRegistrationSuccess: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp),
-            contentScale = ContentScale.Crop
-        )
+    LaunchedEffect(uiState) {
+        if (uiState is RegistrationUiState.Success) {
+            onRegistrationSuccess()
+        }
+    }
 
-        Column(
+    if (uiState is RegistrationUiState.Content) {
+        val state = uiState as RegistrationUiState.Content
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Spacer(modifier = Modifier.height(140.dp))
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                contentScale = ContentScale.Crop
+            )
 
-            Surface(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f),
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                RegistrationContent(
-                    uiState = uiState,
-                    viewModel = viewModel,
-                    onNavigateToLogin = onNavigateToLogin,
-                    onNavigateToVerification = onNavigateToVerification
-                )
+                Spacer(modifier = Modifier.height(140.dp))
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
+                ) {
+                    RegistrationContent(
+                        state = state,
+                        viewModel = viewModel,
+                        onNavigateToLogin = onNavigateToLogin
+                    )
+                }
             }
         }
     }
@@ -88,10 +96,9 @@ fun RegistrationScreen(
  */
 @Composable
 private fun RegistrationContent(
-    uiState: RegistrationUiState,
+    state: RegistrationUiState.Content,
     viewModel: RegistrationViewModel,
-    onNavigateToLogin: () -> Unit,
-    onNavigateToVerification: () -> Unit
+    onNavigateToLogin: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -99,7 +106,6 @@ private fun RegistrationContent(
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 70dp spacing from top of surface as per architectural guide
         Spacer(modifier = Modifier.height(70.dp))
 
         Text(
@@ -110,47 +116,46 @@ private fun RegistrationContent(
             textAlign = TextAlign.Center
         )
 
-        // 67dp spacing from title to first input
         Spacer(modifier = Modifier.height(67.dp))
 
         LoginTextField(
-            value = uiState.name,
+            value = state.name,
             onValueChange = viewModel::onNameChange,
             label = stringResource(R.string.registration_name_label),
-            error = uiState.nameError?.let { stringResource(it) }
+            error = state.nameError?.let { stringResource(it) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LoginTextField(
-            value = uiState.email,
+            value = state.email,
             onValueChange = viewModel::onEmailChange,
             label = stringResource(R.string.registration_email_label),
-            error = uiState.emailError?.let { stringResource(it) },
+            error = state.emailError?.let { stringResource(it) },
             keyboardType = KeyboardType.Email
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LoginTextField(
-            value = uiState.password,
+            value = state.password,
             onValueChange = viewModel::onPasswordChange,
             label = stringResource(R.string.registration_password_label),
-            error = uiState.passwordError?.let { stringResource(it) },
+            error = state.passwordError?.let { stringResource(it) },
             isPassword = true,
-            isPasswordVisible = uiState.isPasswordVisible,
+            isPasswordVisible = state.isPasswordVisible,
             onToggleVisibility = viewModel::togglePasswordVisibility
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LoginTextField(
-            value = uiState.confirmPassword,
+            value = state.confirmPassword,
             onValueChange = viewModel::onConfirmPasswordChange,
             label = stringResource(R.string.registration_confirm_password_label),
-            error = uiState.confirmPasswordError?.let { stringResource(it) },
+            error = state.confirmPasswordError?.let { stringResource(it) },
             isPassword = true,
-            isPasswordVisible = uiState.isConfirmPasswordVisible,
+            isPasswordVisible = state.isConfirmPasswordVisible,
             onToggleVisibility = viewModel::toggleConfirmPasswordVisibility
         )
 
@@ -170,9 +175,7 @@ private fun RegistrationContent(
 
         Button(
             onClick = {
-                if (viewModel.validateInputs()) {
-                    onNavigateToVerification()
-                }
+                viewModel.register()
             },
             modifier = Modifier
                 .fillMaxWidth(0.65f)
@@ -182,7 +185,7 @@ private fun RegistrationContent(
             ),
             shape = RoundedCornerShape(32.dp)
         ) {
-            if (uiState.isLoading) {
+            if (state.isLoading) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(24.dp)
