@@ -48,23 +48,6 @@ class UserDatasource @Inject constructor(
     }
 
     /**
-     * Fetches teams that the specified user is a member of.
-     *
-     * @param userID The unique ID of the user.
-     * @return A list of [TeamDTO] objects.
-     * @throws AppError.NetworkError If a network error occurs.
-     */
-    suspend fun getTeamsIntegratedByUser(userID: String): List<TeamDTO> {
-        return try {
-            val snapshot = firestore.collection("teams").whereArrayContains("memberIDs", userID).get().await()
-            snapshot.toObjects(TeamDTO::class.java)
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Error fetching integrated teams: ${ex.message}")
-        }
-    }
-
-    /**
      * Fetches user suggestions based on a partial email address.
      *
      * @param email The partial email string to search for.

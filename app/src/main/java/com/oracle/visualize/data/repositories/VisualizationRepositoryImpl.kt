@@ -2,30 +2,26 @@ package com.oracle.visualize.data.repositories
 
 import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.UserDatasource
-import com.oracle.visualize.data.datasources.VisualizationDataSource
+import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
-import com.oracle.visualize.data.mapper.toShareTeam
-import com.oracle.visualize.data.mapper.toShareUser
 import com.oracle.visualize.data.mapper.toVisualizationCard
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import kotlinx.coroutines.coroutineScope
 import java.util.Date
 import javax.inject.Inject
 
 /**
  * Implementation of [VisualizationRepository] that manages visualization data.
- * It combines data from [VisualizationDataSource] and [UserDatasource] to create
+ * It combines data from [VisualizationDatasource] and [UserDatasource] to create
  * comprehensive [VisualizationCard] objects for the UI.
  *
  * @property visualizationDataSource Data source for visualization operations.
  * @property userDatasource Data source for user information.
  */
 class VisualizationRepositoryImpl @Inject constructor(
-    private val visualizationDataSource: VisualizationDataSource,
+    private val visualizationDataSource: VisualizationDatasource,
     private val userDatasource: UserDatasource,
     private val teamsDatasource: TeamDatasource
 ) : VisualizationRepository {

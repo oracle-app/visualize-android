@@ -1,13 +1,9 @@
 package com.oracle.visualize.data.datasources
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -16,7 +12,7 @@ import javax.inject.Inject
  *
  * @property db The [FirebaseFirestore] instance used for database operations.
  */
-class VisualizationDataSource @Inject constructor(
+class VisualizationDatasource @Inject constructor(
     private val db: FirebaseFirestore,
     private val teamsDatasource: TeamDatasource
 ) {
@@ -128,23 +124,39 @@ class VisualizationDataSource @Inject constructor(
     }
 
     private suspend fun getVisualizationsSharedWithTeamsUserIsIn(userID: String): List<VisualizationDTO> {
-        val userTeams = teamsDatasource.getTeamsUserIsIn(userID)
-        val teamIDs = userTeams.mapNotNull { it.id }
+        return try {
+            val userTeams = teamsDatasource.getTeamsUserIsIn(userID)
+            val teamIDs = userTeams.mapNotNull { it.id }
 
-        if (teamIDs.isEmpty()) return emptyList()
+            if (teamIDs.isEmpty()) return emptyList()
 
-        val snapshot = db.collection("visualizations")
-            .whereArrayContainsAny("sharedWithTeams", teamIDs)
-            .get()
-            .await()
-        return snapshot.toObjects(VisualizationDTO::class.java)
+            val snapshot = db.collection("visualizations")
+                .whereArrayContainsAny("sharedWithTeams", teamIDs)
+                .get()
+                .await()
+
+            if (snapshot.isEmpty) return emptyList()
+
+            snapshot.documents.map { doc ->
+                doc.toObject(VisualizationDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
+            }
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
+        }
     }
 
     suspend fun getAllSharedVisualizations(userID: String): List<VisualizationDTO> {
-        val sharedWithUser = getVisualizationsSharedWithUser(userID)
-        val sharedWithTeams = getVisualizationsSharedWithTeamsUserIsIn(userID)
+        return try {
+            val sharedWithUser = getVisualizationsSharedWithUser(userID)
+            val sharedWithTeams = getVisualizationsSharedWithTeamsUserIsIn(userID)
 
-        val allShared = sharedWithUser + sharedWithTeams
-        return allShared.distinctBy { it.id }
+            val allShared = sharedWithUser + sharedWithTeams
+            allShared.distinctBy { it.id }
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching all shared visualizations: ${ex.message}")
+        }
     }
 }
