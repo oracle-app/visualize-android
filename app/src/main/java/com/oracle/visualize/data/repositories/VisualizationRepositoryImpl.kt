@@ -54,7 +54,7 @@ class VisualizationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSharedVisualizations(userID: String): List<VisualizationCard> {
-        val dtos = visualizationDataSource.getVisualizationsSharedWithUser(userID)
+        val dtos = visualizationDataSource.getAllSharedVisualizations(userID)
         return fetchDetailsAndMap(dtos)
     }
 
