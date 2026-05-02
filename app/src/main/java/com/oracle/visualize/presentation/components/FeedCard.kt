@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
 
@@ -128,7 +127,7 @@ fun FeedCard(item: VisualizationCard) {
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val chart = item.chart as? Chart<*>
+                    val chart = item.chart
                     if (chart != null) {
                         ChartRenderFeedCard(chart = chart)
                     } else {

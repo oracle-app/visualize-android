@@ -56,6 +56,7 @@ class FeedViewModel @Inject constructor(
             * - SCATTER (Scatter Chart)
             * - PIE (Pie Chart)
             * - DONUT (Donut Chart)
+            * - AREA (Area Chart)
             *
             * TODO: Get data from the microservice becomes available.
             *

@@ -1,7 +1,6 @@
 package com.oracle.visualize.domain.models
 
 import java.util.Date
-import com.oracle.visualize.domain.models.Chart
 
 
 /**
