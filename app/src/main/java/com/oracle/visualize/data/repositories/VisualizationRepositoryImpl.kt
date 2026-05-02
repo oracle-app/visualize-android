@@ -1,14 +1,18 @@
 package com.oracle.visualize.data.repositories
 
+import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
+import com.oracle.visualize.data.mapper.toShareTeam
+import com.oracle.visualize.data.mapper.toShareUser
 import com.oracle.visualize.data.mapper.toVisualizationCard
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import kotlinx.coroutines.coroutineScope
 import java.util.Date
 import javax.inject.Inject
 
@@ -22,7 +26,8 @@ import javax.inject.Inject
  */
 class VisualizationRepositoryImpl @Inject constructor(
     private val visualizationDataSource: VisualizationDataSource,
-    private val userDatasource: UserDatasource
+    private val userDatasource: UserDatasource,
+    private val teamsDatasource: TeamDatasource
 ) : VisualizationRepository {
 
     override suspend fun createVisualization(
@@ -48,40 +53,45 @@ class VisualizationRepositoryImpl @Inject constructor(
         return visualizationDataSource.getAllVisualizations().map { it.toDomain() }
     }
 
-    override suspend fun getAllVisualizationsByUserID(userID: String, filter: VisualizationFilter): List<VisualizationCard> {
-        val dtos = mutableListOf<VisualizationDTO>()
+    override suspend fun getSharedVisualizations(userID: String): List<VisualizationCard> {
+        val dtos = visualizationDataSource.getVisualizationsSharedWithUser(userID)
+        return fetchDetailsAndMap(dtos)
+    }
 
-        when(filter) {
-            VisualizationFilter.ALL -> {
-                dtos += visualizationDataSource.getAllVisualizationsByUserID(userID)
-            }
+    override suspend fun getPersonalVisualizations(userID: String): List<VisualizationCard> {
+        val dtos = visualizationDataSource.getPersonalVisualizations(userID)
+        return fetchDetailsAndMap(dtos)
+    }
 
-            VisualizationFilter.SHARED -> {
-                val visualizationsSharedWithUser = visualizationDataSource.getVisualizationsSharedWithUser(userID)
-                val visualizationsSharedWithTeam = visualizationDataSource.getSharedVisualizationsByTeamsIntegratedByUser(userID)
-                dtos += visualizationsSharedWithUser
-                dtos += visualizationsSharedWithTeam
-            }
-
-            VisualizationFilter.PERSONAL -> {
-                dtos += visualizationDataSource.getPersonalVisualizations(userID)
-            }
-        }
-
-        val visualizationCards = mutableListOf<VisualizationCard>()
-        val user = userDatasource.getUserByID(userID)
-        val hiddenVisualizations = user.hiddenVisualizations
-
+    private suspend fun fetchDetailsAndMap(dtos: List<VisualizationDTO>): List<VisualizationCard> {
+        val cards = mutableListOf<VisualizationCard>()
         for (dto in dtos) {
-            val author = userDatasource.getUserByID(dto.authorID)
-            val users = visualizationDataSource.getAllUsersVisualizationIsSharedWith(dto.id)
-            val sharedUsers = users.map { it.toDomain() }
-            val card = dto.toVisualizationCard(author.username,sharedUsers)
-            visualizationCards += card
+            val authorDTO = userDatasource.getUserByID(dto.authorID)
+            val authorName = authorDTO.username
+
+            val usersDTOs = userDatasource.getUsersByIDs(dto.sharedWithUsers)
+            val usersSharedWith = usersDTOs.map { it.toDomain() }
+
+            val teamsDTOs = teamsDatasource.getTeamsByIDs(dto.sharedWithTeams)
+
+            val uniqueMemberIDs = teamsDTOs.flatMap { it.membersIDs }.toSet().toList()
+            val membersDTOs = userDatasource.getUsersByIDs(uniqueMemberIDs)
+            val allMembers = membersDTOs.map { it.toDomain() }
+
+            val teamsSharedWith = teamsDTOs.map { teamDTO ->
+                val specificTeamMembers = allMembers.filter { member ->
+                    teamDTO.membersIDs.contains(member.id)
+                }
+                teamDTO.toDomain(specificTeamMembers)
+            }
+
+            val card = dto.toVisualizationCard(
+                authorName = authorName,
+                teamsSharedWith = teamsSharedWith,
+                usersSharedWith = usersSharedWith
+            )
+            cards.add(card)
         }
-        val filteredCards = visualizationCards.filter { card ->
-            card.id !in hiddenVisualizations
-        }
-        return visualizationCards
+        return cards
     }
 }

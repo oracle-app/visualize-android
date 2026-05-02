@@ -143,7 +143,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     .heightIn(min = 41.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MemberAvatarStackFeed(item.sharedWith)
+                MemberAvatarStackFeed(item.allUsersSharedWith)
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }

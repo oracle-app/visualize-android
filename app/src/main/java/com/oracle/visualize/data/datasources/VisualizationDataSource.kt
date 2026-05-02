@@ -17,10 +17,10 @@ import javax.inject.Inject
  * @property db The [FirebaseFirestore] instance used for database operations.
  */
 class VisualizationDataSource @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val teamsDatasource: TeamDatasource
 ) {
     private val visualizationsRef = db.collection("visualizations")
-    private val teamsRef = db.collection("teams")
 
     /**
      * Creates a new visualization in the database.
@@ -86,7 +86,8 @@ class VisualizationDataSource @Inject constructor(
         return try {
             val visualizations = visualizationsRef
                 .whereArrayContains("sharedWithUsers", userID)
-                .get().await()
+                .get()
+                .await()
 
             if (visualizations.isEmpty) return emptyList()
 
@@ -126,109 +127,24 @@ class VisualizationDataSource @Inject constructor(
         }
     }
 
-    /**
-     * Fetches visualizations shared with any team that the user is a member of.
-     *
-     * @param userID The unique ID of the user.
-     * @return A list of [VisualizationDTO] objects shared with the user's teams.
-     * @throws AppError.ParsingError If any document cannot be parsed.
-     * @throws AppError.NetworkError If a network error occurs.
-     */
-    suspend fun getSharedVisualizationsByTeamsIntegratedByUser(userID: String): List<VisualizationDTO> {
-        return try {
-            val teams = teamsRef.whereArrayContains("membersIDs", userID).get().await()
-            val teamIDs = teams.documents.map { it.id }
+    private suspend fun getVisualizationsSharedWithTeamsUserIsIn(userID: String): List<VisualizationDTO> {
+        val userTeams = teamsDatasource.getTeamsUserIsIn(userID)
+        val teamIDs = userTeams.mapNotNull { it.id }
 
-            if (teamIDs.isEmpty()) return emptyList()
+        if (teamIDs.isEmpty()) return emptyList()
 
-            val sharedWithTeams = visualizationsRef
-                .whereArrayContainsAny("sharedWithTeams", teamIDs)
-                .get()
-                .await()
-
-            if (sharedWithTeams.isEmpty) return emptyList()
-
-            sharedWithTeams.documents.map { doc ->
-                doc.toObject(VisualizationDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch team visualizations: ${ex.message}")
-        }
+        val snapshot = db.collection("visualizations")
+            .whereArrayContainsAny("sharedWithTeams", teamIDs)
+            .get()
+            .await()
+        return snapshot.toObjects(VisualizationDTO::class.java)
     }
 
-    /**
-     * Aggregates all visualizations relevant to a user (personal, shared with user, shared with teams).
-     *
-     * @param userID The unique ID of the user.
-     * @return A list of [VisualizationDTO] objects.
-     * @throws AppError.NetworkError If a network error occurs.
-     */
-    suspend fun getAllVisualizationsByUserID(userID: String): List<VisualizationDTO> {
-        return try {
-            val finalArray = mutableListOf<VisualizationDTO>()
-            val personal = getPersonalVisualizations(userID)
-            val sharedWithUsers = getVisualizationsSharedWithUser(userID)
-            val sharedWithTeams = getSharedVisualizationsByTeamsIntegratedByUser(userID)
+    suspend fun getAllSharedVisualizations(userID: String): List<VisualizationDTO> {
+        val sharedWithUser = getVisualizationsSharedWithUser(userID)
+        val sharedWithTeams = getVisualizationsSharedWithTeamsUserIsIn(userID)
 
-            finalArray.addAll(personal)
-            finalArray.addAll(sharedWithUsers)
-            finalArray.addAll(sharedWithTeams)
-            finalArray
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to aggregate visualizations: ${ex.message}")
-        }
-    }
-
-    /**
-     * Fetches all users that a specific visualization is shared with.
-     *
-     * @param visualizationID The unique ID of the visualization.
-     * @return A list of [UserDTO] objects representing the users.
-     * @throws AppError.NotFound If the visualization ID does not exist.
-     * @throws AppError.ParsingError If documentation mapping fails.
-     * @throws AppError.NetworkError If a network error occurs.
-     */
-    suspend fun getAllUsersVisualizationIsSharedWith(visualizationID: String): List<UserDTO> {
-        return try {
-            val snapshot = db.collection("visualizations")
-                .document(visualizationID)
-                .get()
-                .await()
-
-            if (!snapshot.exists()) {
-                throw AppError.NotFound("This visualization ID does not exist.")
-            }
-
-            val visualizationDTO = snapshot.toObject(VisualizationDTO::class.java)
-                ?: throw AppError.ParsingError("Visualization could not be mapped.")
-
-            val sharedUserIDs = visualizationDTO.sharedWithUsers.filter { it.isNotBlank() }
-
-            coroutineScope {
-                sharedUserIDs.map { userId ->
-                    async {
-                        val userSnapshot = db.collection("users")
-                            .document(userId)
-                            .get()
-                            .await()
-
-                        if (userSnapshot.exists()) {
-                            userSnapshot.toObject(UserDTO::class.java)
-                                ?: throw AppError.ParsingError("Failed to map UserDTO: $userId")
-                        } else {
-                            null
-                        }
-                    }
-                }
-                    .awaitAll()
-                    .filterNotNull()
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch shared users: ${ex.message}")
-        }
+        val allShared = sharedWithUser + sharedWithTeams
+        return allShared.distinctBy { it.id }
     }
 }

@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
+import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
@@ -63,8 +64,9 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideVisualizationDataSource(
-        db: FirebaseFirestore
-    ): VisualizationDataSource = VisualizationDataSource(db)
+        db: FirebaseFirestore,
+        teamsDatasource: TeamDatasource
+    ): VisualizationDataSource = VisualizationDataSource(db, teamsDatasource)
 
     /**
      * Alternative provider for [FirebaseFirestore] using the [Firebase] accessor.

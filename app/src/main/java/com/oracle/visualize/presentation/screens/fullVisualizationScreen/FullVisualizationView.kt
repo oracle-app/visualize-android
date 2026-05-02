@@ -96,7 +96,7 @@ fun FullVisualizationPage(
                         FullVisualizationTopBar (
                             teamName = visualization.author,
                             visualizationTitle = visualization.title,
-                            members = visualization.sharedWith,
+                            members = visualization.allUsersSharedWith,
                             onBackClick = onBackClick
                         )
 
