@@ -22,6 +22,19 @@ class VisualizationDataSource @Inject constructor(
     private val visualizationsRef = db.collection("visualizations")
     private val teamsRef = db.collection("teams")
 
+
+    fun formatVisualization(v: VisualizationDTO): HashMap<String, Any> {
+        return hashMapOf(
+            "authorID" to v.authorID,
+            "title" to v.title,
+            "configJSON" to v.configJSON,
+            "sharedWithUsers" to v.sharedWithUsers,
+            "sharedWithTeams" to v.sharedWithTeams,
+            "createdAt" to v.createdAt
+        )
+    }
+
+
     /**
      * Creates a new visualization in the database.
      *
@@ -29,19 +42,11 @@ class VisualizationDataSource @Inject constructor(
      * @throws AppError.ValidationError If required fields are empty.
      * @throws AppError.NetworkError If a network error occurs.
      */
-    suspend fun createVisualization(visualization: Visualization) {
+    suspend fun createVisualization(visualization: VisualizationDTO) {
         try {
             if (visualization.authorID.isNotEmpty() && visualization.title.isNotEmpty() &&
                 visualization.configJSON.isNotEmpty()) {
-
-                val formattedVisualization = hashMapOf(
-                    "authorID" to visualization.authorID,
-                    "title" to visualization.title,
-                    "configJSON" to visualization.configJSON,
-                    "sharedWithUsers" to visualization.sharedWithUsers,
-                    "sharedWithTeams" to visualization.sharedWithTeams,
-                    "createdAt" to visualization.createdAt,
-                )
+                val formattedVisualization = formatVisualization(visualization)
                 visualizationsRef.add(formattedVisualization).await()
             } else {
                 throw AppError.ValidationError("AuthorID, title, and configJSON cannot be empty")
