@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
+import com.oracle.visualize.domain.usecases.GetMockChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,17 +16,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-// ** Uncomment the library of the mock chart you want to try out. **
-
-// import com.oracle.visualize.presentation.components.mockHorizontalBarChart
-// import com.oracle.visualize.presentation.components.mockVerticalBarChart
-// import com.oracle.visualize.presentation.components.mockStackedBarChart
-// import com.oracle.visualize.presentation.components.mockLineChart
-// import com.oracle.visualize.presentation.components.mockScatterChart
-// import com.oracle.visualize.presentation.components.mockPieChart
-// import com.oracle.visualize.presentation.components.mockDonutChart
-import com.oracle.visualize.presentation.components.mockAreaChart
 
 /**
  * ViewModel for the Feed screen.
@@ -34,7 +25,8 @@ import com.oracle.visualize.presentation.components.mockAreaChart
  */
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val getMockChartUseCase: GetMockChartUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeedUIState())
@@ -50,12 +42,37 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
+            /*
+            * Get a chart from the mock chart repository.
+            *
+            * @param chartType: The type of chart, according belongs to the
+            * ChartTypes enum.
+            *
+            * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
+            * - VERTICAL_BAR (Vertical Bar Chart)
+            * - HORIZONTAL_BAR (Vertical Bar Chart)
+            * - STACKED_BAR (Stacked Bar Chart)
+            * - LINE (Line Chart)
+            * - SCATTER (Scatter Chart)
+            * - PIE (Pie Chart)
+            * - DONUT (Donut Chart)
+            *
+            * TODO: Get data from the microservice becomes available.
+            *
+            * */
+            val mockChart = getMockChartUseCase(ChartTypes.VERTICAL_BAR).fold(
+                onSuccess = { it },
+                onFailure = { null }
+            )
+
             // TODO: Get from Auth Repository
             val userID = "oEJtQz0gdbRpTZ8ETPCy"
 
             getAllUserVisualizationsUseCase(userID, filter).fold(
                 onSuccess = { visualizations ->
-                    allItems = visualizations
+                    allItems = visualizations.map { item ->
+                        item.copy(chart = mockChart)
+                    }
                     applySearch()
                 },
                 onFailure = { error ->
@@ -94,30 +111,16 @@ class FeedViewModel @Inject constructor(
 
     private fun applySearch() {
         val currentSearch = _uiState.value.searchText
-
-        /* Mock of a chart model for an item's feed card.
-        * You can modify the mock data at RenderChartMock.kt.
-        * CAUTION: Only should use one model per item for not
-        * to break the component.
-        * */
-        val itemsWithMockCharts = allItems.map { item ->
-            // item.copy(chart = mockVerticalBarChart)
-            // item.copy(chart = mockHorizontalBarChart)
-            // item.copy(chart = mockStackedBarChart)
-            // item.copy(chart = mockPieChart)
-            // item.copy(chart = mockDonutChart)
-            // item.copy(chart = mockLineChart)
-            // item.copy(chart = mockScatterChart)
-            item.copy(chart = mockAreaChart)
-        }
-
-        val filteredItems = if (currentSearch.isBlank()) {
-            itemsWithMockCharts
-        } else {
-            itemsWithMockCharts.filter { item ->
-                item.title.contains(currentSearch, ignoreCase = true)
+        
+        viewModelScope.launch {
+            val filteredItems = if (currentSearch.isBlank()) {
+                allItems
+            } else {
+                allItems.filter { item ->
+                    item.title.contains(currentSearch, ignoreCase = true)
+                }
             }
+            _uiState.update { it.copy(items = filteredItems, isLoading = false) }
         }
-        _uiState.update { it.copy(items = filteredItems, isLoading = false) }
     }
 }

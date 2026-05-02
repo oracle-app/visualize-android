@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.models
 
 import java.util.Date
+import com.oracle.visualize.domain.models.Chart
 
 
 /**
@@ -13,5 +14,5 @@ data class VisualizationCard(
     val createdAt: Date,
     val sharedWith: List<User>,
     val configJSON: String,
-    val chart: Any
+    val chart: Chart<*>? = null
 )

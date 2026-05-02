@@ -7,12 +7,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AuthFirebaseSource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
+import com.oracle.visualize.data.repositories.ChartRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
 import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.data.repositories.UserRepositoryImpl
+import com.oracle.visualize.domain.repositories.ChartRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -115,4 +117,12 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
+
+    /**
+     * Binds [ChartRepositoryImpl] to [ChartRepository].
+     */
+    @Binds
+    abstract fun bindChartRepository(
+        chartRepositoryImpl: ChartRepositoryImpl
+    ): ChartRepository
 }

@@ -36,6 +36,6 @@ fun VisualizationDTO.toVisualizationCard(authorName: String, sharedUsers: List<U
         createdAt = this.createdAt.toDate(),
         configJSON = this.configJSON,
         sharedWith = sharedUsers,
-        chart = Any()
+        chart = null
     )
 }
