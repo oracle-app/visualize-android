@@ -13,12 +13,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
- import com.oracle.visualize.presentation.navigation.NavRoutes
+import androidx.navigation.toRoute
+import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 
 
 /**
@@ -79,7 +81,14 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
-            FeedPage(modifier = Modifier.fillMaxSize())
+            FeedPage(
+                modifier = Modifier.fillMaxSize(),
+                onVisualizationClick = { visualizationId ->
+                    navController.navigate(
+                        NavRoutes.FullScreen(visualizationId)
+                    )
+                }
+            )
         }
 
         composable<NavRoutes.Create> {
@@ -98,5 +107,20 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             ProfilePage(modifier = Modifier.fillMaxSize())
             // TODO: Pass profile.userId to ProfilePage
         }
+
+        composable<NavRoutes.FullScreen> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
+
+            FullVisualizationPage(
+                visualizationId = route.visualizationId,
+                modifier = Modifier.fillMaxSize(),
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onThreadsClick = {
+                }
+            )
+        }
+
     }
 }

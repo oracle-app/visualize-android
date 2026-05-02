@@ -22,5 +22,6 @@ sealed interface NavRoutes {
     object Teams : MainTab
     @Serializable
     data class Profile(val userId: String) : MainTab
-
+    @Serializable
+    data class FullScreen(val visualizationId: String) : NavRoutes
 }
