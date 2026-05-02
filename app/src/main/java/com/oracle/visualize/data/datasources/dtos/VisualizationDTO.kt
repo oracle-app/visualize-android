@@ -4,6 +4,17 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 import java.util.Date
 
+/**
+ * Data Transfer Object representing a visualization in the database.
+ *
+ * @property id The unique identifier for the visualization document.
+ * @property authorID The unique ID of the user who created the visualization.
+ * @property title The title of the visualization.
+ * @property configJSON A JSON string containing the configuration for the visualization.
+ * @property sharedWithUsers List of user IDs that this visualization is shared with.
+ * @property sharedWithTeams List of team IDs that this visualization is shared with.
+ * @property createdAt The timestamp when the visualization was created.
+ */
 data class VisualizationDTO(
     @DocumentId
     val id: String = "",
