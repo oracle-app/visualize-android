@@ -189,5 +189,10 @@
     <string name="profile_img_description">Profile Image</string>
     <string name="log_out">Log Out</string>
 
+    // FullScreen Page
+    <string name="snipping_tool">Snipping Tool</string>
+    <string name="threads">Threads</string>
+
+
 
 </resources>

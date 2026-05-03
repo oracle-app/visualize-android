@@ -36,7 +36,8 @@ import com.oracle.visualize.presentation.components.SearchSection
 @Composable
 fun FeedPage(
     modifier: Modifier = Modifier,
-    feedViewModel: FeedViewModel = hiltViewModel()
+    feedViewModel: FeedViewModel = hiltViewModel(),
+    onVisualizationClick: (String) -> Unit = {}
 ) {
     val uiState by feedViewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -82,7 +83,11 @@ fun FeedPage(
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                         items(uiState.items) { item ->
-                            FeedCard(item)
+                            FeedCard(item,
+                                onClick = {
+                                    onVisualizationClick(item.id)
+                                }
+                            )
                         }
                         item {
                             Spacer(modifier = Modifier.height(80.dp))
