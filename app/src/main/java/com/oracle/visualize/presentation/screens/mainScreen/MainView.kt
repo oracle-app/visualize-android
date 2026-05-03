@@ -78,7 +78,7 @@ fun MainScreen(
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.SelectChart,
+        startDestination = NavRoutes.Feed,
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
