@@ -58,9 +58,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
-    testImplementation(libs.junit.junit)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.jupiter.junit.jupiter)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -83,4 +81,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+
 }

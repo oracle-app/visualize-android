@@ -1,5 +1,5 @@
 [versions]
-agp = "9.2.0"
+agp = "9.1.1"
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -21,9 +21,7 @@ coil = "3.4.0"
 koalaplot = "0.11.0"
 mockk = "1.13.12"
 foundationLayout = "1.11.0"
-junitJunit = "4.12"
-junitJupiter = "5.14.0"
-junitJupiterVersion = "6.0.0"
+coroutinesTest = "1.10.2"
 
 
 [libraries]
@@ -62,9 +60,7 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 koalaplot-core = { group = "io.github.koalaplot", name = "koalaplot-core", version.ref = "koalaplot" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
-jupiter-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiterVersion" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
 
 
