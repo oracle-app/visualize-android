@@ -82,6 +82,7 @@ fun MainScreen(
                             is com.oracle.visualize.presentation.navigation.NavRoutes.Notifications -> NavRoutes.Notifications.route
                             is com.oracle.visualize.presentation.navigation.NavRoutes.Teams -> NavRoutes.Teams.route
                             is com.oracle.visualize.presentation.navigation.NavRoutes.Profile -> NavRoutes.Profile.route
+                            is com.oracle.visualize.presentation.navigation.NavRoutes.FullScreen -> ""
                         }
                         navController.navigate(route) {
                             popUpTo(navController.graph.findStartDestination().id) {
