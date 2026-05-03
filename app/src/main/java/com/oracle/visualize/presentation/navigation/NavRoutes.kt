@@ -22,12 +22,6 @@ sealed interface NavRoutes {
     object Teams : MainTab
     @Serializable
     data class Profile(val userId: String) : MainTab
-
-    // Non-tab screens (no bottom navigation bar shown)
     @Serializable
     data class FullScreen(val visualizationId: String) : NavRoutes
-    @Serializable
-    object SelectChart : NavRoutes
-    @Serializable
-    object ShareAndPost : NavRoutes
 }

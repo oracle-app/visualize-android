@@ -128,20 +128,6 @@
     <string name="snipping_tool">Snipping Tool</string>
     <string name="threads">Threads</string>
 
-    // Chart Card
-    <string name="chart_edit_title_description">Edit Title</string>
-    <string name="chart_legend_units_sold">Units Sold</string>
-    <string name="chart_legend_total_transaction">Total Transaction</string>
-    <string name="chart_y_8000">$8,000</string>
-    <string name="chart_y_6000">$6,000</string>
-    <string name="chart_y_4000">$4,000</string>
-    <string name="chart_y_2000">$2,000</string>
-    <string name="chart_y_0">$0</string>
-    <string name="month_jan">Jan</string>
-    <string name="month_feb">Feb</string>
-    <string name="month_mar">Mar</string>
-    <string name="month_apr">Apr</string>
-    <string name="month_may">May</string>
-    <string name="month_jun">Jun</string>
+
 
 </resources>

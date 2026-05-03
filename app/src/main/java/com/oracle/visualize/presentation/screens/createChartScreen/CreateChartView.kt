@@ -36,14 +36,12 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
  * Screen for uploading a dataset to create new visualizations.
  *
  * @param modifier Modifier for the layout.
- * @param onNavigateToSelectChart Callback to navigate to chart selection after generation.
  * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
-    onNavigateToSelectChart: () -> Unit = {},
     viewModel: CreateChartViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -55,6 +53,7 @@ fun CreatePage(
             if (uri != null) {
                 val fileName = getFileName(context, uri) ?: "unknown_file"
                 val sizeBytes = getFileSizeBytes(context, uri)
+
                 viewModel.onFileSelected(SelectedDataset(fileName, sizeBytes))
             }
         }
@@ -104,7 +103,9 @@ fun CreatePage(
             )
 
             if (uiState is CreateChartUiState.Idle) {
-                DashedSelector(onClick = { launcher.launch("*/*") })
+                DashedSelector(
+                    onClick = { launcher.launch("*/*") }
+                )
             } else {
                 FileStatusSection(uiState as CreateChartUiState, viewModel)
             }
@@ -119,7 +120,7 @@ fun CreatePage(
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = onNavigateToSelectChart,
+                    onClick = { /**/ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -181,6 +182,7 @@ fun DashedSelector(onClick: () -> Unit) {
                     size = Size(iconSize * 0.6f, iconSize * 0.08f)
                 )
             }
+
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.dashed_selector_choose_file),
@@ -238,6 +240,7 @@ fun DatasetRequirementsSection() {
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = stringResource(R.string.dataset_requirements_example_label),
             fontSize = 12.sp,
@@ -245,7 +248,9 @@ fun DatasetRequirementsSection() {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
+
         TableExampleComponent()
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.dataset_requirements_footer),
@@ -270,11 +275,13 @@ fun TableExampleComponent() {
             Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.onPrimary)
+
         val rows = listOf(
             listOf("Jan", "A", "120", "North"),
             listOf("Jan", "B", "95", "South"),
             listOf("Feb", "A", "150", "North")
         )
+
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
