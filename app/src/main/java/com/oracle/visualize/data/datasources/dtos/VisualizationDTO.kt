@@ -23,5 +23,5 @@ data class VisualizationDTO(
     val configJSON: String = "{}",
     val sharedWithUsers: List<String> = emptyList(),
     val sharedWithTeams: List<String> = emptyList(),
-    val createdAt: Date = Timestamp.now(),
+    val createdAt: Timestamp = Timestamp.now(),
 )

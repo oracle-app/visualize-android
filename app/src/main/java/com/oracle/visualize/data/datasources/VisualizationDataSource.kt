@@ -22,7 +22,12 @@ class VisualizationDataSource @Inject constructor(
     private val visualizationsRef = db.collection("visualizations")
     private val teamsRef = db.collection("teams")
 
-
+    /**
+     * Formats a visualization object.
+     *
+     * @param v The [Visualization] object to be formatted.
+     * @return A [HashMap] representing the formatted visualization.
+     */
     fun formatVisualization(v: VisualizationDTO): HashMap<String, Any> {
         return hashMapOf(
             "authorID" to v.authorID,
@@ -249,7 +254,8 @@ class VisualizationDataSource @Inject constructor(
                 batch.commit().await()
             }
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to publish visualizations: ${ex.message}")
         }
     }
 }

@@ -26,7 +26,11 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
             }
         }
 
-        visualizationRepository.publishVisualizationsInBulk(visualizations)
-        return Result.success(Unit)
+        return try {
+            visualizationRepository.publishVisualizationsInBulk(visualizations)
+            Result.success(Unit)
+        } catch (ex: Exception) {
+            Result.failure(ex)
+        }
     }
 }
