@@ -12,7 +12,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+/**
+ * ViewModel for the FullScreen visualization screen.
+ *
+ * Loads the selected visualization using its ID.
+ *
+ * @property getAllUserVisualizationsUseCase Use case to fetch user visualizations.
+ */
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase

@@ -19,7 +19,19 @@ import com.oracle.visualize.presentation.components.ChartRender
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.FullVisualizationTopBar
 import com.oracle.visualize.presentation.components.mockVerticalChart
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.draw.clipToBounds
 
+/**
+ * Screen that displays a selected visualization in FullScreen mode.
+ *
+ * @param visualizationId ID of the visualization to load.
+ * @param modifier Modifier for the screen layout.
+ * @param viewModel The [FullVisualizationViewModel] that manages the screen state.
+ * @param onBackClick Callback to navigate back.
+ * @param onThreadsClick Callback to open the threads section.
+ */
 
 @Composable
 fun FullVisualizationPage(
@@ -37,10 +49,11 @@ fun FullVisualizationPage(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0),
         floatingActionButton = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
             ) {
                 FloatingActionButton(
                     onClick = {
@@ -99,16 +112,21 @@ fun FullVisualizationPage(
                             members = visualization.sharedWith,
                             onBackClick = onBackClick
                         )
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(16.dp),
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .clipToBounds(),
                             contentAlignment = Alignment.Center
                         ) {
-                            ChartRender(chart = mockVerticalChart)
+                            ZoomableChart(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 260.dp, max = 420.dp)
+                            ) {
+                                ChartRender(chart = mockVerticalChart)
+                            }
                         }
                     }
                 }
