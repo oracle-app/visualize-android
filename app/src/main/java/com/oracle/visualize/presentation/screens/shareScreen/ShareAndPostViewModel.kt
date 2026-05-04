@@ -3,33 +3,40 @@ package com.oracle.visualize.presentation.screens.shareScreen
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
-import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Share and Post screen.
+ * Manages team selections and user search suggestions for sharing visualizations.
+ *
+ * @property teamRepository Repository to fetch team information.
+ * @property getUserSuggestionsUseCase Use case to search for users by email.
+ */
 @HiltViewModel
 class ShareAndPostViewModel @Inject constructor(
-    private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
+    private val teamRepository: TeamRepository,
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase
-) : ViewModel(
-
-) {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
     val uiState: StateFlow<ShareUiState> = _uiState.asStateFlow()
+
     private val _searchQuery = MutableStateFlow("")
-    // Hardcoded User ID for testing purposes. This is binded to a development environment
-    // which only members of the GH organization have access to.
+
+    // TODO: This will be acquired from the Auth Repository eventually.
     val userID = "e9Nk8XrxHJAtwN3Hf2FL"
+
     init {
         loadData()
         setupSearchDebounce()
@@ -41,8 +48,15 @@ class ShareAndPostViewModel @Inject constructor(
                 .debounce(500)
                 .filter { it.isNotBlank() }
                 .collect { query ->
-                    val results = getUserSuggestionsUseCase.execute(query.lowercase().trim())
-                    updateSuggestions(results)
+                    getUserSuggestionsUseCase(query.lowercase().trim()).fold(
+                        onSuccess = { results ->
+                            updateSuggestions(results)
+                        },
+                        onFailure = { error ->
+                            Log.e("ShareAndPostViewModel", "Error fetching user suggestions: ${error.message}")
+                            updateSuggestions(emptyList())
+                        }
+                    )
                 }
         }
     }
@@ -51,10 +65,9 @@ class ShareAndPostViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = ShareUiState.Loading
             try {
-                val myTeams = getUsersTeamsUseCase.getTeamsUserOwns(userID)
-                val teamsImIn = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
+                val myTeams = teamRepository.getTeamsOwnedByUser(userID)
+                val teamsImIn = teamRepository.getTeamsUserIsIn(userID)
                 val suggestedUsers = emptyList<ShareUser>()
-
 
                 _uiState.value = ShareUiState.Content(
                     myTeams        = myTeams,
@@ -62,7 +75,15 @@ class ShareAndPostViewModel @Inject constructor(
                     suggestedUsers = suggestedUsers
                 )
             } catch (e: Exception) {
-                _uiState.value = ShareUiState.Error(e.message ?: "Failed to load data")
+                // Translates technical error
+                val errorMessage = when (e) {
+                    is AppError.NetworkError -> "Connection error. Please check your internet."
+                    is AppError.ParsingError -> "There was a problem reading your teams."
+                    else -> "Failed to load data. Please try again."
+                }
+
+                Log.e("ShareAndPostViewModel", "Failed to load initial data", e)
+                _uiState.value = ShareUiState.Error(errorMessage)
             }
         }
     }

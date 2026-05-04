@@ -1,12 +1,16 @@
 package com.oracle.visualize.domain.models
 
-import com.google.firebase.Timestamp
+import java.util.Date
 
+
+/**
+ * Domain model representing a summary card of a visualization.
+ */
 data class VisualizationCard(
     val id: String,
     val title: String,
     val author: String,
-    val createdAt: Timestamp,
+    val createdAt: Date,
     val sharedWith: List<User>,
     val configJSON: String
 )

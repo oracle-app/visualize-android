@@ -1,6 +1,5 @@
 package com.oracle.visualize.data.repositories
 
-import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDataSource
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
@@ -10,8 +9,17 @@ import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import java.util.Date
 import javax.inject.Inject
 
+/**
+ * Implementation of [VisualizationRepository] that manages visualization data.
+ * It combines data from [VisualizationDataSource] and [UserDatasource] to create
+ * comprehensive [VisualizationCard] objects for the UI.
+ *
+ * @property visualizationDataSource Data source for visualization operations.
+ * @property userDatasource Data source for user information.
+ */
 class VisualizationRepositoryImpl @Inject constructor(
     private val visualizationDataSource: VisualizationDataSource,
     private val userDatasource: UserDatasource
@@ -31,7 +39,7 @@ class VisualizationRepositoryImpl @Inject constructor(
             configJSON = configJSON,
             sharedWithUsers = sharedWithUsers,
             sharedWithTeams = sharedWithTeams,
-            createdAt = Timestamp.now(),
+            createdAt = Date(),
         )
         visualizationDataSource.createVisualization(visualization)
     }

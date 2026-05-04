@@ -1,5 +1,8 @@
 package com.oracle.visualize.presentation.screens.createChartScreen
 
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
@@ -23,28 +26,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartViewModel
+import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
 /**
  * Screen for uploading a dataset to create new visualizations.
+ *
+ * @param modifier Modifier for the layout.
+ * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
-    viewModel: CreateChartViewModel = viewModel(),
+    viewModel: CreateChartViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Using GetContent for broader support of cloud providers like Google Drive
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
-            viewModel.onFileSelected(uri, context)
+            if (uri != null) {
+                val fileName = getFileName(context, uri) ?: "unknown_file"
+                val sizeBytes = getFileSizeBytes(context, uri)
+
+                viewModel.onFileSelected(SelectedDataset(fileName, sizeBytes))
+            }
         }
     )
 
@@ -141,10 +152,10 @@ fun DashedSelector(onClick: () -> Unit) {
             width = 2f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
-        val bordercolor = MaterialTheme.colorScheme.outlineVariant
+        val borderColor = MaterialTheme.colorScheme.outlineVariant
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRoundRect(
-                color = bordercolor,
+                color = borderColor,
                 style = stroke,
                 cornerRadius = CornerRadius(8.dp.toPx())
             )
@@ -178,8 +189,8 @@ fun DashedSelector(onClick: () -> Unit) {
                 fontWeight = FontWeight.Medium,
                 color = teal
             )
-            Text(stringResource(R.string.dashed_selector_min_size), fontSize = 12.sp, color = bordercolor)
-            Text(stringResource(R.string.dashed_selector_one_dataset), fontSize = 12.sp, color = bordercolor)
+            Text(stringResource(R.string.dashed_selector_min_size), fontSize = 12.sp, color = borderColor)
+            Text(stringResource(R.string.dashed_selector_one_dataset), fontSize = 12.sp, color = borderColor)
         }
     }
 }
@@ -279,4 +290,26 @@ fun TableExampleComponent() {
             }
         }
     }
+}
+
+private fun getFileName(context: Context, uri: Uri): String? {
+    var name: String? = null
+    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        if (cursor.moveToFirst()) {
+            val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (index != -1) name = cursor.getString(index)
+        }
+    }
+    return name
+}
+
+private fun getFileSizeBytes(context: Context, uri: Uri): Long {
+    var size: Long = 0
+    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        if (cursor.moveToFirst()) {
+            val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+            if (index != -1) size = cursor.getLong(index)
+        }
+    }
+    return size
 }
