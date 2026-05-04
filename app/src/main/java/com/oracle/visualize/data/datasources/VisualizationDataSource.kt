@@ -1,5 +1,6 @@
 package com.oracle.visualize.data.datasources
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
@@ -28,7 +29,7 @@ class VisualizationDataSource @Inject constructor(
      * @param v The [Visualization] object to be formatted.
      * @return A [HashMap] representing the formatted visualization.
      */
-    fun formatVisualization(v: VisualizationDTO): HashMap<String, Any> {
+    private fun formatVisualization(v: VisualizationDTO): HashMap<String, Any> {
         return hashMapOf(
             "authorID" to v.authorID,
             "title" to v.title,
@@ -47,11 +48,20 @@ class VisualizationDataSource @Inject constructor(
      * @throws AppError.ValidationError If required fields are empty.
      * @throws AppError.NetworkError If a network error occurs.
      */
-    suspend fun createVisualization(visualization: VisualizationDTO) {
+    suspend fun createVisualization(visualization: Visualization) {
         try {
             if (visualization.authorID.isNotEmpty() && visualization.title.isNotEmpty() &&
                 visualization.configJSON.isNotEmpty()) {
-                val formattedVisualization = formatVisualization(visualization)
+                val vDTO = VisualizationDTO(
+                    id = visualization.id,
+                    authorID = visualization.authorID,
+                    title = visualization.title,
+                    configJSON = visualization.configJSON,
+                    sharedWithUsers = visualization.sharedWithUsers,
+                    sharedWithTeams = visualization.sharedWithTeams,
+                    createdAt = Timestamp(visualization.createdAt)
+                )
+                val formattedVisualization = formatVisualization(vDTO)
                 visualizationsRef.add(formattedVisualization).await()
             } else {
                 throw AppError.ValidationError("AuthorID, title, and configJSON cannot be empty")
