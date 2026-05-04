@@ -1,5 +1,6 @@
 package com.oracle.visualize.fixtures
 
+import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import java.util.Date
 
@@ -16,9 +17,64 @@ object VisualizationFixtures {
         configJSON = "{}"
     )
 
+    val fakeValidVisualization = Visualization(
+        id = "1",
+        authorID = "1",
+        title = "Vis",
+        configJSON = "{}",
+        sharedWithUsers = emptyList(),
+        sharedWithTeams = emptyList(),
+        createdAt = Date()
+    )
+
+    val fakeInvalidVisualization = Visualization(
+        id = "",
+        authorID = "1",
+        title = "Vis",
+        configJSON = "{}",
+        sharedWithUsers = emptyList(),
+        sharedWithTeams = emptyList(),
+        createdAt = Date()
+    )
+
     val fakeVisualizations = listOf(
         fakeVisualizationCard,
         fakeVisualizationCard.copy(id = "2", title = "Chart B")
     )
 
+    val visListWhereAllAreValid = listOf(
+        fakeValidVisualization,
+        fakeValidVisualization.copy(
+            id="2", title = "Vis 2", authorID = "2", sharedWithUsers = listOf("1")),
+    )
+
+    val visListWhereOneHasEmptyTitle = listOf(
+        fakeValidVisualization,
+        fakeValidVisualization.copy(
+            id="2", title = "", authorID = "2", sharedWithUsers = listOf("1")
+        ),
+    )
+
+    val visListWhereOneHasEmptyAuthorID = listOf(
+        fakeValidVisualization,
+        fakeValidVisualization.copy(
+            id="2", title = "Vis 2", authorID = "", sharedWithUsers = listOf("1")
+        ),
+    )
+
+    val visListWhereOneHasEmptyConfigJSON = listOf(
+        fakeValidVisualization,
+        fakeValidVisualization.copy(
+            id="2", title = "Vis 2", authorID = "2", configJSON = "",
+            sharedWithUsers = listOf("1")
+        ),
+    )
+
+    val visListWhereAllAreInvalid = listOf(
+        fakeValidVisualization.copy(title = ""),
+        fakeValidVisualization.copy(
+            id="2", title = "Vis 2", authorID = "2", configJSON = "",
+            sharedWithUsers = listOf("1")
+        ),
+    )
 }

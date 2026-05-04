@@ -8,7 +8,8 @@ import javax.inject.Singleton
 /**
  * Use case to publish many visualizations in bulk.
  *
- * @property visualizationRepository: The repository to create / publish visualization.
+ * @returns Result<Unit> A Result that only indicates if the operation succeeded or failed.
+ * @property visualizationRepository The repository to create / publish visualization.
  */
 @Singleton
 class PublishVisualizationsInBulkUseCase @Inject constructor(
@@ -19,9 +20,8 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
             return Result.failure(IllegalArgumentException("No visualizations to publish."))
         }
 
-        for (visualization in visualizations) {
-            if (visualization.title.isEmpty() || visualization.authorID.isEmpty() ||
-                visualization.configJSON.isEmpty()) {
+        for (vis in visualizations) {
+            if (vis.title.isBlank() || vis.authorID.isBlank() || vis.configJSON.isBlank()) {
                 return Result.failure(IllegalArgumentException("Invalid visualization data."))
             }
         }

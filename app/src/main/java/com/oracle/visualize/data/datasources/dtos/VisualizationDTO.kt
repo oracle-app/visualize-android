@@ -2,7 +2,6 @@ package com.oracle.visualize.data.datasources.dtos
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
-import java.util.Date
 
 /**
  * Data Transfer Object representing a visualization in the database.
