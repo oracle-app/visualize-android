@@ -8,6 +8,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -149,5 +150,20 @@ class PublishVisualizationsInBulkUCTest {
         coVerify (exactly = 0) {
             visualizationRepository.publishVisualizationsInBulk(visList)
         }
+    }
+
+    @Test
+    fun `return failure when repository throws exception`() = runTest {
+        // Given
+        val visList = VisualizationFixtures.visListWhereAllAreValid
+        val exception = Exception("Network Error")
+        coEvery { visualizationRepository.publishVisualizationsInBulk(any()) } throws exception
+
+        // When
+        val result = publishVisualizationsInBulkUseCase(visList)
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(exception, result.exceptionOrNull())
     }
 }
