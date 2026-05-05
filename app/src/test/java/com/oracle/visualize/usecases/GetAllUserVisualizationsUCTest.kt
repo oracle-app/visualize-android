@@ -140,7 +140,7 @@ class GetAllUserVisualizationsUCTest {
         // when
         val result = getAllUserVisualizations(
             VisualizationFixtures.VALID_USER_ID,
-            // Usamos SHARED para forzar que falle directamente con ese mock
+            // We use SHARED to force it to fail immediately with that mock
             VisualizationFilter.SHARED
         )
 
