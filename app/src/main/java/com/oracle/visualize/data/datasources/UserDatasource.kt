@@ -1,6 +1,8 @@
 package com.oracle.visualize.data.datasources
 
+import android.net.Uri
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
@@ -15,7 +17,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class UserDatasource @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val storage: FirebaseStorage
 ) {
 
     /**
@@ -89,6 +92,34 @@ class UserDatasource @Inject constructor(
             throw AppError.NetworkError("Error fetching user suggestions: ${e.message}")
         }
     }
+
+    // SETTER FUNCTIONS FOR UPLOADS
+
+    suspend fun setProfilePicture(userID: String, uri: Uri): Boolean {
+        return try {
+            // Raw image is uploaded to Firebase storage
+
+            val storageRef = storage.reference.child("users/$userID/profilePicture")
+            storageRef.putFile(uri).await()
+
+            // Fetch the uploaded image's URL
+
+            val downloadUrl = storageRef.downloadUrl.await().toString()
+
+            // Url is sent to replace user's current pfp URL
+
+            firestore.collection("users")
+                .document(userID)
+                .update("profilePictureURL", downloadUrl)
+                .await()
+
+            true
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Error updating profile picture: ${e.message}")
+        }
+    }
+
 
     /**
      * Fetches groups (teams) that the specified user is in.
