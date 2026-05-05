@@ -74,9 +74,6 @@ fun ProfilePage(
         }
 
     val selectedPalette = profileViewModel.selectedPalette
-    val userName = profileViewModel.userName
-    val email = profileViewModel.email
-    val profileImage = profileViewModel.profileImage
 
     // Background Image Setup
 
@@ -121,15 +118,13 @@ fun ProfilePage(
                     // Profile picture, username and email.
 
                     var expanded by remember { mutableStateOf(false) }
+                    val readyState = uiState as? ProfileUiState.Ready
 
                     Box {
                         ProfileHeader(
-                            userName = userName,
-                            email = email,
-                            profileImageUrl = profileImage,
-
-                            // Upon clicking, it displays the dropdown menu.
-
+                            userName = readyState?.username ?: "",
+                            email = readyState?.eMail ?: "",
+                            profileImageUrl = readyState?.image ?: "",
                             onEditClick = { expanded = true }
                         )
 
@@ -229,6 +224,8 @@ fun ProfilePage(
                     }
 
                 }
+
+                else -> {}
             }
 
         }
