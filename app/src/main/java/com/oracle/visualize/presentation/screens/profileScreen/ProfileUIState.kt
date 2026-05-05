@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
+import android.net.Uri
 import com.oracle.visualize.ui.theme.ChartPalette
 
 
@@ -10,6 +11,10 @@ sealed interface ProfileUiState {
         val username: String,
         val eMail: String,
         val image: String,
-        val chartTheme: ChartPalette
+        val chartTheme: String
+    ) : ProfileUiState
+
+    data class PfpUpload(
+        val pfp: Uri? = null
     ) : ProfileUiState
 }
