@@ -19,22 +19,12 @@ object VisualizationFixtures {
 
     val fakeValidVisualization = Visualization(
         id = "1",
-        authorID = "1",
-        title = "Vis",
-        configJSON = "{}",
+        title = "Chart A",
+        authorID = "John",
+        createdAt = Date(),
         sharedWithUsers = emptyList(),
         sharedWithTeams = emptyList(),
-        createdAt = Date()
-    )
-
-    val fakeInvalidVisualization = Visualization(
-        id = "",
-        authorID = "1",
-        title = "Vis",
-        configJSON = "{}",
-        sharedWithUsers = emptyList(),
-        sharedWithTeams = emptyList(),
-        createdAt = Date()
+        configJSON = "{}"
     )
 
     val fakeVisualizations = listOf(
@@ -67,6 +57,22 @@ object VisualizationFixtures {
         fakeValidVisualization.copy(
             id="2", title = "Vis 2", authorID = "2", configJSON = "",
             sharedWithUsers = listOf("1")
+        ),
+    )
+
+    val visListWhereSomeAreValidAndSomeInvalid = listOf(
+        fakeValidVisualization,
+        fakeValidVisualization.copy(
+            id="2", title = "Vis 2", authorID = "2", configJSON = "{}",
+            sharedWithUsers = listOf("1")
+        ),
+        fakeValidVisualization.copy(
+            id="3", title = "", authorID = "", configJSON = "",
+            sharedWithUsers = listOf("1")
+        ),
+        fakeValidVisualization.copy(
+            id="4", title = "sdasdasd", authorID = "", configJSON = "",
+            sharedWithTeams = listOf("2", "3")
         ),
     )
 

@@ -1,6 +1,7 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase
 import com.oracle.visualize.fixtures.VisualizationFixtures
 import io.mockk.MockKAnnotations
@@ -8,7 +9,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
@@ -34,118 +35,117 @@ class PublishVisualizationsInBulkUCTest {
     }
 
     @Test
-    fun `return success if all visualizations are published`() = runBlocking {
+    fun `return success when all valid visualizations are published`() = runTest {
+        // Given
         val visList = VisualizationFixtures.visListWhereAllAreValid
-
-        // Given
-        coEvery {
-            visualizationRepository.publishVisualizationsInBulk(visList)
-        } returns Unit
+        coEvery { visualizationRepository.publishVisualizationsInBulk(visList) } returns Unit
 
         // When
-        publishVisualizationsInBulkUseCase(visList)
+        val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
-        assertTrue(publishVisualizationsInBulkUseCase(visList).isSuccess)
-
-        coVerify (exactly = 2) {
+        assertTrue(result.isSuccess)
+        coVerify (exactly = 1) {
             visualizationRepository.publishVisualizationsInBulk(visList)
         }
     }
 
     @Test
-    fun `return failure if visualizations list is empty`() = runBlocking {
+    fun `return failure when a visualizations list is empty`() = runTest {
         // Given
-        coEvery {
-            visualizationRepository.publishVisualizationsInBulk(emptyList())
-        } returns Unit
+        coEvery { visualizationRepository.publishVisualizationsInBulk(emptyList<Visualization>()) } returns Unit
 
         // When
-        publishVisualizationsInBulkUseCase(emptyList())
+        val result = publishVisualizationsInBulkUseCase(emptyList<Visualization>())
 
         // Then
-        assertTrue(publishVisualizationsInBulkUseCase(emptyList()).isFailure)
-
+        assertTrue(result.isFailure)
         coVerify (exactly = 0) {
-            visualizationRepository.publishVisualizationsInBulk(emptyList())
+            visualizationRepository.publishVisualizationsInBulk(emptyList<Visualization>())
         }
     }
 
     @Test
-    fun `return failure if one visualization has an empty author ID`() = runBlocking {
+    fun `return success even if one visualization has an empty author ID`() = runTest {
+        // Given
         val visList = VisualizationFixtures.visListWhereOneHasEmptyAuthorID
-
-        // Given
-        coEvery {
-            visualizationRepository.publishVisualizationsInBulk(visList)
-        } returns Unit
+        val expectedList = visList.filter{ it.authorID.isNotBlank() }
+        coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
         // When
-        publishVisualizationsInBulkUseCase(visList)
+        val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
-        assertTrue(publishVisualizationsInBulkUseCase(visList).isFailure)
-
-        coVerify (exactly = 0) {
-            visualizationRepository.publishVisualizationsInBulk(visList)
+        assertTrue(result.isSuccess)
+        coVerify (exactly = 1) {
+            visualizationRepository.publishVisualizationsInBulk(expectedList)
         }
     }
 
     @Test
-    fun `return failure if one visualization has an empty title`() = runBlocking {
+    fun `return success even if one visualization has an empty title`() = runTest {
+        // Given
         val visList = VisualizationFixtures.visListWhereOneHasEmptyTitle
-
-        // Given
-        coEvery {
-            visualizationRepository.publishVisualizationsInBulk(visList)
-        } returns Unit
+        val expectedList = visList.filter{ it.title.isNotBlank() }
+        coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
         // When
-        publishVisualizationsInBulkUseCase(visList)
+        val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
-        assertTrue(publishVisualizationsInBulkUseCase(visList).isFailure)
-
-        coVerify (exactly = 0) {
-            visualizationRepository.publishVisualizationsInBulk(visList)
+        assertTrue(result.isSuccess)
+        coVerify (exactly = 1) {
+            visualizationRepository.publishVisualizationsInBulk(expectedList)
         }
     }
 
     @Test
-    fun `return failure if one visualization has an empty ConfigJSON`() = runBlocking {
+    fun `return success even if one visualization has an empty ConfigJSON`() = runTest {
+        // Given
         val visList = VisualizationFixtures.visListWhereOneHasEmptyConfigJSON
-
-        // Given
-        coEvery {
-            visualizationRepository.publishVisualizationsInBulk(visList)
-        } returns Unit
+        val expectedList = visList.filter{ it.configJSON.isNotBlank() }
+        coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
         // When
-        publishVisualizationsInBulkUseCase(visList)
+        val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
-        assertTrue(publishVisualizationsInBulkUseCase(visList).isFailure)
-
-        coVerify (exactly = 0) {
-            visualizationRepository.publishVisualizationsInBulk(visList)
+        assertTrue(result.isSuccess)
+        coVerify (exactly = 1) {
+            visualizationRepository.publishVisualizationsInBulk(expectedList)
         }
     }
 
     @Test
-    fun `return failure when are visualizations are invalid`() = runBlocking {
-        val visList = VisualizationFixtures.visListWhereAllAreInvalid
-
+    fun `return success when some visualizations valid and some invalid`() = runTest {
         // Given
-        coEvery {
-            visualizationRepository.publishVisualizationsInBulk(visList)
-        } returns Unit
+        val visList = VisualizationFixtures.visListWhereSomeAreValidAndSomeInvalid
+        val expectedList = visList.filter{
+            it.authorID.isNotBlank() && it.title.isNotBlank() && it.configJSON.isNotBlank()
+        }
+        coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
         // When
-        publishVisualizationsInBulkUseCase(visList)
+        val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
-        assertTrue(publishVisualizationsInBulkUseCase(visList).isFailure)
+        assertTrue(result.isSuccess)
+        coVerify (exactly = 1) {
+            visualizationRepository.publishVisualizationsInBulk(expectedList)
+        }
+    }
 
+    @Test
+    fun `return failure when all visualizations are invalid`() = runTest {
+        // Given
+        val visList = VisualizationFixtures.visListWhereAllAreInvalid
+        coEvery { visualizationRepository.publishVisualizationsInBulk(visList) } returns Unit
+
+        // When
+        val result = publishVisualizationsInBulkUseCase(visList)
+
+        // Then
+        assertTrue(result.isFailure)
         coVerify (exactly = 0) {
             visualizationRepository.publishVisualizationsInBulk(visList)
         }

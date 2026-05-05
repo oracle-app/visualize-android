@@ -17,17 +17,19 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
 ){
     suspend operator fun invoke(visualizations: List<Visualization>): Result<Unit> {
         if (visualizations.isEmpty()) {
-            return Result.failure(IllegalArgumentException("No visualizations to publish."))
+            return Result.failure(IllegalArgumentException("Visualizations list is empty."))
         }
 
-        for (vis in visualizations) {
-            if (vis.title.isBlank() || vis.authorID.isBlank() || vis.configJSON.isBlank()) {
-                return Result.failure(IllegalArgumentException("Invalid visualization data."))
-            }
+        val validVisualizations = visualizations.filter {
+            it.title.isNotBlank() && it.authorID.isNotBlank() && it.configJSON.isNotBlank()
+        }
+
+        if (validVisualizations.isEmpty()) {
+            return Result.failure(IllegalArgumentException("No valid visualizations to publish."))
         }
 
         return try {
-            visualizationRepository.publishVisualizationsInBulk(visualizations)
+            visualizationRepository.publishVisualizationsInBulk(validVisualizations)
             Result.success(Unit)
         } catch (ex: Exception) {
             Result.failure(ex)
