@@ -1,4 +1,5 @@
 package com.oracle.visualize.data.repositories
+import android.net.Uri
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.models.User
@@ -36,6 +37,10 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getTeamsIntegratedByUser(userId: String): List<Team> {
         return userDatasource.getTeamsIntegratedByUser(userId).map { it.toDomain() }
+    }
+
+    override suspend fun setProfilePicture(userId: String, uri: Uri): Boolean {
+        return userDatasource.setProfilePicture(userId, uri)
     }
 }
 
