@@ -2,6 +2,9 @@ package com.oracle.visualize.domain.models
 
 import java.util.Date
 
+/**
+ * Domain model representing a Visualization.
+ */
 data class Visualization (
     val id: String,
     val authorID: String,

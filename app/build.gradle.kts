@@ -56,7 +56,10 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -79,4 +82,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+
 }

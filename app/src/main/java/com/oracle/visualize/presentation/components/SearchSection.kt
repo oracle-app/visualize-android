@@ -16,6 +16,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 
+/**
+ * A reusable search text field component.
+ *
+ * @param text The current search query.
+ * @param onTextChange Callback when the search query changes.
+ */
 @Composable
 fun SearchSection(
     text: String,

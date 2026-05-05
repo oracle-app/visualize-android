@@ -28,14 +28,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.SelectedDataset
-import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartViewModel
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
 
 /**
  * Screen for uploading a dataset to create new visualizations.
+ *
+ * @param modifier Modifier for the layout.
+ * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,10 +152,10 @@ fun DashedSelector(onClick: () -> Unit) {
             width = 2f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
         )
-        val bordercolor = MaterialTheme.colorScheme.outlineVariant
+        val borderColor = MaterialTheme.colorScheme.outlineVariant
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRoundRect(
-                color = bordercolor,
+                color = borderColor,
                 style = stroke,
                 cornerRadius = CornerRadius(8.dp.toPx())
             )
@@ -188,8 +189,8 @@ fun DashedSelector(onClick: () -> Unit) {
                 fontWeight = FontWeight.Medium,
                 color = teal
             )
-            Text(stringResource(R.string.dashed_selector_min_size), fontSize = 12.sp, color = bordercolor)
-            Text(stringResource(R.string.dashed_selector_one_dataset), fontSize = 12.sp, color = bordercolor)
+            Text(stringResource(R.string.dashed_selector_min_size), fontSize = 12.sp, color = borderColor)
+            Text(stringResource(R.string.dashed_selector_one_dataset), fontSize = 12.sp, color = borderColor)
         }
     }
 }

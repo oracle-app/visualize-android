@@ -6,6 +6,12 @@ import com.oracle.visualize.domain.models.ThemePreference
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.UserType
 
+/**
+ * Extension function to map [UserDTO] to [User] domain model.
+ * Handles parsing of enums like [UserType] and [ThemePreference].
+ *
+ * @return A [User] object.
+ */
 fun UserDTO.toDomain(): User = User(
     id = id,
     email = email,
@@ -22,6 +28,12 @@ fun UserDTO.toDomain(): User = User(
         ThemePreference.valueOf(themePreference)
     }.getOrDefault(ThemePreference.SYSTEM)
 )
+/**
+ * Extension function to map [UserDTO] to [ShareUser] domain model.
+ * Used for sharing features where only a subset of user data is needed.
+ *
+ * @return A [ShareUser] object.
+ */
 fun UserDTO.toShareUser(): ShareUser {
     return ShareUser(
         id = this.id,

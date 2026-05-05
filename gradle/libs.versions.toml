@@ -19,6 +19,9 @@ ksp = "2.3.6"
 hiltNavigationCompose = "1.2.0"
 coil = "3.4.0"
 koalaplot = "0.11.0"
+mockk = "1.13.12"
+foundationLayout = "1.11.0"
+coroutinesTest = "1.10.2"
 
 
 [libraries]
@@ -55,6 +58,9 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 koalaplot-core = { group = "io.github.koalaplot", name = "koalaplot-core", version.ref = "koalaplot" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
 
 

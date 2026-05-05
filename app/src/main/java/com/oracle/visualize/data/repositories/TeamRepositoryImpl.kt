@@ -13,6 +13,14 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
+/**
+ * Implementation of [TeamRepository] that coordinates team-related data operations.
+ * It uses both [TeamDatasource] and [UserDatasource] to fetch complete team information,
+ * including member details.
+ *
+ * @property teamsDatasource Data source for team operations in Firestore.
+ * @property userDataSource Data source for user operations in Firestore.
+ */
 class TeamRepositoryImpl @Inject constructor(
     private val teamsDatasource: TeamDatasource,
     private val userDataSource: UserDatasource

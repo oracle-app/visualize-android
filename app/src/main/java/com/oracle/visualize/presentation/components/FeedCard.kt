@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
@@ -55,10 +54,16 @@ fun formatTime(date: Date, context: Context): String{
         else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
+/**
+ * A card component used in the feed to display a visualization's summary.
+ *
+ * @param item The [VisualizationCard] data to display.
+ */
 @Composable
-fun FeedCard(item: VisualizationCard) {
+fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
     val context = LocalContext.current
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -106,14 +111,28 @@ fun FeedCard(item: VisualizationCard) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .background(MaterialTheme.colorScheme.onPrimary),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 20.dp)
             ) {
-                Text("Graph", color = MaterialTheme.colorScheme.onSurface)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(all = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ChartRender(
+                        // chart = mockPieChart
+                        chart = mockVerticalChart
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
