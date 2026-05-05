@@ -135,7 +135,7 @@ class GetAllUserVisualizationsUCTest {
         val exception = Exception("Firestore unavailable")
         coEvery {
             visualizationRepository.getSharedVisualizations(any())
-        } throws exception¥
+        } throws exception
 
         // when
         val result = getAllUserVisualizations(
