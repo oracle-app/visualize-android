@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases
 
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
 ){
     suspend operator fun invoke(visualizations: List<Visualization>): Result<Unit> {
         if (visualizations.isEmpty()) {
-            return Result.failure(IllegalArgumentException("Visualizations list is empty."))
+            return Result.failure(AppError.ValidationError("Visualizations list is empty"))
         }
 
         val validVisualizations = visualizations.filter {
@@ -25,7 +26,7 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
         }
 
         if (validVisualizations.isEmpty()) {
-            return Result.failure(IllegalArgumentException("No valid visualizations to publish."))
+            return Result.failure(AppError.ValidationError("No valid visualizations to publish"))
         }
 
         return try {

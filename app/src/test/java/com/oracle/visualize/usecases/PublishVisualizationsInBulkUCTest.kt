@@ -1,7 +1,8 @@
 package com.oracle.visualize.usecases
 
-import com.oracle.visualize.domain.repositories.VisualizationRepository
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
+import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase
 import com.oracle.visualize.fixtures.VisualizationFixtures
 import io.mockk.MockKAnnotations
@@ -54,15 +55,16 @@ class PublishVisualizationsInBulkUCTest {
     @Test
     fun `return failure when a visualizations list is empty`() = runTest {
         // Given
-        coEvery { visualizationRepository.publishVisualizationsInBulk(emptyList<Visualization>()) } returns Unit
+        val visList = emptyList<Visualization>()
 
         // When
-        val result = publishVisualizationsInBulkUseCase(emptyList<Visualization>())
+        val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
         assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
         coVerify (exactly = 0) {
-            visualizationRepository.publishVisualizationsInBulk(emptyList<Visualization>())
+            visualizationRepository.publishVisualizationsInBulk(visList)
         }
     }
 
@@ -140,13 +142,13 @@ class PublishVisualizationsInBulkUCTest {
     fun `return failure when all visualizations are invalid`() = runTest {
         // Given
         val visList = VisualizationFixtures.visListWhereAllAreInvalid
-        coEvery { visualizationRepository.publishVisualizationsInBulk(visList) } returns Unit
 
         // When
         val result = publishVisualizationsInBulkUseCase(visList)
 
         // Then
         assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
         coVerify (exactly = 0) {
             visualizationRepository.publishVisualizationsInBulk(visList)
         }

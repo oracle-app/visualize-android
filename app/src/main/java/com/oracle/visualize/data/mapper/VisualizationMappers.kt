@@ -26,7 +26,6 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
  *
  * @return A [VisualizationDTO] object.
  */
-@Suppress("CAST_NEVER_SUCCEEDS")
 fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
     id = id,
     authorID = authorID,
@@ -34,7 +33,7 @@ fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
     configJSON = configJSON,
     sharedWithUsers = sharedWithUsers,
     sharedWithTeams = sharedWithTeams,
-    createdAt = createdAt as Timestamp,
+    createdAt = Timestamp(createdAt),
 )
 
 /**
