@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -33,15 +34,6 @@ class ProfileViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
 
-    var profileImage by mutableStateOf("")
-        private set
-
-    var userName by mutableStateOf("Username Placeholder")
-        private set
-
-    var email by mutableStateOf("placeholder email")
-        private set
-
     var selectedPalette by mutableStateOf(ChartPalette.THEME1)
         private set
 
@@ -65,12 +57,10 @@ class ProfileViewModel @Inject constructor(
 
             Log.d("ProfileViewModel", "Profile picture URL: ${user.profilePictureURL}")
 
-            userName = user.username
-            email = user.email
-            profileImage = user.profilePictureURL
+            // If the uid is successful, then take those values and bring them to the uiState
 
             _user.value = user
-            _uiState.value = ProfileUiState.Ready(userName, email, profileImage, selectedPalette)
+            _uiState.value = ProfileUiState.Ready(user.username, user.email, user.profilePictureURL, user.chartTheme)
             Result.success(Unit)
 
         } catch (e: AppError.NotFound) {
@@ -91,19 +81,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-
-    fun onProfileImageChange(image: String) {
-        profileImage = image
-    }
-
-    fun onUserNameChange(name: String) {
-        userName = name
-    }
-
-    fun onEmailChange(newEmail: String) {
-        email = newEmail
-    }
-
     fun onPaletteChange(palette: ChartPalette) {
         selectedPalette = palette
     }
@@ -111,13 +88,20 @@ class ProfileViewModel @Inject constructor(
     fun setUiState() {
         viewModelScope.launch {
             fetchUserData()
-                .onSuccess {
-                    _uiState.value = ProfileUiState.Ready(userName, email, profileImage, selectedPalette)
-                }
                 .onFailure {
                     _uiState.value = ProfileUiState.Idle
                 }
         }
+    }
+
+    fun setPfpUpload() {
+        viewModelScope.launch {
+            _uiState.value = ProfileUiState.PfpUpload()
+        }
+    }
+
+    fun onPfpCaptured(uri: Uri) {
+        _uiState.value = ProfileUiState.PfpUpload(pfp = uri)
     }
 
     init {
