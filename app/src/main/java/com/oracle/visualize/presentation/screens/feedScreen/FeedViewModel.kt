@@ -58,7 +58,7 @@ class FeedViewModel @Inject constructor(
             * - DONUT (Donut Chart)
             * - AREA (Area Chart)
             *
-            * TODO: Get data from the microservice becomes available.
+            * TODO: Get data from the microservice when it becomes available.
             *
             * */
             val mockChart = getMockChartUseCase(ChartTypes.VERTICAL_BAR).fold(

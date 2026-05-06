@@ -23,7 +23,7 @@ import com.oracle.visualize.domain.models.StackedBarChart
 import com.oracle.visualize.domain.models.VerticalBarChart
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
-import io.github.koalaplot.core.legend.ColumnLegend
+import io.github.koalaplot.core.legend.FlowLegend
 import io.github.koalaplot.core.legend.LegendLocation
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
@@ -41,7 +41,7 @@ private fun generateColors(n: Int): List<Color> {
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun ChartRenderGeneral(chart: Chart<*>) {
+fun ChartRenderFullScreen(chart: Chart<*>) {
     when (chart) {
         is VerticalBarChart -> {
             val labels = chart.fieldNames
@@ -53,14 +53,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -74,14 +74,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -94,14 +94,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = chart.stackNames.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text(chart.stackNames[it]) }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -115,14 +115,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -136,14 +136,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -157,14 +157,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -178,14 +178,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }
@@ -198,14 +198,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 modifier = Modifier.fillMaxSize(),
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
-                    ColumnLegend(
-                        modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(16.dp),
+                    FlowLegend(
+                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = chart.stackNames.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text(chart.stackNames[it]) }
                     )
                 },
-                legendLocation = LegendLocation.LEFT
+                legendLocation = LegendLocation.TOP
             ) {
                 ChartRenderFeedCard(chart)
             }

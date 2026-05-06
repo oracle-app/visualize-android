@@ -15,9 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.presentation.components.ChartRender
+import com.oracle.visualize.presentation.components.ChartRenderFullScreen
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.FullVisualizationTopBar
-import com.oracle.visualize.presentation.components.mockVerticalChart
 import com.oracle.visualize.R
 
 
@@ -89,6 +88,7 @@ fun FullVisualizationPage(
 
                 uiState.visualization != null -> {
                     val visualization = uiState.visualization!!
+                    val chart = uiState.chart!!
 
                     Column(
                         modifier = Modifier.fillMaxSize()
@@ -96,7 +96,7 @@ fun FullVisualizationPage(
                         FullVisualizationTopBar (
                             teamName = visualization.author,
                             visualizationTitle = visualization.title,
-                            members = visualization.sharedWith,
+                            members = visualization.allUsersSharedWith,
                             onBackClick = onBackClick
                         )
 
@@ -108,7 +108,7 @@ fun FullVisualizationPage(
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            ChartRender(chart = mockVerticalChart)
+                            ChartRenderFullScreen(chart = chart)
                         }
                     }
                 }

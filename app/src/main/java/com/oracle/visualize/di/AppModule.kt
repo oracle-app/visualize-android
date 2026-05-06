@@ -4,8 +4,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
-import com.oracle.visualize.data.datasources.AuthFirebaseSource
-import com.oracle.visualize.data.datasources.VisualizationDataSource
+import com.oracle.visualize.data.datasources.AuthFirebasesource
+import com.oracle.visualize.data.datasources.TeamDatasource
+import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
 import com.oracle.visualize.data.repositories.ChartRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
@@ -47,7 +48,7 @@ object FirebaseModule {
         FirebaseFirestore.getInstance()
 
     /**
-     * Provides a singleton instance of [AuthFirebaseSource].
+     * Provides a singleton instance of [AuthFirebasesource].
      *
      * @param auth The [FirebaseAuth] instance.
      */
@@ -55,18 +56,19 @@ object FirebaseModule {
     @Singleton
     fun provideAuthFirebaseSource(
         auth: FirebaseAuth
-    ): AuthFirebaseSource = AuthFirebaseSource(auth)
+    ): AuthFirebasesource = AuthFirebasesource(auth)
 
     /**
-     * Provides a singleton instance of [VisualizationDataSource].
+     * Provides a singleton instance of [VisualizationDatasource].
      *
      * @param db The [FirebaseFirestore] instance.
      */
     @Provides
     @Singleton
     fun provideVisualizationDataSource(
-        db: FirebaseFirestore
-    ): VisualizationDataSource = VisualizationDataSource(db)
+        db: FirebaseFirestore,
+        teamsDatasource: TeamDatasource
+    ): VisualizationDatasource = VisualizationDatasource(db, teamsDatasource)
 
     /**
      * Alternative provider for [FirebaseFirestore] using the [Firebase] accessor.
