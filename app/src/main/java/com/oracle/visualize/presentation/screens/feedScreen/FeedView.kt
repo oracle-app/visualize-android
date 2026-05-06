@@ -83,7 +83,8 @@ fun FeedPage(
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                         items(uiState.items) { item ->
-                            FeedCard(item,
+                            FeedCard(
+                                item,
                                 onClick = {
                                     onVisualizationClick(item.id)
                                 }
