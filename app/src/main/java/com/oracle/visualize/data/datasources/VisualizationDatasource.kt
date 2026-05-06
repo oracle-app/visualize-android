@@ -162,16 +162,21 @@ class VisualizationDatasource @Inject constructor(
     }
 
     /**
-     * Fetches all users that a specific visualization is shared with.
+     * Deletes a specific visualization.
      *
      * @param visualizationID The unique ID of the visualization.
-     * @return A list of [UserDTO] objects representing the users.
      * @throws AppError.NotFound If the visualization ID does not exist.
-     * @throws AppError.ParsingError If documentation mapping fails.
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun deleteVisualization(visualizationID: String) {
         try {
+            val visExists = db.collection("users")
+                .document(visualizationID).get().await().exists()
+
+            if (!visExists) {
+                throw AppError.NotFound("Visualization not found")
+            }
+
             val batch = db.batch()
             val usersWithHiddenVisualizations = db.collection("users")
                 .whereArrayContains("hiddenVisualizations", visualizationID)
@@ -187,47 +192,144 @@ class VisualizationDatasource @Inject constructor(
             batch.delete(visualizationsRef.document(visualizationID))
             batch.commit().await()
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
         }
     }
 
+    /**
+     * Shares a visualization with multiple users.
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @param userIDs The lists of users IDs.
+     * @throws AppError.NotFound If the visualization ID does not exist or if users don't exist in DB.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun shareVisualizationWithUsers(visualizationID: String, userIDs: List<String>){
         try {
-            visualizationsRef.document(visualizationID)
-                .update("sharedWithUsers", FieldValue.arrayUnion(*userIDs.toTypedArray()))
-                .await()
+            val vis = visualizationsRef.document(visualizationID)
+            val visExists = vis.get().await().exists()
+            val filteredUsers = mutableListOf<String>()
+
+            if (!visExists) {
+                throw AppError.NotFound("Visualization not found")
+            }
+
+            for (u in userIDs) {
+                val userExists = db.collection("users").document(u).get().await().exists()
+                if (userExists) { filteredUsers.add(u) }
+            }
+
+            if (filteredUsers.isEmpty()) {
+                throw AppError.NotFound("Users not found in db")
+            }
+
+            vis.update("sharedWithUsers", FieldValue.arrayUnion(*filteredUsers.toTypedArray())).await()
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
         }
     }
 
+    /**
+     * Shares a visualization with multiple teams.
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @param teamIDs The lists of teams IDs.
+     * @throws AppError.NotFound If the visualization ID does not exist or if teams don't exist in DB.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun shareVisualizationWithTeams(visualizationID: String, teamIDs: List<String>){
         try {
-            visualizationsRef.document(visualizationID)
-                .update("sharedWithTeams", FieldValue.arrayUnion(*teamIDs.toTypedArray()))
-                .await()
+            val vis = visualizationsRef.document(visualizationID)
+            val visExists = vis.get().await().exists()
+            val filteredTeams = mutableListOf<String>()
+
+            if (!visExists) {
+                throw AppError.NotFound("Visualization not found")
+            }
+
+            for (t in teamIDs) {
+                val teamExists = db.collection("teams").document(t).get().await().exists()
+                if (teamExists) { filteredTeams.add(t) }
+            }
+
+            if (filteredTeams.isEmpty()) {
+                throw AppError.NotFound("Teams not found in db")
+            }
+
+            vis.update("sharedWithTeams", FieldValue.arrayUnion(*filteredTeams.toTypedArray())).await()
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
         }
     }
 
+    /**
+     * Deletes the access of several users to a visualization.
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @param userIDs The lists of users IDs.
+     * @throws AppError.NotFound If the visualization ID does not exist or if users don't exist in DB.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun deleteUsersAccessToVisualization(visualizationID: String, userIDs: List<String>){
         try {
-            visualizationsRef.document(visualizationID)
-                .update("sharedWithUsers", FieldValue.arrayRemove(*userIDs.toTypedArray()))
-                .await()
+            val vis = visualizationsRef.document(visualizationID)
+            val visExists = vis.get().await().exists()
+            val filteredUsers = mutableListOf<String>()
+
+            if (!visExists) {
+                throw AppError.NotFound("Visualization not found")
+            }
+
+            for (u in userIDs) {
+                val userExists = db.collection("users").document(u).get().await().exists()
+                if (userExists) { filteredUsers.add(u) }
+            }
+
+            if (filteredUsers.isEmpty()) {
+                throw AppError.NotFound("Users not found in db")
+            }
+
+            vis.update("sharedWithUsers", FieldValue.arrayRemove(*filteredUsers.toTypedArray())).await()
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
         }
     }
 
+    /**
+     * Deletes the access of several teams to a visualization.
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @param teamIDs The lists of teams IDs.
+     * @throws AppError.NotFound If the visualization ID does not exist or if teams don't exist in DB.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
     suspend fun deleteTeamsAccessToVisualization(visualizationID: String, teamIDs: List<String>){
         try {
-            visualizationsRef.document(visualizationID)
-                .update("sharedWithTeams", FieldValue.arrayRemove(*teamIDs.toTypedArray()))
-                .await()
+            val vis = visualizationsRef.document(visualizationID)
+            val visExists = vis.get().await().exists()
+            val filteredTeams = mutableListOf<String>()
+
+            if (!visExists) {
+                throw AppError.NotFound("Visualization not found")
+            }
+
+            for (t in teamIDs) {
+                val teamExists = db.collection("teams").document(t).get().await().exists()
+                if (teamExists) { filteredTeams.add(t) }
+            }
+
+            if (filteredTeams.isEmpty()) {
+                throw AppError.NotFound("Teams not found in db")
+            }
+
+            vis.update("sharedWithTeams", FieldValue.arrayRemove(*filteredTeams.toTypedArray())).await()
         } catch (ex: Exception) {
-            throw ex
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
         }
     }
 }
