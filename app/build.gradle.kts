@@ -5,18 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.android.hilt)
-    alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
-}
-
-ktlint {
-    android.set(true)
-    ignoreFailures.set(false)
-
-    filter {
-        exclude("**/generated/**")
-        exclude("**/build/**")
-    }
 }
 
 detekt {
@@ -113,22 +102,4 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
-}
-
-tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask> {
-    enabled = true
-}
-
-tasks.named("preBuild") {
-    dependsOn("ktlintFormat")
-}
-
-tasks.register("checkQuality") {
-    group = "verification"
-    dependsOn("ktlintCheck", "detekt")
-}
-
-tasks.register("format") {
-    group = "formatting"
-    dependsOn("ktlintFormat")
 }
