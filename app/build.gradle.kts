@@ -5,14 +5,40 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.android.hilt)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
+}
+
+ktlint {
+    android.set(true)
+    ignoreFailures.set(false)
+
+    filter {
+        exclude("**/generated/**")
+        exclude("**/build/**")
+    }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    ignoreFailures = false
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        txt.required.set(true)
+        html.required.set(true)
+    }
 }
 
 android {
     namespace = "com.oracle.visualize"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version =
+            release(36) {
+                minorApiLevel = 1
+            }
     }
 
     defaultConfig {
@@ -30,7 +56,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -40,6 +66,12 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    lint {
+        abortOnError = true
+        warningsAsErrors = true
+        checkReleaseBuilds = true
     }
 }
 
@@ -81,5 +113,22 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+}
 
+tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask> {
+    enabled = true
+}
+
+tasks.named("preBuild") {
+    dependsOn("ktlintFormat")
+}
+
+tasks.register("checkQuality") {
+    group = "verification"
+    dependsOn("ktlintCheck", "detekt")
+}
+
+tasks.register("format") {
+    group = "formatting"
+    dependsOn("ktlintFormat")
 }
