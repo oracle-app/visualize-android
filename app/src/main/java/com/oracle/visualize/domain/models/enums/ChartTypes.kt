@@ -1,5 +1,7 @@
 package com.oracle.visualize.domain.models.enums
 
+import com.oracle.visualize.domain.exceptions.AppError
+
 enum class ChartTypes(val typeName: String) {
     VERTICAL_BAR("Vertical Bar Chart"),
     HORIZONTAL_BAR("Horizontal Bar Chart"),
@@ -13,6 +15,6 @@ enum class ChartTypes(val typeName: String) {
     companion object {
         fun fromTypeName(typeName: String): ChartTypes =
             entries.firstOrNull() { it.typeName == typeName } ?:
-            throw IllegalArgumentException("Invalid chart type")
+            throw AppError.InvalidType("Invalid chart type")
     }
 }

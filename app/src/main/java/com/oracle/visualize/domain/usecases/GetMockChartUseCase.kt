@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases
 
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.repositories.ChartRepository
@@ -20,7 +21,7 @@ class GetMockChartUseCase @Inject constructor(
         return try {
             Result.success(chartRepository.getMockChart(chartType))
         } catch (ex: Exception) {
-            Result.failure(ex)
+            Result.failure(AppError.InvalidType("Couldn't get mock chart with the given chart type."))
         }
     }
 }
