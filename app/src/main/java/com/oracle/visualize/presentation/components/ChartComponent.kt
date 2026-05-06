@@ -54,7 +54,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
@@ -75,7 +75,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
@@ -95,7 +95,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = chart.stackNames.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text(chart.stackNames[it]) }
@@ -116,7 +116,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
@@ -137,7 +137,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
@@ -158,7 +158,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
@@ -179,7 +179,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = labels.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text("${labels[it]}") }
@@ -199,7 +199,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 title = { Text("", style = MaterialTheme.typography.titleLarge) },
                 legend = {
                     FlowLegend(
-                        modifier = Modifier.padding(bottom = 28.dp).border(1.dp, Color.Black).padding(16.dp),
+                        modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
                         itemCount = chart.stackNames.size,
                         symbol = { Symbol(shape = RectangleShape, fillBrush = SolidColor(colors[it])) },
                         label = { Text(chart.stackNames[it]) }
