@@ -13,7 +13,9 @@ object VisualizationFixtures {
         title = "Chart A",
         author = "John",
         createdAt = Date(),
-        sharedWith = emptyList(),
+        teamsSharedWith = emptyList(),
+        usersSharedWith = emptyList(),
+        allUsersSharedWith = emptyList(),
         configJSON = "{}"
     )
 
