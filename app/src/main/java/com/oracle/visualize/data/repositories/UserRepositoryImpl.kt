@@ -29,13 +29,5 @@ class UserRepositoryImpl @Inject constructor(
             deferredUsers.awaitAll()
         }
     }
-
-    override suspend fun getUserByUserID(userId: String): User {
-        return userDatasource.getUserByID(userId).toDomain()
-    }
-
-    override suspend fun getTeamsIntegratedByUser(userId: String): List<Team> {
-        return userDatasource.getTeamsIntegratedByUser(userId).map { it.toDomain() }
-    }
 }
 

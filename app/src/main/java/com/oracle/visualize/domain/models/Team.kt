@@ -5,7 +5,7 @@ package com.oracle.visualize.domain.models
  */
 data class Team (
     val id: String,
-    val memberIDs: List<String>,
+    val members: List<User> = emptyList(),
     val name: String,
     val ownerID: String
 )

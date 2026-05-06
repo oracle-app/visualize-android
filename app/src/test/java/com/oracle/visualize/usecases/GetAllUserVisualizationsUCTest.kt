@@ -52,21 +52,22 @@ class GetAllUserVisualizationsUCTest {
         assertTrue(result.isFailure)
         assertTrue(result.exceptionOrNull() is AppError.ValidationError)
         coVerify(exactly = 0) {
-            visualizationRepository.getAllVisualizationsByUserID(any(), any())
+            visualizationRepository.getSharedVisualizations(any())
+            visualizationRepository.getPersonalVisualizations(any())
         }
     }
 
     //Calls to the Repository
 
     @Test
-    fun validUserID_returnsResultSuccess_withVisualizationList() = runTest {
+    fun validUserID_withFilterAll_callsBothAndReturnsCombinedResultSuccess() = runTest {
         // given
         coEvery {
-            visualizationRepository.getAllVisualizationsByUserID(
-                VisualizationFixtures.VALID_USER_ID,
-                VisualizationFilter.ALL
-            )
+            visualizationRepository.getSharedVisualizations(VisualizationFixtures.VALID_USER_ID)
         } returns VisualizationFixtures.fakeVisualizations
+        coEvery {
+            visualizationRepository.getPersonalVisualizations(VisualizationFixtures.VALID_USER_ID)
+        } returns emptyList()
 
         // when
         val result = getAllUserVisualizations(
@@ -78,10 +79,8 @@ class GetAllUserVisualizationsUCTest {
         assertTrue(result.isSuccess)
         assertEquals(VisualizationFixtures.fakeVisualizations, result.getOrNull())
         coVerify(exactly = 1) {
-            visualizationRepository.getAllVisualizationsByUserID(
-                VisualizationFixtures.VALID_USER_ID,
-                VisualizationFilter.ALL
-            )
+            visualizationRepository.getSharedVisualizations(VisualizationFixtures.VALID_USER_ID)
+            visualizationRepository.getPersonalVisualizations(VisualizationFixtures.VALID_USER_ID)
         }
     }
 
@@ -89,10 +88,10 @@ class GetAllUserVisualizationsUCTest {
     fun validUserID_withNoVisualizations_returnsEmptyList() = runTest {
         // given
         coEvery {
-            visualizationRepository.getAllVisualizationsByUserID(
-                VisualizationFixtures.VALID_USER_ID,
-                VisualizationFilter.ALL
-            )
+            visualizationRepository.getSharedVisualizations(VisualizationFixtures.VALID_USER_ID)
+        } returns emptyList()
+        coEvery {
+            visualizationRepository.getPersonalVisualizations(VisualizationFixtures.VALID_USER_ID)
         } returns emptyList()
 
         // when
@@ -107,27 +106,26 @@ class GetAllUserVisualizationsUCTest {
     }
 
     @Test
-    fun filterIsForwardedToRepository() = runTest {
-        // given - verify the filter enum is forwarded, not hardcoded
+    fun filterPersonal_callsOnlyPersonalVisualizations() = runTest {
+        // given
         coEvery {
-            visualizationRepository.getAllVisualizationsByUserID(
-                VisualizationFixtures.VALID_USER_ID,
-                VisualizationFilter.PERSONAL
-            )
+            visualizationRepository.getPersonalVisualizations(VisualizationFixtures.VALID_USER_ID)
         } returns VisualizationFixtures.fakeVisualizations
 
         // when
-        getAllUserVisualizations(
+        val result = getAllUserVisualizations(
             VisualizationFixtures.VALID_USER_ID,
             VisualizationFilter.PERSONAL
         )
 
         // then
+        assertTrue(result.isSuccess)
+        assertEquals(VisualizationFixtures.fakeVisualizations, result.getOrNull())
         coVerify(exactly = 1) {
-            visualizationRepository.getAllVisualizationsByUserID(
-                VisualizationFixtures.VALID_USER_ID,
-                VisualizationFilter.PERSONAL
-            )
+            visualizationRepository.getPersonalVisualizations(VisualizationFixtures.VALID_USER_ID)
+        }
+        coVerify(exactly = 0) {
+            visualizationRepository.getSharedVisualizations(any())
         }
     }
 
@@ -136,19 +134,18 @@ class GetAllUserVisualizationsUCTest {
         // given
         val exception = Exception("Firestore unavailable")
         coEvery {
-            visualizationRepository.getAllVisualizationsByUserID(any(), any())
+            visualizationRepository.getSharedVisualizations(any())
         } throws exception
 
         // when
         val result = getAllUserVisualizations(
             VisualizationFixtures.VALID_USER_ID,
-            VisualizationFilter.ALL
+            // We use SHARED to force it to fail immediately with that mock
+            VisualizationFilter.SHARED
         )
 
         // then
         assertTrue(result.isFailure)
         assertEquals(exception, result.exceptionOrNull())
     }
-
-
 }
