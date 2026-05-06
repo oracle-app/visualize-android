@@ -255,7 +255,7 @@ class VisualizationDataSource @Inject constructor(
     /**
      * Publishes all user's visualizations to the database in bulk.
      *
-     * @param visualizations The unique ID of the visualization.
+     * @param visualizations The list of visualizations [List<VisualizationDTO>].
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun publishVisualizationsInBulk(visualizations: List<VisualizationDTO>) {
