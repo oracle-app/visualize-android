@@ -126,7 +126,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         val allUsers = mutableListOf<UserDTO>()
         val chunkSize = 30
 
-        // chunked() es equivalente al stride de Swift para dividir el array
+        // ´chunked()´ is equivalent to Swift's ´stride´ for splitting the array 
         ids.chunked(chunkSize).forEach { chunk ->
             val chunkUsers = userDatasource.getUsersByIDs(chunk)
             allUsers.addAll(chunkUsers)
