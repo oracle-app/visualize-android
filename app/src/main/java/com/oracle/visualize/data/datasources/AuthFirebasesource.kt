@@ -11,7 +11,7 @@ import javax.inject.Inject
  *
  * @property auth The [FirebaseAuth] instance used for authentication operations.
  */
-class AuthFirebaseSource @Inject constructor(private val auth: FirebaseAuth) {
+class AuthFirebasesource @Inject constructor(private val auth: FirebaseAuth) {
     /**
      * Attempts to log in a user with the provided email and password.
      *

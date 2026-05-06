@@ -4,6 +4,8 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,16 +20,23 @@ class GetAllUserVisualizationsUseCase @Inject constructor(
 ){
     // Return type Result<List<VisualizationCard>>
     suspend operator fun invoke(userID: String, filter: VisualizationFilter): Result<List<VisualizationCard>> {
-
-        if (userID.isBlank()) {
-            return Result.failure(AppError.ValidationError("User ID does not exist."))
-        }
+        if (userID.isBlank()) return Result.failure(AppError.ValidationError("User ID empty"))
 
         return try {
-            val visualizations = visualizationRepository.getAllVisualizationsByUserID(userID, filter)
-            Result.success(visualizations)
-        } catch (ex: Exception) {
-            Result.failure(ex)
+            coroutineScope {
+                val cards = when (filter) {
+                    VisualizationFilter.ALL -> {
+                        val shared = async { visualizationRepository.getSharedVisualizations(userID) }
+                        val personal = async { visualizationRepository.getPersonalVisualizations(userID) }
+                        shared.await() + personal.await()
+                    }
+                    VisualizationFilter.SHARED -> visualizationRepository.getSharedVisualizations(userID)
+                    VisualizationFilter.PERSONAL -> visualizationRepository.getPersonalVisualizations(userID)
+                }
+                Result.success(cards)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

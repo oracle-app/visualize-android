@@ -8,8 +8,6 @@ import com.oracle.visualize.domain.models.User
  * Interface defining the operations for user management.
  */
 interface UserRepository {
-    suspend fun getUserByUserID(userId: String): User?
-    suspend fun getTeamsIntegratedByUser(userId: String): List<Team>
     suspend fun getUserSuggestionsByEmail(email: String): List<ShareUser>
     suspend fun hideVisualization(userId: String, visualizationId: String)
 }

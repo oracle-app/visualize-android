@@ -22,4 +22,6 @@ interface VisualizationRepository {
     suspend fun shareVisualizationWithTeams(visualizationID: String, teamIDs: List<String>)
     suspend fun deleteUsersAccessToVisualization(visualizationID: String, userIDs: List<String>)
     suspend fun deleteTeamsAccessToVisualization(visualizationID: String, teamIDs: List<String>)
+    suspend fun getSharedVisualizations(userID: String): List<VisualizationCard>
+    suspend fun getPersonalVisualizations(userID: String): List<VisualizationCard>
 }
