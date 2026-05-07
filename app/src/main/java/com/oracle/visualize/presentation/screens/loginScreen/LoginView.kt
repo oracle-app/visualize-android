@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.login
+package com.oracle.visualize.presentation.screens.loginScreen
 
 import androidx.compose.runtime.Composable
 
@@ -15,7 +15,7 @@ import androidx.navigation.NavController
  * @param viewModel The [LoginViewModel] that manages the login state.
  */
 @Composable
-fun LoginScreen(
+fun LoginPage(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
     ) {

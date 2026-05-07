@@ -2,6 +2,7 @@ package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import com.oracle.visualize.fixtures.DatasetFixtures
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
 
@@ -146,7 +147,7 @@ class ValidateDatasetUCTest {
         val result = validateDataset(DatasetFixtures.VALID_CSV_NAME, emptyFile)
 
         // then
-        assertTrue(result.isFailure)
+        assertFalse(result.isSuccess)
         assertTrue(result.exceptionOrNull() is IllegalArgumentException)
     }
 
