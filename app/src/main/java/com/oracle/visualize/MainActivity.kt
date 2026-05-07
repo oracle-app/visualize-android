@@ -1,6 +1,7 @@
 package com.oracle.visualize
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,6 +23,10 @@ class MainActivity : ComponentActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Prevent screenshots and screen recording for security
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+
         enableEdgeToEdge()
         setContent {
             VisualizeTheme {
