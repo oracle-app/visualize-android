@@ -12,6 +12,7 @@ object VisualizationFixtures {
         id = "1",
         title = "Chart A",
         author = "John",
+        authorID = "12344",
         createdAt = Date(),
         teamsSharedWith = emptyList(),
         usersSharedWith = emptyList(),

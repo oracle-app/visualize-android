@@ -69,6 +69,7 @@ fun VisualizationDTO.toVisualizationCard(
         id = this.id ?: "",
         title = this.title,
         author = authorName,
+        authorID = this.authorID,
         createdAt = this.createdAt.toDate(),
         configJSON = this.configJSON,
         teamsSharedWith = teamsSharedWith,
