@@ -1,10 +1,6 @@
 package com.oracle.visualize.presentation.components
 
-<<<<<<< Updated upstream
 import androidx.compose.foundation.layout.fillMaxWidth
-=======
-import androidx.compose.foundation.layout.*
->>>>>>> Stashed changes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -33,13 +29,8 @@ private fun buildLineChartData(
     }
 }
 
-<<<<<<< Updated upstream
 private fun generateColors(n: Int): List<Color> {
     return List(n) { i ->
-=======
-private fun chartColorGenerator(n: Int): List<Color> =
-    List(n) { i ->
->>>>>>> Stashed changes
         Color.hsv(i * 360f / n, 0.6f, 0.9f)
     }
 
@@ -68,39 +59,23 @@ fun ChartRender(chart: Chart<*>) {
             }
 
             XYGraph(
-<<<<<<< Updated upstream
                 xAxisModel = remember { CategoryAxisModel(labels) },
                 yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
                 yAxisTitle = ""
-=======
-                xAxisModel = remember { CategoryAxisModel(chart.categories) },
-                yAxisModel =
-                    rememberFloatLinearAxisModel(
-                        0f..maxY,
-                        minorTickCount = 0,
-                    ),
-                yAxisTitle = chart.chartTitle,
->>>>>>> Stashed changes
             ) {
                 VerticalBarPlot(
                     xData = labels,
                     yData = values,
                     bar = { index, _, _ ->
                         DefaultBar(
-<<<<<<< Updated upstream
                             brush = SolidColor(colors[index]),
                             modifier = Modifier.fillMaxWidth()
-=======
-                            brush = SolidColor(colors[0]),
-                            modifier = Modifier.fillMaxWidth(),
->>>>>>> Stashed changes
                         )
                     },
                 )
             }
         }
 
-<<<<<<< Updated upstream
 //        TODO("Still need to fix Horizontal and Line Charts")
 //
 //        is HorizontalBarChart -> {
@@ -168,20 +143,6 @@ fun ChartRender(chart: Chart<*>) {
                 chart.data,
                 label = {
                     i -> Text(text = chart.data[i].toString())
-=======
-        ChartTypes.LINE -> {
-            XYGraph(
-                rememberFloatLinearAxisModel(0f..chart.series[0].xValues.max()),
-                rememberFloatLinearAxisModel(0f..chart.series[0].yValues.max()),
-                yAxisTitle = chart.chartTitle,
-            ) {
-                chart.series.forEachIndexed { idx, series ->
-                    val data = buildLineChartData(series.xValues, series.yValues)
-                    LinePlot(
-                        data,
-                        lineStyle = LineStyle(SolidColor(colors[idx])),
-                    )
->>>>>>> Stashed changes
                 }
             )
         }
