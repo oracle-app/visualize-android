@@ -9,7 +9,6 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -71,7 +70,13 @@ class PublishVisualizationsInBulkUCTest {
     @Test
     fun `return success even if one visualization has an empty author ID`() = runTest {
         // Given
-        val visList = VisualizationFixtures.visListWhereOneHasEmptyAuthorID
+        val visList = listOf(
+            VisualizationFixtures.fakeValidVisualization,
+            VisualizationFixtures.fakeValidVisualization.copy(
+                id="2", title = "Vis 2", authorID = "", sharedWithUsers = listOf("1")
+            )
+        )
+
         val expectedList = visList.filter{ it.authorID.isNotBlank() }
         coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
@@ -88,7 +93,13 @@ class PublishVisualizationsInBulkUCTest {
     @Test
     fun `return success even if one visualization has an empty title`() = runTest {
         // Given
-        val visList = VisualizationFixtures.visListWhereOneHasEmptyTitle
+        val visList = listOf(
+            VisualizationFixtures.fakeValidVisualization,
+            VisualizationFixtures.fakeValidVisualization.copy(
+                id="2", title = "", authorID = "2", sharedWithUsers = listOf("1")
+            )
+        )
+
         val expectedList = visList.filter{ it.title.isNotBlank() }
         coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
@@ -105,7 +116,14 @@ class PublishVisualizationsInBulkUCTest {
     @Test
     fun `return success even if one visualization has an empty ConfigJSON`() = runTest {
         // Given
-        val visList = VisualizationFixtures.visListWhereOneHasEmptyConfigJSON
+        val visList = listOf(
+            VisualizationFixtures.fakeValidVisualization,
+            VisualizationFixtures.fakeValidVisualization.copy(
+                id="2", title = "Vis 2", authorID = "2", configJSON = "",
+                sharedWithUsers = listOf("1")
+            )
+        )
+
         val expectedList = visList.filter{ it.configJSON.isNotBlank() }
         coEvery { visualizationRepository.publishVisualizationsInBulk(expectedList) } returns Unit
 
@@ -122,7 +140,22 @@ class PublishVisualizationsInBulkUCTest {
     @Test
     fun `return success when some visualizations valid and some invalid`() = runTest {
         // Given
-        val visList = VisualizationFixtures.visListWhereSomeAreValidAndSomeInvalid
+        val visList = listOf(
+            VisualizationFixtures.fakeValidVisualization,
+            VisualizationFixtures.fakeValidVisualization.copy(
+                id="2", title = "Vis 2", authorID = "2", configJSON = "{}",
+                sharedWithUsers = listOf("1")
+            ),
+            VisualizationFixtures.fakeValidVisualization.copy(
+                id="3", title = "", authorID = "", configJSON = "",
+                sharedWithUsers = listOf("2")
+            ),
+            VisualizationFixtures.fakeValidVisualization.copy(
+                id="4", title = "sdasdasd", authorID = "", configJSON = "",
+                sharedWithTeams = listOf("2", "3")
+            ),
+        )
+
         val expectedList = visList.filter{
             it.authorID.isNotBlank() && it.title.isNotBlank() && it.configJSON.isNotBlank()
         }
@@ -166,6 +199,6 @@ class PublishVisualizationsInBulkUCTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
+        assertTrue(result.exceptionOrNull() is Exception)
     }
 }

@@ -12,7 +12,7 @@ object VisualizationFixtures {
         id = "1",
         title = "Chart A",
         author = "John",
-        authorID = "12344",
+        authorID = "2",
         createdAt = Date(),
         teamsSharedWith = emptyList(),
         usersSharedWith = emptyList(),
@@ -30,52 +30,23 @@ object VisualizationFixtures {
         configJSON = "{}"
     )
 
-    val fakeVisualizations = listOf(
-        fakeVisualizationCard,
-        fakeVisualizationCard.copy(id = "2", title = "Chart B")
+    val fakeSharedVisualizations = listOf(
+        fakeVisualizationCard.copy(id = "shared_1", title = "Shared Chart A"),
+        fakeVisualizationCard.copy(id = "shared_2", title = "Shared Chart B")
+    )
+
+    val fakePersonalVisualizations = listOf(
+        fakeVisualizationCard.copy(id = "personal_1", title = "Personal Chart A"),
+        fakeVisualizationCard.copy(id = "personal_2", title = "Personal Chart B")
     )
 
     val visListWhereAllAreValid = listOf(
         fakeValidVisualization,
         fakeValidVisualization.copy(
-            id="2", title = "Vis 2", authorID = "2", sharedWithUsers = listOf("1")),
-    )
-
-    val visListWhereOneHasEmptyTitle = listOf(
-        fakeValidVisualization,
-        fakeValidVisualization.copy(
-            id="2", title = "", authorID = "2", sharedWithUsers = listOf("1")
-        ),
-    )
-
-    val visListWhereOneHasEmptyAuthorID = listOf(
-        fakeValidVisualization,
-        fakeValidVisualization.copy(
-            id="2", title = "Vis 2", authorID = "", sharedWithUsers = listOf("1")
-        ),
-    )
-
-    val visListWhereOneHasEmptyConfigJSON = listOf(
-        fakeValidVisualization,
-        fakeValidVisualization.copy(
-            id="2", title = "Vis 2", authorID = "2", configJSON = "",
-            sharedWithUsers = listOf("1")
-        ),
-    )
-
-    val visListWhereSomeAreValidAndSomeInvalid = listOf(
-        fakeValidVisualization,
-        fakeValidVisualization.copy(
-            id="2", title = "Vis 2", authorID = "2", configJSON = "{}",
-            sharedWithUsers = listOf("1")
+            id="2", title = "Vis 2", authorID = "2", sharedWithUsers = listOf("1")
         ),
         fakeValidVisualization.copy(
-            id="3", title = "", authorID = "", configJSON = "",
-            sharedWithUsers = listOf("1")
-        ),
-        fakeValidVisualization.copy(
-            id="4", title = "sdasdasd", authorID = "", configJSON = "",
-            sharedWithTeams = listOf("2", "3")
+            id="3", title = "Vis 3", authorID = "2", sharedWithUsers = listOf("1", "2")
         ),
     )
 
