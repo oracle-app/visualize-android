@@ -19,4 +19,4 @@ ktlint_standard_package-name = enabled
 ktlint_standard_class-naming = disabled
 ktlint_standard_function-naming = disabled
 ktlint_standard_trailing-comma-on-call-site = enabled
-ktlint_standard_trailing-comma-on-declaration-site = enabledx
+ktlint_standard_trailing-comma-on-declaration-site = enabled
