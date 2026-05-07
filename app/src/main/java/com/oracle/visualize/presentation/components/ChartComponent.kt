@@ -26,7 +26,7 @@ private fun buildLineChartData(xData: List<Float>, yData: List<Float>): List<Def
     }
 }
 
-private fun generateColors(n: Int): List<Color> {
+    private fun generateColors(n: Int): List<Color> {
     return List(n) { i ->
         Color.hsv(i * 360f / n, 0.6f, 0.9f)
     }
