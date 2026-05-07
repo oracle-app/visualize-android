@@ -55,7 +55,7 @@ fun FeedPage(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             when {
                 uiState.isLoading -> {
@@ -91,7 +91,7 @@ fun FeedPage(
                             )
                         }
                         item {
-                            Spacer(modifier = Modifier.height(80.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
