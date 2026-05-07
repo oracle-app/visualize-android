@@ -62,7 +62,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -83,7 +83,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -103,7 +103,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -124,7 +124,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -145,7 +145,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -166,7 +166,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -187,7 +187,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
 
@@ -207,7 +207,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
                 },
                 legendLocation = LegendLocation.TOP
             ) {
-                ChartRenderFeedCard(chart)
+                ChartRenderGeneral(chart)
             }
         }
     }

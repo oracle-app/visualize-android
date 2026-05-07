@@ -32,68 +32,65 @@ class FeedViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(FeedUIState())
     val uiState: StateFlow<FeedUIState> = _uiState.asStateFlow()
 
-    private var allItems: List<VisualizationCard> = emptyList()
+    private var allVisualizations: List<VisualizationCard> = emptyList()
+
+    // TODO: Get from Auth Repository
+    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
 
     init {
-        fetchItems(VisualizationFilter.ALL)
+        loadData(forceRefresh = false)
     }
 
-    private fun fetchItems(filter: VisualizationFilter) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+    fun loadData(forceRefresh: Boolean = false) {
+        if (forceRefresh) {
+            allVisualizations = emptyList()
+        }
 
+        if (allVisualizations.isEmpty()) {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        }
+
+        viewModelScope.launch {
             /*
-            * Get a chart from the mock chart repository.
-            *
-            * @param chartType: The type of chart, according belongs to the
-            * ChartTypes enum.
-            *
-            * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
-            * - VERTICAL_BAR (Vertical Bar Chart)
-            * - HORIZONTAL_BAR (Vertical Bar Chart)
-            * - STACKED_BAR (Stacked Bar Chart)
-            * - LINE (Line Chart)
-            * - SCATTER (Scatter Chart)
-            * - PIE (Pie Chart)
-            * - DONUT (Donut Chart)
-            * - AREA (Area Chart)
-            *
-            * TODO: Get data from the microservice when it becomes available.
-            *
-            * */
-            val mockChart = getMockChartUseCase(ChartTypes.VERTICAL_BAR).fold(
+             * Get a chart from the mock chart repository.
+             *
+             * @param chartType The type of chart, according belongs to the
+             * ChartTypes enum.
+             *
+             * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
+             * - VERTICAL_BAR (Vertical Bar Chart)
+             * - HORIZONTAL_BAR (Vertical Bar Chart)
+             * - STACKED_BAR (Stacked Bar Chart)
+             * - LINE (Line Chart)
+             * - SCATTER (Scatter Chart)
+             * - PIE (Pie Chart)
+             * - DONUT (Donut Chart)
+             * - AREA (Area Chart)
+             *
+             * TODO: Get data from the microservice when it becomes available.
+             */
+            val mockChart = getMockChartUseCase(chartType = ChartTypes.PIE).fold(
                 onSuccess = { it },
                 onFailure = { null }
             )
-
-            // TODO: Get from Auth Repository
-            val userID = "oEJtQz0gdbRpTZ8ETPCy"
-
-            getAllUserVisualizationsUseCase(userID, filter).fold(
-                onSuccess = { visualizations ->
-                    allItems = visualizations.map { item ->
-                        item.copy(chart = mockChart)
+            getAllUserVisualizationsUseCase(currentUserID).fold(
+                onSuccess = { items ->
+                    allVisualizations = items.map { i ->
+                        i.copy(chart = mockChart)
                     }
-                    applySearch()
+                    applyLocalFilterAndSearch()
                 },
                 onFailure = { error ->
-                    allItems = emptyList()
-
+                    allVisualizations = emptyList()
                     val uiErrorMessage = when (error) {
                         is AppError.NetworkError -> "Connection error. Please check your internet."
                         is AppError.ParsingError -> "There was a problem reading some visualizations."
                         is AppError.NotFound -> "No visualizations found."
                         else -> "An unexpected error occurred. Please try again."
                     }
-
                     Log.e("FeedViewModel", "Error fetching visualizations: ${error.message}", error)
-
                     _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            items = emptyList(),
-                            errorMessage = uiErrorMessage
-                        )
+                        it.copy(isLoading = false, items = emptyList(), errorMessage = uiErrorMessage)
                     }
                 }
             )
@@ -101,27 +98,43 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
-        _uiState.update { it.copy(selectedFilter = filter, searchText = "") }
-        fetchItems(filter)
-    }
+        if (_uiState.value.selectedFilter == filter) return
 
+        _uiState.update { it.copy(selectedFilter = filter) }
+
+        if (allVisualizations.isNotEmpty()) {
+            applyLocalFilterAndSearch()
+        } else {
+            loadData()
+        }
+    }
     fun onSearchTextChange(newText: String) {
         _uiState.update { it.copy(searchText = newText) }
-        applySearch()
+        applyLocalFilterAndSearch()
     }
 
-    private fun applySearch() {
-        val currentSearch = _uiState.value.searchText
-        
-        viewModelScope.launch {
-            val filteredItems = if (currentSearch.isBlank()) {
-                allItems
-            } else {
-                allItems.filter { item ->
-                    item.title.contains(currentSearch, ignoreCase = true)
-                }
+    private fun applyLocalFilterAndSearch() {
+        val filter = _uiState.value.selectedFilter
+        val search = _uiState.value.searchText
+
+        var filteredItems = when (filter) {
+            VisualizationFilter.ALL -> allVisualizations
+            VisualizationFilter.PERSONAL -> allVisualizations.filter { it.authorID == currentUserID }
+            VisualizationFilter.SHARED -> allVisualizations.filter { it.authorID != currentUserID }
+        }
+
+        if (search.isNotBlank()) {
+            filteredItems = filteredItems.filter { item ->
+                item.title.contains(search, ignoreCase = true)
             }
-            _uiState.update { it.copy(items = filteredItems, isLoading = false) }
+        }
+
+        _uiState.update {
+            it.copy(
+                items = filteredItems,
+                isLoading = false,
+                errorMessage = null
+            )
         }
     }
 }

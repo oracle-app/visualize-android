@@ -63,7 +63,7 @@ private fun generateColors(n: Int): List<Color> {
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun ChartRenderFeedCard(chart: Chart<*>) {
+fun ChartRenderGeneral(chart: Chart<*>) {
     when (chart) {
         is VerticalBarChart -> {
             val values = chart.data.values.toList()

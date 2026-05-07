@@ -130,7 +130,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                 ) {
                     val chart = item.chart
                     if (chart != null) {
-                        ChartRenderFeedCard(chart = chart)
+                        ChartRenderGeneral(chart = chart)
                     } else {
                         Text(
                             text = "Chart not found",
