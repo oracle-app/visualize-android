@@ -1,6 +1,9 @@
 package com.oracle.visualize.data.mapper
 
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
+import com.oracle.visualize.domain.models.ShareTeam
+import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
@@ -28,13 +31,33 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
  * @param sharedUsers List of [User] objects representing who the visualization is shared with.
  * @return A [VisualizationCard] object.
  */
-fun VisualizationDTO.toVisualizationCard(authorName: String, sharedUsers: List<User>): VisualizationCard {
+fun VisualizationDTO.toVisualizationCard(
+    authorName: String,
+    teamsSharedWith: List<Team>,
+    usersSharedWith: List<User>): VisualizationCard {
+    val allUsersDict = mutableMapOf<String, User>()
+
+    for (user in usersSharedWith) {
+        allUsersDict[user.id] = user
+    }
+
+    for (team in teamsSharedWith) {
+        for (member in team.members) {
+            allUsersDict[member.id] = member
+        }
+    }
+
+    val allUsers = allUsersDict.values.toList()
+
     return VisualizationCard(
-        id = this.id,
+        id = this.id ?: "",
         title = this.title,
         author = authorName,
+        authorID = this.authorID,
         createdAt = this.createdAt.toDate(),
         configJSON = this.configJSON,
-        sharedWith = sharedUsers
+        teamsSharedWith = teamsSharedWith,
+        usersSharedWith = usersSharedWith,
+        allUsersSharedWith = allUsers
     )
 }

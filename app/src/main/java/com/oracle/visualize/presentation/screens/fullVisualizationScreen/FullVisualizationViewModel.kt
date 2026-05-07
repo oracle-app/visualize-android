@@ -12,13 +12,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+/**
+ * ViewModel for the FullScreen visualization screen.
+ *
+ * Loads the selected visualization using its ID.
+ *
+ * @property getAllUserVisualizationsUseCase Use case to fetch user visualizations.
+ */
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
+    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
 
     fun loadVisualization(visualizationId: String) {
         viewModelScope.launch {
@@ -30,9 +37,7 @@ class FullVisualizationViewModel @Inject constructor(
             }
 
             //TODO: Get from Auth Repository
-            val userID = "oEJtQz0gdbRpTZ8ETPCy"
-
-            getAllUserVisualizationsUseCase(userID, VisualizationFilter.ALL).fold(
+            getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
 
