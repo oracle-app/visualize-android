@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,13 +53,15 @@ fun FeedPage(
             )
         }
     ) { paddingValues ->
-        Box(
+        PullToRefreshBox(
+            isRefreshing = uiState.isLoading && uiState.items.isNotEmpty(),
+            onRefresh = { feedViewModel.loadData(forceRefresh = true) },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             when {
-                uiState.isLoading -> {
+                uiState.isLoading && uiState.items.isEmpty() -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 uiState.errorMessage != null -> {
@@ -67,12 +70,18 @@ fun FeedPage(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+                uiState.items.isEmpty() && !uiState.isLoading -> {
+                    Text(
+                        text = "No visualizations found.",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
                 else -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp, vertical = 0.dp)
+                            .padding(horizontal = 16.dp)
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(22.dp))
@@ -82,15 +91,17 @@ fun FeedPage(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
-                        items(uiState.items) { item ->
-                            FeedCard(item,
-                                onClick = {
-                                    onVisualizationClick(item.id)
-                                }
+                        items(
+                            items = uiState.items,
+                            key = { it.id }
+                        ) { item ->
+                            FeedCard(
+                                item = item,
+                                onClick = { onVisualizationClick(item.id) }
                             )
                         }
                         item {
-                            Spacer(modifier = Modifier.height(80.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }

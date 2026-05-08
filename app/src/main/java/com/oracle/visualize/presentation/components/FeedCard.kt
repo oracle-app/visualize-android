@@ -67,8 +67,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        border = BorderStroke(2.dp,MaterialTheme.colorScheme.outline)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
     ) {
         Column {
@@ -143,7 +142,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     .heightIn(min = 41.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MemberAvatarStackFeed(item.sharedWith)
+                MemberAvatarStackFeed(item.allUsersSharedWith)
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }
