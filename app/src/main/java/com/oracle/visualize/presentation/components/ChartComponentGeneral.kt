@@ -164,7 +164,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
         }
 
         is LineChart -> {
-            val processedData = chart.data.map { (x, y) -> DefaultPoint(x, y) }
+            val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
 
             XYGraph (
                 xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),
@@ -211,7 +211,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
         }
 
         is ScatterChart -> {
-            val processedData = chart.data.map { (x, y) -> DefaultPoint(x, y)}
+            val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
 
             XYGraph (
                 xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),

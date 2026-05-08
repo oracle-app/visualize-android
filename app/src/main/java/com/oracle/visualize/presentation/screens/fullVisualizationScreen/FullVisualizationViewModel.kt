@@ -57,7 +57,7 @@ class FullVisualizationViewModel @Inject constructor(
             * TODO: Get data from the microservice when it becomes available.
             *
             * */
-            val mockChart = getMockChartUseCase(ChartTypes.AREA).fold(
+            val mockChart = getMockChartUseCase(ChartTypes.STACKED_BAR).fold(
                 onSuccess = { it },
                 onFailure = { null }
             )

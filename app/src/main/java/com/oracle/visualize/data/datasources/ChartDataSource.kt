@@ -5,11 +5,13 @@ import com.oracle.visualize.domain.exceptions.AppError
 import javax.inject.Inject
 
 /**
- * Data source for chart-related.
+ * Data source for chart-related operations.
  */
 class ChartDataSource @Inject constructor(){
     /**
      * Return a mock chart based on its type.
+     *
+     * TODO: Change when the chart generator microservice API endpoints are available.
      *
      * @param chartType: The type of the chart.
      * @throws AppError.NotFound: If the chart type is not found.
@@ -80,7 +82,7 @@ class ChartDataSource @Inject constructor(){
                         40f to 27f,
                         50f to 52f
                     ),
-                    fieldNames = listOf("Jan", "Feb", "Mar", "Apr", "May")
+                    fieldNames = listOf("Currency (USD)")
                 )
             }
 
@@ -95,7 +97,7 @@ class ChartDataSource @Inject constructor(){
                         40f to 27f,
                         50f to 52f
                     ),
-                    fieldNames = listOf("Jan", "Feb", "Mar", "Apr", "May")
+                    fieldNames = listOf("Currency (USD)")
                 )
             }
 
