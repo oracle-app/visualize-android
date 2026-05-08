@@ -1,7 +1,9 @@
 package com.oracle.visualize.domain.models.enums
 
 import com.oracle.visualize.domain.exceptions.AppError
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class ChartTypes(val typeName: String) {
     VERTICAL_BAR("Vertical Bar Chart"),
     HORIZONTAL_BAR("Horizontal Bar Chart"),

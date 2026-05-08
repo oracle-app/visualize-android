@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.enums.ChartTypes
-import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetMockChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,7 +57,7 @@ class FullVisualizationViewModel @Inject constructor(
             * TODO: Get data from the microservice when it becomes available.
             *
             * */
-            val mockChart = getMockChartUseCase(ChartTypes.VERTICAL_BAR).fold(
+            val mockChart = getMockChartUseCase(ChartTypes.AREA).fold(
                 onSuccess = { it },
                 onFailure = { null }
             )

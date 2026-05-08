@@ -69,7 +69,7 @@ class FeedViewModel @Inject constructor(
              *
              * TODO: Get data from the microservice when it becomes available.
              */
-            val mockChart = getMockChartUseCase(chartType = ChartTypes.PIE).fold(
+            val mockChart = getMockChartUseCase(chartType = ChartTypes.STACKED_BAR).fold(
                 onSuccess = { it },
                 onFailure = { null }
             )

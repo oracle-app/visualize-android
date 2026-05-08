@@ -49,7 +49,7 @@ import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlin.math.roundToInt
 
-private fun generateColors(n: Int): List<Color> {
+fun generateChartColors(n: Int): List<Color> {
     return List(n) { i ->
         Color.hsv(i * 360f / n, 0.6f, 0.9f)
     }
@@ -64,14 +64,18 @@ private fun generateColors(n: Int): List<Color> {
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun ChartRenderGeneral(chart: Chart<*>) {
+    val labels = when (chart) {
+        is AreaChart -> chart.stackNames
+        is StackedBarChart -> chart.stackNames
+        else -> chart.fieldNames
+    }
+
+    val colors = generateChartColors(labels.size)
+
     when (chart) {
         is VerticalBarChart -> {
             val values = chart.data.values.toList()
             val maxValue = values.maxOrNull() ?: 0f
-            val labels = chart.fieldNames
-            val colors = remember(labels.size) {
-                generateColors(labels.size)
-            }
 
             XYGraph(
                 xAxisModel = remember { CategoryAxisModel(labels) },
@@ -91,10 +95,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     xData = labels,
                     yData = values,
                     bar = { index, _, _ ->
-                        DefaultBar(
-                            brush = SolidColor(colors[index]),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        DefaultBar(brush = SolidColor(colors[index]), modifier = Modifier.fillMaxWidth())
                     }
                 )
             }
@@ -102,9 +103,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
 
         is HorizontalBarChart -> {
             val values = chart.data.values.toList()
-            val labels = chart.fieldNames
             val maxValue = values.maxOrNull() ?: 0f
-            val colors = generateColors(labels.size)
 
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
@@ -124,18 +123,14 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     xData = values,
                     yData = labels,
                     bar = { index, _, _ ->
-                        DefaultBar(
-                            brush = SolidColor(colors[index]),
-                            modifier = Modifier.fillMaxHeight()
-                        )
-                    },
+                        DefaultBar(brush = SolidColor(colors[index]), modifier = Modifier.fillMaxHeight())
+                    }
                 )
             }
         }
 
         is StackedBarChart -> {
             val categories = chart.data.keys.toList()
-            val colors = generateColors(chart.stackNames.size)
             val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
 
             if (categories.isNotEmpty()) {
@@ -154,18 +149,12 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     )
                 ) {
                     StackedVerticalBarPlot {
-                        chart.stackNames.forEachIndexed { seriesIndex, _ ->
+                        labels.forEachIndexed { seriesIndex, _ ->
                             series(
-                                defaultBar = verticalSolidBar(
-                                    colors[seriesIndex],
-                                    RectangleShape,
-                                    null
-                                )
+                                defaultBar = verticalSolidBar(colors[seriesIndex], RectangleShape, border = null)
                             ) {
                                 chart.data.forEach { (category, values) ->
-                                    if (seriesIndex < values.size) {
-                                        item(category, values[seriesIndex])
-                                    }
+                                    if (seriesIndex < values.size) item(category, values[seriesIndex])
                                 }
                             }
                         }
@@ -175,9 +164,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
         }
 
         is LineChart -> {
-            val labels = chart.fieldNames
             val processedData = chart.data.map { (x, y) -> DefaultPoint(x, y) }
-            val colors = generateColors(labels.size)
 
             XYGraph (
                 xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),
@@ -201,26 +188,16 @@ fun ChartRenderGeneral(chart: Chart<*>) {
         }
 
         is PieChartModel -> {
-            PieChart(
-                chart.data,
-                label = {
-                    i -> Text(text = chart.data[i].toString())
-                }
-            )
+            PieChart(values = chart.data, label = { i -> Text(text = chart.data[i].toString()) })
         }
 
         is DonutChart -> {
             PieChart(
-                chart.data,
-                label = {
-                        i -> Text(text = chart.data[i].toString())
-                },
+                values = chart.data,
+                label = { i -> Text(text = chart.data[i].toString()) },
                 holeSize = 0.6f,
                 holeContent = {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column {
                             Text(text = "Total", style = MaterialTheme.typography.titleMedium)
                             Text(
@@ -234,8 +211,6 @@ fun ChartRenderGeneral(chart: Chart<*>) {
         }
 
         is ScatterChart -> {
-            val labels = chart.fieldNames
-            val colors = generateColors(labels.size)
             val processedData = chart.data.map { (x, y) -> DefaultPoint(x, y)}
 
             XYGraph (
@@ -255,32 +230,23 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 LinePlot(
                     data = processedData,
                     symbol = {
-                        Symbol(
-                            fillBrush = SolidColor(colors[0]),
-                            outlineBrush = SolidColor(colors[0])
-                        )
+                        Symbol(fillBrush = SolidColor(colors[0]), outlineBrush = SolidColor(colors[0]))
                     }
                 )
             }
         }
 
         is AreaChart -> {
-            val colors = generateColors(chart.stackNames.size)
             val sortedKeys = chart.data.keys.sorted()
             val minX = sortedKeys.firstOrNull() ?: 0f
             val maxX = sortedKeys.lastOrNull() ?: 0f
             val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
 
-            val seriesData = List(chart.stackNames.size) { seriesIndex ->
-                sortedKeys.map { x ->
-                    chart.data[x]?.getOrNull(seriesIndex) ?: 0f
-                }
+            val seriesData = List(labels.size) { seriesIndex ->
+                sortedKeys.map { x -> chart.data[x]?.getOrNull(seriesIndex) ?: 0f }
             }
 
-            val processedData = StackedAreaPlotDataAdapter(
-                xData = sortedKeys,
-                yData = seriesData
-            )
+            val processedData = StackedAreaPlotDataAdapter(xData = sortedKeys, yData = seriesData)
 
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(minX..maxOf(minX + 1f, maxX)),
