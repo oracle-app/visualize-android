@@ -20,7 +20,7 @@ class DeleteUsersAccessToVisualizationUseCase @Inject constructor(
         if (filterUserIDs.isEmpty()) return Result.failure(AppError.ValidationError("None of the users IDs in list is valid"))
 
         return try {
-            Result.success(visualizationRepository.deleteUsersAccessToVisualization(visualizationID, userIDs))
+            Result.success(visualizationRepository.deleteUsersAccessToVisualization(visualizationID, filterUserIDs))
         } catch (ex: Exception) {
             Result.failure(AppError.NetworkError("Failed to delete users access to visualization"))
         }

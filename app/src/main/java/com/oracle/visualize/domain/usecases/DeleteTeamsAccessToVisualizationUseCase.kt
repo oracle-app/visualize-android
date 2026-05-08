@@ -17,11 +17,11 @@ class DeleteTeamsAccessToVisualizationUseCase @Inject constructor(
         if (visualizationID.isBlank()) return Result.failure(AppError.ValidationError("Visualization ID is empty"))
         if (teamIDs.isEmpty()) return Result.failure(AppError.ValidationError("Users IDs list is empty"))
 
-        val filterUserIDs = teamIDs.filter { it.isNotBlank() }
-        if (filterUserIDs.isEmpty()) return Result.failure(AppError.ValidationError("None of the users IDs in list is valid"))
+        val filterTeamIDs = teamIDs.filter { it.isNotBlank() }
+        if (filterTeamIDs.isEmpty()) return Result.failure(AppError.ValidationError("None of the users IDs in list is valid"))
 
         return try {
-            Result.success(visualizationRepository.deleteTeamsAccessToVisualization(visualizationID, teamIDs))
+            Result.success(visualizationRepository.deleteTeamsAccessToVisualization(visualizationID, filterTeamIDs))
         } catch (ex: Exception) {
             Result.failure(AppError.NetworkError("Failed to delete users access to visualization"))
         }

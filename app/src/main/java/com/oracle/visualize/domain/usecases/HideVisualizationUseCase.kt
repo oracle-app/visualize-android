@@ -13,13 +13,8 @@ class HideVisualizationUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
     suspend operator fun invoke(userId: String, visualizationId: String): Result<Unit> {
-        if (userId.isBlank()) {
-            return Result.failure(AppError.ValidationError("Invalid user ID"))
-        }
-
-        if (visualizationId.isBlank()) {
-            return Result.failure(AppError.ValidationError("Invalid visualization ID"))
-        }
+        if (userId.isBlank()) return Result.failure(AppError.ValidationError("Invalid user ID"))
+        if (visualizationId.isBlank()) return Result.failure(AppError.ValidationError("Invalid visualization ID"))
 
         return try {
             Result.success(userRepository.hideVisualization(userId, visualizationId))

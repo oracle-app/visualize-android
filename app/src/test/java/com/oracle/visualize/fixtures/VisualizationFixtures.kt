@@ -6,6 +6,7 @@ import java.util.Date
 object VisualizationFixtures {
 
     const val VALID_USER_ID = "user123"
+    const val VALID_VISUALIZATION_ID = "vis123456"
 
     val fakeVisualizationCard = VisualizationCard(
         id = "1",
