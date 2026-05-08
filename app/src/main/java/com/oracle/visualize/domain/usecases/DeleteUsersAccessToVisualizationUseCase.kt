@@ -13,19 +13,11 @@ class DeleteUsersAccessToVisualizationUseCase @Inject constructor(
     private val visualizationRepository: VisualizationRepository
 ){
     suspend operator fun invoke(visualizationID: String, userIDs: List<String>): Result<Unit> {
-        if (visualizationID.isBlank()) {
-            return Result.failure(AppError.ValidationError("Visualization ID is empty"))
-        }
-
-        if (userIDs.isEmpty()) {
-            return Result.failure(AppError.ValidationError("Users IDs list is empty"))
-        }
+        if (visualizationID.isBlank()) return Result.failure(AppError.ValidationError("Visualization ID is empty"))
+        if (userIDs.isEmpty()) return Result.failure(AppError.ValidationError("Users IDs list is empty"))
 
         val filterUserIDs = userIDs.filter { it.isNotBlank() }
-
-        if (filterUserIDs.isEmpty()) {
-            return Result.failure(AppError.ValidationError("None of the users IDs in list is valid"))
-        }
+        if (filterUserIDs.isEmpty()) return Result.failure(AppError.ValidationError("None of the users IDs in list is valid"))
 
         return try {
             Result.success(visualizationRepository.deleteUsersAccessToVisualization(visualizationID, userIDs))

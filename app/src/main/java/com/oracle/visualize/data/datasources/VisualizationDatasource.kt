@@ -173,19 +173,14 @@ class VisualizationDatasource @Inject constructor(
             val visExists = db.collection("users")
                 .document(visualizationID).get().await().exists()
 
-            if (!visExists) {
-                throw AppError.NotFound("Visualization not found")
-            }
-
+            if (!visExists) throw AppError.NotFound("Visualization not found")
             val batch = db.batch()
+
             val usersWithHiddenVisualizations = db.collection("users")
-                .whereArrayContains("hiddenVisualizations", visualizationID)
-                .get().await()
+                .whereArrayContains("hiddenVisualizations", visualizationID).get().await()
 
             usersWithHiddenVisualizations.documents.forEach { user ->
-                batch.update(
-                    user.reference,
-                    "hiddenVisualizations",
+                batch.update(user.reference, "hiddenVisualizations",
                     FieldValue.arrayRemove(visualizationID)
                 )
             }
@@ -210,20 +205,14 @@ class VisualizationDatasource @Inject constructor(
             val vis = visualizationsRef.document(visualizationID)
             val visExists = vis.get().await().exists()
             val filteredUsers = mutableListOf<String>()
-
-            if (!visExists) {
-                throw AppError.NotFound("Visualization not found")
-            }
+            if (!visExists) throw AppError.NotFound("Visualization not found")
 
             for (u in userIDs) {
                 val userExists = db.collection("users").document(u).get().await().exists()
                 if (userExists) { filteredUsers.add(u) }
             }
 
-            if (filteredUsers.isEmpty()) {
-                throw AppError.NotFound("Users not found in db")
-            }
-
+            if (filteredUsers.isEmpty()) throw AppError.NotFound("Users not found in db")
             vis.update("sharedWithUsers", FieldValue.arrayUnion(*filteredUsers.toTypedArray())).await()
         } catch (ex: Exception) {
             if (ex is AppError) throw ex
@@ -244,20 +233,14 @@ class VisualizationDatasource @Inject constructor(
             val vis = visualizationsRef.document(visualizationID)
             val visExists = vis.get().await().exists()
             val filteredTeams = mutableListOf<String>()
-
-            if (!visExists) {
-                throw AppError.NotFound("Visualization not found")
-            }
+            if (!visExists) throw AppError.NotFound("Visualization not found")
 
             for (t in teamIDs) {
                 val teamExists = db.collection("teams").document(t).get().await().exists()
                 if (teamExists) { filteredTeams.add(t) }
             }
 
-            if (filteredTeams.isEmpty()) {
-                throw AppError.NotFound("Teams not found in db")
-            }
-
+            if (filteredTeams.isEmpty()) throw AppError.NotFound("Teams not found in db")
             vis.update("sharedWithTeams", FieldValue.arrayUnion(*filteredTeams.toTypedArray())).await()
         } catch (ex: Exception) {
             if (ex is AppError) throw ex
@@ -278,20 +261,14 @@ class VisualizationDatasource @Inject constructor(
             val vis = visualizationsRef.document(visualizationID)
             val visExists = vis.get().await().exists()
             val filteredUsers = mutableListOf<String>()
-
-            if (!visExists) {
-                throw AppError.NotFound("Visualization not found")
-            }
+            if (!visExists) throw AppError.NotFound("Visualization not found")
 
             for (u in userIDs) {
                 val userExists = db.collection("users").document(u).get().await().exists()
                 if (userExists) { filteredUsers.add(u) }
             }
 
-            if (filteredUsers.isEmpty()) {
-                throw AppError.NotFound("Users not found in db")
-            }
-
+            if (filteredUsers.isEmpty()) throw AppError.NotFound("Users not found in db")
             vis.update("sharedWithUsers", FieldValue.arrayRemove(*filteredUsers.toTypedArray())).await()
         } catch (ex: Exception) {
             if (ex is AppError) throw ex
@@ -312,20 +289,14 @@ class VisualizationDatasource @Inject constructor(
             val vis = visualizationsRef.document(visualizationID)
             val visExists = vis.get().await().exists()
             val filteredTeams = mutableListOf<String>()
-
-            if (!visExists) {
-                throw AppError.NotFound("Visualization not found")
-            }
+            if (!visExists) throw AppError.NotFound("Visualization not found")
 
             for (t in teamIDs) {
                 val teamExists = db.collection("teams").document(t).get().await().exists()
                 if (teamExists) { filteredTeams.add(t) }
             }
 
-            if (filteredTeams.isEmpty()) {
-                throw AppError.NotFound("Teams not found in db")
-            }
-
+            if (filteredTeams.isEmpty()) throw AppError.NotFound("Teams not found in db")
             vis.update("sharedWithTeams", FieldValue.arrayRemove(*filteredTeams.toTypedArray())).await()
         } catch (ex: Exception) {
             if (ex is AppError) throw ex
