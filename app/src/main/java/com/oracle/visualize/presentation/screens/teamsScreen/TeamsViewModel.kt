@@ -11,6 +11,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Teams screen.
+ *
+ * @property getUsersTeamsUseCase Use case for fetching the user's teams.
+ * @property deleteTeamUseCase Use case for deleting a team.
+ */
 @HiltViewModel
 class TeamsViewModel @Inject constructor(
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
@@ -20,32 +26,36 @@ class TeamsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
     val uiState: StateFlow<TeamsUiState> = _uiState.asStateFlow()
 
-    // Real userID for persistence
     private val userID = "e9Nk8XrxHJAtwN3Hf2FL"
 
-    init {
-        loadTeams()
-    }
+    init { loadTeams() }
 
     private fun loadTeams() {
         viewModelScope.launch {
             _uiState.value = TeamsUiState.Loading
-            try {
-                // MockData usage (commented out)
-                // val myTeams = TeamsMockData.myTeams
-                // val teamsImIn = TeamsMockData.teamsImIn
 
-                // REAL USE CASE CALL (Firestore)
-                val myTeams   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
-                val teamsImIn = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
-                
-                _uiState.value = TeamsUiState.Content(
-                    myTeams   = myTeams,
-                    teamsImIn = teamsImIn
-                )
-            } catch (e: Exception) {
-                _uiState.value = TeamsUiState.Error(e.message ?: "Failed to load teams")
-            }
+            val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
+            val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
+
+            myTeamsResult.fold(
+                onFailure = { e ->
+                    _uiState.value = TeamsUiState.Error(e.message ?: "Failed to load teams")
+                    return@launch
+                },
+                onSuccess = {}
+            )
+            teamsImInResult.fold(
+                onFailure = { e ->
+                    _uiState.value = TeamsUiState.Error(e.message ?: "Failed to load teams")
+                    return@launch
+                },
+                onSuccess = {}
+            )
+
+            _uiState.value = TeamsUiState.Content(
+                myTeams   = myTeamsResult.getOrDefault(emptyList()),
+                teamsImIn = teamsImInResult.getOrDefault(emptyList())
+            )
         }
     }
 
@@ -53,28 +63,22 @@ class TeamsViewModel @Inject constructor(
         val current = _uiState.value as? TeamsUiState.Content ?: return
         when (event) {
             is TeamsUiEvent.ToggleExpand -> {
-                val updated = if (event.teamId in current.expandedTeamIds) {
+                val updated = if (event.teamId in current.expandedTeamIds)
                     current.expandedTeamIds - event.teamId
-                } else {
+                else
                     current.expandedTeamIds + event.teamId
-                }
                 _uiState.value = current.copy(expandedTeamIds = updated)
             }
             is TeamsUiEvent.SwipeTeam ->
                 _uiState.value = current.copy(swipedTeamId = event.teamId)
-
             is TeamsUiEvent.DeleteTeam -> {
                 viewModelScope.launch {
-                    try {
-                        // MockData usage (commented out)
-                        // val updatedMyTeams = current.myTeams.filter { it.id != event.teamId }
-                        // _uiState.value = current.copy(myTeams = updatedMyTeams, swipedTeamId = null)
-
-                        deleteTeamUseCase.invoke(event.teamId)
-                        loadTeams()
-                    } catch (e: Exception) {
-                        _uiState.value = TeamsUiState.Error(e.message ?: "Failed to delete team")
-                    }
+                    deleteTeamUseCase(event.teamId).fold(
+                        onSuccess = { loadTeams() },
+                        onFailure = { e ->
+                            _uiState.value = TeamsUiState.Error(e.message ?: "Failed to delete team")
+                        }
+                    )
                 }
             }
             is TeamsUiEvent.Refresh -> loadTeams()
