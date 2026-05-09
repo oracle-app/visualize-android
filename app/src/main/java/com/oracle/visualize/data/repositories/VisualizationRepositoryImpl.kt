@@ -152,4 +152,12 @@ class VisualizationRepositoryImpl @Inject constructor(
         val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
         visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
     }
+
+    override suspend fun deleteVisualizationForEveryone(visualizationId: String) {
+        visualizationDataSource.deleteVisualization(visualizationId)
+    }
+
+    override suspend fun hideVisualizationForMe(userID: String, visualizationId: String) {
+        userDatasource.hideVisualizationForUser(userID, visualizationId)
+    }
 }
