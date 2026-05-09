@@ -83,5 +83,10 @@ fun ChartDTO.toDomain(): Chart<*> {
             } ?: emptyMap(),
             stackNames = stringFieldNames
         )
+
+        // Unsupported chart type
+        else -> {
+            VerticalBarChart(chartTitle = "", data = emptyMap(), fieldNames = emptyList())
+        }
     }
 }

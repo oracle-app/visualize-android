@@ -17,6 +17,6 @@ enum class ChartTypes(val typeName: String) {
     companion object {
         fun fromTypeName(typeName: String): ChartTypes =
             entries.firstOrNull() { it.typeName == typeName } ?:
-            throw AppError.InvalidType("Invalid chart type")
+            throw AppError.UnavailableMockData("Unavailable mock data for $typeName chart")
     }
 }
