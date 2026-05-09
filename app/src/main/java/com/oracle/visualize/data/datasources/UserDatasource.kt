@@ -3,7 +3,6 @@ package com.oracle.visualize.data.datasources
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import kotlinx.coroutines.tasks.await
@@ -83,6 +82,10 @@ class UserDatasource @Inject constructor(
             .get()
             .await()
         return snapshot.toObjects(UserDTO::class.java)
+    }
+
+    suspend fun saveUserProfile(uid: String, user: UserDTO){
+        firestore.collection("users").document(uid).set(user).await()
     }
 
     suspend fun hideVisualization(userId: String, visualizationId: String) {
