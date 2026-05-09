@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class TeamDatasource @Inject constructor(
     private val db: FirebaseFirestore
-){
+) {
     private val teamsRef = db.collection("teams")
 
     /**
@@ -25,19 +25,15 @@ class TeamDatasource @Inject constructor(
      * @throws AppError.ValidationError If any of the parameters are empty.
      * @throws AppError.NetworkError If the operation fails due to a network issue.
      */
-    suspend fun createTeam(
-        memberIDs: List<String>,
-        name: String,
-        ownerID: String
-    ) {
+    suspend fun createTeam(memberIDs: List<String>, name: String, ownerID: String) {
         try {
             if (ownerID.isNotEmpty() && name.isNotEmpty() && memberIDs.isNotEmpty()) {
-                val formattedVisualization = hashMapOf(
+                val formattedTeam = hashMapOf(
                     "memberIDs" to memberIDs,
-                    "name" to name,
-                    "ownerID" to ownerID
+                    "name"      to name,
+                    "ownerID"   to ownerID
                 )
-                teamsRef.add(formattedVisualization).await()
+                teamsRef.add(formattedTeam).await()
             } else {
                 throw AppError.ValidationError("OwnerID, Name and MemberIDs cannot be empty")
             }
@@ -101,6 +97,64 @@ class TeamDatasource @Inject constructor(
         } catch (ex: Exception) {
             if (ex is AppError) throw ex
             throw AppError.NetworkError("Failed to fetch user's teams: ${ex.message}")
+        }
+    }
+
+    /**
+     * Updates an existing team's name and member list.
+     *
+     * @param teamID The unique ID of the team to update.
+     * @param memberIDs The new list of member user IDs.
+     * @param name The new team name.
+     * @throws AppError.ValidationError If any parameter is blank.
+     * @throws AppError.NetworkError If the operation fails.
+     */
+    suspend fun updateTeam(teamID: String, memberIDs: List<String>, name: String) {
+        try {
+            require(teamID.isNotBlank()) { "Team ID cannot be empty" }
+            require(name.isNotBlank())   { "Team name cannot be empty" }
+            teamsRef.document(teamID).update(
+                mapOf(
+                    "name"      to name,
+                    "memberIDs" to memberIDs
+                )
+            ).await()
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to update team: ${ex.message}")
+        }
+    }
+
+    /**
+     * Deletes a team document by its ID.
+     *
+     * @param teamID The unique ID of the team to delete.
+     * @throws AppError.NetworkError If the operation fails.
+     */
+    suspend fun deleteTeam(teamID: String) {
+        try {
+            teamsRef.document(teamID).delete().await()
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to delete team: ${ex.message}")
+        }
+    }
+
+    /**
+     * Fetches multiple teams by a list of IDs (max 30 per Firestore whereIn limit).
+     *
+     * @param teamIDs List of team IDs to fetch (max 30).
+     * @return A list of [TeamDTO] matching the provided IDs.
+     * @throws AppError.NetworkError If the operation fails.
+     */
+    suspend fun getTeamsByIDs(teamIDs: List<String>): List<TeamDTO> {
+        if (teamIDs.isEmpty()) return emptyList()
+        return try {
+            val snapshot = teamsRef.whereIn("__name__", teamIDs).get().await()
+            snapshot.toObjects(TeamDTO::class.java)
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch teams by IDs: ${ex.message}")
         }
     }
 }
