@@ -14,14 +14,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
+import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
-import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
-
+import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 
 /**
  * Main container screen that sets up the navigation host and bottom bar.
@@ -30,9 +30,9 @@ import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVis
  */
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
+    viewModel: MainViewModel = hiltViewModel()
 ) {
-    val navController = rememberNavController()
+    val navController  = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val currentDestination = viewModel.navItems.find { item ->
@@ -45,15 +45,13 @@ fun MainScreen(
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
-                    navItems = viewModel.navItems,
+                    navItems           = viewModel.navItems,
                     currentDestination = currentDestination,
-                    onItemSelected = { destination ->
+                    onItemSelected     = { destination ->
                         navController.navigate(destination) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState    = true
                         }
                     }
                 )
@@ -62,27 +60,26 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(innerPadding)
+            modifier      = Modifier.padding(innerPadding)
         )
     }
 }
 
-// ─── NavHost ──────────────────────────────────────────────────────────────────
-
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
-        navController = navController,
+        navController    = navController,
         startDestination = NavRoutes.Feed,
-        modifier = modifier
+        modifier         = modifier
     ) {
         composable<NavRoutes.Feed> {
             FeedPage(
-                modifier = Modifier.fillMaxSize(),
+                modifier             = Modifier.fillMaxSize(),
                 onVisualizationClick = { visualizationId ->
-                    navController.navigate(
-                        NavRoutes.FullScreen(visualizationId)
-                    )
+                    navController.navigate(NavRoutes.FullScreen(visualizationId))
+                },
+                onShareVisualization = { visualizationId ->
+                    navController.navigate(NavRoutes.Share(visualizationId))
                 }
             )
         }
@@ -101,22 +98,24 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.Profile> {
             ProfilePage(modifier = Modifier.fillMaxSize())
-            // TODO: Pass profile.userId to ProfilePage
         }
 
         composable<NavRoutes.FullScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
-
             FullVisualizationPage(
                 visualizationId = route.visualizationId,
-                modifier = Modifier.fillMaxSize(),
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onThreadsClick = {
-                }
+                modifier        = Modifier.fillMaxSize(),
+                onBackClick     = { navController.popBackStack() },
+                onThreadsClick  = {}
             )
         }
 
+        composable<NavRoutes.Share> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.Share>()
+            ShareAndPostScreen(
+                visualizationId = route.visualizationId,
+                onNavigateBack  = { navController.popBackStack() }
+            )
+        }
     }
 }
