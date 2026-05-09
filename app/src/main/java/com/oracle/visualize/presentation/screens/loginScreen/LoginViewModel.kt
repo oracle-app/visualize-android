@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.login
+package com.oracle.visualize.presentation.screens.loginScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

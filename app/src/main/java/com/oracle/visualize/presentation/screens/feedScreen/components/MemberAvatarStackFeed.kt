@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,15 +49,15 @@ fun MemberAvatarStackFeed(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
-                            .border(BorderStroke(1.dp, Color.White), CircleShape)
-                            .background(Color.White)
+                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape)
+                            .background(MaterialTheme.colorScheme.onPrimary)
                             .padding(start = 14.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "+$extraCount",
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                            color = Color.DarkGray
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
@@ -68,7 +68,7 @@ fun MemberAvatarStackFeed(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
-                            .border(BorderStroke(1.dp, Color.White), CircleShape)
+                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape)
                     ) {
                         members.getOrNull(memberIndex)?.let { user ->
                             UserAvatarCard(user = user, size = AVATAR_SIZE.value.toInt())
