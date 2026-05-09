@@ -3,8 +3,9 @@ package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
+import com.oracle.visualize.domain.usecases.GetMockChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val getMockChartUseCase: GetMockChartUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
@@ -36,6 +38,30 @@ class FullVisualizationViewModel @Inject constructor(
                 )
             }
 
+            /*
+            * Get a chart from the mock chart repository.
+            *
+            * @param chartType: The type of chart, according belongs to the
+            * ChartTypes enum.
+            *
+            * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
+            * - VERTICAL_BAR (Vertical Bar Chart)
+            * - HORIZONTAL_BAR (Vertical Bar Chart)
+            * - STACKED_BAR (Stacked Bar Chart)
+            * - LINE (Line Chart)
+            * - SCATTER (Scatter Chart)
+            * - PIE (Pie Chart)
+            * - DONUT (Donut Chart)
+            * - AREA (Area Chart)
+            *
+            * TODO: Get data from the microservice when it becomes available.
+            *
+            * */
+            val mockChart = getMockChartUseCase(ChartTypes.STACKED_BAR).fold(
+                onSuccess = { it },
+                onFailure = { null }
+            )
+
             //TODO: Get from Auth Repository
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
@@ -45,8 +71,11 @@ class FullVisualizationViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             visualization = visualization,
+                            chart = mockChart,
                             errorMessage = if (visualization == null) {
                                 "Visualization not found."
+                            } else if (mockChart == null) {
+                                "Chart not found."
                             } else {
                                 null
                             }
