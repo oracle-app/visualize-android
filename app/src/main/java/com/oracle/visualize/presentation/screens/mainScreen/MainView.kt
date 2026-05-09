@@ -28,10 +28,14 @@ import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
  * Main container screen that sets up the navigation host and bottom bar.
  *
  * @param viewModel The [MainViewModel] providing navigation items.
+ * @param onToggleTheme Callback to toggle the app theme.
+ * @param isDarkMode Boolean indicating if dark mode is enabled.
  */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
+    onToggleTheme: () -> Unit = {},
+    isDarkMode: Boolean = false
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()

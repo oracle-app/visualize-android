@@ -50,6 +50,6 @@ fun BottomNavBar(
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-     }
- }
+        }
+    }
 }

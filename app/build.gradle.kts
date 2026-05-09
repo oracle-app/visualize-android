@@ -5,30 +5,14 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.android.hilt)
-    alias(libs.plugins.ktlint)
-    alias(libs.plugins.detekt)
-}
-
-ktlint {
-    android.set(true)
-    ignoreFailures.set(false)
-
-    enableExperimentalRules.set(true)
-}
-
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    ignoreFailures = false
 }
 
 android {
     namespace = "com.oracle.visualize"
     compileSdk {
-        version =
-            release(36) {
-                minorApiLevel = 1
-            }
+        version = release(36) {
+            minorApiLevel = 1
+        }
     }
 
     defaultConfig {
@@ -46,22 +30,16 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-
     buildFeatures {
         compose = true
-    }
-    testOptions {
-        unitTests.all {
-            it.useJUnit()
-        }
     }
 }
 
@@ -103,4 +81,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+
 }

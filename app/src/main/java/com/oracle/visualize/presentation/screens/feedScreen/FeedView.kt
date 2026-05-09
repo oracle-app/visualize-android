@@ -58,7 +58,7 @@ fun FeedPage(
             onRefresh = { feedViewModel.loadData(forceRefresh = true) },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding())
+                .padding(paddingValues)
         ) {
             when {
                 uiState.isLoading && uiState.items.isEmpty() -> {
@@ -101,7 +101,7 @@ fun FeedPage(
                             )
                         }
                         item {
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(80.dp))
                         }
                     }
                 }

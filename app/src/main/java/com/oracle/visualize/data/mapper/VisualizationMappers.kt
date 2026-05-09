@@ -1,6 +1,5 @@
 package com.oracle.visualize.data.mapper
 
-import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
@@ -22,21 +21,6 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
     sharedWithUsers = sharedWithUsers,
     sharedWithTeams = sharedWithTeams,
     createdAt = createdAt.toDate(),
-)
-
-/**
- * Extension function to map [Visualization] to [VisualizationDTO] Data Transfer Object.
- *
- * @return A [VisualizationDTO] object.
- */
-fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
-    id = id,
-    authorID = authorID,
-    title = title,
-    configJSON = configJSON,
-    sharedWithUsers = sharedWithUsers,
-    sharedWithTeams = sharedWithTeams,
-    createdAt = Timestamp(createdAt),
 )
 
 /**
@@ -74,7 +58,6 @@ fun VisualizationDTO.toVisualizationCard(
         configJSON = this.configJSON,
         teamsSharedWith = teamsSharedWith,
         usersSharedWith = usersSharedWith,
-        allUsersSharedWith = allUsers,
-        chart = null
+        allUsersSharedWith = allUsers
     )
 }

@@ -1,9 +1,5 @@
 package com.oracle.visualize.domain.models.enums
 
-import com.oracle.visualize.domain.exceptions.AppError
-import kotlinx.serialization.Serializable
-
-@Serializable
 enum class ChartTypes(val typeName: String) {
     VERTICAL_BAR("Vertical Bar Chart"),
     HORIZONTAL_BAR("Horizontal Bar Chart"),
@@ -17,6 +13,6 @@ enum class ChartTypes(val typeName: String) {
     companion object {
         fun fromTypeName(typeName: String): ChartTypes =
             entries.firstOrNull() { it.typeName == typeName } ?:
-            throw AppError.UnavailableMockData("Unavailable mock data for $typeName chart")
+            throw IllegalArgumentException("Invalid chart type")
     }
 }

@@ -30,7 +30,7 @@ fun ChartCard(
     onSelect: () -> Unit,
     onEditTitle: () -> Unit
 ) {
-    val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary
+    val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else Color.White
     val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
     val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
 

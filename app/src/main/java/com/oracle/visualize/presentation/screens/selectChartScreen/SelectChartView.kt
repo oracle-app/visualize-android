@@ -117,13 +117,13 @@ fun ChartSelectionPage(
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_title),
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_subtitle),
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                                color = Color.White.copy(alpha = 0.9f),
                                 fontSize = 12.sp
                             )
                         }
@@ -166,7 +166,7 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_post_personal), color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_post_personal), color = Color.White, fontSize = 12.sp)
                             }
 
                             Button(
@@ -176,7 +176,7 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_share_and_post), color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_share_and_post), color = Color.White, fontSize = 12.sp)
                             }
                         }
                     }

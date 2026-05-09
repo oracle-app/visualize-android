@@ -15,14 +15,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.presentation.components.ChartRenderFullScreen
+import com.oracle.visualize.presentation.components.ChartRender
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.FullVisualizationTopBar
+import com.oracle.visualize.presentation.components.mockVerticalChart
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.ui.draw.clipToBounds
-import com.oracle.visualize.presentation.components.ChartRenderFullScreen
 
 /**
  * Screen that displays a selected visualization in FullScreen mode.
@@ -103,7 +103,6 @@ fun FullVisualizationPage(
 
                 uiState.visualization != null -> {
                     val visualization = uiState.visualization!!
-                    val chart = uiState.chart!!
 
                     Column(
                         modifier = Modifier.fillMaxSize()
@@ -127,7 +126,7 @@ fun FullVisualizationPage(
                                     .fillMaxWidth()
                                     .heightIn(min = 260.dp, max = 420.dp)
                             ) {
-                                ChartRenderFullScreen(chart = chart)
+                                ChartRender(chart = mockVerticalChart)
                             }
                         }
                     }

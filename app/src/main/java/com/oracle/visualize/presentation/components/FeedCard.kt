@@ -67,7 +67,8 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        border = BorderStroke(2.dp,MaterialTheme.colorScheme.outline)
 
     ) {
         Column {
@@ -119,7 +120,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(150.dp)
                         .background(
                             color = MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(12.dp)
@@ -127,16 +128,10 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val chart = item.chart
-                    if (chart != null) {
-                        ChartRenderGeneral(chart = chart)
-                    } else {
-                        Text(
-                            text = "Chart not found",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    ChartRender(
+                        // chart = mockPieChart
+                        chart = mockVerticalChart
+                    )
                 }
             }
 
