@@ -98,6 +98,15 @@
     <string name="share_and_post">Share and Post</string>
     <string name="input_email">Enter email</string>
 
+    <!-- Feed Card Menu -->
+
+    <string name="feed_menu_share">Share</string>
+    <string name="feed_menu_delete_for_me">Delete for me</string>
+    <string name="feed_menu_delete_for_everyone">Delete for everyone</string>
+    <string name="feed_menu_more_options">More options</string>
+    <string name="feed_delete_title">Delete Visualization?</string>
+    <string name="feed_delete_for_everyone_message">This will permanently remove the visualization from the feed for you and everyone you shared it with. This action cannot be undone.</string>
+    <string name="feed_delete_for_me_message">This will remove the visualization from your feed. To see it again, the owner will need to share it with you.</string>
 
     // Errors
 
