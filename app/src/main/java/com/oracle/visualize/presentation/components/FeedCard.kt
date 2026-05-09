@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.components
 
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,12 +89,13 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "By ${item.author}",
+                            text = stringResource(R.string.by_author, item.author),
                             color = MaterialTheme.colorScheme.tertiary,
                             fontSize = 13.sp
                         )
                         Text(
-                            text = "    •    ${formatTime(item.createdAt, context)}",
+                            text = stringResource(R.string.bullet_separator,
+                                formatTime(item.createdAt, context)),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
@@ -103,7 +104,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
 
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "Menu",
+                    contentDescription = stringResource(R.string.icon_menu),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }

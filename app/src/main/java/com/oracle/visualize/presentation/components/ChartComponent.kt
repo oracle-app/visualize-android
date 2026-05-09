@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.domain.models.VerticalBarChart
@@ -18,6 +19,8 @@ import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.DefaultPoint
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
+import com.oracle.visualize.R
+
 
 private fun buildLineChartData(xData: List<Float>, yData: List<Float>): List<DefaultPoint<Float, Float>> {
     val n = xData.size
@@ -146,7 +149,7 @@ fun ChartRender(chart: Chart<*>) {
         }
 
         else -> {
-            Text("Invalid chart type was detected")
+            Text(stringResource(R.string.invalid_chart))
         }
     }
 }
