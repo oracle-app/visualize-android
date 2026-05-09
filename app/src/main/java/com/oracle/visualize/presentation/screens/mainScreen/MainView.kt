@@ -12,26 +12,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.oracle.visualize.domain.models.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
+import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.createEditScreen.CreateEditTeamPage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 
+private const val ROUTE_CREATE_TEAM = "create_team"
+private const val ROUTE_EDIT_TEAM   = "edit_team/{teamId}"
 
-// Bottom nav destinations — screens outside this list hide the nav bar
-private val bottomNavRoutes = setOf(
-    NavRoutes.Feed.route,
-    NavRoutes.Create.route,
-    NavRoutes.Notifications.route,
-    NavRoutes.Teams.route,
-    NavRoutes.Profile.route,
-    "create_team",
-    "edit_team/{teamId}"
-)
-
+/**
+ * Root composable that hosts the [Scaffold] with the bottom nav bar and the main [NavHost].
+ *
+ * @param viewModel The [MainViewModel] providing nav items (injected by Hilt).
+ * @param onToggleTheme Callback for toggling light/dark mode.
+ * @param isDarkMode Current dark mode state.
+ */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
@@ -42,78 +40,78 @@ fun MainScreen(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    // Only show bottom nav on main tab destinations
-    val showBottomBar = currentRoute in bottomNavRoutes
+    val currentNavRoute: NavRoutes? = when (currentRoute) {
+        NavRoutes.Feed.route          -> NavRoutes.Feed
+        NavRoutes.Create.route        -> NavRoutes.Create
+        NavRoutes.Notifications.route -> NavRoutes.Notifications
+        NavRoutes.Teams.route         -> NavRoutes.Teams
+        else                          -> null
+    }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier  = Modifier.fillMaxSize(),
         bottomBar = {
-            if (showBottomBar) {
+            if (currentNavRoute != null) {
                 BottomNavBar(
-                    navItems = viewModel.navItems,
-                    navController = navController
+                    navItems           = viewModel.navItems,
+                    currentDestination = currentNavRoute,
+                    onItemSelected     = { destination ->
+                        navController.navigate(destination.route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState    = true
+                        }
+                    }
                 )
             }
         }
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+            modifier      = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         )
     }
 }
 
-// ─── NavHost ──────────────────────────────────────────────────────────────────
-
+/**
+ * Defines the full navigation graph for the app.
+ *
+ * @param navController The [NavHostController] managing back stack and routing.
+ * @param modifier Modifier applied to the [NavHost] container.
+ */
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navController,
+        navController    = navController,
         startDestination = NavRoutes.Feed.route,
-        modifier = modifier
+        modifier         = modifier
     ) {
         composable(NavRoutes.Feed.route) {
             FeedPage(modifier = Modifier.fillMaxSize())
         }
-
         composable(NavRoutes.Create.route) {
             CreatePage(modifier = Modifier.fillMaxSize())
         }
-
         composable(NavRoutes.Notifications.route) {
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
-
-        /* Share screen — no bottom bar, navigates back to Feed
-        composable(NavRoutes.Share.route) {
-                // TODO: Add TeamsPage when implemented
-        }*/
-
-        // Teams section
         composable(NavRoutes.Teams.route) {
             TeamsPage(
-                modifier = Modifier.fillMaxSize(),
-                onNavigateToCreate = { navController.navigate("create_team") },
-                onNavigateToEdit = { teamId -> navController.navigate("edit_team/$teamId") }
+                modifier           = Modifier.fillMaxSize(),
+                onNavigateToCreate = { navController.navigate(ROUTE_CREATE_TEAM) },
+                onNavigateToEdit   = { teamId -> navController.navigate("edit_team/$teamId") }
             )
         }
-
-        composable("create_team") {
-            CreateEditTeamPage(
-                onNavigateBack = { navController.popBackStack() }
-            )
+        composable(ROUTE_CREATE_TEAM) {
+            CreateEditTeamPage(onNavigateBack = { navController.popBackStack() })
         }
-
-        composable("edit_team/{teamId}") {
-            CreateEditTeamPage(
-                onNavigateBack = { navController.popBackStack() }
-            )
+        composable(ROUTE_EDIT_TEAM) {
+            CreateEditTeamPage(onNavigateBack = { navController.popBackStack() })
         }
-
-        composable(NavRoutes.Profile.route) {
+        composable(NavRoutes.Profile.ROUTE_PATTERN) {
             // TODO: Add ProfilePage when implemented
         }
     }
