@@ -1,4 +1,3 @@
-// LoginUseCase.kt (Refactorizado)
 package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.domain.models.AuthUser
@@ -16,19 +15,19 @@ class LoginUseCase @Inject constructor(private val authRepository: AuthRepositor
 
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
 
-    // Estandarizado: Ahora devuelve Result<AuthUser>
+    // Returns Result<AuthUser>
     suspend operator fun invoke(email: String, password: String): Result<AuthUser> {
-        // 1. Validaciones usando Return (Fail Fast sin excepciones pesadas)
+        // 1. Validations using Return
         if (email.isBlank()) return Result.failure(AppError.ValidationError("Email is required"))
         if (!email.matches(emailRegex)) return Result.failure(AppError.ValidationError("Valid Email required"))
         if (password.isBlank()) return Result.failure(AppError.ValidationError("Password is required"))
 
-        // 2. Ejecución segura atrapando los errores del DataSource/Repository
+        // 2. Catches DataSource/Repository errors
         return try {
             val user = authRepository.login(email, password)
             Result.success(user)
         } catch (e: Exception) {
-            // El error sube tipado desde el DataSource
+            // The error uploads type to the DataSource
             Result.failure(e)
         }
     }

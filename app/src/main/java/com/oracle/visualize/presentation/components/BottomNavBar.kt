@@ -3,7 +3,6 @@ package com.oracle.visualize.presentation.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavDestination.Companion.hasRoute
 import com.oracle.visualize.presentation.navigation.NavItem
 import com.oracle.visualize.presentation.navigation.NavRoutes
 
@@ -51,6 +50,6 @@ fun BottomNavBar(
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        }
-    }
+     }
+ }
 }

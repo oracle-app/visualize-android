@@ -1,7 +1,9 @@
 package com.oracle.visualize.data.datasources
 
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
+import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -97,7 +99,29 @@ class TeamDatasource @Inject constructor(
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
         return try {
             val snapshot = teamsRef.whereArrayContains("membersIDs", userID).get().await()
-            snapshot.toObjects(TeamDTO::class.java)
+            if (snapshot.isEmpty) return emptyList()
+
+            snapshot.documents.map { doc ->
+                doc.toObject(TeamDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
+            }
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to fetch user's teams: ${ex.message}")
+        }
+    }
+
+    suspend fun getTeamsByIDs(ids: List<String>): List<TeamDTO> {
+        if (ids.isEmpty()) return emptyList()
+        return try {
+            val snapshot = db.collection("teams")
+                .whereIn(FieldPath.documentId(), ids)
+                .get()
+                .await()
+            snapshot.documents.map { doc ->
+                doc.toObject(TeamDTO::class.java)
+                    ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
+            }
         } catch (ex: Exception) {
             if (ex is AppError) throw ex
             throw AppError.NetworkError("Failed to fetch user's teams: ${ex.message}")

@@ -22,11 +22,6 @@
 
     <string name="app_name">Visualize</string>
 
-    // Activity Title Miscellaneous
-
-    <string name="title_activity_feed">FeedActivity</string>
-    <string name="title_activity_search_section">SearchSection</string>
-    <string name="title_activity_feed_top_bar">FeedTopBar</string>
 
     // Feed Top Bar
 
@@ -128,6 +123,11 @@
 
     <string name="edit_image_description">Edit Profile Image</string>
     <string name="profile_img_description">Profile Image</string>
+
+    // FullScreen Page
+    <string name="snipping_tool">Snipping Tool</string>
+    <string name="threads">Threads</string>
+
 
 
 </resources>

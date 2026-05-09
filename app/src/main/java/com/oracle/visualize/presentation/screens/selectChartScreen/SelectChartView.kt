@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.ChartSelectionUiState
 import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
 import com.oracle.visualize.ui.theme.ErrorRed
 
@@ -118,13 +117,13 @@ fun ChartSelectionPage(
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_title),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
                                 text = stringResource(R.string.chart_selection_ready_subtitle),
-                                color = Color.White.copy(alpha = 0.9f),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                                 fontSize = 12.sp
                             )
                         }
@@ -167,7 +166,7 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_post_personal), color = Color.White, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_post_personal), color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
                             }
 
                             Button(
@@ -177,7 +176,7 @@ fun ChartSelectionPage(
                                 shape = RoundedCornerShape(8.dp),
                                 enabled = viewModel.hasSelections()
                             ) {
-                                Text(stringResource(R.string.chart_selection_share_and_post), color = Color.White, fontSize = 12.sp)
+                                Text(stringResource(R.string.chart_selection_share_and_post), color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
                             }
                         }
                     }

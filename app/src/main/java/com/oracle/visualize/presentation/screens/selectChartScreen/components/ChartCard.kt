@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.Visualization
-import com.oracle.visualize.ui.theme.*
 
 @Composable
 fun ChartCard(
@@ -31,7 +30,7 @@ fun ChartCard(
     onSelect: () -> Unit,
     onEditTitle: () -> Unit
 ) {
-    val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else Color.White
+    val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary
     val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
     val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
 

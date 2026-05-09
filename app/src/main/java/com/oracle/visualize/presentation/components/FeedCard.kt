@@ -60,14 +60,14 @@ fun formatTime(date: Date, context: Context): String{
  * @param item The [VisualizationCard] data to display.
  */
 @Composable
-fun FeedCard(item: VisualizationCard) {
+fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
     val context = LocalContext.current
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        border = BorderStroke(2.dp,MaterialTheme.colorScheme.outline)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
     ) {
         Column {
@@ -142,7 +142,7 @@ fun FeedCard(item: VisualizationCard) {
                     .heightIn(min = 41.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MemberAvatarStackFeed(item.sharedWith)
+                MemberAvatarStackFeed(item.allUsersSharedWith)
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }

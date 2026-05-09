@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,20 +20,17 @@ import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 
 
 /**
  * Main container screen that sets up the navigation host and bottom bar.
  *
  * @param viewModel The [MainViewModel] providing navigation items.
- * @param onToggleTheme Callback to toggle the app theme.
- * @param isDarkMode Boolean indicating if dark mode is enabled.
  */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    onToggleTheme: () -> Unit = {},
-    isDarkMode: Boolean = false
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -66,7 +62,6 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            // Mejora: Usa el padding completo para evitar problemas visuales
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -82,7 +77,14 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
-            FeedPage(modifier = Modifier.fillMaxSize())
+            FeedPage(
+                modifier = Modifier.fillMaxSize(),
+                onVisualizationClick = { visualizationId ->
+                    navController.navigate(
+                        NavRoutes.FullScreen(visualizationId)
+                    )
+                }
+            )
         }
 
         composable<NavRoutes.Create> {
@@ -97,9 +99,24 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             // TODO: Implement TeamsPage
         }
 
-        composable<NavRoutes.Profile> { backStackEntry ->
-            val profile = backStackEntry.toRoute<NavRoutes.Profile>()
+        composable<NavRoutes.Profile> {
+            ProfilePage(modifier = Modifier.fillMaxSize())
             // TODO: Pass profile.userId to ProfilePage
         }
+
+        composable<NavRoutes.FullScreen> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
+
+            FullVisualizationPage(
+                visualizationId = route.visualizationId,
+                modifier = Modifier.fillMaxSize(),
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onThreadsClick = {
+                }
+            )
+        }
+
     }
 }

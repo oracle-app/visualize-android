@@ -11,7 +11,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class LogoutUseCase @Inject constructor(
-    private val repository: AuthRepository
+    private val authRepository: AuthRepository
 ) {
-    operator fun invoke() = repository.logout()
+    operator fun invoke() = authRepository.logout()
 }
