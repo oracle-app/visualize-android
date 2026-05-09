@@ -8,6 +8,7 @@ import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
+import com.oracle.visualize.data.mapper.toVisualizationDTO
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.repositories.VisualizationRepository
@@ -145,6 +146,11 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
 
         return allTeams
+    }
+
+    override suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
+        val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
+        visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
     }
     override suspend fun deleteVisualization(visualizationID: String) {
         visualizationDataSource.deleteVisualization(visualizationID)
