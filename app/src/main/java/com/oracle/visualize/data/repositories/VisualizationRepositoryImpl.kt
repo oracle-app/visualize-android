@@ -152,6 +152,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
         visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
     }
+
     override suspend fun deleteVisualization(visualizationID: String) {
         visualizationDataSource.deleteVisualization(visualizationID)
     }
@@ -164,17 +165,11 @@ class VisualizationRepositoryImpl @Inject constructor(
         visualizationDataSource.shareVisualizationWithTeams(visualizationID, teamIDs)
     }
 
-    override suspend fun deleteUsersAccessToVisualization(
-        visualizationID: String,
-        userIDs: List<String>
-    ) {
+    override suspend fun deleteUsersAccessToVisualization(visualizationID: String, userIDs: List<String>) {
         visualizationDataSource.deleteUsersAccessToVisualization(visualizationID, userIDs)
     }
 
-    override suspend fun deleteTeamsAccessToVisualization(
-        visualizationID: String,
-        teamIDs: List<String>
-    ) {
+    override suspend fun deleteTeamsAccessToVisualization(visualizationID: String, teamIDs: List<String>) {
         visualizationDataSource.deleteTeamsAccessToVisualization(visualizationID, teamIDs)
     }
 }

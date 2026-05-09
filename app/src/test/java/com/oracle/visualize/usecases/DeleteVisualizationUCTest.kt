@@ -1,7 +1,6 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.domain.usecases.DeleteVisualizationUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
@@ -44,6 +43,7 @@ class DeleteVisualizationUCTest {
     fun `return success when deleting a visualization with valid ID`() = runTest {
         // Given
         val visualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID
+        coEvery { visualizationRepository.deleteVisualization(visualizationID) } returns Unit
 
         // When
         val result = deleteVisualization(visualizationID)
@@ -51,5 +51,33 @@ class DeleteVisualizationUCTest {
         // Then
         assertTrue(result.isSuccess)
         coVerify(exactly = 1) { visualizationRepository.deleteVisualization(visualizationID) }
+    }
+
+    @Test
+    fun `return success when deleting a visualization with invalid ID`() = runTest {
+        // Given
+        val visualizationID = ""
+
+        // When
+        val result = deleteVisualization(visualizationID)
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+    }
+
+    @Test
+    fun `return failure when an exception is thrown`() = runTest {
+        // Given
+        val visualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID
+        val exception = Exception("Network Error")
+        coEvery { visualizationRepository.deleteVisualization(visualizationID) } throws exception
+
+        // When
+        val result = deleteVisualization(visualizationID)
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is Exception)
     }
 }

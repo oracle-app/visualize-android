@@ -30,14 +30,6 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserByUserID(userId: String): User {
-        return userDatasource.getUserByID(userId).toDomain()
-    }
-
-    override suspend fun getTeamsIntegratedByUser(userId: String): List<Team> {
-        return userDatasource.getTeamsIntegratedByUser(userId).map { it.toDomain() }
-    }
-
     override suspend fun hideVisualization(userId: String, visualizationId: String) {
         return userDatasource.hideVisualization(userId, visualizationId)
     }
