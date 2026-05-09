@@ -3,6 +3,7 @@ package com.oracle.visualize.presentation.screens.feedScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,28 +76,32 @@ fun FeedPage(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-                is FeedUiState.Success ->{
-                    if (state.items.isEmpty()){
-                        Text(
-                            text = stringResource(R.string.error_not_found),
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                    else {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp)
-                        ){
+                is FeedUiState.Success -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(22.dp))
+                            SearchSection(
+                                text = state.searchText,
+                                onTextChange = { feedViewModel.onSearchTextChange(it) }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                        if (state.items.isEmpty()) {
                             item {
-                                Spacer(modifier = Modifier.height(22.dp))
-                                SearchSection(
-                                    text = state.searchText,
-                                    onTextChange = { feedViewModel.onSearchTextChange(it) }
+                                Text(
+                                    text = stringResource(R.string.error_not_found),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp),
+                                    textAlign = TextAlign.Center
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
+                        } else {
                             items(
                                 items = state.items,
                                 key = { it.id }
@@ -105,13 +111,14 @@ fun FeedPage(
                                     onClick = { onVisualizationClick(item.id) }
                                 )
                             }
-                            item {
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
-                    }
+                }
                 }
             }
         }
     }
+
