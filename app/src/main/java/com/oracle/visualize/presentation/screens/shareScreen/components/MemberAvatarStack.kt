@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,7 +54,7 @@ fun MemberAvatarStack(
                     modifier = Modifier
                         .offset(x = AVATAR_OFFSET * index)
                         .requiredSize(AVATAR_SIZE)
-                        .border(BorderStroke(1.dp, Color.White), CircleShape)
+                        .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape)
                 ) {
                     members.getOrNull(index)?.let { user ->
                         UserAvatar(
@@ -72,15 +73,15 @@ fun MemberAvatarStack(
                     .requiredSize(AVATAR_SIZE)
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) Color.White.copy(alpha = 0.25f) else Color.White
+                        if (isSelected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.25f) else MaterialTheme.colorScheme.onPrimary
                     )
-                    .border(BorderStroke(1.dp, Color.White), CircleShape),
+                    .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "+$extraCount",
                     style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                    color = if (isSelected) Color.White else Color.DarkGray
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
