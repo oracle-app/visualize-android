@@ -99,6 +99,34 @@
     <string name="input_email">Enter email</string>
 
 
+    // Teams Screen
+
+    <string name="teams_title">Teams</string>
+    <string name="teams_my_teams_section">My Teams</string>
+    <string name="teams_im_in_section">Teams I\'m In</string>
+    <string name="teams_member_count">%d members</string>
+    <string name="teams_empty_my_teams">You haven\'t created any teams yet.</string>
+    <string name="teams_empty_im_in">You\'re not part of any teams yet.</string>
+    <string name="teams_create_fab_description">Create team</string>
+    <string name="teams_edit_description">Edit</string>
+    <string name="teams_delete_description">Delete</string>
+    <string name="teams_owner_label">owner</string>
+    <string name="teams_retry">Retry</string>
+
+    // Create/Edit Team Screen
+
+    <string name="create_team_title">Create New Team</string>
+    <string name="edit_team_title">Edit Your Team</string>
+    <string name="create_team_name_placeholder">Team\'s Name</string>
+    <string name="create_team_add_people_section">Add people to your team</string>
+    <string name="create_team_search_placeholder">Search by email</string>
+    <string name="edit_team_search_placeholder">Add more people</string>
+    <string name="create_team_suggestions_section">People in the same teams as you</string>
+    <string name="create_team_member_list_section">Member List</string>
+    <string name="create_team_save_description">Save team</string>
+    <string name="create_team_remove_member_description">Remove</string>
+    <string name="create_team_name_error">Team name cannot be empty</string>
+
     // Errors
 
 
@@ -119,7 +147,7 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="licenses">Licenses and open source libraries</string>
 
-        // Descriptions
+    // Descriptions
 
     <string name="edit_image_description">Edit Profile Image</string>
     <string name="profile_img_description">Profile Image</string>
