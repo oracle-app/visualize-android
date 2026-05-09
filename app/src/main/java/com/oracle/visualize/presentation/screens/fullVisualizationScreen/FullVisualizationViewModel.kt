@@ -60,6 +60,7 @@ class FullVisualizationViewModel @Inject constructor(
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
+                // TODO: The use of mockdata will no longer be supported. The chart object must be obtained from the DB
                 val mockChart = null
                     _uiState.update {
                         it.copy(

@@ -1,18 +1,15 @@
 package com.oracle.visualize.data.mapper
 
-import com.oracle.visualize.data.datasources.dtos.ChartDTO
 import com.oracle.visualize.domain.models.*
 import com.oracle.visualize.domain.models.enums.ChartTypes
 
 /**
- * Extension function to map [ChartDTO] to [Chart] domain model, returning a specific
+ * Extension function to parse JSON in the DB to [Chart] domain model, returning a specific
  * chart implementation based on its type.
  *
  * @return A [Chart] object.
  */
 import org.json.JSONObject
-import com.oracle.visualize.domain.models.*
-
 object ChartMapper {
 
     fun fromPreviewJson(previewJson: String): Chart<*>? {
