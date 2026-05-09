@@ -125,6 +125,20 @@ class DeleteUsersAccessToVisualizationUCTest {
     }
 
     @Test
+    fun `return failure when visualizationID is valid, but the userIDs list is empty`() = runTest {
+        // Given
+        val visualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID
+        val userIDs = emptyList<String>()
+
+        // When
+        val result = deleteUsersAccessToVisualization(visualizationID, userIDs)
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+    }
+
+    @Test
     fun `return failure when an exception is thrown`() = runTest {
         // Given
         val visualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID

@@ -125,6 +125,20 @@ class DeleteTeamsAccessToVisualizationUCTest {
     }
 
     @Test
+    fun `return failure when visualizationID is valid, but teamIDs list is empty`() = runTest {
+        // Given
+        val visualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID
+        val teamIDs = emptyList<String>()
+
+        // When
+        val result = deleteTeamsAccessToVisualization(visualizationID, teamIDs)
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+    }
+
+    @Test
     fun `return failure when an exception is thrown`() = runTest {
         // Given
         val visualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID
