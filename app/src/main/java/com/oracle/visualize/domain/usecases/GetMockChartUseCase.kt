@@ -20,10 +20,8 @@ class GetMockChartUseCase @Inject constructor(
     suspend operator fun invoke(chartType: ChartTypes): Result<Chart<*>> {
         return try {
             Result.success(chartRepository.getMockChart(chartType))
-        } catch (ex: AppError.NetworkError) {
-            Result.failure(AppError.NetworkError("Could not get the mock chart"))
-        } catch (ex: AppError.UnavailableMockData) {
-            Result.failure(AppError.UnavailableMockData("Mock data for ${chartType.typeName} chart is not supported"))
+        } catch (ex: Exception) {
+            Result.failure(ex)
         }
     }
 }
