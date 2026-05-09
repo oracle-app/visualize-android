@@ -202,4 +202,21 @@ class VisualizationDatasource @Inject constructor(
             throw AppError.NetworkError("Failed to publish visualizations: ${ex.message}")
         }
     }
+
+    /**
+     * Permanently deletes a visualization document from Firestore.
+     *
+     * @param visualizationId The unique ID of the visualization to delete.
+     * @throws AppError.NetworkError If the operation fails.
+     */
+    suspend fun deleteVisualization(visualizationId: String) {
+        try {
+            visualizationsRef.document(visualizationId).delete().await()
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to delete visualization: ${ex.message}")
+        }
+    }
 }
+
+
