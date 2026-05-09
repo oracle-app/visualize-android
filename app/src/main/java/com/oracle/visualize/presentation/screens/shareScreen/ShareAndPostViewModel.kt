@@ -1,13 +1,16 @@
 package com.oracle.visualize.presentation.screens.shareScreen
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +29,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ShareAndPostViewModel @Inject constructor(
     private val teamRepository: TeamRepository,
-    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase
+    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
@@ -77,9 +81,9 @@ class ShareAndPostViewModel @Inject constructor(
             } catch (e: Exception) {
                 // Translates technical error
                 val errorMessage = when (e) {
-                    is AppError.NetworkError -> "Connection error. Please check your internet."
-                    is AppError.ParsingError -> "There was a problem reading your teams."
-                    else -> "Failed to load data. Please try again."
+                    is AppError.NetworkError -> context.getString(R.string.error_network)
+                    is AppError.ParsingError -> context.getString(R.string.error_parsing)
+                    else -> context.getString(R.string.error_unknown_retry)
                 }
 
                 Log.e("ShareAndPostViewModel", "Failed to load initial data", e)

@@ -1,11 +1,14 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +24,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
@@ -55,10 +59,10 @@ class FullVisualizationViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     val uiErrorMessage = when (error) {
-                        is AppError.NetworkError -> "Connection error. Please check your internet."
-                        is AppError.ParsingError -> "There was a problem reading this visualization."
-                        is AppError.NotFound -> "Visualization not found."
-                        else -> "An unexpected error occurred. Please try again,."
+                        is AppError.NetworkError -> context.getString(R.string.error_network)
+                        is AppError.ParsingError -> context.getString(R.string.error_parsing)
+                        is AppError.NotFound     -> context.getString(R.string.error_not_found)
+                        else                     -> context.getString(R.string.error_unknown_retry)
                     }
 
                     _uiState.update {

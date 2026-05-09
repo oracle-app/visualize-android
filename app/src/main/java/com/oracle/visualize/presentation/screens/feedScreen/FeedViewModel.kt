@@ -1,13 +1,16 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,11 +26,12 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(FeedUIState())
-    val uiState: StateFlow<FeedUIState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
+    val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
     private var allVisualizations: List<VisualizationCard> = emptyList()
     // TODO: Get from Auth Repository
@@ -43,7 +47,7 @@ class FeedViewModel @Inject constructor(
         }
 
         if (allVisualizations.isEmpty()) {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.value = FeedUiState.Loading
         }
 
         viewModelScope.launch {
@@ -55,24 +59,26 @@ class FeedViewModel @Inject constructor(
                 onFailure = { error ->
                     allVisualizations = emptyList()
                     val uiErrorMessage = when (error) {
-                        is AppError.NetworkError -> "Connection error. Please check your internet."
-                        is AppError.ParsingError -> "There was a problem reading some visualizations."
-                        is AppError.NotFound -> "No visualizations found."
-                        else -> "An unexpected error occurred. Please try again."
+                        is AppError.NetworkError -> context.getString(R.string.error_network)
+                        is AppError.ParsingError -> context.getString(R.string.error_parsing)
+                        is AppError.NotFound     -> context.getString(R.string.error_not_found)
+                        else                     -> context.getString(R.string.error_unknown_retry)
                     }
                     Log.e("FeedViewModel", "Error fetching visualizations: ${error.message}", error)
-                    _uiState.update {
-                        it.copy(isLoading = false, items = emptyList(), errorMessage = uiErrorMessage)
-                    }
+                    _uiState.value = FeedUiState.Error(uiErrorMessage)
                 }
             )
         }
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
-        if (_uiState.value.selectedFilter == filter) return
+        val currentState = _uiState.value
+        if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
 
-        _uiState.update { it.copy(selectedFilter = filter) }
+        _uiState.value = when (currentState) {
+            is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
+            else -> currentState
+        }
 
         if (allVisualizations.isNotEmpty()) {
             applyLocalFilterAndSearch()
@@ -81,13 +87,19 @@ class FeedViewModel @Inject constructor(
         }
     }
     fun onSearchTextChange(newText: String) {
-        _uiState.update { it.copy(searchText = newText) }
+        val currentState = _uiState.value
+        if(currentState is FeedUiState.Success){
+            _uiState.value = currentState.copy(searchText = newText)
+        }
         applyLocalFilterAndSearch()
     }
 
     private fun applyLocalFilterAndSearch() {
-        val filter = _uiState.value.selectedFilter
-        val search = _uiState.value.searchText
+        val currentState = _uiState.value
+        val filter = if (currentState is FeedUiState.Success)
+            currentState.selectedFilter else VisualizationFilter.ALL
+        val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
+
 
         var filteredItems = when (filter) {
             VisualizationFilter.ALL -> allVisualizations
@@ -101,12 +113,10 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        _uiState.update {
-            it.copy(
-                items = filteredItems,
-                isLoading = false,
-                errorMessage = null
-            )
-        }
+        _uiState.value = FeedUiState.Success(
+            items = filteredItems,
+            searchText = search,
+            selectedFilter = filter
+        )
     }
 }

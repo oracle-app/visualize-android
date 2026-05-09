@@ -116,6 +116,10 @@
     <string name="error_unknown">Unknown</string>
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
+    <string name="error_network">Connection error. Please check your internet.</string>
+    <string name="error_parsing">There was a problem reading some visualizations.</string>
+    <string name="error_not_found">No visualizations found.</string>
+    <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>
