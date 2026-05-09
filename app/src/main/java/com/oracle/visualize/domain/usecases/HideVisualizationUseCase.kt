@@ -19,7 +19,7 @@ class HideVisualizationUseCase @Inject constructor(
         return try {
             Result.success(userRepository.hideVisualization(userId, visualizationId))
         } catch (ex: Exception) {
-            Result.failure(AppError.NetworkError("Failed to hide visualization"))
+            Result.failure(ex)
         }
     }
 }

@@ -33,7 +33,7 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
             visualizationRepository.publishVisualizationsInBulk(validVisualizations)
             Result.success(Unit)
         } catch (ex: Exception) {
-            Result.failure(AppError.NetworkError("Failed to publish visualizations"))
+            Result.failure(ex)
         }
     }
 }

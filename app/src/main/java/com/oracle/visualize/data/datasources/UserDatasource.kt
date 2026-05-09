@@ -87,12 +87,18 @@ class UserDatasource @Inject constructor(
 
     suspend fun hideVisualization(userId: String, visualizationId: String) {
         try {
-            val user = firestore.collection("users")
-                .document(userId)
-                .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
-                .await()
+            val user = firestore.collection("users").document(userId)
+            val userExists = user.get().await().exists()
+            if (!userExists) throw AppError.NotFound("User not found in DB")
+
+            val visualization = firestore.collection("visualizations").document(visualizationId)
+            val visualizationExists = visualization.get().await().exists()
+            if (!visualizationExists) throw AppError.NotFound("Visualization not found in DB")
+
+            user.update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId)).await()
         } catch(e: Exception) {
-            throw e
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Error hiding visualization from user: ${e.message}")
         }
     }
 }

@@ -23,7 +23,7 @@ class ShareVisualizationWithUsersUseCase @Inject constructor(
         return try {
             Result.success(visualizationRepository.shareVisualizationWithUsers(visualizationID, filterUserIDs))
         } catch (ex: Exception) {
-            Result.failure(AppError.NetworkError("Failed to share visualizations with users."))
+            Result.failure(ex)
         }
     }
 }

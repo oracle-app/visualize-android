@@ -17,7 +17,7 @@ class DeleteVisualizationUseCase @Inject constructor(
         return try {
             Result.success(visualizationRepository.deleteVisualization(visualizationID))
         } catch (ex: Exception) {
-            Result.failure(AppError.NetworkError("Failed to delete visualization"))
+            Result.failure(ex)
         }
     }
 }

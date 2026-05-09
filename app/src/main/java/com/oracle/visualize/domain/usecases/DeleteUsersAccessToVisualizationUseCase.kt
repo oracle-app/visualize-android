@@ -22,7 +22,7 @@ class DeleteUsersAccessToVisualizationUseCase @Inject constructor(
         return try {
             Result.success(visualizationRepository.deleteUsersAccessToVisualization(visualizationID, filterUserIDs))
         } catch (ex: Exception) {
-            Result.failure(AppError.NetworkError("Failed to delete users access to visualization"))
+            Result.failure(ex)
         }
     }
 }

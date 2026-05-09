@@ -51,7 +51,7 @@ class DeleteVisualizationUCTest {
     }
 
     @Test
-    fun `return success when deleting a visualization with invalid ID`() = runTest {
+    fun `return failure when deleting a visualization with invalid ID`() = runTest {
         // Given
         val visualizationID = ""
 
