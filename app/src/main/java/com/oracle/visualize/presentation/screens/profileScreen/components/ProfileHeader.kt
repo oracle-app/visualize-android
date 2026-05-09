@@ -35,8 +35,9 @@ fun ProfileHeader(
     modifier: Modifier = Modifier,
     userName: String,
     email: String,
-    profileImageUrl: String,
-    onEditClick: () -> Unit
+    profileImageUrl: Any,
+    onEditClick: () -> Unit,
+    preview: Boolean = false
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -58,38 +59,42 @@ fun ProfileHeader(
 
             Log.d("ProfileHeader", "Image URL received: $profileImageUrl")
 
-            OutlinedIconButton(
-                onClick = onEditClick,
-                modifier = Modifier
-                    .size(48.dp)
-                    .offset(x = (-6).dp, y = (-6).dp),
-                colors = IconButtonDefaults.outlinedIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(R.string.edit_image_description)
-                )
+            if (!preview) {
+                OutlinedIconButton(
+                    onClick = onEditClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .offset(x = (-6).dp, y = (-6).dp),
+                    colors = IconButtonDefaults.outlinedIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = stringResource(R.string.edit_image_description)
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (!preview) {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = userName,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
+            Text(
+                text = userName,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-        Text(
-            text = email,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+            Text(
+                text = email,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
     }
 }

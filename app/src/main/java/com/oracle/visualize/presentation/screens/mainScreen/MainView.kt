@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.mainScreen
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -16,11 +17,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
+import com.oracle.visualize.presentation.screens.SnippingTool.SnippingToolView
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
+import androidx.core.net.toUri
 
 
 /**
@@ -118,6 +121,16 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                     navController.popBackStack()
                 },
                 onThreadsClick = {
+                }
+            )
+        }
+
+        composable<NavRoutes.SnippingTool> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.SnippingTool>()
+            SnippingToolView(
+                imageUri = route.imageUri.toUri(),
+                onDone = { resultUri ->
+                    navController.popBackStack()
                 }
             )
         }

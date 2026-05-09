@@ -19,6 +19,7 @@ import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -27,6 +28,10 @@ class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    //This is a PLACEHOLDER uid due to a current lack of  login implementation,
+    //replace later with FirebaseAuth.getInstance().currentUser?.uid
+    private val uid = "oEJtQz0gdbRpTZ8ETPCy"
+
 
 
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
@@ -34,14 +39,7 @@ class ProfileViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user
 
-    var selectedPalette by mutableStateOf(ChartPalette.THEME1)
-        private set
-
     suspend fun fetchUserData(): Result<Unit> {
-
-        //This is a PLACEHOLDER uid, replace in implementation with a Firebase get current user.
-
-        val uid = "4HgGnKxDgthKf6GuQZqF1NGqP133"
 
         if (uid == null) {
             return Result.failure(AppError.AuthFailed())
@@ -81,8 +79,15 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun onPaletteChange(palette: ChartPalette) {
-        selectedPalette = palette
+    fun setChartTheme(selectedPalette: String) {
+        viewModelScope.launch {
+            userRepository.setChartTheme(uid, selectedPalette)
+            _uiState.update { current ->
+                if (current is ProfileUiState.Ready) {
+                    current.copy(chartTheme = selectedPalette)
+                } else current
+            }
+        }
     }
 
     fun setUiState() {
@@ -94,14 +99,20 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun setPfpUpload() {
+    fun setPfpUploadUi() {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.PfpUpload()
         }
     }
 
-    fun onPfpCaptured(uri: Uri) {
+    fun setPfpCapturedValue(uri: Uri) {
         _uiState.value = ProfileUiState.PfpUpload(pfp = uri)
+    }
+
+    fun updatePfp(url: String) {
+        viewModelScope.launch {
+            userRepository.setProfilePicture(uid, url)
+        }
     }
 
     init {

@@ -8,10 +8,12 @@ import javax.inject.Inject
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toShareUser
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.tasks.await
 
 /**
  * Implementation of [UserRepository] to manage user-specific data.
@@ -39,8 +41,16 @@ class UserRepositoryImpl @Inject constructor(
         return userDatasource.getTeamsIntegratedByUser(userId).map { it.toDomain() }
     }
 
-    override suspend fun setProfilePicture(userId: String, uri: Uri): Boolean {
-        return userDatasource.setProfilePicture(userId, uri)
+    override suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
+        return uploadProfilePicture(userID, uri)
+    }
+
+    override suspend fun setProfilePicture(userId: String, url: String): Boolean {
+        return userDatasource.setProfilePicture(userId, url)
+    }
+
+    override suspend fun setChartTheme(userId: String, selectedPalette: String): Boolean {
+        return userDatasource.setChartTheme(userId, selectedPalette)
     }
 }
 

@@ -93,30 +93,49 @@ class UserDatasource @Inject constructor(
         }
     }
 
-    // SETTER FUNCTIONS FOR UPLOADS
+    // UPLOAD FUNCTIONS
 
-    suspend fun setProfilePicture(userID: String, uri: Uri): Boolean {
+    // This function uploads an image in Uri format and returns the upload URL.
+
+    suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
         return try {
-            // Raw image is uploaded to Firebase storage
-
             val storageRef = storage.reference.child("users/$userID/profilePicture")
             storageRef.putFile(uri).await()
 
-            // Fetch the uploaded image's URL
+            storageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Error uploading profile picture: ${e.message}")
+        }
+    }
 
-            val downloadUrl = storageRef.downloadUrl.await().toString()
+    // This function uses the uid to update the user's profile picture URL with a new value.
 
-            // Url is sent to replace user's current pfp URL
-
+    suspend fun setProfilePicture(userID: String, url: String): Boolean {
+        return try {
             firestore.collection("users")
                 .document(userID)
-                .update("profilePictureURL", downloadUrl)
+                .update("profilePictureURL", url)
                 .await()
 
             true
         } catch (e: Exception) {
             if (e is AppError) throw e
-            throw AppError.NetworkError("Error updating profile picture: ${e.message}")
+            throw AppError.NetworkError("Error setting profile picture URL: ${e.message}")
+        }
+    }
+
+    suspend fun setChartTheme(userID: String, selectedPalette: String): Boolean {
+        return try {
+            firestore.collection("users")
+                .document(userID)
+                .update("chartTheme", selectedPalette)
+                .await()
+
+            true
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Error setting Chart Theme: ${e.message}")
         }
     }
 

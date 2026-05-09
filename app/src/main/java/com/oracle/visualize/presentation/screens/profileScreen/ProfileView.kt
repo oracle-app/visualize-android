@@ -1,6 +1,10 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -39,7 +43,13 @@ import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeI
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
 import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.oracle.visualize.presentation.navigation.NavRoutes
+import com.oracle.visualize.presentation.screens.profileScreen.components.ChartThemePicker
+import com.yalantis.ucrop.UCrop
+import java.io.File
 import kotlin.let
 
 
@@ -51,18 +61,46 @@ fun ProfilePage(
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
 
-    // EDIT THIS LATER TO ASSIGN THE TAKEN IMAGE TO AN EMPTY VALUE IN VIEWMODEL
-
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        bitmap?.let { null }
-    }
-
     // This is where the UI state is fetched.
 
     val context = LocalContext.current
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // EDIT THIS LATER TO ASSIGN THE TAKEN IMAGE TO AN EMPTY VALUE IN VIEWMODEL
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            profileViewModel.setPfpUploadUi()
+            imageUri?.let { profileViewModel.setPfpCapturedValue(it) }
+        }
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            profileViewModel.setPfpUploadUi()
+            profileViewModel.setPfpCapturedValue(it)
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            imageUri?.let { cameraLauncher.launch(it) }
+        }
+    }
+
+    val uCropLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val resultUri = UCrop.getOutput(result.data!!)
+        resultUri?.let { profileViewModel.setPfpCapturedValue(it) }
+    }
 
     // This is where the page fetches the current app version.
 
@@ -73,58 +111,46 @@ fun ProfilePage(
             .versionName ?: unknown
         }
 
-    val selectedPalette = profileViewModel.selectedPalette
-
-    // Background Image Setup
-
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.profilebgtransparent),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            alignment = Alignment.TopCenter,
-            contentScale = ContentScale.FillBounds
-        )
-
-        // Page content starts here.
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-
-            // Check view model, decide if to draw or not.
-
-            when (val state = uiState) {
-                is ProfileUiState.Idle -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        when (val state = uiState) {
+            is ProfileUiState.Idle -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-                is ProfileUiState.Ready -> {
+            }
+            is ProfileUiState.Ready -> {
 
-                    //Spacer at top of the page.
+                // Background Image Setup
+                Image(
+                    painter = painterResource(id = R.drawable.profilebgtransparent),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp),
+                    alignment = Alignment.TopCenter,
+                    contentScale = ContentScale.FillBounds
+                )
 
+                // Page content starts here.
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                ) {
                     Spacer(modifier = Modifier.height(98.dp))
 
-                    // Profile picture, username and email.
-
                     var expanded by remember { mutableStateOf(false) }
-                    val readyState = uiState as? ProfileUiState.Ready
 
                     Box {
                         ProfileHeader(
-                            userName = readyState?.username ?: "",
-                            email = readyState?.eMail ?: "",
-                            profileImageUrl = readyState?.image ?: "",
+                            userName = state.username,
+                            email = state.eMail,
+                            profileImageUrl = state.image,
                             onEditClick = { expanded = true }
                         )
 
@@ -132,58 +158,45 @@ fun ProfilePage(
                             expanded = expanded,
                             onDismiss = { expanded = false },
                             items = listOf(
-                                stringResource(R.string.take_photo) to { cameraLauncher.launch(null) },
-                                stringResource(R.string.choose_photo) to { /* launch gallery */ },
+                                stringResource(R.string.take_photo) to {
+
+                                    // Creates a temporary cache file to store the captured image.
+
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        File.createTempFile("photo_", ".jpg", context.cacheDir)
+                                    )
+
+
+                                    imageUri = uri
+                                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                                        == PackageManager.PERMISSION_GRANTED) {
+                                        cameraLauncher.launch(uri)
+                                    } else {
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+
+
+                                },
+                                stringResource(R.string.choose_photo) to {
+                                    galleryLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                },
                                 stringResource(R.string.delete_photo) to { /* delete pfp */ }
                             )
                         )
                     }
 
-                    // Spacer between profile header and cards.
-
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Chart theme selector.
-
-                    SettingsCard(title = stringResource(R.string.chart_theme_title)) {
-
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                                ThemeItem(
-                                    palette = ChartPalette.THEME1,
-                                    isSelected = selectedPalette == ChartPalette.THEME1,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME1) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                ThemeItem(
-                                    palette = ChartPalette.THEME2,
-                                    isSelected = selectedPalette == ChartPalette.THEME2,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME2) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                                ThemeItem(
-                                    palette = ChartPalette.THEME3,
-                                    isSelected = selectedPalette == ChartPalette.THEME3,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME3) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                ThemeItem(
-                                    palette = ChartPalette.THEME4,
-                                    isSelected = selectedPalette == ChartPalette.THEME4,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME4) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
-                    }
-
-                    // 4 dp spacer.
+                    ChartThemePicker(
+                        selectedPalette = state.chartTheme,
+                        onPaletteChange = { profileViewModel.setChartTheme(it) }
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
-
-                    // "About app" card.
 
                     SettingsCard(title = stringResource(R.string.about_title)) {
                         Text(
@@ -198,11 +211,7 @@ fun ProfilePage(
                         )
                     }
 
-                    //Spacer between about and logout button.
-
                     Spacer(modifier = Modifier.height(64.dp))
-
-                    // Logout button, logic not yet implemented
 
                     OutlinedButton(
                         onClick = { },
@@ -222,12 +231,64 @@ fun ProfilePage(
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
+                }
+            }
+            is ProfileUiState.PfpUpload -> {
 
+                Column{
+                    ProfileHeader(
+                        userName = "",
+                        email = "",
+                        profileImageUrl = state.pfp ?: "",
+                        onEditClick = {}
+                    )
+
+                    OutlinedButton(
+                        onClick = {
+                            state.pfp?.let { pfp ->
+                                navController.navigate(NavRoutes.SnippingTool(imageUri = pfp.toString()))
+                            }
+                        },
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 48.dp)
+                            .height(64.dp)
+                    ) {
+                        Text(
+                            text = "Edit photo",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = { },
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 48.dp)
+                            .height(64.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.log_out),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 }
 
-                else -> {}
             }
 
+            else -> {}
         }
     }
 }

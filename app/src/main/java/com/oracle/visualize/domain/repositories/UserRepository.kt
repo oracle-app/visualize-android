@@ -13,6 +13,10 @@ interface UserRepository {
     suspend fun getTeamsIntegratedByUser(userId: String): List<Team>
     suspend fun getUserSuggestionsByEmail(email: String): List<ShareUser>
 
-    suspend fun setProfilePicture(userID: String, uri: Uri): Boolean
+    suspend fun uploadProfilePicture(userID: String, uri: Uri): String
+
+    suspend fun setProfilePicture(userID: String, url: String): Boolean
+
+    suspend fun setChartTheme(userID: String, url: String): Boolean
 
 }
