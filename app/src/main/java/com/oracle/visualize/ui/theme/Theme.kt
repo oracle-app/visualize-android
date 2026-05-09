@@ -25,6 +25,12 @@ private val DarkColorScheme = darkColorScheme(
     secondaryContainer = Color.Transparent,
     onSecondaryContainer = DarkMode_NotAsLightGray,
 
+    tertiaryContainer = DarkMode_NotAsLightOrange,
+    onTertiaryContainer = DarkMode_LightOrange,
+
+    tertiary = DarkMode_GreyishBlue,
+    onTertiary = DarkMode_LightGreyishBlue,
+
     background = DarkMode_Background,
     onBackground = DarkMode_NotAsLightGray,
     surface = DarkMode_Background,
@@ -51,6 +57,12 @@ private val LightColorScheme = lightColorScheme(
 
     secondaryContainer = White,
     onSecondaryContainer = NotAsLightGray,
+
+    tertiaryContainer = NotAsLightOrange,
+    onTertiaryContainer = LightOrange,
+
+    tertiary = GreyishBlue,
+    onTertiary = LightGreyishBlue,
 
     background = VeryLightGray,
     onBackground = NotAsLightGray,

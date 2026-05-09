@@ -21,6 +21,7 @@ import com.oracle.visualize.presentation.components.mockVerticalChart
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material.icons.filled.Crop
 import androidx.compose.ui.draw.clipToBounds
 
 /**
@@ -62,7 +63,7 @@ fun FullVisualizationPage(
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.CropFree,
+                        imageVector = Icons.Filled.Crop,
                         contentDescription = stringResource(R.string.snipping_tool)
                     )
                 }
