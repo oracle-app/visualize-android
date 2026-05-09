@@ -18,4 +18,10 @@ interface VisualizationRepository {
     suspend fun getSharedVisualizations(userID: String): List<VisualizationCard>
     suspend fun getPersonalVisualizations(userID: String): List<VisualizationCard>
     suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>)
+
+    /** Permanently deletes a visualization and removes it from every recipient's feed. */
+    suspend fun deleteVisualizationForEveryone(visualizationId: String)
+
+    /** Hides a visualization from the current user's feed without deleting it. */
+    suspend fun hideVisualizationForMe(userID: String, visualizationId: String)
 }
