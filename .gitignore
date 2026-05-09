@@ -1,7 +1,6 @@
 *.iml
 .idea/
 .gradle
-.kotlin
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -15,5 +14,8 @@
 .externalNativeBuild
 .cxx
 local.properties
-.kotlin/
+
+# JVM crash logs
 *.log
+hs_err_pid*.log
+replay_pid*.log
