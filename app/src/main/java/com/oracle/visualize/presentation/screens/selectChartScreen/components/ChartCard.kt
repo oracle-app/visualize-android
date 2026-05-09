@@ -54,9 +54,9 @@ fun ChartCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(topBottomBackground)
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = visualization.title,
@@ -67,6 +67,7 @@ fun ChartCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 IconButton(
                     onClick = onEditTitle,
                     modifier = Modifier.size(24.dp)

@@ -1,13 +1,16 @@
 package com.oracle.visualize.presentation.screens.selectChartScreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,7 +26,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -46,13 +51,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
 import com.oracle.visualize.ui.theme.ErrorRed
-
+import com.oracle.visualize.ui.theme.LighterBlue
 
 /**
  * Screen for selecting visualizations to post or share.
  *
  * @param onBack Callback to navigate back.
  * @param onNavigateToShare Callback to navigate to the share screen.
+ * @param onNavigateToFeed Callback to navigate to the feed screen.
  * @param viewModel The [SelectChartViewModel] that manages chart selections.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +66,7 @@ import com.oracle.visualize.ui.theme.ErrorRed
 fun ChartSelectionPage(
     onBack: () -> Unit,
     onNavigateToShare: () -> Unit,
+    onNavigateToFeed: () -> Unit,
     viewModel: SelectChartViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,6 +74,16 @@ fun ChartSelectionPage(
     var tempTitle by remember { mutableStateOf("") }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // Intercept the system back gesture to show unsaved-changes dialog when needed
+    BackHandler {
+        val state = uiState
+        if (state is ChartSelectionUiState.Success && state.hasTitleChanges) {
+            viewModel.showUnsavedChangesDialog(true)
+        } else {
+            onBack()
+        }
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -76,161 +93,255 @@ fun ChartSelectionPage(
                     Text(
                         text = stringResource(R.string.chart_selection_title),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = Color.Black
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.icon_back))
+                    IconButton(
+                        onClick = {
+                            val state = uiState
+                            if (state is ChartSelectionUiState.Success && state.hasTitleChanges) {
+                                viewModel.showUnsavedChangesDialog(true)
+                            } else {
+                                onBack()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.icon_back),
+                            tint = Color.Black
+                        )
                     }
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = LighterBlue,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black
                 )
             )
         },
-    ) { paddingValues ->
-        when (val state = uiState) {
-            is ChartSelectionUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            is ChartSelectionUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.message, color = ErrorRed)
-                }
-            }
-            is ChartSelectionUiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
+        bottomBar = {
+            if (uiState is ChartSelectionUiState.Success) {
+                Surface(
+                    color = LighterBlue,
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp
                 ) {
-                    item {
-                        Column(
+                    Row(
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = onNavigateToFeed,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.primary)
-                                .padding(16.dp)
+                                .weight(1f)
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                            ),
+                            shape = RoundedCornerShape(28.dp),
+                            enabled = viewModel.hasSelections()
                         ) {
                             Text(
-                                text = stringResource(R.string.chart_selection_ready_title),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold,
+                                text = stringResource(R.string.chart_selection_post_personal),
+                                color = Color.White,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = onNavigateToShare,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                            ),
+                            shape = RoundedCornerShape(28.dp),
+                            enabled = viewModel.hasSelections()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.chart_selection_share_and_post),
+                                color = Color.White,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        containerColor = LighterBlue
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when (val state = uiState) {
+                is ChartSelectionUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                is ChartSelectionUiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = state.message, color = ErrorRed)
+                    }
+                }
+                is ChartSelectionUiState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = SelectChartMockData.READY_TITLE,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = SelectChartMockData.READY_SUBTITLE,
+                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+
+                        item {
+                            Text(
+                                text = SelectChartMockData.SELECTION_PROMPT,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontSize = 14.sp
                             )
-                            Text(
-                                text = stringResource(R.string.chart_selection_ready_subtitle),
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-                                fontSize = 12.sp
-                            )
                         }
-                    }
 
-                    item {
-                        Text(
-                            text = stringResource(R.string.chart_selection_prompt),
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 14.sp
-                        )
-                    }
-
-                    items(state.charts) { selection ->
-                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            ChartCard(
-                                visualization = selection.visualization,
-                                isSelected = selection.isSelected,
-                                onSelect = { viewModel.toggleSelection(selection.visualization.id) },
-                                onEditTitle = {
-                                    tempTitle = selection.visualization.title
-                                    showEditDialog = selection.visualization.id
-                                }
-                            )
-                        }
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Button(
-                                onClick = {},
-                                modifier = Modifier.weight(1f).height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                                shape = RoundedCornerShape(8.dp),
-                                enabled = viewModel.hasSelections()
-                            ) {
-                                Text(stringResource(R.string.chart_selection_post_personal), color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
-                            }
-
-                            Button(
-                                onClick = onNavigateToShare,
-                                modifier = Modifier.weight(1f).height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                                shape = RoundedCornerShape(8.dp),
-                                enabled = viewModel.hasSelections()
-                            ) {
-                                Text(stringResource(R.string.chart_selection_share_and_post), color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
+                        items(
+                            items = state.charts,
+                            key = { it.visualization.id }
+                        ) { selection ->
+                            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                ChartCard(
+                                    visualization = selection.visualization,
+                                    isSelected = selection.isSelected,
+                                    onSelect = { viewModel.toggleSelection(selection.visualization.id) },
+                                    onEditTitle = {
+                                        tempTitle = selection.visualization.title
+                                        showEditDialog = selection.visualization.id
+                                    }
+                                )
                             }
                         }
                     }
-                }
-
-                if (showEditDialog != null) {
-                    AlertDialog(
-                        onDismissRequest = { showEditDialog = null },
-                        title = { Text(stringResource(R.string.dialog_edit_title), fontWeight = FontWeight.Bold) },
-                        text = {
-                            OutlinedTextField(
-                                value = tempTitle,
-                                onValueChange = { tempTitle = it },
-                                label = { Text(stringResource(R.string.dialog_edit_title_label)) },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                showEditDialog?.let { viewModel.updateChartTitle(it, tempTitle) }
-                                showEditDialog = null
-                            }) {
-                                Text(stringResource(R.string.confirm), color = MaterialTheme.colorScheme.primary)
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showEditDialog = null }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
-                            }
-                        }
-                    )
-                }
-
-                if (state.isUnsavedChangesDialogVisible) {
-                    AlertDialog(
-                        onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                        title = { Text(stringResource(R.string.dialog_unsaved_title), fontWeight = FontWeight.Bold) },
-                        text = { Text(stringResource(R.string.dialog_unsaved_message)) },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                viewModel.showUnsavedChangesDialog(false)
-                                onBack()
-                            }) {
-                                Text(stringResource(R.string.dialog_leave), color = ErrorRed)
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
-                                Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onPrimaryContainer)
-                            }
-                        }
-                    )
                 }
             }
+        }
+
+        if (showEditDialog != null) {
+            AlertDialog(
+                onDismissRequest = { showEditDialog = null },
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                title = {
+                    Text(
+                        text = stringResource(R.string.dialog_edit_title),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
+                text = {
+                    OutlinedTextField(
+                        value = tempTitle,
+                        onValueChange = { tempTitle = it },
+                        label = { Text(text = stringResource(R.string.dialog_edit_title_label)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showEditDialog?.let { id -> viewModel.updateChartTitle(id, tempTitle) }
+                            showEditDialog = null
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.confirm),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showEditDialog = null }) {
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            )
+        }
+
+        if (uiState is ChartSelectionUiState.Success && (uiState as ChartSelectionUiState.Success).isUnsavedChangesDialogVisible) {
+            AlertDialog(
+                onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                title = {
+                    Text(
+                        text = stringResource(R.string.dialog_unsaved_title),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.dialog_unsaved_message),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.showUnsavedChangesDialog(false)
+                            onBack()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.dialog_leave),
+                            color = ErrorRed,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            )
         }
     }
 }

@@ -21,6 +21,8 @@ import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
+import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
+import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 
 
 /**
@@ -73,7 +75,7 @@ fun MainScreen(
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Feed,
+        startDestination = NavRoutes.ChartSelection,
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
@@ -88,7 +90,33 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable<NavRoutes.Create> {
-            CreatePage(modifier = Modifier.fillMaxSize())
+            CreatePage(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateToSelection = {
+                    navController.navigate(NavRoutes.ChartSelection)
+                }
+            )
+        }
+
+        composable<NavRoutes.ChartSelection> {
+            ChartSelectionPage(
+                onBack = { navController.popBackStack() },
+                onNavigateToShare = {
+                    // TODO: Navigate to share screen
+                    navController.navigate(NavRoutes.ShareAndPost)
+                },
+                onNavigateToFeed = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.ChartSelection) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable<NavRoutes.ShareAndPost> {
+            ShareAndPostScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable<NavRoutes.Notifications> {
@@ -99,8 +127,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             // TODO: Implement TeamsPage
         }
 
-        composable<NavRoutes.Profile> {
-            ProfilePage(modifier = Modifier.fillMaxSize())
+        composable<NavRoutes.Profile> { backStackEntry ->
+            val profile = backStackEntry.toRoute<NavRoutes.Profile>()
+            ProfilePage(
+                modifier = Modifier.fillMaxSize()
+            )
             // TODO: Pass profile.userId to ProfilePage
         }
 

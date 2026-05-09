@@ -8,6 +8,11 @@ import java.util.UUID
  * Mock data for development and testing purposes.
  */
 object SelectChartMockData {
+    // Strings moved from strings.xml to mock data
+    const val READY_TITLE = "Your Visualizations Are Ready!"
+    const val READY_SUBTITLE = "We've generated several charts based on your dataset."
+    const val SELECTION_PROMPT = "Choose the chart that best represents the insights you want to share."
+
     val visualizations = listOf(
         Visualization(
             id = UUID.randomUUID().toString(),

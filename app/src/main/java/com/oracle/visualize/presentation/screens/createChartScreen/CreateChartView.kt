@@ -36,12 +36,14 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
  * Screen for uploading a dataset to create new visualizations.
  *
  * @param modifier Modifier for the layout.
+ * @param onNavigateToSelection Callback to navigate to the chart selection screen.
  * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
+    onNavigateToSelection: () -> Unit = {},
     viewModel: CreateChartViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -120,7 +122,7 @@ fun CreatePage(
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = { /**/ },
+                    onClick = onNavigateToSelection,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
