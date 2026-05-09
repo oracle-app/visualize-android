@@ -10,7 +10,6 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -23,21 +22,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStack
 import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvatar
+import com.oracle.visualize.ui.theme.ErrorRed
 import com.oracle.visualize.ui.theme.LightBlue
 import com.oracle.visualize.ui.theme.LighterBlue
+import com.oracle.visualize.ui.theme.StrongBlue
 import com.oracle.visualize.ui.theme.StrongOrange
 
+/**
+ * Entry-point composable for the Teams screen.
+ * Observes [TeamsViewModel] state and delegates rendering to [TeamsContent].
+ *
+ * @param modifier Modifier applied to the root layout.
+ * @param onNavigateToCreate Callback triggered when the user taps the create FAB.
+ * @param onNavigateToEdit Callback triggered when the user selects edit on a team row.
+ * @param viewModel The [TeamsViewModel] instance (injected by Hilt).
+ */
 @Composable
 fun TeamsPage(
     modifier: Modifier = Modifier,
@@ -61,9 +72,9 @@ fun TeamsPage(
 
         is TeamsUiState.Content -> {
             TeamsContent(
-                state = state,
+                state    = state,
                 modifier = modifier,
-                onEvent = { event ->
+                onEvent  = { event ->
                     when (event) {
                         is TeamsUiEvent.NavigateToCreateTeam -> onNavigateToCreate()
                         is TeamsUiEvent.NavigateToEditTeam   -> onNavigateToEdit(event.teamId)
@@ -79,7 +90,7 @@ fun TeamsPage(
                     Text(text = state.message, color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(onClick = { viewModel.onEvent(TeamsUiEvent.Refresh) }) {
-                        Text("Retry")
+                        Text(stringResource(R.string.teams_retry))
                     }
                 }
             }
@@ -96,7 +107,7 @@ private fun TeamsContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -106,15 +117,15 @@ private fun TeamsContent(
                     .padding(top = 48.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
             ) {
                 Text(
-                    text = "Teams",
-                    fontSize = 32.sp,
+                    text       = stringResource(R.string.teams_title),
+                    fontSize   = 32.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black
+                    color      = MaterialTheme.colorScheme.onSurface
                 )
             }
 
             LazyColumn(
-                modifier = Modifier
+                modifier       = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(bottom = 120.dp)
@@ -122,28 +133,28 @@ private fun TeamsContent(
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
-                        text = "My Teams",
+                        text     = stringResource(R.string.teams_my_teams_section),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.Black,
+                        color    = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                 }
 
                 itemsIndexed(state.myTeams) { index, team ->
                     MyTeamRow(
-                        team = team,
-                        isSwiped = state.swipedTeamId == team.id,
-                        position = when {
-                            state.myTeams.size == 1 -> TeamPosition.SINGLE
-                            index == 0              -> TeamPosition.TOP
-                            index == state.myTeams.size - 1 -> TeamPosition.BOTTOM
-                            else                    -> TeamPosition.MIDDLE
+                        team          = team,
+                        isSwiped      = state.swipedTeamId == team.id,
+                        position      = when {
+                            state.myTeams.size == 1              -> TeamPosition.SINGLE
+                            index == 0                           -> TeamPosition.TOP
+                            index == state.myTeams.size - 1      -> TeamPosition.BOTTOM
+                            else                                 -> TeamPosition.MIDDLE
                         },
-                        onSwipe = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
+                        onSwipe       = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
                         onDismissSwipe = { onEvent(TeamsUiEvent.SwipeTeam(null)) },
-                        onEdit = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
-                        onDelete = { onEvent(TeamsUiEvent.DeleteTeam(team.id)) }
+                        onEdit        = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
+                        onDelete      = { onEvent(TeamsUiEvent.DeleteTeam(team.id)) }
                     )
                     if (index < state.myTeams.size - 1) {
                         Spacer(modifier = Modifier.height(3.dp))
@@ -154,25 +165,25 @@ private fun TeamsContent(
 
                 item {
                     Text(
-                        text = "Teams I'm In",
+                        text     = stringResource(R.string.teams_im_in_section),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.Black,
+                        color    = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                 }
 
                 itemsIndexed(state.teamsImIn) { index, team ->
                     TeamsImInRow(
-                        team = team,
+                        team       = team,
                         isExpanded = team.id in state.expandedTeamIds,
-                        position = when {
-                            state.teamsImIn.size == 1 -> TeamPosition.SINGLE
-                            index == 0                -> TeamPosition.TOP
-                            index == state.teamsImIn.size - 1 -> TeamPosition.BOTTOM
-                            else                      -> TeamPosition.MIDDLE
+                        position   = when {
+                            state.teamsImIn.size == 1              -> TeamPosition.SINGLE
+                            index == 0                             -> TeamPosition.TOP
+                            index == state.teamsImIn.size - 1      -> TeamPosition.BOTTOM
+                            else                                   -> TeamPosition.MIDDLE
                         },
-                        onToggle = { onEvent(TeamsUiEvent.ToggleExpand(team.id)) }
+                        onToggle   = { onEvent(TeamsUiEvent.ToggleExpand(team.id)) }
                     )
                     if (index < state.teamsImIn.size - 1) {
                         Spacer(modifier = Modifier.height(3.dp))
@@ -182,19 +193,19 @@ private fun TeamsContent(
         }
 
         FloatingActionButton(
-            onClick = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
-            modifier = Modifier
+            onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
+            modifier       = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp, end = 16.dp)
                 .size(80.dp),
             containerColor = StrongOrange,
-            contentColor = Color.White,
-            shape = RoundedCornerShape(24.dp)
+            contentColor   = MaterialTheme.colorScheme.onPrimary,
+            shape          = RoundedCornerShape(24.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Create team",
-                modifier = Modifier.size(40.dp)
+                imageVector        = Icons.Default.Add,
+                contentDescription = stringResource(R.string.teams_create_fab_description),
+                modifier           = Modifier.size(40.dp)
             )
         }
     }
@@ -228,51 +239,51 @@ private fun MyTeamRow(
             .clip(shape)
             .background(LighterBlue)
     ) {
-        // Actions at the back (right)
+        // Action buttons revealed on swipe (right side)
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .width(140.dp)
                 .fillMaxHeight()
         ) {
-            // Edit Button (Teal)
+            // Edit button
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .background(Color(0xFF34797C))
+                    .background(StrongBlue)
                     .clickable { onEdit(); onDismissSwipe() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit",
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
+                    imageVector        = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.teams_edit_description),
+                    tint               = MaterialTheme.colorScheme.onPrimary,
+                    modifier           = Modifier.size(28.dp)
                 )
             }
-            // Delete Button (Red)
+            // Delete button
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .background(Color(0xFFEC4848))
+                    .background(ErrorRed)
                     .clickable { onDelete(); onDismissSwipe() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = Color.White,
-                    modifier = Modifier.size(28.dp)
+                    imageVector        = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.teams_delete_description),
+                    tint               = MaterialTheme.colorScheme.onPrimary,
+                    modifier           = Modifier.size(28.dp)
                 )
             }
         }
 
-        // Main card content (front, with offset)
+        // Main card content (slides left on swipe)
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            modifier          = Modifier
                 .offset(x = offset)
                 .fillMaxWidth()
                 .background(LighterBlue)
@@ -285,9 +296,13 @@ private fun MyTeamRow(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = team.name, fontSize = 18.sp, color = Color.Black)
+                Text(text = team.name, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "${team.memberCount} members", fontSize = 14.sp, color = Color.Gray)
+                Text(
+                    text     = stringResource(R.string.teams_member_count, team.memberCount),
+                    fontSize = 14.sp,
+                    color    = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             MemberAvatarStack(members = team.members, isSelected = false)
         }
@@ -316,29 +331,33 @@ private fun TeamsImInRow(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            modifier          = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .clickable { onToggle() }
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = team.name, fontSize = 18.sp, color = Color.Black)
+                Text(text = team.name, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "${team.memberCount} members", fontSize = 14.sp, color = Color.Gray)
+                Text(
+                    text     = stringResource(R.string.teams_member_count, team.memberCount),
+                    fontSize = 14.sp,
+                    color    = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             MemberAvatarStack(members = team.members, isSelected = false)
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
-                imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                imageVector        = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint = Color.Black
+                tint               = MaterialTheme.colorScheme.onSurface
             )
         }
 
         AnimatedVisibility(
             visible = isExpanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
+            enter   = expandVertically(),
+            exit    = shrinkVertically()
         ) {
             Column(
                 modifier = Modifier
@@ -346,7 +365,7 @@ private fun TeamsImInRow(
                     .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
             ) {
                 team.members.forEach { member ->
-                    MemberListItem(user = member, isOwner = member.id == "user1")
+                    MemberListItem(user = member, isOwner = member.id == team.ownerID)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -358,16 +377,20 @@ private fun TeamsImInRow(
 private fun MemberListItem(user: ShareUser, isOwner: Boolean) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier          = Modifier.fillMaxWidth()
     ) {
         UserAvatar(user = user, size = 40)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = user.username, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-            Text(text = user.email, fontSize = 12.sp, color = Color.Gray)
+            Text(text = user.username, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = user.email,    fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (isOwner) {
-            Text(text = "owner", fontSize = 12.sp, color = Color.Gray)
+            Text(
+                text     = stringResource(R.string.teams_owner_label),
+                fontSize = 12.sp,
+                color    = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
