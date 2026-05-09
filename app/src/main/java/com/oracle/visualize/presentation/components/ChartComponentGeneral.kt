@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -8,7 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,6 +75,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
     }
 
     val colors = generateChartColors(labels.size)
+    var selectedPlotIndex by remember { mutableStateOf<Int?>(null) }
 
     when (chart) {
         is VerticalBarChart -> {
@@ -95,7 +100,12 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     xData = labels,
                     yData = values,
                     bar = { index, _, _ ->
-                        DefaultBar(brush = SolidColor(colors[index]), modifier = Modifier.fillMaxWidth())
+                        DefaultBar(
+                            brush = SolidColor(colors[index]),
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                selectedPlotIndex = if (selectedPlotIndex == null) index else null
+                            }
+                        )
                     }
                 )
             }
@@ -123,7 +133,12 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     xData = values,
                     yData = labels,
                     bar = { index, _, _ ->
-                        DefaultBar(brush = SolidColor(colors[index]), modifier = Modifier.fillMaxHeight())
+                        DefaultBar(
+                            brush = SolidColor(colors[index]),
+                            modifier = Modifier.fillMaxHeight().clickable {
+                                selectedPlotIndex = if (selectedPlotIndex == null) index else null
+                            }
+                        )
                     }
                 )
             }
@@ -151,7 +166,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     StackedVerticalBarPlot {
                         labels.forEachIndexed { seriesIndex, _ ->
                             series(
-                                defaultBar = verticalSolidBar(colors[seriesIndex], RectangleShape, border = null)
+                                defaultBar = verticalSolidBar(colors[seriesIndex], RectangleShape, border = null),
                             ) {
                                 chart.data.forEach { (category, values) ->
                                     if (seriesIndex < values.size) item(category, values[seriesIndex])
@@ -182,7 +197,8 @@ fun ChartRenderGeneral(chart: Chart<*>) {
             ) {
                 LinePlot(
                     data = processedData,
-                    lineStyle = LineStyle(SolidColor(colors[0]), strokeWidth = 2.dp)
+                    symbol = { Symbol(fillBrush = SolidColor(colors[0]), outlineBrush = SolidColor(colors[0])) },
+                    lineStyle = LineStyle(SolidColor(colors[0]), strokeWidth = 2.dp),
                 )
             }
         }
