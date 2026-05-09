@@ -6,6 +6,7 @@ import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.FieldValue
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -82,5 +83,23 @@ class UserDatasource @Inject constructor(
             .get()
             .await()
         return snapshot.toObjects(UserDTO::class.java)
+    }
+
+    /**
+     * Adds a visualization ID to the user's hidden visualizations list in Firestore.
+     *
+     * @param userID The unique ID of the user.
+     * @param visualizationId The visualization ID to hide.
+     * @throws AppError.NetworkError If the operation fails.
+     */
+    suspend fun hideVisualizationForUser(userID: String, visualizationId: String) {
+        try {
+            firestore.collection("users").document(userID)
+                .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
+                .await()
+        } catch (ex: Exception) {
+            if (ex is AppError) throw ex
+            throw AppError.NetworkError("Failed to hide visualization: ${ex.message}")
+        }
     }
 }
