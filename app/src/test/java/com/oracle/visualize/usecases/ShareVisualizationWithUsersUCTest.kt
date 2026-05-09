@@ -24,7 +24,7 @@ import org.junit.Test
  *   Result.isFailure instead of crashing the caller.
  */
 
-class DeleteUsersAccessToVisualizationUCTest {
+class ShareVisualizationWithUsersUCTest {
 
     @MockK
     private lateinit var visualizationRepository: VisualizationRepository
