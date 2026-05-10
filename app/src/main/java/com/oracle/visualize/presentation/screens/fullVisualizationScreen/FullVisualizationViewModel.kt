@@ -27,7 +27,7 @@ class FullVisualizationViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
-    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
+    private val currentUserID: String = "NQ5fdkRdISA8U7DgcII1"
 
     fun loadVisualization(visualizationId: String) {
         viewModelScope.launch {
@@ -57,7 +57,7 @@ class FullVisualizationViewModel @Inject constructor(
             * TODO: Get data from the microservice when it becomes available.
             *
             * */
-            val mockChart = getMockChartUseCase(ChartTypes.VERTICAL_BAR).fold(
+            val mockChart = getMockChartUseCase(ChartTypes.PIE).fold(
                 onSuccess = { it },
                 onFailure = { null }
             )

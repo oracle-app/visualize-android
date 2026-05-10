@@ -18,7 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.DonutChart
@@ -39,6 +41,7 @@ import io.github.koalaplot.core.line.LinePlot
 import io.github.koalaplot.core.line.StackedAreaPlot
 import io.github.koalaplot.core.line.StackedAreaPlotDataAdapter
 import io.github.koalaplot.core.line.StackedAreaStyle
+import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.style.AreaStyle
 import io.github.koalaplot.core.style.LineStyle
@@ -67,86 +70,114 @@ fun generateChartColors(n: Int): List<Color> {
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun ChartRenderGeneral(chart: Chart<*>) {
-    val labels = when (chart) {
-        is AreaChart -> chart.stackNames
-        is StackedBarChart -> chart.stackNames
-        else -> chart.fieldNames
-    }
+fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
 
-    val colors = generateChartColors(labels.size)
-    var selectedPlotIndex by remember { mutableStateOf<Int?>(null) }
+    var plotIndex by remember { mutableStateOf<Int?>(null) }
 
     when (chart) {
         is VerticalBarChart -> {
+            val categories = chart.data.keys.toList()
             val values = chart.data.values.toList()
             val maxValue = values.maxOrNull() ?: 0f
+            val barColors = generateChartColors(categories.size)
 
-            XYGraph(
-                xAxisModel = remember { CategoryAxisModel(labels) },
-                yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
-                xAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                ),
-                yAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                )
-            ) {
-                VerticalBarPlot(
-                    xData = labels,
-                    yData = values,
-                    bar = { index, _, _ ->
-                        DefaultBar(
-                            brush = SolidColor(colors[index]),
-                            modifier = Modifier.fillMaxWidth().clickable {
-                                selectedPlotIndex = if (selectedPlotIndex == null) index else null
-                            }
-                        )
+            Box {
+                XYGraph(
+                    xAxisModel = remember { CategoryAxisModel(categories) },
+                    yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
+                    xAxisContent = AxisContent(
+                        style = rememberAxisStyle(),
+                        labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
+                        title = {}
+                    ),
+                    yAxisContent = AxisContent(
+                        style = rememberAxisStyle(),
+                        labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
+                        title = {}
+                    )
+                ) {
+                    VerticalBarPlot(
+                        xData = categories,
+                        yData = values,
+                        bar = { index, _, _ ->
+                            DefaultBar(
+                                brush = SolidColor(barColors[index]),
+                                modifier = Modifier.fillMaxWidth().then(
+                                    if (showTooltips) {
+                                        Modifier.clickable { plotIndex = if (plotIndex == index) null else index }
+                                    } else Modifier
+                                )
+                            )
+                        }
+                    )
+                }
+
+                if (showTooltips && plotIndex != null) {
+                    Popup(
+                        alignment = Alignment.TopCenter,
+                        offset = IntOffset(0, -100),
+                        onDismissRequest = { plotIndex = null }
+                    ) {
+                        ChartTooltip(listOf("${categories[plotIndex!!]}: ${values[plotIndex!!]}"))
                     }
-                )
+                }
             }
         }
 
         is HorizontalBarChart -> {
+            val categories = chart.data.keys.toList()
             val values = chart.data.values.toList()
             val maxValue = values.maxOrNull() ?: 0f
+            val barColors = generateChartColors(categories.size)
 
-            XYGraph(
-                xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
-                yAxisModel = remember { CategoryAxisModel(labels) },
-                xAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                ),
-                yAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                )
-            ) {
-                HorizontalBarPlot(
-                    xData = values,
-                    yData = labels,
-                    bar = { index, _, _ ->
-                        DefaultBar(
-                            brush = SolidColor(colors[index]),
-                            modifier = Modifier.fillMaxHeight().clickable {
-                                selectedPlotIndex = if (selectedPlotIndex == null) index else null
-                            }
-                        )
+            Box {
+                XYGraph(
+                    xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
+                    yAxisModel = remember { CategoryAxisModel(categories) },
+                    xAxisContent = AxisContent(
+                        style = rememberAxisStyle(),
+                        labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
+                        title = {}
+                    ),
+                    yAxisContent = AxisContent(
+                        style = rememberAxisStyle(),
+                        labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
+                        title = {}
+                    )
+                ) {
+                    HorizontalBarPlot(
+                        xData = values,
+                        yData = categories,
+                        bar = { index, _, _ ->
+                            DefaultBar(
+                                brush = SolidColor(barColors[index]),
+                                modifier = Modifier.fillMaxWidth().then(
+                                    if (showTooltips) {
+                                        Modifier.clickable { plotIndex = if (plotIndex == index) null else index }
+                                    } else Modifier
+                                )
+                            )
+                        }
+                    )
+                }
+
+                if (showTooltips && plotIndex != null) {
+                    Popup(
+                        alignment = Alignment.CenterEnd,
+                        offset = IntOffset(0, 0),
+                        onDismissRequest = { plotIndex = null }
+                    ) {
+                        ChartTooltip(listOf("${categories[plotIndex!!]}: ${values[plotIndex!!]}"))
                     }
-                )
+                }
             }
         }
 
         is StackedBarChart -> {
             val categories = chart.data.keys.toList()
             val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
+            val seriesNames = chart.stackNames
+            val seriesColors = generateChartColors(seriesNames.size)
 
             if (categories.isNotEmpty()) {
                 XYGraph(
@@ -164,9 +195,9 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                     )
                 ) {
                     StackedVerticalBarPlot {
-                        labels.forEachIndexed { seriesIndex, _ ->
+                        seriesNames.forEachIndexed { seriesIndex, _ ->
                             series(
-                                defaultBar = verticalSolidBar(colors[seriesIndex], RectangleShape, border = null),
+                                defaultBar = verticalSolidBar(seriesColors[seriesIndex], RectangleShape, border = null)
                             ) {
                                 chart.data.forEach { (category, values) ->
                                     if (seriesIndex < values.size) item(category, values[seriesIndex])
@@ -180,6 +211,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
 
         is LineChart -> {
             val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
+            val lineColor = generateChartColors(1).firstOrNull() ?: Color.Blue
 
             XYGraph (
                 xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),
@@ -197,37 +229,75 @@ fun ChartRenderGeneral(chart: Chart<*>) {
             ) {
                 LinePlot(
                     data = processedData,
-                    symbol = { Symbol(fillBrush = SolidColor(colors[0]), outlineBrush = SolidColor(colors[0])) },
-                    lineStyle = LineStyle(SolidColor(colors[0]), strokeWidth = 2.dp),
+                    lineStyle = LineStyle(SolidColor(lineColor), strokeWidth = 2.dp)
                 )
             }
         }
 
         is PieChartModel -> {
-            PieChart(values = chart.data, label = { i -> Text(text = chart.data[i].toString()) })
+            val categories = chart.fieldNames
+            val values = chart.data
+            val colors = generateChartColors(categories.size)
+
+            PieChart(
+                values = values,
+                label = { index -> Text(text = values[index].toString(),
+                    modifier = Modifier.clickable { plotIndex = if (plotIndex == index) null else index }
+                )},
+                slice = { index -> DefaultSlice(color = colors[index])
+                }
+            )
+
+            if (showTooltips && plotIndex != null) {
+                Popup(
+                    alignment = Alignment.TopCenter,
+                    offset = IntOffset(0, 0),
+                    onDismissRequest = { plotIndex = null }
+                ) {
+                    ChartTooltip(listOf("${categories[plotIndex!!]}: ${values[plotIndex!!]}"))
+                }
+            }
         }
 
         is DonutChart -> {
+            val categories = chart.fieldNames
+            val values = chart.data
+            val colors = generateChartColors(categories.size)
+
             PieChart(
-                values = chart.data,
-                label = { i -> Text(text = chart.data[i].toString()) },
+                values = values,
+                label = { index -> Text(text = values[index].toString(),
+                    modifier = Modifier.clickable { plotIndex = if (plotIndex == index) null else index }
+                )},
+                slice = { index -> DefaultSlice(color = colors[index]) },
                 holeSize = 0.6f,
                 holeContent = {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column {
                             Text(text = "Total", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                text = (chart.data.sum().roundToInt() / 1.0f).toString(),
+                                text = (values.sum().roundToInt() / 1.0f).toString(),
                                 style = MaterialTheme.typography.titleMedium
                             )
                         }
                     }
                 }
             )
+
+            if (showTooltips && plotIndex != null) {
+                Popup(
+                    alignment = Alignment.TopCenter,
+                    offset = IntOffset(0, 0),
+                    onDismissRequest = { plotIndex = null }
+                ) {
+                    ChartTooltip(listOf("${categories[plotIndex!!]}: ${values[plotIndex!!]}"))
+                }
+            }
         }
 
         is ScatterChart -> {
             val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
+            val dotColor = generateChartColors(1).firstOrNull() ?: Color.Blue
 
             XYGraph (
                 xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),
@@ -246,7 +316,7 @@ fun ChartRenderGeneral(chart: Chart<*>) {
                 LinePlot(
                     data = processedData,
                     symbol = {
-                        Symbol(fillBrush = SolidColor(colors[0]), outlineBrush = SolidColor(colors[0]))
+                        Symbol(fillBrush = SolidColor(dotColor), outlineBrush = SolidColor(dotColor))
                     }
                 )
             }
@@ -258,7 +328,10 @@ fun ChartRenderGeneral(chart: Chart<*>) {
             val maxX = sortedKeys.lastOrNull() ?: 0f
             val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
 
-            val seriesData = List(labels.size) { seriesIndex ->
+            val seriesNames = chart.stackNames
+            val seriesColors = generateChartColors(seriesNames.size)
+
+            val seriesData = List(seriesNames.size) { seriesIndex ->
                 sortedKeys.map { x -> chart.data[x]?.getOrNull(seriesIndex) ?: 0f }
             }
 
@@ -280,10 +353,10 @@ fun ChartRenderGeneral(chart: Chart<*>) {
             ) {
                 StackedAreaPlot(
                     data = processedData,
-                    styles = colors.map { col ->
+                    styles = seriesColors.map { col ->
                         StackedAreaStyle(
                             lineStyle = LineStyle(SolidColor(col), strokeWidth = 2.dp),
-                            areaStyle = AreaStyle(SolidColor(col.copy(alpha = 0.2f)))
+                            areaStyle = AreaStyle(SolidColor(col.copy(alpha = 0.2f))),
                         )
                     },
                     firstBaseline = AreaBaseline.HorizontalLine(0f),

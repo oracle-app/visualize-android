@@ -35,7 +35,7 @@ class FeedViewModel @Inject constructor(
     private var allVisualizations: List<VisualizationCard> = emptyList()
 
     // TODO: Get from Auth Repository
-    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
+    private val currentUserID: String = "NQ5fdkRdISA8U7DgcII1"
 
     init {
         loadData(forceRefresh = false)
