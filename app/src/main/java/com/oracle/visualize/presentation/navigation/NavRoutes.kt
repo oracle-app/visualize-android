@@ -36,20 +36,30 @@ sealed interface NavRoutes {
     }
 
     @Serializable
-    data class Profile(val userId: String) : MainTab {
-        override val route get() = "profile/$userId"
+    data class Profile(
+        val userId: String
+    ) : MainTab {
+
+        override val route: String
+            get() = "profile/$userId"
 
         companion object {
-            const val ROUTE_PATTERN = "profile/{userId}"
+            const val ROUTE_PATTERN =
+                "profile/{userId}"
         }
     }
 
     @Serializable
-    data class FullScreen(val visualizationId: String) : NavRoutes {
-        override val route get() = "full_screen/$visualizationId"
+    data class FullScreen(
+        val visualizationId: String
+    ) : NavRoutes {
+
+        override val route: String
+            get() = "full_screen/$visualizationId"
 
         companion object {
-            const val ROUTE_PATTERN = "full_screen/{visualizationId}"
+            const val ROUTE_PATTERN =
+                "full_screen/{visualizationId}"
         }
     }
 }
