@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
