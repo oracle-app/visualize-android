@@ -17,10 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Visualization
 
 @Composable
@@ -30,9 +32,9 @@ fun ChartCard(
     onSelect: () -> Unit,
     onEditTitle: () -> Unit
 ) {
-    val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary
-    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
-    val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+    val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
 
     Card(
         modifier = Modifier
@@ -45,7 +47,9 @@ fun ChartCard(
             )
             .clickable { onSelect() },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -74,7 +78,7 @@ fun ChartCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Title",
+                        contentDescription = stringResource(R.string.dialog_edit_title),
                         modifier = Modifier.size(20.dp),
                         tint = iconColor
                     )
@@ -85,7 +89,7 @@ fun ChartCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(Color(0xFFF9F9F9))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 MockChartContent()
@@ -100,9 +104,17 @@ fun ChartCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                LegendItem(color = Color.Blue, text = "Units Sold", textColor = contentColor)
+                LegendItem(
+                    color = MaterialTheme.colorScheme.primary,
+                    text = "Units Sold",
+                    textColor = contentColor
+                )
                 Spacer(modifier = Modifier.width(16.dp))
-                LegendItem(color = Color.Yellow, text = "Total Transactions", textColor = contentColor)
+                LegendItem(
+                    color = MaterialTheme.colorScheme.secondary,
+                    text = "Total Transactions",
+                    textColor = contentColor
+                )
             }
         }
     }
@@ -110,6 +122,11 @@ fun ChartCard(
 
 @Composable
 fun MockChartContent() {
+    val axisColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val gridColor = MaterialTheme.colorScheme.outlineVariant
+    val barColor = MaterialTheme.colorScheme.primary
+    val lineColor = MaterialTheme.colorScheme.secondary
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f)) {
             Column(
@@ -119,7 +136,7 @@ fun MockChartContent() {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 listOf("20,000", "15,000", "10,000", "5,000", "0").forEach { label ->
-                    Text(text = label, fontSize = 8.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(text = label, fontSize = 8.sp, color = axisColor)
                 }
             }
 
@@ -136,7 +153,7 @@ fun MockChartContent() {
                         HorizontalDivider(
                             modifier = Modifier.fillMaxWidth(),
                             thickness = 0.5.dp,
-                            color = Color.LightGray.copy(alpha = 0.4f)
+                            color = gridColor
                         )
                     }
                 }
@@ -152,13 +169,12 @@ fun MockChartContent() {
                             modifier = Modifier
                                 .fillMaxHeight(h)
                                 .width(10.dp)
-                                .background(Color.Blue)
+                                .background(barColor)
                         )
                     }
                 }
 
                 Canvas(modifier = Modifier.fillMaxSize()) {
-                    val orangeLine = Color.Yellow
                     val points = listOf(0.7f, 0.5f, 0.8f, 0.4f, 0.7f, 0.3f, 0.6f, 0.4f)
                     val path = Path()
                     
@@ -172,7 +188,7 @@ fun MockChartContent() {
                     
                     drawPath(
                         path = path,
-                        color = orangeLine,
+                        color = lineColor,
                         style = Stroke(width = 2.dp.toPx())
                     )
                 }
@@ -186,7 +202,7 @@ fun MockChartContent() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug").forEach { month ->
-                    Text(text = month, fontSize = 8.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(text = month, fontSize = 8.sp, color = axisColor)
                 }
             }
         }

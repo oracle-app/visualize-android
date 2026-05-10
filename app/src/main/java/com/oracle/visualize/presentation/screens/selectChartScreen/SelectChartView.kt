@@ -40,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,8 +49,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
-import com.oracle.visualize.ui.theme.ErrorRed
-import com.oracle.visualize.ui.theme.LighterBlue
 
 /**
  * Screen for selecting visualizations to post or share.
@@ -93,8 +90,7 @@ fun ChartSelectionPage(
                     Text(
                         text = stringResource(R.string.chart_selection_title),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        color = Color.Black
+                        fontSize = 20.sp
                     )
                 },
                 navigationIcon = {
@@ -110,23 +106,22 @@ fun ChartSelectionPage(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.icon_back),
-                            tint = Color.Black
+                            contentDescription = stringResource(R.string.icon_back)
                         )
                     }
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LighterBlue,
-                    titleContentColor = Color.Black,
-                    navigationIconContentColor = Color.Black
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
         },
         bottomBar = {
             if (uiState is ChartSelectionUiState.Success) {
                 Surface(
-                    color = LighterBlue,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     tonalElevation = 0.dp,
                     shadowElevation = 0.dp
                 ) {
@@ -144,14 +139,15 @@ fun ChartSelectionPage(
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.secondary,
-                                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                                disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.4f)
                             ),
                             shape = RoundedCornerShape(28.dp),
                             enabled = viewModel.hasSelections()
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_post_personal),
-                                color = Color.White,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -164,14 +160,15 @@ fun ChartSelectionPage(
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.secondary,
-                                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+                                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                                disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.4f)
                             ),
                             shape = RoundedCornerShape(28.dp),
                             enabled = viewModel.hasSelections()
                         ) {
                             Text(
                                 text = stringResource(R.string.chart_selection_share_and_post),
-                                color = Color.White,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -180,7 +177,7 @@ fun ChartSelectionPage(
                 }
             }
         },
-        containerColor = LighterBlue
+        containerColor = MaterialTheme.colorScheme.surfaceVariant
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -195,7 +192,10 @@ fun ChartSelectionPage(
                 }
                 is ChartSelectionUiState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = state.message, color = ErrorRed)
+                        Text(
+                            text = state.message,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
                 is ChartSelectionUiState.Success -> {
@@ -257,12 +257,12 @@ fun ChartSelectionPage(
         if (showEditDialog != null) {
             AlertDialog(
                 onDismissRequest = { showEditDialog = null },
-                containerColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.surface,
                 title = {
                     Text(
                         text = stringResource(R.string.dialog_edit_title),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 text = {
@@ -273,7 +273,9 @@ fun ChartSelectionPage(
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 },
@@ -295,7 +297,7 @@ fun ChartSelectionPage(
                     TextButton(onClick = { showEditDialog = null }) {
                         Text(
                             text = stringResource(R.string.cancel),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -305,18 +307,18 @@ fun ChartSelectionPage(
         if (uiState is ChartSelectionUiState.Success && (uiState as ChartSelectionUiState.Success).isUnsavedChangesDialogVisible) {
             AlertDialog(
                 onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                containerColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.surface,
                 title = {
                     Text(
                         text = stringResource(R.string.dialog_unsaved_title),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 text = {
                     Text(
                         text = stringResource(R.string.dialog_unsaved_message),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 confirmButton = {
@@ -328,7 +330,7 @@ fun ChartSelectionPage(
                     ) {
                         Text(
                             text = stringResource(R.string.dialog_leave),
-                            color = ErrorRed,
+                            color = MaterialTheme.colorScheme.error,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -337,7 +339,7 @@ fun ChartSelectionPage(
                     TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
                         Text(
                             text = stringResource(R.string.cancel),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
