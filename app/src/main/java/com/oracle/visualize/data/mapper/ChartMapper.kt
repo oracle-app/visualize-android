@@ -19,7 +19,7 @@ object ChartMapper {
 
         return try {
             val jsonObject = JSONObject(previewJson)
-            val chartName = jsonObject.optString("chartName", "Sin Título")
+            val chartName = jsonObject.optString("chartName", "No Title")
             val chartTypeStr = jsonObject.optString("chartType", "")
 
             val metricsObj = jsonObject.optJSONObject("metrics")
