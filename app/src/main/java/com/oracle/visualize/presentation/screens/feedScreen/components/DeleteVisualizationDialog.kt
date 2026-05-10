@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.feedScreen.components
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -7,6 +8,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 
 /**
@@ -26,14 +28,15 @@ fun DeleteForEveryoneDialog(
         title = {
             Text(
                 text       = stringResource(R.string.feed_delete_title),
-                fontWeight = FontWeight.SemiBold,
-                style      = MaterialTheme.typography.titleLarge
+                fontWeight = FontWeight.Normal,
+                style      = MaterialTheme.typography.headlineSmall,
+                color      = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
             Text(
                 text  = stringResource(R.string.feed_delete_for_everyone_message),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
@@ -42,16 +45,23 @@ fun DeleteForEveryoneDialog(
                 Text(
                     text       = stringResource(R.string.delete),
                     color      = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Medium,
+                    style      = MaterialTheme.typography.labelLarge
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(
+                    text       = stringResource(R.string.cancel),
+                    color      = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    style      = MaterialTheme.typography.labelLarge
+                )
             }
         },
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(28.dp)
     )
 }
 
@@ -72,14 +82,15 @@ fun DeleteForMeDialog(
         title = {
             Text(
                 text       = stringResource(R.string.feed_delete_title),
-                fontWeight = FontWeight.SemiBold,
-                style      = MaterialTheme.typography.titleLarge
+                fontWeight = FontWeight.Normal,
+                style      = MaterialTheme.typography.headlineSmall,
+                color      = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
             Text(
                 text  = stringResource(R.string.feed_delete_for_me_message),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
@@ -88,15 +99,22 @@ fun DeleteForMeDialog(
                 Text(
                     text       = stringResource(R.string.delete),
                     color      = MaterialTheme.colorScheme.error,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Medium,
+                    style      = MaterialTheme.typography.labelLarge
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(
+                    text       = stringResource(R.string.cancel),
+                    color      = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    style      = MaterialTheme.typography.labelLarge
+                )
             }
         },
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(28.dp)
     )
 }
