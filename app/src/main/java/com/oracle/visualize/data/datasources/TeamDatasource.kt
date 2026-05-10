@@ -29,9 +29,9 @@ class TeamDatasource @Inject constructor(
         try {
             if (ownerID.isNotEmpty() && name.isNotEmpty() && memberIDs.isNotEmpty()) {
                 val formattedTeam = hashMapOf(
-                    "memberIDs" to memberIDs,
-                    "name"      to name,
-                    "ownerID"   to ownerID
+                    "membersIDs" to memberIDs,  // ← era "memberIDs"
+                    "name"       to name,
+                    "ownerID"    to ownerID
                 )
                 teamsRef.add(formattedTeam).await()
             } else {
@@ -115,8 +115,8 @@ class TeamDatasource @Inject constructor(
             require(name.isNotBlank())   { "Team name cannot be empty" }
             teamsRef.document(teamID).update(
                 mapOf(
-                    "name"      to name,
-                    "memberIDs" to memberIDs
+                    "name"       to name,
+                    "membersIDs" to memberIDs  // ← era "memberIDs"
                 )
             ).await()
         } catch (ex: Exception) {
