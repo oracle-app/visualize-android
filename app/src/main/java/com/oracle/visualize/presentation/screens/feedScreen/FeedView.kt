@@ -59,7 +59,7 @@ fun FeedPage(
         }
     ) { paddingValues ->
         PullToRefreshBox(
-            isRefreshing = false,
+            isRefreshing = (uiState as? FeedUiState.Success)?.isRefreshing == true,
             onRefresh = { feedViewModel.loadData(forceRefresh = true) },
             modifier = Modifier
                 .fillMaxSize()

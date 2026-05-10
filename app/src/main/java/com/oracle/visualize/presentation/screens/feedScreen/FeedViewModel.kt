@@ -34,18 +34,23 @@ class FeedViewModel @Inject constructor(
 
     private var allVisualizations: List<VisualizationCard> = emptyList()
     // TODO: Get from Auth Repository
-    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
+    private val currentUserID: String = "NQ5fdkRdISA8U7DgcII1"
 
     init {
         loadData(forceRefresh = false)
     }
 
     fun loadData(forceRefresh: Boolean = false) {
+
         if (forceRefresh) {
             allVisualizations = emptyList()
-        }
-
-        if (allVisualizations.isEmpty()) {
+            val current = _uiState.value
+            _uiState.value = if (current is FeedUiState.Success) {
+                current.copy(isRefreshing = true)
+            } else {
+                FeedUiState.Loading
+            }
+        } else {
             _uiState.value = FeedUiState.Loading
         }
 

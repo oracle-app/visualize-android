@@ -18,5 +18,6 @@ sealed interface FeedUiState {
         val items: List<VisualizationCard>,
         val searchText: String = "",
         val selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
+        val isRefreshing: Boolean = false
     ) : FeedUiState
 }
