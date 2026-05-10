@@ -56,7 +56,9 @@ import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlin.math.roundToInt
 
+// Generates a random color. Will later be replaced by user's theme preference.
 fun generateChartColors(n: Int): List<Color> {
+    if (n <= 0) return emptyList()
     return List(n) { i ->
         Color.hsv(i * 360f / n, 0.6f, 0.9f)
     }
@@ -67,7 +69,6 @@ fun generateChartColors(n: Int): List<Color> {
  *
  * @param chart The chart configuration and data to render.
  */
-
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
@@ -81,6 +82,27 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
             val maxValue = values.maxOrNull() ?: 0f
             val barColors = generateChartColors(categories.size)
 
+            XYGraph(
+                xAxisModel = remember { CategoryAxisModel(categories) },
+                yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
+                xAxisContent = AxisContent(
+                    style = rememberAxisStyle(),
+                    labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
+                    title = {}
+                ),
+                yAxisContent = AxisContent(
+                    style = rememberAxisStyle(),
+                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
+                    title = {}
+                )
+            ) {
+                VerticalBarPlot(
+                    xData = categories,
+                    yData = values,
+                    bar = { index, _, _ ->
+                        DefaultBar(brush = SolidColor(barColors[index]), modifier = Modifier.fillMaxWidth())
+                    }
+                )
             Box {
                 XYGraph(
                     xAxisModel = remember { CategoryAxisModel(categories) },
@@ -122,6 +144,7 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
                     }
                 }
             }
+            }
         }
 
         is HorizontalBarChart -> {
@@ -130,6 +153,27 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
             val maxValue = values.maxOrNull() ?: 0f
             val barColors = generateChartColors(categories.size)
 
+            XYGraph(
+                xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
+                yAxisModel = remember { CategoryAxisModel(categories) },
+                xAxisContent = AxisContent(
+                    style = rememberAxisStyle(),
+                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
+                    title = {}
+                ),
+                yAxisContent = AxisContent(
+                    style = rememberAxisStyle(),
+                    labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
+                    title = {}
+                )
+            ) {
+                HorizontalBarPlot(
+                    xData = values,
+                    yData = categories,
+                    bar = { index, _, _ ->
+                        DefaultBar(brush = SolidColor(barColors[index]), modifier = Modifier.fillMaxHeight())
+                    }
+                )
             Box {
                 XYGraph(
                     xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
@@ -170,6 +214,7 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
                         ChartTooltip(listOf("${categories[plotIndex!!]}: ${values[plotIndex!!]}"))
                     }
                 }
+            }
             }
         }
 
