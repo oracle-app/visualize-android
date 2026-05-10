@@ -74,6 +74,7 @@ fun VisualizationDTO.toVisualizationCard(
         configJSON = this.configJSON,
         teamsSharedWith = teamsSharedWith,
         usersSharedWith = usersSharedWith,
-        allUsersSharedWith = allUsers
+        allUsersSharedWith = allUsers,
+        chart = null
     )
 }
