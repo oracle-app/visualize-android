@@ -94,7 +94,7 @@ fun FullVisualizationPage(
 
                 uiState.errorMessage != null -> {
                     Text(
-                        text = uiState.errorMessage ?: "",
+                        text = stringResource(uiState.errorMessage!!),
                         modifier = Modifier.align(Alignment.Center),
                         color = MaterialTheme.colorScheme.error
                     )

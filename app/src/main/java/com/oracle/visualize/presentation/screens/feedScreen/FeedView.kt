@@ -72,7 +72,7 @@ fun FeedPage(
                 }
                 is FeedUiState.Error -> {
                     Text(
-                        text = state.message,
+                        text = stringResource(state.message),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }

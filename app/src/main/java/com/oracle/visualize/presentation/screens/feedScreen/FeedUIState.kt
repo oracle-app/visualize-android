@@ -13,7 +13,7 @@ import com.oracle.visualize.domain.models.enums.VisualizationFilter
 
 sealed interface FeedUiState {
     object Loading : FeedUiState
-    data class Error(val message: String) : FeedUiState
+    data class Error(val message: Int) : FeedUiState
     data class Success(
         val items: List<VisualizationCard>,
         val searchText: String = "",
