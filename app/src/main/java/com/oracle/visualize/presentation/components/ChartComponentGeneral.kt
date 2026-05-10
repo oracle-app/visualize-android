@@ -49,6 +49,7 @@ import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 import kotlin.math.roundToInt
 
+// Generates a random color. Will later be replaced by user's theme preference.
 fun generateChartColors(n: Int): List<Color> {
     if (n <= 0) return emptyList()
     return List(n) { i ->

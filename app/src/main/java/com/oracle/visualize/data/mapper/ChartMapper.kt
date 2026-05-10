@@ -1,7 +1,9 @@
 package com.oracle.visualize.data.mapper
 
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
 import com.oracle.visualize.domain.models.enums.ChartTypes
+import org.json.JSONException
 
 /**
  * Extension function to parse JSON in the DB to [Chart] domain model, returning a specific
@@ -58,11 +60,15 @@ object ChartMapper {
                     val stackNames = fieldNames.drop(1)
                     AreaChart(chartName, parseToMapFloatListFloat(dataObj), stackNames)
                 }
-                else -> null
+                else -> {
+                    throw AppError.ParsingError("Unsupported chart type: $chartTypeStr")
+                }
             }
+        }catch (e: JSONException) {
+            throw AppError.ParsingError("JSON parsing error: ${e.message}")
         } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            if (e is AppError) throw e
+            throw AppError.ParsingError("Error parsing chart: ${e.message}")
         }
     }
 
