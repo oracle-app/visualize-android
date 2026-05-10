@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,7 @@ class FeedViewModel @Inject constructor(
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
     private var allVisualizations: List<VisualizationCard> = emptyList()
+
     // TODO: Get from Auth Repository
     private val currentUserID: String = "NQ5fdkRdISA8U7DgcII1"
 
@@ -52,6 +54,7 @@ class FeedViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
                     allVisualizations = items
@@ -62,7 +65,7 @@ class FeedViewModel @Inject constructor(
                     val uiErrorMessage = when (error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.ParsingError -> R.string.error_parsing
-                        is AppError.NotFound     -> R.string.error_not_found
+                        is AppError.NotFound     -> R.string.error_viz_not_found
                         else                     -> R.string.error_unknown_retry
                     }
                     Log.e("FeedViewModel", "Error fetching visualizations: ${error.message}", error)

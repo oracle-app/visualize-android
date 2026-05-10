@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,12 +41,21 @@ class FullVisualizationViewModel @Inject constructor(
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
-
+                // TODO: The use of mockdata will no longer be supported. The chart object must be obtained from the DB
+                val mockChart = null
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualization = visualization,
-                            errorMessage = if (visualization == null) R.string.error_not_found else null
+                            chart = null,
+                            errorMessage = if (visualization == null) {
+                                R.string.error_viz_not_found
+                            } else if (mockChart == null) {
+                                R.string.error_chart_not_found
+                            } else {
+                                null
+                            }
+
                         )
                     }
                 },
@@ -53,7 +63,7 @@ class FullVisualizationViewModel @Inject constructor(
                     val uiErrorMessage = when (error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.ParsingError -> R.string.error_parsing
-                        is AppError.NotFound     -> R.string.error_not_found
+                        is AppError.NotFound     -> R.string.error_viz_not_found
                         else                     -> R.string.error_unknown_retry
                     }
 

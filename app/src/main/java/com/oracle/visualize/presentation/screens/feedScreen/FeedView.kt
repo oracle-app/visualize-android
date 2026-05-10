@@ -94,7 +94,7 @@ fun FeedPage(
                         if (state.items.isEmpty()) {
                             item {
                                 Text(
-                                    text = stringResource(R.string.error_not_found),
+                                    text = stringResource(R.string.error_viz_not_found),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 32.dp),

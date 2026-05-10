@@ -118,7 +118,8 @@
 
     <string name="error_network">Connection error. Please check your internet.</string>
     <string name="error_parsing">There was a problem reading some visualizations.</string>
-    <string name="error_not_found">No visualizations found.</string>
+    <string name="error_viz_not_found">No visualizations found.</string>
+    <string name="error_chart_not_found">No chart found.</string>
     <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
 
     //Icon Descriptions
