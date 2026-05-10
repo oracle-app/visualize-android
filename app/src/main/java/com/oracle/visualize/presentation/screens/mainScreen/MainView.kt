@@ -8,16 +8,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.createEditScreen.CreateEditTeamPage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 
 private const val ROUTE_CREATE_TEAM = "create_team"
@@ -40,18 +43,23 @@ fun MainScreen(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    val currentNavRoute: NavRoutes? = when (currentRoute) {
-        NavRoutes.Feed.route          -> NavRoutes.Feed
-        NavRoutes.Create.route        -> NavRoutes.Create
-        NavRoutes.Notifications.route -> NavRoutes.Notifications
-        NavRoutes.Teams.route         -> NavRoutes.Teams
-        else                          -> null
+    // Profile matches any "profile/..." route since userId varies per user.
+    val currentNavRoute: NavRoutes? = when {
+        currentRoute == NavRoutes.Feed.route          -> NavRoutes.Feed
+        currentRoute == NavRoutes.Create.route        -> NavRoutes.Create
+        currentRoute == NavRoutes.Notifications.route -> NavRoutes.Notifications
+        currentRoute == NavRoutes.Teams.route         -> NavRoutes.Teams
+        currentRoute?.startsWith("profile/") == true  ->
+            NavRoutes.Profile(userId = currentRoute.removePrefix("profile/"))
+        else                                          -> null
     }
+
+    val showBottomBar = currentNavRoute != null
 
     Scaffold(
         modifier  = Modifier.fillMaxSize(),
         bottomBar = {
-            if (currentNavRoute != null) {
+            if (showBottomBar) {
                 BottomNavBar(
                     navItems           = viewModel.navItems,
                     currentDestination = currentNavRoute,
@@ -92,12 +100,15 @@ fun AppNavHost(
         composable(NavRoutes.Feed.route) {
             FeedPage(modifier = Modifier.fillMaxSize())
         }
+
         composable(NavRoutes.Create.route) {
             CreatePage(modifier = Modifier.fillMaxSize())
         }
+
         composable(NavRoutes.Notifications.route) {
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
+
         composable(NavRoutes.Teams.route) {
             TeamsPage(
                 modifier           = Modifier.fillMaxSize(),
@@ -105,14 +116,23 @@ fun AppNavHost(
                 onNavigateToEdit   = { teamId -> navController.navigate("edit_team/$teamId") }
             )
         }
+
         composable(ROUTE_CREATE_TEAM) {
             CreateEditTeamPage(onNavigateBack = { navController.popBackStack() })
         }
-        composable(ROUTE_EDIT_TEAM) {
+
+        composable(
+            route     = ROUTE_EDIT_TEAM,
+            arguments = listOf(navArgument("teamId") { type = NavType.StringType })
+        ) {
             CreateEditTeamPage(onNavigateBack = { navController.popBackStack() })
         }
-        composable(NavRoutes.Profile.ROUTE_PATTERN) {
-            // TODO: Add ProfilePage when implemented
+
+        composable(
+            route     = NavRoutes.Profile.ROUTE_PATTERN,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) {
+            ProfilePage(modifier = Modifier.fillMaxSize())
         }
     }
 }
