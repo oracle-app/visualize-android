@@ -211,13 +211,13 @@ fun ChartSelectionPage(
                                     .padding(16.dp)
                             ) {
                                 Text(
-                                    text = SelectChartMockData.READY_TITLE,
+                                    text = stringResource(R.string.chart_selection_ready_title),
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp
                                 )
                                 Text(
-                                    text = SelectChartMockData.READY_SUBTITLE,
+                                    text = stringResource(R.string.chart_selection_ready_subtitle),
                                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                                     fontSize = 12.sp
                                 )
@@ -226,7 +226,7 @@ fun ChartSelectionPage(
 
                         item {
                             Text(
-                                text = SelectChartMockData.SELECTION_PROMPT,
+                                text = stringResource(R.string.chart_selection_prompt),
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontSize = 14.sp

@@ -106,13 +106,13 @@ fun ChartCard(
             ) {
                 LegendItem(
                     color = MaterialTheme.colorScheme.primary,
-                    text = "Units Sold",
+                    text = stringResource(R.string.chart_legend_units_sold),
                     textColor = contentColor
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 LegendItem(
                     color = MaterialTheme.colorScheme.secondary,
-                    text = "Total Transactions",
+                    text = stringResource(R.string.chart_legend_total_transactions),
                     textColor = contentColor
                 )
             }

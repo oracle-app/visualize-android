@@ -71,6 +71,13 @@
     <string name="chart_selection_title">Choose visualization</string>
     <string name="chart_selection_post_personal">Post to personal feed</string>
     <string name="chart_selection_share_and_post">Share and post</string>
+    <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
+    <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
+    <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
+
+    // Chart Legend (Mock)
+    <string name="chart_legend_units_sold">Units Sold</string>
+    <string name="chart_legend_total_transactions">Total Transactions</string>
 
     // Edit Chart Title Dialog
 
