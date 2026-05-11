@@ -51,7 +51,7 @@ fun CreatePage(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             if (uri != null) {
-                val fileName = getFileName(context, uri) ?: "unknown_file"
+                val fileName = getFileName(context, uri) ?: context.getString(R.string.unknown_file)
                 val sizeBytes = getFileSizeBytes(context, uri)
 
                 viewModel.onFileSelected(SelectedDataset(fileName, sizeBytes))
@@ -216,7 +216,7 @@ fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateChartViewMod
         }
         is CreateChartUiState.Error -> {
             FileStatusItem(
-                fileName = state.fileName ?: "Error",
+                fileName = state.fileName ?: stringResource(R.string.error_generic),
                 fileSize = state.fileSize ?: "",
                 errorMessage = state.message,
                 onCancel = { viewModel.resetState() }

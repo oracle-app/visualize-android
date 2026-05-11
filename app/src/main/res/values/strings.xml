@@ -25,7 +25,10 @@
 
     // Feed Top Bar
 
-    <string name="feed_top_bar_title">All Feed</string>
+    <string name="feed_filter_all">All Feed</string>
+    <string name="feed_filter_personal">Personal Feed</string>
+    <string name="feed_filter_shared">Shared Feed</string>
+
     <string name="feed_top_bar_options_description">Options</string>
 
     // Search Section
@@ -43,6 +46,11 @@
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
+    <string name="by_author">By %s</string>
+    <string name="bullet_separator">    •    %s</string>
+
+    //Chart Component
+    <string name="invalid_chart">"Invalid chart type was detected"</string>
 
     // Create View
 
@@ -61,6 +69,9 @@
     <string name="dataset_requirements_example_label">Example</string>
     <string name="dataset_requirements_footer">Each row should represent a single data entry. Avoid empty rows or merged cells.</string>
 
+    <string name="unknown_file">unknown_file</string>
+
+    // Mock Table
     <string name="table_header_date">Date</string>
     <string name="table_header_product">Product</string>
     <string name="table_header_sales">Sales</string>
@@ -101,14 +112,20 @@
 
     // Errors
 
-
+    <string name="error_generic">Error</string>
     <string name="error_unknown">Unknown</string>
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
+    <string name="error_network">Connection error. Please check your internet.</string>
+    <string name="error_parsing">There was a problem reading some visualizations.</string>
+    <string name="error_viz_not_found">No visualizations found.</string>
+    <string name="error_chart_not_found">No chart found.</string>
+    <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>
     <string name="icon_back">Back</string>
+    <string name="icon_menu">Menu</string>
 
     // Profile Page
 

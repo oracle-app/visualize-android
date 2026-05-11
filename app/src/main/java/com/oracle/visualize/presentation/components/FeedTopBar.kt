@@ -56,9 +56,9 @@ fun FeedTopBar(
     var expanded by remember { mutableStateOf(false) }
 
     val filterLabels = mapOf(
-        VisualizationFilter.ALL to "All Feed",
-        VisualizationFilter.PERSONAL to "Personal Feed",
-        VisualizationFilter.SHARED to "Shared Feed"
+        VisualizationFilter.ALL      to stringResource(R.string.feed_filter_all),
+        VisualizationFilter.PERSONAL to stringResource(R.string.feed_filter_personal),
+        VisualizationFilter.SHARED   to stringResource(R.string.feed_filter_shared)
     )
 
     TopAppBar(
@@ -70,7 +70,7 @@ fun FeedTopBar(
                 ) {
                     Text(
                         text = filterLabels[selectedFilter]
-                            ?: stringResource(R.string.feed_top_bar_title),
+                            ?: stringResource(R.string.feed_filter_all),
                         fontWeight = FontWeight.Bold,
                         fontSize = 30.sp
                     )
@@ -126,7 +126,6 @@ fun FeedTopBar(
                     }
                 }
             }
-
         },
         actions = {
             IconButton(

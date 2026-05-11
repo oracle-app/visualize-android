@@ -1,9 +1,9 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,12 +19,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
+import com.oracle.visualize.R
+import androidx.compose.runtime.collectAsState
 
 /**
  * Composable representing the Feed screen.
@@ -40,7 +45,7 @@ fun FeedPage(
     feedViewModel: FeedViewModel = hiltViewModel(),
     onVisualizationClick: (String) -> Unit = {}
 ) {
-    val uiState by feedViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
@@ -48,69 +53,82 @@ fun FeedPage(
         topBar = {
             FeedTopBar(
                 scrollBehavior = scrollBehavior,
-                selectedFilter = uiState.selectedFilter,
+                selectedFilter = (uiState as? FeedUiState.Success)?.selectedFilter
+                    ?: VisualizationFilter.ALL,
+
                 onFilterSelected = { feedViewModel.onFilterChange(it) },
+
                 onSearchClick = { feedViewModel.toggleSearch() }
             )
         }
     ) { paddingValues ->
         PullToRefreshBox(
-            isRefreshing = uiState.isLoading && uiState.items.isNotEmpty(),
+            isRefreshing = (uiState as? FeedUiState.Success)?.isRefreshing == true,
             onRefresh = { feedViewModel.loadData(forceRefresh = true) },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
         ) {
-            when {
-                uiState.isLoading && uiState.items.isEmpty() -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+            when (val state = uiState) {
 
-                uiState.errorMessage != null -> {
+                is FeedUiState.Error -> {
                     Text(
-                        text = uiState.errorMessage!!,
+                        text = stringResource(state.message),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
 
-                uiState.items.isEmpty() && !uiState.isLoading -> {
-                    Text(
-                        text = "No visualizations found.",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+                is FeedUiState.Success -> {
 
-                else -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     ) {
+
                         item {
                             Spacer(modifier = Modifier.height(22.dp))
-                            if (uiState.isSearching) {
+
+                            if (state.isSearching) {
                                 SearchSection(
-                                    text = uiState.searchText,
+                                    text = state.searchText,
                                     onTextChange = { feedViewModel.onSearchTextChange(it) }
                                 )
                             }
+
                             Spacer(modifier = Modifier.height(8.dp))
                         }
-                        items(
-                            items = uiState.items,
-                            key = { it.id }
-                        ) { item ->
-                            FeedCard(
-                                item = item,
-                                onClick = { onVisualizationClick(item.id) }
-                            )
+
+                        if (state.items.isEmpty()) {
+                            item {
+                                Text(
+                                    text = stringResource(R.string.error_viz_not_found),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        } else {
+                            items(
+                                items = state.items,
+                                key = { it.id }
+                            ) { item ->
+                                FeedCard(
+                                    item = item,
+                                    onClick = { onVisualizationClick(item.id) }
+                                )
+                            }
                         }
+
                         item {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
+
+                else -> {}
             }
         }
     }
