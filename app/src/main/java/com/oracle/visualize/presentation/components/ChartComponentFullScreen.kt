@@ -29,11 +29,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun ChartRenderFullScreen(chart: Chart<*>) {
-    val labels = when (chart) {
-        is AreaChart -> chart.fieldNames
-        is StackedBarChart -> chart.fieldNames
-        else -> chart.fieldNames
-    }
+    val labels = chart.fieldNames
 
     val dSize = when (chart.data) {
         is List<*> -> chart.data.size
