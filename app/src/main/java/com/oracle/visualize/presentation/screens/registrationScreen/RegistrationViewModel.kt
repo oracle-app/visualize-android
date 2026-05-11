@@ -126,7 +126,7 @@ class RegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             updateContent { it.copy(isLoading = true, errorMessage = null) }
             try {
-                registerUseCase(state.email, state.password)
+                registerUseCase(state.name, state.email, state.password, state.confirmPassword)
                 _uiState.value = RegistrationUiState.Success
             } catch (e: Exception) {
                 updateContent { it.copy(isLoading = false, errorMessage = e.message) }
