@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,9 +47,9 @@ class FullVisualizationViewModel @Inject constructor(
                             visualization = visualization,
                             chart = chart,
                             errorMessage = if (visualization == null) {
-                                "Visualization not found."
+                                R.string.error_viz_not_found
                             } else if (chart == null) {
-                                "Chart not found."
+                                R.string.error_chart_not_found
                             } else {
                                 null
                             }
@@ -57,10 +58,10 @@ class FullVisualizationViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     val uiErrorMessage = when (error) {
-                        is AppError.NetworkError -> "Connection error. Please check your internet."
-                        is AppError.ParsingError -> "There was a problem reading this visualization."
-                        is AppError.NotFound -> "Visualization not found."
-                        else -> "An unexpected error occurred. Please try again,."
+                        is AppError.NetworkError -> R.string.error_network
+                        is AppError.ParsingError -> R.string.error_parsing
+                        is AppError.NotFound     -> R.string.error_viz_not_found
+                        else                     -> R.string.error_unknown_retry
                     }
 
                     _uiState.update {
@@ -75,3 +76,4 @@ class FullVisualizationViewModel @Inject constructor(
         }
     }
 }
+

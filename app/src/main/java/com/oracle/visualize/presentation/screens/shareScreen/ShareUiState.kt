@@ -23,5 +23,5 @@ sealed interface ShareUiState {
         val showUnsavedChangesDialog: Boolean = false
     ) : ShareUiState
 
-    data class Error(val message: String) : ShareUiState
+    data class Error(val message: Int) : ShareUiState
 }

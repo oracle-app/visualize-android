@@ -3,6 +3,7 @@ package com.oracle.visualize.presentation.screens.shareScreen
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.repositories.TeamRepository
@@ -26,7 +27,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ShareAndPostViewModel @Inject constructor(
     private val teamRepository: TeamRepository,
-    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase
+    private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
@@ -77,9 +78,9 @@ class ShareAndPostViewModel @Inject constructor(
             } catch (e: Exception) {
                 // Translates technical error
                 val errorMessage = when (e) {
-                    is AppError.NetworkError -> "Connection error. Please check your internet."
-                    is AppError.ParsingError -> "There was a problem reading your teams."
-                    else -> "Failed to load data. Please try again."
+                    is AppError.NetworkError -> R.string.error_network
+                    is AppError.ParsingError -> R.string.error_parsing
+                    else -> R.string.error_unknown_retry
                 }
 
                 Log.e("ShareAndPostViewModel", "Failed to load initial data", e)
