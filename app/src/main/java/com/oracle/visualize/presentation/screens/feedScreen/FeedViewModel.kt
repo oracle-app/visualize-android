@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,13 +24,14 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeedUIState())
     val uiState: StateFlow<FeedUIState> = _uiState.asStateFlow()
 
     private var allVisualizations: List<VisualizationCard> = emptyList()
+
     // TODO: Get from Auth Repository
     private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
 
@@ -47,6 +49,7 @@ class FeedViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
                     allVisualizations = items
