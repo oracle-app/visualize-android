@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,21 +40,19 @@ class FullVisualizationViewModel @Inject constructor(
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
-                // TODO: The use of mockdata will no longer be supported. The chart object must be obtained from the DB
-                val mockChart = null
+                    val chart = visualization?.chart
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualization = visualization,
-                            chart = null,
+                            chart = chart,
                             errorMessage = if (visualization == null) {
                                 R.string.error_viz_not_found
-                            } else if (mockChart == null) {
+                            } else if (chart == null) {
                                 R.string.error_chart_not_found
                             } else {
                                 null
                             }
-
                         )
                     }
                 },

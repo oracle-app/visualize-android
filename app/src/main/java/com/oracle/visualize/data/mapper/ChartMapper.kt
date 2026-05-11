@@ -2,7 +2,6 @@ package com.oracle.visualize.data.mapper
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
-import com.oracle.visualize.domain.models.enums.ChartTypes
 import org.json.JSONException
 
 /**
@@ -33,6 +32,20 @@ object ChartMapper {
 
             val dataObj = jsonObject.optJSONObject("data")
 
+            var stackNames = if (metricsObj !== null) fieldNames.drop(1) else emptyList()
+
+            if (dataObj != null && stackNames.isEmpty() ) {
+                val field2 = dataObj.optJSONObject("field2")
+                if (field2 !== null) {
+                    val f2Keys = field2.keys()
+                    val f2KeysList = mutableListOf<String>()
+                    while (f2Keys.hasNext()) {
+                        f2KeysList.add(f2Keys.next())
+                    }
+                    stackNames = f2KeysList
+                }
+            }
+
             when (chartTypeStr) {
                 "Vertical Bar Chart" -> {
                     VerticalBarChart(chartName, parseToMapStringFloat(dataObj), fieldNames)
@@ -41,7 +54,7 @@ object ChartMapper {
                     HorizontalBarChart(chartName, parseToMapStringFloat(dataObj), fieldNames)
                 }
                 "Stacked Bar Chart" -> {
-                    val stackNames = fieldNames.drop(1)
+
                     StackedBarChart(chartName, parseToMapStringListFloat(dataObj), stackNames)
                 }
                 "Line Chart", "Line" -> {
@@ -57,7 +70,6 @@ object ChartMapper {
                     ScatterChart(chartName, parseToMapFloatFloat(dataObj), fieldNames)
                 }
                 "Area Chart", "Area" -> {
-                    val stackNames = fieldNames.drop(1)
                     AreaChart(chartName, parseToMapFloatListFloat(dataObj), stackNames)
                 }
                 else -> {
@@ -100,19 +112,24 @@ object ChartMapper {
         if (dataObj == null) return map
 
         val keysArray = dataObj.optJSONArray("field1") ?: return map
+        val field2 = dataObj.optJSONObject("field2")
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i)
             val valueList = mutableListOf<Float>()
 
-            var fieldIndex = 2
-            while (dataObj.has("field$fieldIndex")) {
-                val array = dataObj.optJSONArray("field$fieldIndex")
-                valueList.add(array?.optString(i)?.toFloatOrNull() ?: 0f)
-                fieldIndex++
+            if (field2 !== null) {
+                var seriesIndex = 0
+                while (true) {
+                    val array = field2.optJSONArray(seriesIndex.toString()) ?: break
+                    val seriesValue = array.optString(i).toFloatOrNull() ?: 0f
+                    valueList.add(seriesValue)
+                    seriesIndex++
+                }
             }
             map[key] = valueList
         }
+
         return map
     }
 
@@ -138,19 +155,24 @@ object ChartMapper {
         if (dataObj == null) return map
 
         val keysArray = dataObj.optJSONArray("field1") ?: return map
+        val field2 = dataObj.optJSONObject("field2")
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i).toFloatOrNull() ?: 0f
             val valueList = mutableListOf<Float>()
 
-            var fieldIndex = 2
-            while (dataObj.has("field$fieldIndex")) {
-                val array = dataObj.optJSONArray("field$fieldIndex")
-                valueList.add(array?.optString(i)?.toFloatOrNull() ?: 0f)
-                fieldIndex++
+            if (field2 !== null) {
+                var seriesIndex = 0
+                while (true) {
+                    val array = field2.optJSONArray(seriesIndex.toString()) ?: break
+                    val seriesValue = array.optString(i).toFloatOrNull() ?: 0f
+                    valueList.add(seriesValue)
+                    seriesIndex++
+                }
             }
             map[key] = valueList
         }
+
         return map
     }
 
