@@ -13,7 +13,9 @@ import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
+import com.oracle.visualize.data.repositories.NotificationRepositoryImpl
 import com.oracle.visualize.data.repositories.UserRepositoryImpl
+import com.oracle.visualize.domain.repositories.NotificationRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -117,4 +119,13 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
+
+    /**
+     * Binds [NotificationRepositoryImpl] to [NotificationRepository].
+     */
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
 }

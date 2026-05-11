@@ -7,49 +7,67 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.repositories.NotificationRepository
 import com.oracle.visualize.presentation.navigation.NavItem
 import com.oracle.visualize.presentation.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
 /**
  * ViewModel for the Main screen (container for bottom navigation).
- * Provides the list of navigation items.
+ * Provides the reactive list of navigation items, including dynamic badge counts.
+ * 
+ * @property notificationRepository Repository used to observe notification counts.
  */
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    notificationRepository: NotificationRepository
+) : ViewModel() {
 
     /**
-     * The list of navigation items to be displayed in the main UI.
-     * The NavController (UI layer) will use the 'destination.route' for actual navigation.
+     * The reactive list of navigation items.
+     * Updates automatically when the notification count changes in the repository.
      */
-    val navItems = listOf(
-        NavItem(
-            label = R.string.nav_create,
-            icon  = Icons.Default.Add,
-            destination = NavRoutes.Create
-        ),
-        NavItem(
-            label = R.string.nav_teams,
-            icon  = Icons.Default.Groups,
-            destination = NavRoutes.Teams
-        ),
-        NavItem(
-            label = R.string.nav_feed,
-            icon  = Icons.Default.Home,
-            destination = NavRoutes.Feed
-        ),
-        NavItem(
-            label = R.string.nav_notifications,
-            icon  = Icons.Default.Notifications,
-            badgeCount = 5,
-            destination = NavRoutes.Notifications
-        ),
-        NavItem(
-            label = R.string.nav_profile,
-            icon  = Icons.Default.Person,
-            destination = NavRoutes.Profile(userId = "placeholder") // Needs to be changed to the current user ID
+    val navItems: StateFlow<List<NavItem>> = notificationRepository.getNotifications()
+        .map { notifications ->
+            val count = notifications.size
+            listOf(
+                NavItem(
+                    label = R.string.nav_create,
+                    icon  = Icons.Default.Add,
+                    destination = NavRoutes.Create
+                ),
+                NavItem(
+                    label = R.string.nav_teams,
+                    icon  = Icons.Default.Groups,
+                    destination = NavRoutes.Teams
+                ),
+                NavItem(
+                    label = R.string.nav_feed,
+                    icon  = Icons.Default.Home,
+                    destination = NavRoutes.Feed
+                ),
+                NavItem(
+                    label = R.string.nav_notifications,
+                    icon  = Icons.Default.Notifications,
+                    badgeCount = count,
+                    destination = NavRoutes.Notifications
+                ),
+                NavItem(
+                    label = R.string.nav_profile,
+                    icon  = Icons.Default.Person,
+                    destination = NavRoutes.Profile(userId = "placeholder")
+                )
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
         )
-    )
 }

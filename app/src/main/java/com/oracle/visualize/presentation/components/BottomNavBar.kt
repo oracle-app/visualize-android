@@ -8,7 +8,8 @@ import com.oracle.visualize.presentation.navigation.NavRoutes
 
 /**
  * A stateless UI component for the Bottom Navigation Bar.
- * * @param navItems The list of navigation items to display.
+ * 
+ * @param navItems The list of navigation items to display.
  * @param currentDestination The current active route object/class for selection highlighting.
  * @param onItemSelected Callback triggered when a navigation item is tapped.
  */

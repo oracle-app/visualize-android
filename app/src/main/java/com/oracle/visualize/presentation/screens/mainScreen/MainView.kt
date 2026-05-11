@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -34,8 +35,9 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
+    val navItems by viewModel.navItems.collectAsStateWithLifecycle()
 
-    val currentDestination = viewModel.navItems.find { item ->
+    val currentDestination = navItems.find { item ->
         backStackEntry?.destination?.hasRoute(item.destination::class) == true
     }?.destination
 
@@ -45,7 +47,7 @@ fun MainScreen(
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
-                    navItems = viewModel.navItems,
+                    navItems = navItems,
                     currentDestination = currentDestination,
                     onItemSelected = { destination ->
                         navController.navigate(destination) {
