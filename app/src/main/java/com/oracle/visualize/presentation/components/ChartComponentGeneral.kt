@@ -82,27 +82,6 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
             val maxValue = values.maxOrNull() ?: 0f
             val barColors = generateChartColors(categories.size)
 
-            XYGraph(
-                xAxisModel = remember { CategoryAxisModel(categories) },
-                yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
-                xAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                ),
-                yAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                )
-            ) {
-                VerticalBarPlot(
-                    xData = categories,
-                    yData = values,
-                    bar = { index, _, _ ->
-                        DefaultBar(brush = SolidColor(barColors[index]), modifier = Modifier.fillMaxWidth())
-                    }
-                )
             Box {
                 XYGraph(
                     xAxisModel = remember { CategoryAxisModel(categories) },
@@ -144,7 +123,6 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
                     }
                 }
             }
-            }
         }
 
         is HorizontalBarChart -> {
@@ -153,27 +131,6 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
             val maxValue = values.maxOrNull() ?: 0f
             val barColors = generateChartColors(categories.size)
 
-            XYGraph(
-                xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
-                yAxisModel = remember { CategoryAxisModel(categories) },
-                xAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                ),
-                yAxisContent = AxisContent(
-                    style = rememberAxisStyle(),
-                    labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
-                    title = {}
-                )
-            ) {
-                HorizontalBarPlot(
-                    xData = values,
-                    yData = categories,
-                    bar = { index, _, _ ->
-                        DefaultBar(brush = SolidColor(barColors[index]), modifier = Modifier.fillMaxHeight())
-                    }
-                )
             Box {
                 XYGraph(
                     xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
@@ -185,7 +142,7 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
                     ),
                     yAxisContent = AxisContent(
                         style = rememberAxisStyle(),
-                        labels = { Text(it, style = MaterialTheme.typography.bodySmall) },
+                        labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall) },
                         title = {}
                     )
                 ) {
@@ -215,16 +172,20 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
                     }
                 }
             }
-            }
         }
 
         is StackedBarChart -> {
             val categories = chart.data.keys.toList()
-            val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
-            val seriesNames = chart.stackNames
+            val seriesCount = chart.data.values.firstOrNull()?.size ?: 0
+            val seriesNames = if (chart.stackNames.size >= seriesCount) {
+                chart.stackNames
+            } else {
+                List(seriesCount) { i -> "Series ${i + 1}" }
+            }
             val seriesColors = generateChartColors(seriesNames.size)
+            val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
 
-            if (categories.isNotEmpty()) {
+            if (categories.isNotEmpty() && seriesCount > 0) {
                 XYGraph(
                     xAxisModel = remember { CategoryAxisModel(categories) },
                     yAxisModel = rememberFloatLinearAxisModel(0f..maxOf(1f, maxY), minorTickCount = 0),
@@ -241,11 +202,11 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
                 ) {
                     StackedVerticalBarPlot {
                         seriesNames.forEachIndexed { seriesIndex, _ ->
-                            series(
-                                defaultBar = verticalSolidBar(seriesColors[seriesIndex], RectangleShape, border = null)
-                            ) {
+                            series(defaultBar = verticalSolidBar(seriesColors[seriesIndex], RectangleShape, border = null)) {
                                 chart.data.forEach { (category, values) ->
-                                    if (seriesIndex < values.size) item(category, values[seriesIndex])
+                                    if (seriesIndex < values.size) {
+                                        item(category, values[seriesIndex])
+                                    }
                                 }
                             }
                         }

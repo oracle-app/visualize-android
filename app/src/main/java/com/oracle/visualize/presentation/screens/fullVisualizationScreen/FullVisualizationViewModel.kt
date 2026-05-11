@@ -3,7 +3,6 @@ package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +24,7 @@ class FullVisualizationViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
-    private val currentUserID: String = "NQ5fdkRdISA8U7DgcII1"
+    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
 
     fun loadVisualization(visualizationId: String) {
         viewModelScope.launch {
@@ -36,40 +35,19 @@ class FullVisualizationViewModel @Inject constructor(
                 )
             }
 
-            /*
-            * Get a chart from the mock chart repository.
-            *
-            * @param chartType: The type of chart, according belongs to the
-            * ChartTypes enum.
-            *
-            * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
-            * - VERTICAL_BAR (Vertical Bar Chart)
-            * - HORIZONTAL_BAR (Vertical Bar Chart)
-            * - STACKED_BAR (Stacked Bar Chart)
-            * - LINE (Line Chart)
-            * - SCATTER (Scatter Chart)
-            * - PIE (Pie Chart)
-            * - DONUT (Donut Chart)
-            * - AREA (Area Chart)
-            *
-            * TODO: Get data from the microservice when it becomes available.
-            *
-            * */
-
             //TODO: Get from Auth Repository
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
-                // TODO: The use of mockdata will no longer be supported. The chart object must be obtained from the DB
-                val mockChart = null
+                    val chart = visualization?.chart
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualization = visualization,
-                            chart = null,
+                            chart = chart,
                             errorMessage = if (visualization == null) {
                                 "Visualization not found."
-                            } else if (mockChart == null) {
+                            } else if (chart == null) {
                                 "Chart not found."
                             } else {
                                 null
@@ -97,4 +75,3 @@ class FullVisualizationViewModel @Inject constructor(
         }
     }
 }
-

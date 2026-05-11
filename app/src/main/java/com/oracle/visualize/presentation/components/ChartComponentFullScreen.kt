@@ -30,22 +30,32 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 @Composable
 fun ChartRenderFullScreen(chart: Chart<*>) {
     val labels = when (chart) {
-        is AreaChart -> chart.stackNames
-        is StackedBarChart -> chart.stackNames
+        is AreaChart -> chart.fieldNames
+        is StackedBarChart -> chart.fieldNames
         else -> chart.fieldNames
     }
 
-    val colors = generateChartColors(labels.size)
+    val dSize = when (chart.data) {
+        is List<*> -> chart.data.size
+        is Map<*,*> -> (chart.data.values.firstOrNull() as? List<*>)?.size ?: 1
+        else -> 1
+    }
+
+    val cleanLabels = labels.ifEmpty {
+        List(dSize) { "Label ${it + 1}" }
+    }
+
+    val colors = generateChartColors(cleanLabels.size)
 
     ChartLayout(
         modifier = Modifier.fillMaxSize(),
         title = { Text("", style = MaterialTheme.typography.titleLarge) },
         legend = {
             FlowLegend(
-                modifier = Modifier.padding(bottom = 36.dp).border(1.dp, Color.Black).padding(16.dp),
-                itemCount = labels.size,
+                modifier = Modifier.padding(8.dp).border(1.dp, Color.Black).padding(8.dp),
+                itemCount = cleanLabels.size,
                 symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
-                label = { Text("${labels[it]}") }
+                label = { Text(cleanLabels[it], style = MaterialTheme.typography.bodySmall ) }
             )
         },
         legendLocation = LegendLocation.TOP
