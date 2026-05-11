@@ -8,5 +8,7 @@ data class FeedUIState(
     val searchText: String = "",
     val selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
     val isLoading: Boolean = true,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isSearching: Boolean = false
+
 )

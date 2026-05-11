@@ -49,7 +49,8 @@ fun FeedPage(
             FeedTopBar(
                 scrollBehavior = scrollBehavior,
                 selectedFilter = uiState.selectedFilter,
-                onFilterSelected = { feedViewModel.onFilterChange(it) }
+                onFilterSelected = { feedViewModel.onFilterChange(it) },
+                onSearchClick = { feedViewModel.toggleSearch() }
             )
         }
     ) { paddingValues ->
@@ -64,18 +65,21 @@ fun FeedPage(
                 uiState.isLoading && uiState.items.isEmpty() -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 uiState.errorMessage != null -> {
                     Text(
                         text = uiState.errorMessage!!,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 uiState.items.isEmpty() && !uiState.isLoading -> {
                     Text(
                         text = "No visualizations found.",
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 else -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -85,10 +89,12 @@ fun FeedPage(
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(22.dp))
-                            SearchSection(
-                                text = uiState.searchText,
-                                onTextChange = { feedViewModel.onSearchTextChange(it) }
-                            )
+                            if (uiState.isSearching) {
+                                SearchSection(
+                                    text = uiState.searchText,
+                                    onTextChange = { feedViewModel.onSearchTextChange(it) }
+                                )
+                            }
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                         items(

@@ -27,6 +27,12 @@ class FeedViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
 ) : ViewModel() {
 
+    fun toggleSearch() {
+        _uiState.update {
+            it.copy(isSearching = !it.isSearching)
+        }
+    }
+
     private val _uiState = MutableStateFlow(FeedUIState())
     val uiState: StateFlow<FeedUIState> = _uiState.asStateFlow()
 
@@ -83,6 +89,7 @@ class FeedViewModel @Inject constructor(
             loadData()
         }
     }
+
     fun onSearchTextChange(newText: String) {
         _uiState.update { it.copy(searchText = newText) }
         applyLocalFilterAndSearch()
