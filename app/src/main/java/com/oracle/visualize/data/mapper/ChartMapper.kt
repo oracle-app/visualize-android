@@ -13,6 +13,12 @@ import org.json.JSONException
 import org.json.JSONObject
 object ChartMapper {
 
+    /**
+     * Function to parse a JSON into a Chart object.
+     *
+     * @param previewJson The JSON code to process.
+     * @return a Chart object, depending on the type of chart.
+    **/
     fun fromPreviewJson(previewJson: String): Chart<*>? {
         if (previewJson.isBlank() || previewJson == "{}") return null
 
@@ -84,12 +90,25 @@ object ChartMapper {
         }
     }
 
+    /**
+     * Function to process a JSON object to obtain the KPI.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return the KPI in Float type.
+     **/
     private fun parseSingleKpi(dataObj: JSONObject?): Float {
         if (dataObj == null) return 0f
         val keysArray = dataObj.optJSONArray("field1") ?: dataObj.optJSONArray("field2")
         return keysArray?.optString(0)?.toFloatOrNull() ?: 0f
     }
 
+    /**
+     * Function to map a JSON object into the specific data format Map<String, Float>
+     * for Vertical and Horizontal Bar charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return map with String keys and Float values.
+     **/
     private fun parseToMapStringFloat(dataObj: JSONObject?): Map<String, Float> {
         val map = mutableMapOf<String, Float>()
         if (dataObj == null) return map
@@ -107,6 +126,37 @@ object ChartMapper {
         return map
     }
 
+    /**
+     * Function to get the values list of a specific key from "field2". Stacked Bar
+     * and Area charts.
+     *
+     * @param field2 The JSON data object to process.
+     * @param keyIndex the current index that will receive the values list.
+     * @return Float values list.
+     **/
+    private fun getfield2ValueList(field2: JSONObject?, keyIndex: Int): List<Float> {
+        val valueList = mutableListOf<Float>()
+        var seriesIndex = 0
+
+        if (field2 !== null) {
+            while (true) {
+                val array = field2.optJSONArray(seriesIndex.toString()) ?: break
+                val seriesValue = array.optString(keyIndex).toFloatOrNull() ?: 0f
+                valueList.add(seriesValue)
+                seriesIndex++
+            }
+        }
+
+        return valueList
+    }
+
+    /**
+     * Function to map a JSON object into the specific data format Map<String, List<Float>>
+     * for Stacked Bar charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return map with String keys and List<Float> values.
+     **/
     private fun parseToMapStringListFloat(dataObj: JSONObject?): Map<String, List<Float>> {
         val map = mutableMapOf<String, List<Float>>()
         if (dataObj == null) return map
@@ -116,23 +166,20 @@ object ChartMapper {
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i)
-            val valueList = mutableListOf<Float>()
-
-            if (field2 !== null) {
-                var seriesIndex = 0
-                while (true) {
-                    val array = field2.optJSONArray(seriesIndex.toString()) ?: break
-                    val seriesValue = array.optString(i).toFloatOrNull() ?: 0f
-                    valueList.add(seriesValue)
-                    seriesIndex++
-                }
-            }
+            val valueList = getfield2ValueList(field2, i)
             map[key] = valueList
         }
 
         return map
     }
 
+    /**
+     * Function to map a JSON object into the specific data format Map<Float, Float>
+     * for Line and Scatter charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return map of Float keys and Float values.
+     **/
     private fun parseToMapFloatFloat(dataObj: JSONObject?): Map<Float, Float> {
         val map = mutableMapOf<Float, Float>()
         if (dataObj == null) return map
@@ -150,6 +197,13 @@ object ChartMapper {
         return map
     }
 
+    /**
+     * Function to map a JSON object into the specific data format Map<Float, List<Float>>
+     * for Area charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return map with Float keys and List<Float> values.
+     **/
     private fun parseToMapFloatListFloat(dataObj: JSONObject?): Map<Float, List<Float>> {
         val map = mutableMapOf<Float, List<Float>>()
         if (dataObj == null) return map
@@ -159,23 +213,20 @@ object ChartMapper {
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i).toFloatOrNull() ?: 0f
-            val valueList = mutableListOf<Float>()
-
-            if (field2 !== null) {
-                var seriesIndex = 0
-                while (true) {
-                    val array = field2.optJSONArray(seriesIndex.toString()) ?: break
-                    val seriesValue = array.optString(i).toFloatOrNull() ?: 0f
-                    valueList.add(seriesValue)
-                    seriesIndex++
-                }
-            }
+            val valueList = getfield2ValueList(field2, i)
             map[key] = valueList
         }
 
         return map
     }
 
+    /**
+     * Function to map a JSON object into the specific data format List<Float>
+     * for Pie and Donut charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return list of Float values.
+     **/
     private fun parseToListFloat(dataObj: JSONObject?): List<Float> {
         val list = mutableListOf<Float>()
         if (dataObj == null) return list
