@@ -3,6 +3,7 @@ package com.oracle.visualize.presentation.components
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -129,7 +130,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                 ) {
                     val chart = item.chart
                     if (chart != null) {
-                        ChartRenderGeneral(chart = chart)
+                        ChartRenderGeneral(chart = chart, showTooltips = false)
                     } else {
                         Text(
                             text = "Chart not found",
