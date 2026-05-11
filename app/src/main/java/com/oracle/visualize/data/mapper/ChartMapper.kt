@@ -155,19 +155,24 @@ object ChartMapper {
         if (dataObj == null) return map
 
         val keysArray = dataObj.optJSONArray("field1") ?: return map
+        val field2 = dataObj.optJSONObject("field2")
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i).toFloatOrNull() ?: 0f
             val valueList = mutableListOf<Float>()
 
-            var fieldIndex = 2
-            while (dataObj.has("field$fieldIndex")) {
-                val array = dataObj.optJSONArray("field$fieldIndex")
-                valueList.add(array?.optString(i)?.toFloatOrNull() ?: 0f)
-                fieldIndex++
+            if (field2 !== null) {
+                var seriesIndex = 0
+                while (true) {
+                    val array = field2.optJSONArray(seriesIndex.toString()) ?: break
+                    val seriesValue = array.optString(i).toFloatOrNull() ?: 0f
+                    valueList.add(seriesValue)
+                    seriesIndex++
+                }
             }
             map[key] = valueList
         }
+
         return map
     }
 
