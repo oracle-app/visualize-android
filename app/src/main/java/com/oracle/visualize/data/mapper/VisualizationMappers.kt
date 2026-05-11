@@ -1,5 +1,6 @@
 package com.oracle.visualize.data.mapper
 
+import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
@@ -24,6 +25,21 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
 )
 
 /**
+ * Extension function to map [Visualization] to [VisualizationDTO] Data Transfer Object.
+ *
+ * @return A [VisualizationDTO] object.
+ */
+fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
+    id = id,
+    authorID = authorID,
+    title = title,
+    configJSON = configJSON,
+    sharedWithUsers = sharedWithUsers,
+    sharedWithTeams = sharedWithTeams,
+    createdAt = Timestamp(createdAt),
+)
+
+/**
  * Extension function to map [VisualizationDTO] to [VisualizationCard] domain model.
  * Used for displaying a summary of the visualization in lists/feeds.
  *
@@ -33,31 +49,19 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
  */
 fun VisualizationDTO.toVisualizationCard(
     authorName: String,
-    teamsSharedWith: List<Team>,
-    usersSharedWith: List<User>): VisualizationCard {
-    val allUsersDict = mutableMapOf<String, User>()
-
-    for (user in usersSharedWith) {
-        allUsersDict[user.id] = user
-    }
-
-    for (team in teamsSharedWith) {
-        for (member in team.members) {
-            allUsersDict[member.id] = member
-        }
-    }
-
-    val allUsers = allUsersDict.values.toList()
-
+    teamsSharedWith: List<Team> = emptyList(),
+    usersSharedWith: List<User> = emptyList(),
+    allUsers: List<User> = emptyList()
+): VisualizationCard {
     return VisualizationCard(
-        id = this.id ?: "",
+        id = this.id,
         title = this.title,
-        author = authorName,
         authorID = this.authorID,
+        author = authorName,
         createdAt = this.createdAt.toDate(),
-        configJSON = this.configJSON,
         teamsSharedWith = teamsSharedWith,
         usersSharedWith = usersSharedWith,
-        allUsersSharedWith = allUsers
+        allUsersSharedWith = allUsers,
+        chart = ChartMapper.fromPreviewJson(this.previewJSON)
     )
 }

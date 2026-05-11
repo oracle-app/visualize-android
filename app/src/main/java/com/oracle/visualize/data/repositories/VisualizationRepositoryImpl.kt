@@ -8,6 +8,7 @@ import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
+import com.oracle.visualize.data.mapper.toVisualizationDTO
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.repositories.VisualizationRepository
@@ -74,7 +75,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         val hiddenIDs = currentUser.hiddenVisualizations?.toSet() ?: emptySet()
 
         val visibleDTOs = dtos.filter { dto ->
-            val id = dto.id ?: return@filter false
+            val id = dto.id
             !hiddenIDs.contains(id)
         }
 
@@ -126,7 +127,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         val allUsers = mutableListOf<UserDTO>()
         val chunkSize = 30
 
-        // ´chunked()´ is equivalent to Swift's ´stride´ for splitting the array 
+        // ´chunked()´ is equivalent to Swift's ´stride´ for splitting the array
         ids.chunked(chunkSize).forEach { chunk ->
             val chunkUsers = userDatasource.getUsersByIDs(chunk)
             allUsers.addAll(chunkUsers)
@@ -145,5 +146,10 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
 
         return allTeams
+    }
+
+    override suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
+        val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
+        visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
     }
 }
