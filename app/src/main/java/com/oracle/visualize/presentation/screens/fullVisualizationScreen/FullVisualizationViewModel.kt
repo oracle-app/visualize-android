@@ -2,8 +2,8 @@ package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,41 +36,20 @@ class FullVisualizationViewModel @Inject constructor(
                 )
             }
 
-            /*
-            * Get a chart from the mock chart repository.
-            *
-            * @param chartType: The type of chart, according belongs to the
-            * ChartTypes enum.
-            *
-            * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
-            * - VERTICAL_BAR (Vertical Bar Chart)
-            * - HORIZONTAL_BAR (Vertical Bar Chart)
-            * - STACKED_BAR (Stacked Bar Chart)
-            * - LINE (Line Chart)
-            * - SCATTER (Scatter Chart)
-            * - PIE (Pie Chart)
-            * - DONUT (Donut Chart)
-            * - AREA (Area Chart)
-            *
-            * TODO: Get data from the microservice when it becomes available.
-            *
-            * */
-
             //TODO: Get from Auth Repository
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
-                // TODO: The use of mockdata will no longer be supported. The chart object must be obtained from the DB
-                val mockChart = null
+                    val chart = visualization?.chart
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualization = visualization,
-                            chart = null,
+                            chart = chart,
                             errorMessage = if (visualization == null) {
-                                "Visualization not found."
-                            } else if (mockChart == null) {
-                                "Chart not found."
+                                R.string.error_viz_not_found
+                            } else if (chart == null) {
+                                R.string.error_chart_not_found
                             } else {
                                 null
                             }
@@ -79,10 +58,10 @@ class FullVisualizationViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     val uiErrorMessage = when (error) {
-                        is AppError.NetworkError -> "Connection error. Please check your internet."
-                        is AppError.ParsingError -> "There was a problem reading this visualization."
-                        is AppError.NotFound -> "Visualization not found."
-                        else -> "An unexpected error occurred. Please try again,."
+                        is AppError.NetworkError -> R.string.error_network
+                        is AppError.ParsingError -> R.string.error_parsing
+                        is AppError.NotFound     -> R.string.error_viz_not_found
+                        else                     -> R.string.error_unknown_retry
                     }
 
                     _uiState.update {
