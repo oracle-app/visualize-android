@@ -2,6 +2,7 @@ package com.oracle.visualize.data.mapper
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
+import org.json.JSONArray
 import org.json.JSONException
 
 /**
@@ -28,55 +29,47 @@ object ChartMapper {
             val chartTypeStr = jsonObject.optString("chartType", "")
 
             val metricsObj = jsonObject.optJSONObject("metrics")
-            val fieldNames = mutableListOf<String>()
+            val metricsFieldNames = mutableListOf<String>()
             metricsObj?.let {
                 val keys = it.keys()
                 while (keys.hasNext()) {
-                    fieldNames.add(it.getString(keys.next()))
+                    metricsFieldNames.add(it.getString(keys.next()))
                 }
             }
 
             val dataObj = jsonObject.optJSONObject("data")
 
-            var stackNames = if (metricsObj !== null) fieldNames.drop(1) else emptyList()
-
-            if (dataObj != null && stackNames.isEmpty() ) {
-                val field2 = dataObj.optJSONObject("field2")
-                if (field2 !== null) {
-                    val f2Keys = field2.keys()
-                    val f2KeysList = mutableListOf<String>()
-                    while (f2Keys.hasNext()) {
-                        f2KeysList.add(f2Keys.next())
-                    }
-                    stackNames = f2KeysList
-                }
-            }
+            /*
+            * Get field names from "field1", applying to:
+            * Vertical Bar, Horizontal Bar, Pie, Donut, and Area charts
+            * */
+            val field1FieldNames = getField1Categories(dataObj)
 
             when (chartTypeStr) {
                 "Vertical Bar Chart" -> {
-                    VerticalBarChart(chartName, parseToMapStringFloat(dataObj), fieldNames)
+                    VerticalBarChart(chartName, parseToMapStringFloat(dataObj), field1FieldNames)
                 }
                 "Horizontal Bar Chart" -> {
-                    HorizontalBarChart(chartName, parseToMapStringFloat(dataObj), fieldNames)
+                    HorizontalBarChart(chartName, parseToMapStringFloat(dataObj), field1FieldNames)
                 }
                 "Stacked Bar Chart" -> {
-
+                    val stackNames = getStackedBarStackNames(dataObj, metricsObj, metricsFieldNames)
                     StackedBarChart(chartName, parseToMapStringListFloat(dataObj), stackNames)
                 }
                 "Line Chart", "Line" -> {
-                    LineChart(chartName, parseToMapFloatFloat(dataObj), fieldNames)
+                    LineChart(chartName, parseToMapFloatFloat(dataObj), metricsFieldNames)
                 }
                 "Pie Chart", "Pie" -> {
-                    PieChartModel(chartName, parseToListFloat(dataObj), fieldNames)
+                    PieChartModel(chartName, parseToListFloat(dataObj), field1FieldNames)
                 }
                 "Donut Chart", "Donut" -> {
-                    DonutChart(chartName, parseToListFloat(dataObj), fieldNames)
+                    DonutChart(chartName, parseToListFloat(dataObj), field1FieldNames)
                 }
                 "Scatter Chart", "Scatter" -> {
-                    ScatterChart(chartName, parseToMapFloatFloat(dataObj), fieldNames)
+                    ScatterChart(chartName, parseToMapFloatFloat(dataObj), metricsFieldNames)
                 }
                 "Area Chart", "Area" -> {
-                    AreaChart(chartName, parseToMapFloatListFloat(dataObj), stackNames)
+                    AreaChart(chartName, parseToMapFloatListFloat(dataObj), field1FieldNames)
                 }
                 else -> {
                     throw AppError.ParsingError("Unsupported chart type: $chartTypeStr")
@@ -88,6 +81,54 @@ object ChartMapper {
             if (e is AppError) throw e
             throw AppError.ParsingError("Error parsing chart: ${e.message}")
         }
+    }
+
+    /**
+     * Function to get stack names for Stack Bar charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @param metricsObj The JSON metric object to process.
+     * @param fieldNames The field names list.
+     * @return the stack names list.
+     **/
+    private fun getStackedBarStackNames(
+        dataObj: JSONObject?, metricsObj: JSONObject?, fieldNames: List<String>
+    ): List<String> {
+        var stackedBarStackNames = if (metricsObj !== null) fieldNames.drop(1) else emptyList()
+
+        if (dataObj != null && stackedBarStackNames.isEmpty() ) {
+            val field2 = dataObj.optJSONObject("field2")
+            if (field2 !== null) {
+                val f2Keys = field2.keys()
+                val f2KeysList = mutableListOf<String>()
+                while (f2Keys.hasNext()) {
+                    f2KeysList.add(f2Keys.next())
+                }
+                stackedBarStackNames = f2KeysList
+            }
+        }
+
+        return stackedBarStackNames
+    }
+
+    /**
+     * Function to get field names for charts that have them on "field1" from the "data"
+     * JSON object.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return the field names list.
+     **/
+    private fun getField1Categories(dataObj: JSONObject?): List<String> {
+        val categories = mutableListOf<String>()
+        val field1 = dataObj?.optJSONArray("field1")
+
+        if (field1 != null) {
+            for (i in 0 until field1.length()) {
+                categories.add(field1.optString(i).ifBlank { "Cat ${i + 1}" })
+            }
+        }
+
+        return categories
     }
 
     /**
@@ -134,7 +175,7 @@ object ChartMapper {
      * @param keyIndex the current index that will receive the values list.
      * @return Float values list.
      **/
-    private fun getfield2ValueList(field2: JSONObject?, keyIndex: Int): List<Float> {
+    private fun getField2ValueList(field2: JSONObject?, keyIndex: Int): List<Float> {
         val valueList = mutableListOf<Float>()
         var seriesIndex = 0
 
@@ -166,8 +207,7 @@ object ChartMapper {
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i)
-            val valueList = getfield2ValueList(field2, i)
-            map[key] = valueList
+            map[key] = getField2ValueList(field2, i)
         }
 
         return map
@@ -213,8 +253,7 @@ object ChartMapper {
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i).toFloatOrNull() ?: 0f
-            val valueList = getfield2ValueList(field2, i)
-            map[key] = valueList
+            map[key] = getField2ValueList(field2, i)
         }
 
         return map

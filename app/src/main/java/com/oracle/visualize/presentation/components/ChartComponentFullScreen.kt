@@ -38,7 +38,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
     }
 
     val cleanLabels = labels.ifEmpty {
-        List(dSize) { "Label ${it + 1}" }
+        List(dSize) { "Cat ${it + 1}" }
     }
 
     val colors = generateChartColors(cleanLabels.size)
