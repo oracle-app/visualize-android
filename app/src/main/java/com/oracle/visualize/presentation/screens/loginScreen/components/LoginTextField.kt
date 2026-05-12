@@ -99,9 +99,9 @@ fun LoginTextField(
             singleLine = true,
             shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
         )
-        if (isError) {
+        error?.let { errorMessage ->
             Text(
-                text = error!!,
+                text = errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,

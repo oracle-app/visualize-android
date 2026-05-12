@@ -71,8 +71,8 @@ fun LoginView(
 
                 Surface(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
+                        .fillMaxHeight()
+                        .fillMaxWidth(),
                     color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
                 ) {
