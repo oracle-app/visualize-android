@@ -13,28 +13,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
-import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.domain.models.Chart
-import com.oracle.visualize.domain.models.StackedBarChart
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
 import io.github.koalaplot.core.legend.FlowLegend
 import io.github.koalaplot.core.legend.LegendLocation
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
-import java.nio.file.WatchEvent
 
 /**
  * Renders a chart based on the provided [Chart] data using KoalaPlot.
  *
  * @param chart The chart configuration and data to render.
+ * @param modifier The modifier object that lets a parent component modify its
+ * appearance.
  */
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun ChartRenderFullScreen(chart: Chart<*>) {
+fun ChartRenderFullScreen(chart: Chart<*>, modifier: Modifier = Modifier) {
     val labels = chart.fieldNames
 
     val dSize = when (chart.data) {
@@ -51,7 +49,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
 
     ChartLayout(
         modifier = Modifier.fillMaxSize(),
-        title = { Text("", style = MaterialTheme.typography.titleLarge) },
+        title = { Text("", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onPrimaryContainer) },
         legend = {
             FlowLegend(
                 modifier = Modifier.border(
@@ -81,6 +79,7 @@ fun ChartRenderFullScreen(chart: Chart<*>) {
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Spacer(modifier = Modifier.height(60.dp))
-            ChartRenderGeneral(chart) }
+            ChartRenderGeneral(chart)
         }
+    }
 }

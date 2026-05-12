@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
