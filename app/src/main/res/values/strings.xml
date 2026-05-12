@@ -75,10 +75,6 @@
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
     <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
 
-    // Chart Legend (Mock)
-    <string name="chart_legend_units_sold">Units Sold</string>
-    <string name="chart_legend_total_transactions">Total Transactions</string>
-
     // Edit Chart Title Dialog
 
     <string name="dialog_edit_title">Edit Chart Title</string>

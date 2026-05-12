@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -13,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -88,33 +86,11 @@ fun ChartCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(200.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(16.dp)
             ) {
                 MockChartContent()
-            }
-
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(topBottomBackground)
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                LegendItem(
-                    color = MaterialTheme.colorScheme.primary,
-                    text = stringResource(R.string.chart_legend_units_sold),
-                    textColor = contentColor
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                LegendItem(
-                    color = MaterialTheme.colorScheme.secondary,
-                    text = stringResource(R.string.chart_legend_total_transactions),
-                    textColor = contentColor
-                )
             }
         }
     }
@@ -206,19 +182,5 @@ fun MockChartContent() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun LegendItem(color: Color, text: String, textColor: Color) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(color)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = text, fontSize = 9.sp, color = textColor)
     }
 }

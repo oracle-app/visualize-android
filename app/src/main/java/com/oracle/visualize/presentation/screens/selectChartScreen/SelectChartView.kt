@@ -53,7 +53,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.components.Ch
 /**
  * Screen for selecting visualizations to post or share.
  *
- * @param onBack Callback to navigate back.
+ * @param onNavigateBack Callback to navigate back.
  * @param onNavigateToShare Callback to navigate to the share screen.
  * @param onNavigateToFeed Callback to navigate to the feed screen.
  * @param viewModel The [SelectChartViewModel] that manages chart selections.
@@ -61,7 +61,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.components.Ch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartSelectionPage(
-    onBack: () -> Unit,
+    onNavigateBack: () -> Unit,
     onNavigateToShare: () -> Unit,
     onNavigateToFeed: () -> Unit,
     viewModel: SelectChartViewModel = hiltViewModel()
@@ -78,7 +78,7 @@ fun ChartSelectionPage(
         if (state is ChartSelectionUiState.Success && state.hasTitleChanges) {
             viewModel.showUnsavedChangesDialog(true)
         } else {
-            onBack()
+            onNavigateBack()
         }
     }
 
@@ -100,7 +100,7 @@ fun ChartSelectionPage(
                             if (state is ChartSelectionUiState.Success && state.hasTitleChanges) {
                                 viewModel.showUnsavedChangesDialog(true)
                             } else {
-                                onBack()
+                                onNavigateBack()
                             }
                         }
                     ) {
@@ -325,7 +325,7 @@ fun ChartSelectionPage(
                     TextButton(
                         onClick = {
                             viewModel.showUnsavedChangesDialog(false)
-                            onBack()
+                            onNavigateBack()
                         }
                     ) {
                         Text(

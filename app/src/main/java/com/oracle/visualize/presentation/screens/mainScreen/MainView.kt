@@ -75,7 +75,7 @@ fun MainScreen(
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.ChartSelection,
+        startDestination = NavRoutes.Feed,
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
@@ -100,9 +100,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.ChartSelection> {
             ChartSelectionPage(
-                onBack = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
                 onNavigateToShare = {
-                    // TODO: Navigate to share screen
                     navController.navigate(NavRoutes.ShareAndPost)
                 },
                 onNavigateToFeed = {
