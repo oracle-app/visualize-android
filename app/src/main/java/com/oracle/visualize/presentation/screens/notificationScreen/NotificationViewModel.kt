@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.notificationScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.models.Notification
 import com.oracle.visualize.domain.models.NotificationSection
 import com.oracle.visualize.domain.repositories.NotificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,18 +22,22 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
-    notificationRepository: NotificationRepository
+    notificationRepository: NotificationRepository,
 ) : ViewModel() {
 
     /**
      * UI state representing the current list of notifications or loading/error status.
+     * Includes a timestamp to force UI refresh on every repository emission.
      */
     val uiState: StateFlow<NotificationUiState> = notificationRepository.getNotifications()
         .map { notifications ->
             if (notifications.isEmpty()) {
-                NotificationUiState.Success(emptyList())
+                NotificationUiState.Success(emptyList(), System.currentTimeMillis())
             } else {
-                NotificationUiState.Success(notifications.sortedByDescending { it.createdAt })
+                NotificationUiState.Success(
+                    notifications = notifications.sortedByDescending { it.createdAt },
+                    lastUpdated = System.currentTimeMillis(),
+                )
             }
         }
         .stateIn(
@@ -58,11 +61,14 @@ class NotificationViewModel @Inject constructor(
         return when {
             diffInMin < 1 -> "Just now"
             diffInMin < 60 -> "$diffInMin min ago"
-            diffInHours < 24 && isSameDay(now, date) -> "$diffInHours h ago"
+            (diffInHours < 24) && isSameDay(now, date) -> "$diffInHours h ago"
             isYesterday(date) -> "Yesterday"
             else -> {
                 val cal = Calendar.getInstance().apply { time = date }
-                "${cal.get(Calendar.DAY_OF_MONTH)}/${cal.get(Calendar.MONTH) + 1}/${cal.get(Calendar.YEAR) % 100}"
+                val day = cal.get(Calendar.DAY_OF_MONTH)
+                val month = cal.get(Calendar.MONTH) + 1
+                val year = cal.get(Calendar.YEAR) % 100
+                "$day/$month/$year"
             }
         }
     }
@@ -88,8 +94,8 @@ class NotificationViewModel @Inject constructor(
     private fun isSameDay(d1: Date, d2: Date): Boolean {
         val cal1 = Calendar.getInstance().apply { time = d1 }
         val cal2 = Calendar.getInstance().apply { time = d2 }
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+        return (cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)) &&
+                (cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR))
     }
 
     /**

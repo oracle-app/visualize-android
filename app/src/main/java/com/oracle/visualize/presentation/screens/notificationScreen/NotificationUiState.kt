@@ -14,9 +14,11 @@ sealed interface NotificationUiState {
      * Indicates that the notifications were successfully fetched.
      * 
      * @property notifications The list of [Notification] objects to display.
+     * @property lastUpdated Timestamp of the last update to force UI recomposition.
      */
     data class Success(
-        val notifications: List<Notification> = emptyList()
+        val notifications: List<Notification> = emptyList(),
+        val lastUpdated: Long = System.currentTimeMillis()
     ) : NotificationUiState
 
     /**

@@ -35,7 +35,7 @@ import com.oracle.visualize.domain.models.NotificationSection
 @Composable
 fun NotificationPage(
     modifier: Modifier = Modifier,
-    viewModel: NotificationViewModel = hiltViewModel()
+    viewModel: NotificationViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
