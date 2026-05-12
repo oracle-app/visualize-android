@@ -28,6 +28,7 @@ object ChartMapper {
             val chartName = jsonObject.optString("chartName", "No Title")
             val chartTypeStr = jsonObject.optString("chartType", "")
 
+            // Metrics' field names, which mainly apply to Line and Scatter charts.
             val metricsObj = jsonObject.optJSONObject("metrics")
             val metricsFieldNames = mutableListOf<String>()
             metricsObj?.let {
