@@ -33,7 +33,7 @@ fun ThreadCard(
         MaterialTheme.colorScheme.tertiary
     }
 
-    val timelineColor = MaterialTheme.colorScheme.secondaryContainer
+    val timelineColor = MaterialTheme.colorScheme.tertiaryFixed
 
     Column(
         modifier = modifier

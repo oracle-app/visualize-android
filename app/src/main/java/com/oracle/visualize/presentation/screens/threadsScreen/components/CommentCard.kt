@@ -35,7 +35,7 @@ fun CommentCard(
                 size = 32.dp,
                 modifier = Modifier.border(
                     width = 3.dp,
-                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    color = MaterialTheme.colorScheme.tertiaryFixed,
                     shape = CircleShape
                 )
             )
@@ -52,7 +52,7 @@ fun CommentCard(
                 bottomEnd = 14.dp
             ),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryFixed
             ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 4.dp

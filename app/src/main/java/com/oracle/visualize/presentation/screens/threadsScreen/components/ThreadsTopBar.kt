@@ -16,6 +16,7 @@ import com.oracle.visualize.R
 
 @Composable
 fun ThreadsTopBar(
+    modifier: Modifier = Modifier,
     title: String,
     onBackClick: () -> Unit
 ) {

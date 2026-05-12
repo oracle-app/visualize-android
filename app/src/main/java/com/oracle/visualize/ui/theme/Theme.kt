@@ -31,6 +31,8 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = DarkMode_GreyishBlue,
     onTertiary = DarkMode_LightGreyishBlue,
 
+    tertiaryFixed = DarkMode_GreyContent,
+
     background = DarkMode_Background,
     onBackground = DarkMode_NotAsLightGray,
     surface = DarkMode_Background,
@@ -63,6 +65,8 @@ private val LightColorScheme = lightColorScheme(
 
     tertiary = GreyishBlue,
     onTertiary = LightGreyishBlue,
+
+    tertiaryFixed = GreyContent,
 
     background = VeryLightGray,
     onBackground = NotAsLightGray,
