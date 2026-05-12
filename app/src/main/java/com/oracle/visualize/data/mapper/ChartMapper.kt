@@ -168,30 +168,6 @@ object ChartMapper {
     }
 
     /**
-     * Function to get the values list of a specific key from "field2". Stacked Bar
-     * and Area charts.
-     *
-     * @param field2 The JSON data object to process.
-     * @param keyIndex the current index that will receive the values list.
-     * @return Float values list.
-     **/
-    private fun getField2ValueList(field2: JSONObject?, keyIndex: Int): List<Float> {
-        val valueList = mutableListOf<Float>()
-        var seriesIndex = 0
-
-        if (field2 !== null) {
-            while (true) {
-                val array = field2.optJSONArray(seriesIndex.toString()) ?: break
-                val seriesValue = array.optString(keyIndex).toFloatOrNull() ?: 0f
-                valueList.add(seriesValue)
-                seriesIndex++
-            }
-        }
-
-        return valueList
-    }
-
-    /**
      * Function to map a JSON object into the specific data format Map<String, List<Float>>
      * for Stacked Bar charts.
      *
@@ -207,7 +183,19 @@ object ChartMapper {
 
         for (i in 0 until keysArray.length()) {
             val key = keysArray.optString(i)
-            map[key] = getField2ValueList(field2, i)
+            val valueList = mutableListOf<Float>()
+            var seriesIndex = 0
+
+            if (field2 !== null) {
+                while (true) {
+                    val array = field2.optJSONArray(seriesIndex.toString()) ?: break
+                    val seriesValue = array.optString(i).toFloatOrNull() ?: 0f
+                    valueList.add(seriesValue)
+                    seriesIndex++
+                }
+            }
+
+            map[key] = valueList
         }
 
         return map
@@ -247,13 +235,22 @@ object ChartMapper {
     private fun parseToMapFloatListFloat(dataObj: JSONObject?): Map<Float, List<Float>> {
         val map = mutableMapOf<Float, List<Float>>()
         if (dataObj == null) return map
+        val field2 = dataObj.optJSONObject("field2") ?: return map
+        val f2Keys = field2.keys()
 
-        val keysArray = dataObj.optJSONArray("field1") ?: return map
-        val field2 = dataObj.optJSONObject("field2")
+        while (f2Keys.hasNext()) {
+            val xValue = f2Keys.next()
+            val xValueFloat = xValue.toFloatOrNull() ?: 0f
+            val currentValArray = field2.optJSONArray(xValue)
+            val processedYValues = mutableListOf<Float>()
 
-        for (i in 0 until keysArray.length()) {
-            val key = keysArray.optString(i).toFloatOrNull() ?: 0f
-            map[key] = getField2ValueList(field2, i)
+            if (currentValArray != null) {
+                for (i in 0..currentValArray.length()) {
+                    processedYValues.add(currentValArray.optString(i).toFloatOrNull() ?: 0f)
+                }
+            }
+
+            map[xValueFloat] = processedYValues
         }
 
         return map
