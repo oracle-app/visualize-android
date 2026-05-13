@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun RenderDonutChart(chart: DonutChart, modifier: Modifier = Modifier) {
+fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart) {
     val categories = chart.fieldNames
     val values = chart.data
     val colors = generateChartColors(categories.size)

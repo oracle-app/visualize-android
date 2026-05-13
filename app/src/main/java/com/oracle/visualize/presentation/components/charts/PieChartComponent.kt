@@ -23,7 +23,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
  */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun RenderPieChart(chart: PieChartModel, modifier: Modifier = Modifier) {
+fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
     val categories = chart.fieldNames
     val values = chart.data
     val colors = generateChartColors(categories.size)
