@@ -80,11 +80,11 @@
     // Chart Selection Screen
 
     <string name="chart_selection_title">Choose visualization</string>
+    <string name="chart_selection_post_personal">Post to personal feed</string>
+    <string name="chart_selection_share_and_post">Share and post</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
     <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
-    <string name="chart_selection_post_personal">Post to personal feed</string>
-    <string name="chart_selection_share_and_post">Share and post</string>
 
     // Edit Chart Title Dialog
 

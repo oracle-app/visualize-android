@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
  */
 @Composable
 fun ShareAndPostScreen(
+    modifier: Modifier = Modifier,
     viewModel: ShareAndPostViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {

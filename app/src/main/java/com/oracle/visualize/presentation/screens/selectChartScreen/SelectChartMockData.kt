@@ -8,6 +8,7 @@ import java.util.UUID
  * Mock data for development and testing purposes.
  */
 object SelectChartMockData {
+
     val visualizations = listOf(
         Visualization(
             id = UUID.randomUUID().toString(),
