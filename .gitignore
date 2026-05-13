@@ -12,6 +12,10 @@
 .DS_Store
 /build
 /captures
-.externalNativeBuild
+.externalsNativeBuild
 .cxx
 local.properties
+app/google-services.json
+*.sh
+*.log
+*.txt
