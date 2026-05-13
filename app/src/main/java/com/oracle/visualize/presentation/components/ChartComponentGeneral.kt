@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.domain.models.Chart
@@ -36,40 +37,40 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
  */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun ChartRenderGeneral(chart: Chart<*>, modifier: Modifier = Modifier) {
+fun ChartRenderGeneral(
+    modifier: Modifier = Modifier,
+    chart: Chart<*>,
+    showAxisLabels: Boolean = true
+) {
     Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-        .padding(8.dp)) {
+        .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)) {
         when (chart) {
             is VerticalBarChart -> {
-                RenderVerticalBarChart(chart, modifier)
+                RenderVerticalBarChart(chart = chart, showAxisLabels = showAxisLabels)
             }
 
             is HorizontalBarChart -> {
-                RenderHorizontalBarChart(chart, modifier)
+                RenderHorizontalBarChart(chart = chart, showAxisLabels = showAxisLabels)
             }
 
             is StackedBarChart -> {
-                RenderStackedBarChart(chart)
+                RenderStackedBarChart(chart = chart, showAxisLabels = showAxisLabels)
             }
 
             is LineChart -> {
-                RenderLineChart(chart)
+                RenderLineChart(chart = chart, showAxisLabels = showAxisLabels)
             }
 
             is ScatterChart -> {
-                RenderScatterChart(chart)
+                RenderScatterChart(chart = chart, showAxisLabels = showAxisLabels)
             }
 
-            is PieChartModel -> {
-                RenderPieChart(chart, modifier)
-            }
+            is PieChartModel -> RenderPieChart(chart = chart)
 
-            is DonutChart -> {
-                RenderDonutChart(chart, modifier)
-            }
+            is DonutChart -> RenderDonutChart(chart = chart)
 
             is AreaChart -> {
-                RenderAreaChart(chart)
+                RenderAreaChart(chart = chart, showAxisLabels = showAxisLabels)
             }
         }
     }
@@ -85,5 +86,22 @@ fun generateChartColors(n: Int): List<Color> {
     if (n <= 0) return emptyList()
     return List(n) { i ->
         Color.hsv(i * 360f / n, 0.6f, 0.9f)
+    }
+}
+
+/** Allows a layout to be rotated in [n] degrees.
+ *
+ * @param n The amount of degrees to rotate.
+ * */
+fun Modifier.rotateChartLegendLayout(n: Float) = layout { measurable, constraints ->
+    val layoutConstraints = measurable.measure(constraints)
+
+    layout(layoutConstraints.height, layoutConstraints.width) {
+        layoutConstraints.placeWithLayer(
+            x = (layoutConstraints.width / 2 -  layoutConstraints.height / 2) * -1,
+            y = (layoutConstraints.height / 2 -  layoutConstraints.width / 2) * -1,
+        ) {
+            rotationZ = n
+        }
     }
 }

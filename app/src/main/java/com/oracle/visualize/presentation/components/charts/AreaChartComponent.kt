@@ -1,9 +1,15 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.presentation.components.generateChartColors
@@ -28,7 +34,11 @@ import kotlin.collections.getOrNull
  */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun RenderAreaChart(chart: AreaChart) {
+fun RenderAreaChart(
+    modifier: Modifier = Modifier,
+    chart: AreaChart,
+    showAxisLabels: Boolean
+) {
     val sortedKeys = chart.data.keys.sorted()
     val minX = sortedKeys.firstOrNull() ?: 0f
     val maxX = sortedKeys.lastOrNull() ?: 0f
@@ -49,12 +59,24 @@ fun RenderAreaChart(chart: AreaChart) {
         xAxisContent = AxisContent(
             style = rememberAxisStyle(),
             labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-            title = {}
+            title = { if (showAxisLabels && !chart.metrics.isEmpty()) Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer) }
         ),
         yAxisContent = AxisContent(
             style = rememberAxisStyle(),
             labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-            title = {}
+            title = {
+                if (showAxisLabels && !chart.metrics.isEmpty()) {
+                    Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
+                        Text(
+                            text = chart.metrics[1],
+                            overflow = TextOverflow.Visible,
+                            softWrap = false,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+            }
         )
     ) {
         StackedAreaPlot(

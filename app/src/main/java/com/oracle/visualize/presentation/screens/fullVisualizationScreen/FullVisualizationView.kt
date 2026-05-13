@@ -126,7 +126,7 @@ fun FullVisualizationPage(
                                     .fillMaxWidth()
                                     .heightIn(min = 260.dp, max = 420.dp)
                             ) {
-                                ChartRenderFullScreen(chart = chart)
+                                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
                             }
                         }
                     }
