@@ -29,6 +29,7 @@ import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
 import com.oracle.visualize.R
+import androidx.compose.runtime.collectAsState
 
 /**
  * Composable representing the Feed screen.
@@ -44,7 +45,7 @@ fun FeedPage(
     feedViewModel: FeedViewModel = hiltViewModel(),
     onVisualizationClick: (String) -> Unit = {}
 ) {
-    val uiState by feedViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
@@ -52,9 +53,12 @@ fun FeedPage(
         topBar = {
             FeedTopBar(
                 scrollBehavior = scrollBehavior,
-                selectedFilter = if (uiState is FeedUiState.Success)
-                    (uiState as FeedUiState.Success).selectedFilter else VisualizationFilter.ALL,
-                onFilterSelected = { feedViewModel.onFilterChange(it) }
+                selectedFilter = (uiState as? FeedUiState.Success)?.selectedFilter
+                    ?: VisualizationFilter.ALL,
+
+                onFilterSelected = { feedViewModel.onFilterChange(it) },
+
+                onSearchClick = { feedViewModel.toggleSearch() }
             )
         }
     ) { paddingValues ->
@@ -65,32 +69,41 @@ fun FeedPage(
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
         ) {
-            //Smart cast
             when (val state = uiState) {
+
                 is FeedUiState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 is FeedUiState.Error -> {
                     Text(
                         text = stringResource(state.message),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 is FeedUiState.Success -> {
+
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     ) {
+
                         item {
                             Spacer(modifier = Modifier.height(22.dp))
-                            SearchSection(
-                                text = state.searchText,
-                                onTextChange = { feedViewModel.onSearchTextChange(it) }
-                            )
+
+                            if (state.isSearching) {
+                                SearchSection(
+                                    text = state.searchText,
+                                    onTextChange = { feedViewModel.onSearchTextChange(it) }
+                                )
+                            }
+
                             Spacer(modifier = Modifier.height(8.dp))
                         }
+
                         if (state.items.isEmpty()) {
                             item {
                                 Text(
@@ -112,13 +125,15 @@ fun FeedPage(
                                 )
                             }
                         }
+
                         item {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
-                }
+
+                else -> {}
             }
         }
     }
-
+}
