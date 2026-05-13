@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.SnippingTool.Components.Pickers
+package com.oracle.visualize.presentation.screens.snippingTool.components.pickers
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChangeHistory
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.Rectangle
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.ChangeHistory
 import androidx.compose.material.icons.outlined.Circle
@@ -23,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.ShapeType
+import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeType
 
 @Composable
 fun ShapePicker(

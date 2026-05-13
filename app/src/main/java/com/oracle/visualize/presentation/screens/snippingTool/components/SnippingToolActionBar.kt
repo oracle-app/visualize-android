@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.SnippingTool.Components
+package com.oracle.visualize.presentation.screens.snippingTool.components
 
 import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.R
 
 @Composable
 fun SnippingToolActionBar(

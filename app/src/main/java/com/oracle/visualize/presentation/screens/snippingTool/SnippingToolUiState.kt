@@ -1,10 +1,10 @@
-package com.oracle.visualize.presentation.screens.SnippingTool
+package com.oracle.visualize.presentation.screens.snippingTool
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.DrawElement
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.DrawingTool
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.ShapeType
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawElement
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
+import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeType
 
 data class SnippingToolUiState(
     val elements: List<DrawElement> = emptyList(),

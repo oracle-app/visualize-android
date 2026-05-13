@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.SnippingTool.Components
+package com.oracle.visualize.presentation.screens.snippingTool.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,12 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Backspace
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.ContentCut
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.LineWeight
-import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,9 +29,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Popup
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.Pickers.ColorPicker
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.Pickers.ShapePicker
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.Pickers.ThicknessPicker
+import com.oracle.visualize.presentation.screens.snippingTool.components.pickers.ColorPicker
+import com.oracle.visualize.presentation.screens.snippingTool.components.pickers.ShapePicker
+import com.oracle.visualize.presentation.screens.snippingTool.components.pickers.ThicknessPicker
 import androidx.compose.ui.res.stringResource
 import com.oracle.visualize.R
 

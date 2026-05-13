@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.SnippingTool
+package com.oracle.visualize.presentation.screens.snippingTool
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -10,15 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
@@ -48,16 +44,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.CropOverlay
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.DrawingCanvas
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.DrawingTool
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.SnippingToolActionBar
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.SnippingToolbar
-import com.tanishranjan.cropkit.CropOptions
-import com.tanishranjan.cropkit.ImageCropper
-import com.tanishranjan.cropkit.rememberCropController
-import com.tanishranjan.cropkit.CropShape
-import com.tanishranjan.cropkit.Gridlines
+import com.oracle.visualize.presentation.screens.snippingTool.components.CropOverlay
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingCanvas
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
+import com.oracle.visualize.presentation.screens.snippingTool.components.SnippingToolActionBar
+import com.oracle.visualize.presentation.screens.snippingTool.components.SnippingToolbar
 import kotlinx.coroutines.launch
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.setValue

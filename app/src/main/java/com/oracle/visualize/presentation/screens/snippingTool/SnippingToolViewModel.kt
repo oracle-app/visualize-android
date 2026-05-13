@@ -1,11 +1,11 @@
-package com.oracle.visualize.presentation.screens.SnippingTool
+package com.oracle.visualize.presentation.screens.snippingTool
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
 import androidx.lifecycle.ViewModel
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.DrawElement
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.DrawingTool
-import com.oracle.visualize.presentation.screens.SnippingTool.Components.ShapeType
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawElement
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
+import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

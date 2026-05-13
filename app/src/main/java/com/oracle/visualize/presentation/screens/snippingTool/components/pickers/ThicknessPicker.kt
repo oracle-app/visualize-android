@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.SnippingTool.Components.Pickers
+package com.oracle.visualize.presentation.screens.snippingTool.components.pickers
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement

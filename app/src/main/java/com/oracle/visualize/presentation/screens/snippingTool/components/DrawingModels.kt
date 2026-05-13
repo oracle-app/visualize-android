@@ -1,7 +1,8 @@
-package com.oracle.visualize.presentation.screens.SnippingTool.Components
+package com.oracle.visualize.presentation.screens.snippingTool.components
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.TextUnit
 
 enum class DrawingTool {
@@ -14,7 +15,7 @@ enum class ShapeType {
 
 sealed class DrawElement {
     data class FreePath(
-        val points: List<Offset>,
+        val path: Path,
         val color: Color,
         val strokeWidth: Float
     ) : DrawElement()

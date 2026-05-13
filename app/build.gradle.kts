@@ -104,5 +104,4 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
-    implementation("com.github.Tanish-Ranjan:crop-kit:1.0.0")
 }

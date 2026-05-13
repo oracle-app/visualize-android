@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.SnippingTool.Components
+package com.oracle.visualize.presentation.screens.snippingTool.components
 
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -52,7 +52,11 @@ fun DrawingCanvas(
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
     modifier: Modifier = Modifier
 ) {
-    var currentPath by remember { mutableStateOf<List<Offset>>(emptyList()) }
+    // Single reusable Path object — mutated in place, never replaced
+    val currentPath = remember { Path() }
+    // Incremented on every drag event to trigger Canvas recomposition
+    var pathVersion by remember { mutableStateOf(0) }
+
     var shapeStart by remember { mutableStateOf<Offset?>(null) }
     var shapeEnd by remember { mutableStateOf<Offset?>(null) }
     var textPosition by remember { mutableStateOf<Offset?>(null) }
@@ -73,7 +77,9 @@ fun DrawingCanvas(
                                     Log.d("DrawingCanvas", "onDragStart: $offset, tool: $selectedTool")
                                     when (selectedTool) {
                                         DrawingTool.PEN, DrawingTool.ERASER -> {
-                                            currentPath = listOf(offset)
+                                            currentPath.reset()
+                                            currentPath.moveTo(offset.x, offset.y)
+                                            pathVersion++
                                         }
                                         DrawingTool.SHAPE -> {
                                             shapeStart = offset
@@ -88,7 +94,8 @@ fun DrawingCanvas(
                                 onDrag = { change, _ ->
                                     when (selectedTool) {
                                         DrawingTool.PEN, DrawingTool.ERASER -> {
-                                            currentPath = currentPath + change.position
+                                            currentPath.lineTo(change.position.x, change.position.y)
+                                            pathVersion++
                                         }
                                         DrawingTool.SHAPE -> {
                                             shapeEnd = change.position
@@ -101,7 +108,7 @@ fun DrawingCanvas(
                                         DrawingTool.PEN -> {
                                             onAddElement(
                                                 DrawElement.FreePath(
-                                                    points = currentPath,
+                                                    path = Path().apply { addPath(currentPath) },
                                                     color = selectedColor,
                                                     strokeWidth = strokeWidth
                                                 )
@@ -110,7 +117,7 @@ fun DrawingCanvas(
                                         DrawingTool.ERASER -> {
                                             onAddElement(
                                                 DrawElement.FreePath(
-                                                    points = currentPath,
+                                                    path = Path().apply { addPath(currentPath) },
                                                     color = Color.Transparent,
                                                     strokeWidth = strokeWidth
                                                 )
@@ -133,7 +140,8 @@ fun DrawingCanvas(
                                         }
                                         DrawingTool.TEXT -> { }
                                     }
-                                    currentPath = emptyList()
+                                    currentPath.reset()
+                                    pathVersion++
                                     shapeStart = null
                                     shapeEnd = null
                                 }
@@ -142,19 +150,17 @@ fun DrawingCanvas(
                     else Modifier
                 )
         ) {
+            @Suppress("UNUSED_EXPRESSION") pathVersion
+
             elements.forEach { element ->
                 drawElement(element, textMeasurer)
             }
 
             when (selectedTool) {
                 DrawingTool.PEN, DrawingTool.ERASER -> {
-                    if (currentPath.size > 1) {
-                        val path = Path().apply {
-                            moveTo(currentPath.first().x, currentPath.first().y)
-                            currentPath.drop(1).forEach { lineTo(it.x, it.y) }
-                        }
+                    if (!currentPath.isEmpty) {
                         drawPath(
-                            path = path,
+                            path = currentPath,
                             color = if (selectedTool == DrawingTool.ERASER) Color.Transparent else selectedColor,
                             style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round),
                             blendMode = if (selectedTool == DrawingTool.ERASER) BlendMode.Clear else BlendMode.SrcOver
@@ -215,13 +221,9 @@ fun DrawingCanvas(
 private fun DrawScope.drawElement(element: DrawElement, textMeasurer: TextMeasurer) {
     when (element) {
         is DrawElement.FreePath -> {
-            if (element.points.size > 1) {
-                val path = Path().apply {
-                    moveTo(element.points.first().x, element.points.first().y)
-                    element.points.drop(1).forEach { lineTo(it.x, it.y) }
-                }
+            if (!element.path.isEmpty) {
                 drawPath(
-                    path = path,
+                    path = element.path,
                     color = element.color,
                     style = Stroke(width = element.strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round),
                     blendMode = if (element.color == Color.Transparent) BlendMode.Clear else BlendMode.SrcOver
