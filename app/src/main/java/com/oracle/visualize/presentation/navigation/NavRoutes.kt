@@ -26,4 +26,15 @@ sealed interface NavRoutes {
 
     @Serializable
     data class FullScreen(val visualizationId: String) : NavRoutes
+
+    @Serializable
+    object Splash : NavRoutes
+
+    @Serializable
+    object Login : NavRoutes
+
+    @Serializable
+    object ChartSelection : NavRoutes
+    @Serializable
+    object ShareAndPost : NavRoutes
 }
