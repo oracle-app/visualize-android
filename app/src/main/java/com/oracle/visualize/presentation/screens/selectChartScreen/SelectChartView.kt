@@ -61,6 +61,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.components.Ch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChartSelectionPage(
+    modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
     onNavigateToShare: () -> Unit,
     onNavigateToFeed: () -> Unit,

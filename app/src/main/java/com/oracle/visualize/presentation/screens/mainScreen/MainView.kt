@@ -32,6 +32,7 @@ import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
  */
 @Composable
 fun MainScreen(
+    modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
@@ -100,6 +101,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.ChartSelection> {
             ChartSelectionPage(
+                modifier = Modifier.fillMaxSize(),
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToShare = {
                     navController.navigate(NavRoutes.ShareAndPost)
@@ -114,6 +116,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.ShareAndPost> {
             ShareAndPostScreen(
+                modifier = Modifier.fillMaxSize(),
                 onNavigateBack = { navController.popBackStack() }
             )
         }
