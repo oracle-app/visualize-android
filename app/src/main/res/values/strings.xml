@@ -145,6 +145,20 @@
     <string name="snipping_tool">Snipping Tool</string>
     <string name="threads">Threads</string>
 
+    //Splash Page
+    <string name="visualize">Visualize</string>
+    <string name="slogan">Turn data into decisions.</string>
+    <string name="splash_description">Create, choose, and share AI-\n
+                        powered graphs in seconds.\n
+                        Fast, simple, and secure.</string>
+    <string name="login">Log In</string>
+    <string name="signup">Sign Up</string>
+    <string name="version">V1.0.0</string>
 
+    //Login Page
+    <string name="welcome">Welcome</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="no_account">Don\'t have an account?</string>
 
 </resources>
