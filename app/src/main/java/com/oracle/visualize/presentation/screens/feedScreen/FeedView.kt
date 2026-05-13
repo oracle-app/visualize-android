@@ -71,6 +71,10 @@ fun FeedPage(
         ) {
             when (val state = uiState) {
 
+                is FeedUiState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
                 is FeedUiState.Error -> {
                     Text(
                         text = stringResource(state.message),

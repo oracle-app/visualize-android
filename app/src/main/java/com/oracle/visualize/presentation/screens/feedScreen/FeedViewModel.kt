@@ -28,18 +28,21 @@ class FeedViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
 ) : ViewModel() {
 
-    fun toggleSearch() {
-        val currentState = _uiState.value
-        if (currentState is FeedUiState.Success) {
-            _uiState.value = currentState.copy(
-                isSearching = !currentState.isSearching
-            )
-        }
-    }
 
     private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
+    fun toggleSearch() {
+        _uiState.update { currentState ->
+            if (currentState is FeedUiState.Success) {
+                currentState.copy(
+                    isSearching = !currentState.isSearching
+                )
+            } else {
+                currentState
+            }
+        }
+    }
     private var allVisualizations: List<VisualizationCard> = emptyList()
 
     // TODO: Get from Auth Repository
@@ -128,12 +131,23 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        _uiState.value = FeedUiState.Success(
-            items = filteredItems,
-            searchText = search,
-            selectedFilter = filter,
-            isRefreshing = (currentState as? FeedUiState.Success)?.isRefreshing ?: false,
-            isSearching = (currentState as? FeedUiState.Success)?.isSearching ?: false
-        )
+        _uiState.update { currentState ->
+            if (currentState is FeedUiState.Success) {
+                currentState.copy(
+                    items = filteredItems,
+                    searchText = search,
+                    selectedFilter = filter,
+                    isRefreshing = false
+                )
+            } else {
+                FeedUiState.Success(
+                    items = filteredItems,
+                    searchText = search,
+                    selectedFilter = filter,
+                    isRefreshing = false
+                )
+            }
+        }
+
     }
 }
