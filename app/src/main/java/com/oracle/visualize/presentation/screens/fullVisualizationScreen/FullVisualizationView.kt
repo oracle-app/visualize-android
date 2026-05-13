@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
+import android.graphics.Bitmap
+import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -20,8 +22,14 @@ import com.oracle.visualize.presentation.screens.fullVisualizationScreen.compone
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.drawToBitmap
 import com.oracle.visualize.presentation.components.ChartRenderFullScreen
+import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
 
 /**
  * Screen that displays a selected visualization in FullScreen mode.
@@ -42,9 +50,23 @@ fun FullVisualizationPage(
     onThreadsClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var snippingBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var chartViewRef by remember { mutableStateOf<View?>(null) }
 
     LaunchedEffect(visualizationId) {
         viewModel.loadVisualization(visualizationId)
+    }
+
+    snippingBitmap?.let { bitmap ->
+        SnippingToolView(
+            bitmap = bitmap,
+            onDone = { result ->
+                viewModel.onSnipCompleted(result)
+                snippingBitmap = null
+            },
+            onCancel = { snippingBitmap = null }
+        )
+        return
     }
 
     Scaffold(
@@ -57,7 +79,7 @@ fun FullVisualizationPage(
             ) {
                 FloatingActionButton(
                     onClick = {
-                        // TODO: Implement snipping tool
+                        chartViewRef?.drawToBitmap()?.let { snippingBitmap = it }
                     },
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {
@@ -121,6 +143,12 @@ fun FullVisualizationPage(
                                 .clipToBounds(),
                             contentAlignment = Alignment.Center
                         ) {
+                            AndroidView(
+                                factory = { context ->
+                                    View(context).also { chartViewRef = it }
+                                },
+                                modifier = Modifier.matchParentSize()
+                            )
                             ZoomableChart(
                                 modifier = Modifier
                                     .fillMaxWidth()
