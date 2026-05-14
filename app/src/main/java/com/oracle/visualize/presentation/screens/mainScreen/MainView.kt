@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.mainScreen
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -24,11 +25,6 @@ import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.ShareWithTeammatesScreen
 
-/**
- * Main container screen that sets up the navigation host and bottom bar.
- *
- * @param viewModel The [MainViewModel] providing navigation items.
- */
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
@@ -59,15 +55,21 @@ fun MainScreen(
             }
         }
     ) { innerPadding ->
+        // CORRECCIÓN 1: En lugar de aplicar el padding aquí, se lo pasamos al NavHost
         AppNavHost(
             navController = navController,
-            modifier      = Modifier.padding(innerPadding)
+            innerPadding  = innerPadding,
+            modifier      = Modifier.fillMaxSize()
         )
     }
 }
 
 @Composable
-fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
+fun AppNavHost(
+    navController: NavHostController,
+    innerPadding: PaddingValues, // Añadimos este parámetro
+    modifier: Modifier = Modifier
+) {
     NavHost(
         navController    = navController,
         startDestination = NavRoutes.Feed,
@@ -75,11 +77,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
     ) {
         composable<NavRoutes.Feed> {
             FeedPage(
-                modifier             = Modifier.fillMaxSize(),
+                modifier             = Modifier.fillMaxSize().padding(innerPadding),
                 onVisualizationClick = { visualizationId ->
                     navController.navigate(NavRoutes.FullScreen(visualizationId))
                 },
-                // From the feed, "Share" goes to ShareWithTeammates, not the initial Create flow.
                 onShareVisualization = { visualizationId ->
                     navController.navigate(NavRoutes.ShareWithTeammates(visualizationId))
                 }
@@ -87,20 +88,22 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable<NavRoutes.Create> {
-            CreatePage(modifier = Modifier.fillMaxSize())
+            CreatePage(modifier = Modifier.fillMaxSize().padding(innerPadding))
         }
 
         composable<NavRoutes.Notifications> {
-            NotificationPage(modifier = Modifier.fillMaxSize())
+            NotificationPage(modifier = Modifier.fillMaxSize().padding(innerPadding))
         }
 
         composable<NavRoutes.Teams> {
             // TODO: Implement TeamsPage
+
         }
 
         composable<NavRoutes.Profile> {
-            ProfilePage(modifier = Modifier.fillMaxSize())
+            ProfilePage(modifier = Modifier.fillMaxSize().padding(innerPadding))
         }
+
 
         composable<NavRoutes.FullScreen> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
@@ -112,7 +115,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             )
         }
 
-        // Reached from the Create flow — full share + post setup screen.
         composable<NavRoutes.Share> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.Share>()
             ShareAndPostScreen(
@@ -121,7 +123,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             )
         }
 
-        // Reached from the Feed — manage who the visualization is shared with.
         composable<NavRoutes.ShareWithTeammates> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.ShareWithTeammates>()
             ShareWithTeammatesScreen(
