@@ -22,6 +22,7 @@ import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVis
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
+import com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.ShareWithTeammatesScreen
 
 /**
  * Main container screen that sets up the navigation host and bottom bar.
@@ -78,8 +79,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onVisualizationClick = { visualizationId ->
                     navController.navigate(NavRoutes.FullScreen(visualizationId))
                 },
+                // From the feed, "Share" goes to ShareWithTeammates, not the initial Create flow.
                 onShareVisualization = { visualizationId ->
-                    navController.navigate(NavRoutes.Share(visualizationId))
+                    navController.navigate(NavRoutes.ShareWithTeammates(visualizationId))
                 }
             )
         }
@@ -110,9 +112,19 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             )
         }
 
+        // Reached from the Create flow — full share + post setup screen.
         composable<NavRoutes.Share> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.Share>()
             ShareAndPostScreen(
+                visualizationId = route.visualizationId,
+                onNavigateBack  = { navController.popBackStack() }
+            )
+        }
+
+        // Reached from the Feed — manage who the visualization is shared with.
+        composable<NavRoutes.ShareWithTeammates> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.ShareWithTeammates>()
+            ShareWithTeammatesScreen(
                 visualizationId = route.visualizationId,
                 onNavigateBack  = { navController.popBackStack() }
             )
