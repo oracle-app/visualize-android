@@ -10,12 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.presentation.components.generateChartColors
-import com.oracle.visualize.presentation.components.rotateChartLegendLayout
 import io.github.koalaplot.core.line.LinePlot
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.xygraph.AxisContent
