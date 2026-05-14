@@ -27,9 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvatar
-import com.oracle.visualize.ui.theme.LightBlue
-import com.oracle.visualize.ui.theme.StrongOrange
-import com.oracle.visualize.ui.theme.VeryLightGray
+
 
 /**
  * Entry-point composable for the Create/Edit Team screen.
@@ -91,7 +89,7 @@ private fun CreateEditTeamContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(LightBlue)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(top = 48.dp, bottom = 16.dp, start = 8.dp, end = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -125,7 +123,7 @@ private fun CreateEditTeamContent(
                                 .fillMaxWidth()
                                 .height(64.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(VeryLightGray)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         ) {
                             TextField(
                                 value         = state.teamName,
@@ -194,8 +192,8 @@ private fun CreateEditTeamContent(
                                 )
                             },
                             colors        = TextFieldDefaults.colors(
-                                focusedContainerColor   = VeryLightGray,
-                                unfocusedContainerColor = VeryLightGray,
+                                focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor   = MaterialTheme.colorScheme.primary,
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.outline
                             ),
@@ -266,7 +264,7 @@ private fun CreateEditTeamContent(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp, end = 16.dp)
                 .size(80.dp),
-            containerColor = StrongOrange,
+            containerColor = MaterialTheme.colorScheme.secondary,
             contentColor   = MaterialTheme.colorScheme.onPrimary,
             shape          = RoundedCornerShape(24.dp)
         ) {
