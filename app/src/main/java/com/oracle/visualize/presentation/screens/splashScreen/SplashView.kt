@@ -76,8 +76,8 @@ fun SplashPage(
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 70.dp)
-                .size(275.dp)
+                .padding(top = 10.dp)
+                .size(350.dp)
         )
 
         Column(
