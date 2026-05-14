@@ -67,7 +67,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 capturable = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturable" }
 retrofit2 = { group = "com.squareup.retrofit2" , name = "retrofit", version.ref = "retrofit" }
-retrofit2-converter = { group = "com.squareup.retrofit2" , name = "retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit2-converter = { group = "com.squareup.retrofit2" , name = "converter-gson", version.ref = "retrofit" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 
 
