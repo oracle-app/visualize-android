@@ -3,6 +3,7 @@ package com.oracle.visualize.data.mapper
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
 import org.json.JSONArray
+import kotlinx.serialization.json.JsonObject
 import org.json.JSONException
 
 /**
@@ -21,7 +22,7 @@ object ChartMapper {
      * @return a Chart object, depending on the type of chart.
     **/
     fun fromPreviewJson(previewJson: String): Chart<*>? {
-        if (previewJson.isBlank() || previewJson == "{}") return null
+        if (previewJson?.isBlank() == true || previewJson == "{}") return null
 
         return try {
             val jsonObject = JSONObject(previewJson)
@@ -279,3 +280,4 @@ object ChartMapper {
         return list
     }
 }
+

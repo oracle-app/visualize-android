@@ -73,6 +73,3 @@ fun MainScreen(
         )
     }
 }
-
-
-

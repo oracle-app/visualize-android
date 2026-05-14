@@ -21,11 +21,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.Chart
+import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.domain.models.Visualization
+import com.oracle.visualize.presentation.components.ChartRenderGeneral
 
 @Composable
 fun ChartCard(
-    visualization: Visualization,
+    chart: Chart<*>,
+    title: String,
     isSelected: Boolean,
     onSelect: () -> Unit,
     onEditTitle: () -> Unit
@@ -61,7 +65,7 @@ fun ChartCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = visualization.title,
+                    text = title,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -90,97 +94,9 @@ fun ChartCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     .padding(16.dp)
             ) {
-                MockChartContent()
+                ChartRenderGeneral(chart = chart)
             }
         }
     }
 }
 
-@Composable
-fun MockChartContent() {
-    val axisColor = MaterialTheme.colorScheme.onSurfaceVariant
-    val gridColor = MaterialTheme.colorScheme.outlineVariant
-    val barColor = MaterialTheme.colorScheme.primary
-    val lineColor = MaterialTheme.colorScheme.secondary
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.weight(1f)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(bottom = 20.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                listOf("20,000", "15,000", "10,000", "5,000", "0").forEach { label ->
-                    Text(text = label, fontSize = 8.sp, color = axisColor)
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 35.dp, bottom = 20.dp, end = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    repeat(5) {
-                        HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
-                            thickness = 0.5.dp,
-                            color = gridColor
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    val barHeights = listOf(0.4f, 0.7f, 0.5f, 0.9f, 0.6f, 0.8f, 0.4f, 0.5f)
-                    barHeights.forEach { h ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight(h)
-                                .width(10.dp)
-                                .background(barColor)
-                        )
-                    }
-                }
-
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val points = listOf(0.7f, 0.5f, 0.8f, 0.4f, 0.7f, 0.3f, 0.6f, 0.4f)
-                    val path = Path()
-                    
-                    val stepX = size.width / (points.size - 1)
-                    
-                    points.forEachIndexed { index, h ->
-                        val x = index * stepX
-                        val y = size.height * (1f - h)
-                        if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
-                    }
-                    
-                    drawPath(
-                        path = path,
-                        color = lineColor,
-                        style = Stroke(width = 2.dp.toPx())
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .padding(start = 35.dp, end = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug").forEach { month ->
-                    Text(text = month, fontSize = 8.sp, color = axisColor)
-                }
-            }
-        }
-    }
-}

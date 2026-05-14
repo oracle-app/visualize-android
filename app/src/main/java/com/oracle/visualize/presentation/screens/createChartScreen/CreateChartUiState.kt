@@ -14,7 +14,8 @@ sealed interface CreateChartUiState {
 
     data class Success(
         val fileName: String,
-        val fileSize: String
+        val fileSize: String,
+        val taskId: String
     ) : CreateChartUiState
 
     data class Error(
