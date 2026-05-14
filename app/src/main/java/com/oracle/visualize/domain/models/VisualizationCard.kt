@@ -15,5 +15,6 @@ data class VisualizationCard(
     val configJSON: String,
     val teamsSharedWith: List<Team>,
     val usersSharedWith: List<User>,
-    val allUsersSharedWith: List<User>
+    val allUsersSharedWith: List<User>,
+    val chart: Chart<*>? = null
 )

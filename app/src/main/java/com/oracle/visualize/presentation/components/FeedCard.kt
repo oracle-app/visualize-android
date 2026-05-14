@@ -3,35 +3,41 @@ package com.oracle.visualize.presentation.components
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.User
-import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvatarCard
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
 
-private val AVATAR_SIZE = 33.dp
-private val AVATAR_OFFSET = 16.dp
-
-fun formatTime(date: Date, context: Context): String {
+fun formatTime(date: Date, context: Context): String{
     val now = Date()
     val diff = now.time - date.time
 
@@ -45,44 +51,31 @@ fun formatTime(date: Date, context: Context): String {
         mins < 60 -> context.getString(R.string.time_mins_ago, mins)
         hours < 24 -> context.getString(R.string.time_hours_ago, hours)
         days < 7 -> context.getString(R.string.time_days_ago, days)
-        else -> context.resources.getQuantityString(
-            R.plurals.time_weeks_ago,
-            weeks,
-            weeks
-        )
+        else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
-
+/**
+ * A card component used in the feed to display a visualization's summary.
+ *
+ * @param item The [VisualizationCard] data to display.
+ */
 @Composable
-fun FeedCard(
-    item: VisualizationCard,
-    currentUserID: String = "",
-    isMenuOpen: Boolean = false,
-    onClick: () -> Unit = {},
-    onOpenMenu: () -> Unit = {},
-    onDismissMenu: () -> Unit = {},
-    onShare: () -> Unit = {},
-    onDeleteForMe: () -> Unit = {},
-    onDeleteForEveryone: () -> Unit = {}
-) {
+fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
     val context = LocalContext.current
-    val isAuthor = item.authorID == currentUserID
-
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceVariant)
+
     ) {
         Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 14.dp, top = 14.dp, end = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                    .padding(start = 14.dp, top = 14.dp, end = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -100,7 +93,6 @@ fun FeedCard(
                             color = MaterialTheme.colorScheme.tertiary,
                             fontSize = 13.sp
                         )
-
                         Text(
                             text = "    •    ${formatTime(item.createdAt, context)}",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -109,58 +101,15 @@ fun FeedCard(
                     }
                 }
 
-                Box {
-                    IconButton(onClick = onOpenMenu) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = stringResource(
-                                R.string.feed_menu_more_options
-                            ),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = isMenuOpen,
-                        onDismissRequest = onDismissMenu
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(stringResource(R.string.feed_menu_share))
-                            },
-                            onClick = onShare
-                        )
-
-                        if (isAuthor) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(
-                                            R.string.feed_menu_delete_for_everyone
-                                        ),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                },
-                                onClick = onDeleteForEveryone
-                            )
-                        } else {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(
-                                            R.string.feed_menu_delete_for_me
-                                        ),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                },
-                                onClick = onDeleteForMe
-                            )
-                        }
-                    }
-                }
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Menu",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
+
 
             Box(
                 modifier = Modifier
@@ -170,15 +119,24 @@ fun FeedCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp)
+                        .height(200.dp)
                         .background(
                             color = MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .padding(12.dp),
+                        .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    ChartRender(chart = mockVerticalChart)
+                    val chart = item.chart
+                    if (chart != null) {
+                        ChartRenderGeneral(chart = chart)
+                    } else {
+                        Text(
+                            text = "Chart not found",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
@@ -191,110 +149,7 @@ fun FeedCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 MemberAvatarStackFeed(item.allUsersSharedWith)
-
                 Spacer(modifier = Modifier.width(8.dp))
-            }
-        }
-    }
-}
-
-@Composable
-fun MemberAvatarStackFeed(
-    members: List<User>
-) {
-    val displayCount = minOf(members.size, 3)
-    val extraCount = members.size - displayCount
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .wrapContentWidth()
-            .padding(horizontal = 14.dp)
-    ) {
-        Layout(
-            content = {
-
-                if (extraCount > 0) {
-                    Box(
-                        modifier = Modifier
-                            .requiredSize(AVATAR_SIZE)
-                            .clip(CircleShape)
-                            .border(
-                                BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.onPrimary
-                                ),
-                                CircleShape
-                            )
-                            .background(MaterialTheme.colorScheme.onPrimary)
-                            .padding(start = 14.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "+$extraCount",
-                            style = TextStyle(
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Normal
-                            ),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
-
-                repeat(displayCount) { index ->
-
-                    val memberIndex = displayCount - 1 - index
-
-                    Box(
-                        modifier = Modifier
-                            .requiredSize(AVATAR_SIZE)
-                            .clip(CircleShape)
-                            .border(
-                                BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.onPrimary
-                                ),
-                                CircleShape
-                            )
-                    ) {
-                        members.getOrNull(memberIndex)?.let { user ->
-                            UserAvatarCard(
-                                user = user,
-                                size = AVATAR_SIZE.value.toInt()
-                            )
-                        }
-                    }
-                }
-            }
-        ) { measurables, constraints ->
-
-            val placeables = measurables.map {
-                it.measure(constraints)
-            }
-
-            val avatarSize = placeables.firstOrNull()?.width ?: 0
-
-            val offset = (AVATAR_SIZE - AVATAR_OFFSET).roundToPx()
-
-            val totalWidth =
-                if (displayCount > 0)
-                    avatarSize + (offset * (displayCount - 1))
-                else 0
-
-            val height = placeables.firstOrNull()?.height ?: 0
-
-            layout(totalWidth, height) {
-
-                placeables.forEachIndexed { index, placeable ->
-
-                    val x = (displayCount - 1 - index) * offset
-
-                    placeable.placeWithLayer(
-                        x,
-                        0,
-                        zIndex = index.toFloat()
-                    )
-                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.navigation
 
+import com.oracle.visualize.domain.models.Chart
 import kotlinx.serialization.Serializable
 
 /**
