@@ -1,11 +1,8 @@
 package com.oracle.visualize.presentation.navigation
 
-import com.oracle.visualize.domain.models.Chart
 import kotlinx.serialization.Serializable
 
-/**
- * Defines the navigation graph destinations using type-safe objects.
- */
+
 @Serializable
 sealed interface NavRoutes {
 
@@ -30,6 +27,10 @@ sealed interface NavRoutes {
     @Serializable
     data class FullScreen(val visualizationId: String) : NavRoutes
 
+
     @Serializable
     data class Share(val visualizationId: String) : NavRoutes
+
+    @Serializable
+    data class ShareWithTeammates(val visualizationId: String) : NavRoutes
 }
