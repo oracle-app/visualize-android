@@ -88,20 +88,3 @@ fun generateChartColors(n: Int): List<Color> {
         Color.hsv(i * 360f / n, 0.6f, 0.9f)
     }
 }
-
-/** Allows a layout to be rotated in [n] degrees.
- *
- * @param n The amount of degrees to rotate.
- * */
-fun Modifier.rotateChartLegendLayout(n: Float) = layout { measurable, constraints ->
-    val layoutConstraints = measurable.measure(constraints)
-
-    layout(layoutConstraints.height, layoutConstraints.width) {
-        layoutConstraints.placeWithLayer(
-            x = (layoutConstraints.width / 2 -  layoutConstraints.height / 2) * -1,
-            y = (layoutConstraints.height / 2 -  layoutConstraints.width / 2) * -1,
-        ) {
-            rotationZ = n
-        }
-    }
-}
