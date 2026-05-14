@@ -46,6 +46,8 @@ fun SnippingToolbar(
     onShapeClick: (ShapeType) -> Unit,
     onCropClick: () -> Unit,
     selectedColor: Color,
+    selectedTool: DrawingTool?,
+    cropMode: Boolean,
     modifier: Modifier = Modifier
 ) {
     var showColorPicker by remember { mutableStateOf(false) }
@@ -53,7 +55,7 @@ fun SnippingToolbar(
     var showShapePicker by remember { mutableStateOf(false) }
 
     val density = LocalDensity.current
-    val offsetPx = with(density) { 64.dp.roundToPx() }
+    val offsetPx = with(density) { 42.dp.roundToPx() }
 
     Box(modifier = modifier) {
         Surface(
@@ -67,10 +69,20 @@ fun SnippingToolbar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onPenClick, modifier = Modifier.size(32.dp)) {
-                    Icon(painter = painterResource(R.drawable.pen), contentDescription = stringResource(R.string.toolbar_pen), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Icon(
+                        painter = painterResource(R.drawable.pen),
+                        contentDescription = stringResource(R.string.toolbar_pen),
+                        tint = if (selectedTool == DrawingTool.PEN && !cropMode) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
                 IconButton(onClick = onEraserClick, modifier = Modifier.size(32.dp)) {
-                    Icon(painter = painterResource(R.drawable.eraser), contentDescription = stringResource(R.string.toolbar_eraser), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Icon(
+                        painter = painterResource(R.drawable.eraser),
+                        contentDescription = stringResource(R.string.toolbar_eraser),
+                        tint = if (selectedTool == DrawingTool.ERASER && !cropMode) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
                 Box {
                     IconButton(onClick = { showColorPicker = !showColorPicker }, modifier = Modifier.size(32.dp)) {
@@ -83,10 +95,7 @@ fun SnippingToolbar(
                         )
                     }
                     if (showColorPicker) {
-                        Popup(
-                            alignment = Alignment.BottomCenter,
-                            offset = IntOffset(0, -offsetPx)
-                        ) {
+                        Popup(alignment = Alignment.BottomCenter, offset = IntOffset(0, -offsetPx)) {
                             ColorPicker(
                                 selectedColor = selectedColor,
                                 onColorChange = { color ->
@@ -99,50 +108,59 @@ fun SnippingToolbar(
                 }
                 Box {
                     IconButton(onClick = { showThicknessPicker = !showThicknessPicker }, modifier = Modifier.size(32.dp)) {
-                        Icon(painter = painterResource(R.drawable.thickness), contentDescription = stringResource(R.string.toolbar_thickness), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Icon(
+                            painter = painterResource(R.drawable.thickness),
+                            contentDescription = stringResource(R.string.toolbar_thickness),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                     if (showThicknessPicker) {
-                        Popup(
-                            alignment = Alignment.BottomCenter,
-                            offset = IntOffset(0, -offsetPx)
-                        ) {
-                            ThicknessPicker(
-                                strokeWidth = strokeWidth,
-                                onThicknessChange = {
-                                    onThicknessClick(it)
-                                }
-                            )
+                        Popup(alignment = Alignment.BottomCenter, offset = IntOffset(0, -offsetPx)) {
+                            ThicknessPicker(strokeWidth = strokeWidth, onThicknessChange = { onThicknessClick(it) })
                         }
                     }
                 }
                 IconButton(onClick = onTextClick, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.TextFields, contentDescription = stringResource(R.string.toolbar_text), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Icon(
+                        Icons.Default.TextFields,
+                        contentDescription = stringResource(R.string.toolbar_text),
+                        tint = if (selectedTool == DrawingTool.TEXT && !cropMode) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
                 Box {
                     IconButton(onClick = { showShapePicker = !showShapePicker }, modifier = Modifier.size(32.dp)) {
-                        Icon(painter = painterResource(R.drawable.shapes), contentDescription = stringResource(R.string.toolbar_shape), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Icon(
+                            painter = painterResource(R.drawable.shapes),
+                            contentDescription = stringResource(R.string.toolbar_shape),
+                            tint = if (selectedTool == DrawingTool.SHAPE && !cropMode) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                     if (showShapePicker) {
-                        Popup(
-                            alignment = Alignment.BottomCenter,
-                            offset = IntOffset(0, -offsetPx)
-                        ) {
-                            ShapePicker(
-                                onShapeChange = { shape ->
-                                    onShapeClick(shape)
-                                    showShapePicker = false
-                                }
-                            )
+                        Popup(alignment = Alignment.BottomCenter, offset = IntOffset(0, -offsetPx)) {
+                            ShapePicker(onShapeChange = { shape ->
+                                onShapeClick(shape)
+                                showShapePicker = false
+                            })
                         }
                     }
                 }
-                IconButton(onClick = {
-                    showColorPicker = false
-                    showThicknessPicker = false
-                    showShapePicker = false
-                    onCropClick()
-                }, modifier = Modifier.size(32.dp)) {
-                    Icon(painter = painterResource(R.drawable.scissors), contentDescription = stringResource(R.string.toolbar_crop), tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                IconButton(
+                    onClick = {
+                        showColorPicker = false
+                        showThicknessPicker = false
+                        showShapePicker = false
+                        onCropClick()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.scissors),
+                        contentDescription = stringResource(R.string.toolbar_crop),
+                        tint = if (cropMode) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
             }
         }

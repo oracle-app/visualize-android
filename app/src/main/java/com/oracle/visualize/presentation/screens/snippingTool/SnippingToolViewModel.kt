@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.snippingTool
 
+import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
 import androidx.lifecycle.ViewModel
@@ -48,10 +49,6 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun setTool(tool: DrawingTool) {
-        _uiState.update { it.copy(selectedTool = tool) }
-    }
-
     fun setShape(shape: ShapeType) {
         _uiState.update { it.copy(selectedShape = shape) }
     }
@@ -67,7 +64,7 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
     fun selectTool(tool: DrawingTool) {
         _uiState.update { current ->
             if (current.isDrawingMode && current.selectedTool == tool) {
-                current.copy(isDrawingMode = false)
+                current.copy(isDrawingMode = false, selectedTool = null)
             } else {
                 current.copy(
                     isDrawingMode = true,
@@ -85,7 +82,34 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
         )}
     }
 
+    fun toggleConfirmDialog() {
+        _uiState.update { it.copy(
+            showConfirmDialog = !it.showConfirmDialog
+        )
+        }
+    }
+
+    fun toggleCancelDialog() {
+        _uiState.update { it.copy(
+            showCancelDialog = !it.showCancelDialog
+        )
+        }
+    }
+
     fun setCropRect(rect: IntRect) {
         _uiState.update { it.copy(cropRect = rect) }
     }
+
+    fun confirmCrop(bitmap: Bitmap): Bitmap {
+        val left = _uiState.value.cropRect.left.coerceIn(0, bitmap.width)
+        val top = _uiState.value.cropRect.top.coerceIn(0, bitmap.height)
+        val right = _uiState.value.cropRect.right.coerceIn(0, bitmap.width)
+        val bottom = _uiState.value.cropRect.bottom.coerceIn(0, bitmap.height)
+        return Bitmap.createBitmap(bitmap, left, top, right - left, bottom - top)
+    }
+
+    fun setIsTransformable() {
+        _uiState.update { it.copy(isTransformable = !_uiState.value.isDrawingMode && !_uiState.value.isCroppingMode) }
+    }
+
 }

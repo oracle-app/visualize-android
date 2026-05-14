@@ -15,12 +15,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,20 +65,23 @@ fun SnippingToolView(
     modifier: Modifier = Modifier,
     viewModel: SnippingToolViewModel = hiltViewModel()
 ) {
+
     val view = LocalView.current
-    SideEffect {
+    DisposableEffect(Unit) {
         val controller = WindowInsetsControllerCompat(
             (view.context as Activity).window,
             view
         )
-        controller.hide(WindowInsetsCompat.Type.navigationBars())
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.systemBars())
+        onDispose {
+            controller.show(WindowInsetsCompat.Type.systemBars())
+
+        }
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
-
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val transformState = rememberTransformableState { zoomChange, panChange, centroid ->
@@ -84,14 +89,9 @@ fun SnippingToolView(
         offset += panChange
     }
 
-    val isTransformable = !uiState.isDrawingMode && !uiState.isCroppingMode
-
-    var showConfirmDialog by remember { mutableStateOf(false) }
-    var showCancelDialog by remember { mutableStateOf(false) }
-
-    if (showConfirmDialog) {
+    if (uiState.showConfirmDialog) {
         AlertDialog(
-            onDismissRequest = { showConfirmDialog = false },
+            onDismissRequest = { viewModel.toggleConfirmDialog() },
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -99,16 +99,9 @@ fun SnippingToolView(
             text = { Text(stringResource(R.string.dialog_confirm_message)) },
             confirmButton = {
                 TextButton(onClick = {
-                    showConfirmDialog = false
+                    viewModel.toggleConfirmDialog()
                     coroutineScope.launch {
-                        val fullBitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                        val cropRect = uiState.cropRect
-                        val left = cropRect.left.coerceIn(0, fullBitmap.width)
-                        val top = cropRect.top.coerceIn(0, fullBitmap.height)
-                        val right = cropRect.right.coerceIn(0, fullBitmap.width)
-                        val bottom = cropRect.bottom.coerceIn(0, fullBitmap.height)
-                        val cropped = Bitmap.createBitmap(fullBitmap, left, top, right - left, bottom - top)
-                        onDone(cropped)
+                        onDone(viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap()))
                     }
                 }) {
                     Text(
@@ -118,7 +111,7 @@ fun SnippingToolView(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) {
+                TextButton(onClick = { viewModel.toggleConfirmDialog() }) {
                     Text(
                         stringResource(R.string.dialog_confirm_no),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -128,9 +121,9 @@ fun SnippingToolView(
         )
     }
 
-    if (showCancelDialog) {
+    if (uiState.showCancelDialog) {
         AlertDialog(
-            onDismissRequest = { showCancelDialog = false },
+            onDismissRequest = { viewModel.toggleCancelDialog() },
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -138,7 +131,7 @@ fun SnippingToolView(
             text = { Text(stringResource(R.string.dialog_cancel_message)) },
             confirmButton = {
                 TextButton(onClick = {
-                    showCancelDialog = false
+                    viewModel.toggleCancelDialog()
                     onCancel()
                 }) {
                     Text(
@@ -148,7 +141,7 @@ fun SnippingToolView(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showCancelDialog = false }) {
+                TextButton(onClick = { viewModel.toggleCancelDialog() }) {
                     Text(
                         stringResource(R.string.dialog_cancel_no),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -165,14 +158,10 @@ fun SnippingToolView(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .onSizeChanged { size ->
-                    val left = (size.width * 0.1f).toInt()
-                    val top = (size.height * 0.1f).toInt()
-                    val right = (size.width * 0.9f).toInt()
-                    val bottom = (size.height * 0.9f).toInt()
-                    viewModel.setCropRect(IntRect(left, top, right, bottom))
+                    viewModel.setCropRect(IntRect((size.width * 0.1f).toInt(), (size.height * 0.1f).toInt(), (size.width * 0.9f).toInt(), (size.height * 0.9f).toInt()))
                 }
                 .then(
-                    if (isTransformable) Modifier.transformable(state = transformState)
+                    if (uiState.isTransformable) Modifier.transformable(state = transformState)
                     else Modifier
                 )
                 .drawWithContent {
@@ -196,7 +185,7 @@ fun SnippingToolView(
 
             DrawingCanvas(
                 elements = uiState.elements,
-                selectedTool = uiState.selectedTool,
+                selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
                 selectedShape = uiState.selectedShape,
                 selectedColor = uiState.selectedColor,
                 strokeWidth = uiState.strokeWidth,
@@ -236,7 +225,9 @@ fun SnippingToolView(
             selectedColor = uiState.selectedColor,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 12.dp, bottom = 48.dp)
+                .padding(start = 16.dp, bottom = 48.dp),
+            selectedTool = uiState.selectedTool,
+            cropMode = uiState.isCroppingMode
         )
 
         SnippingToolActionBar(
@@ -244,23 +235,23 @@ fun SnippingToolView(
             onRedo = { viewModel.redo() },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 12.dp, top = 64.dp)
+                .padding(start = 16.dp, top = 64.dp)
         )
 
         Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 12.dp, bottom = 48.dp),
+                .padding(end = 16.dp, bottom = 48.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            SmallFloatingActionButton(
-                onClick = { showCancelDialog = true },
+            FloatingActionButton(
+                onClick = { viewModel.toggleCancelDialog() },
                 containerColor = MaterialTheme.colorScheme.error
             ) {
                 Icon(Icons.Default.Close, contentDescription = stringResource(R.string.fab_cancel), tint = MaterialTheme.colorScheme.onSecondary)
             }
-            SmallFloatingActionButton(
-                onClick = { showConfirmDialog = true },
+            FloatingActionButton(
+                onClick = { viewModel.toggleConfirmDialog() },
                 containerColor = MaterialTheme.colorScheme.secondary
             ) {
                 Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.fab_confirm), tint = MaterialTheme.colorScheme.onSecondary)

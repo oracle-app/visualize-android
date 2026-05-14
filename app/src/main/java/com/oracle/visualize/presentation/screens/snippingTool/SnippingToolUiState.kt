@@ -9,11 +9,14 @@ import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeTy
 data class SnippingToolUiState(
     val elements: List<DrawElement> = emptyList(),
     val redoStack: List<DrawElement> = emptyList(),
-    val selectedTool: DrawingTool = DrawingTool.PEN,
+    val selectedTool: DrawingTool? = null,
     val selectedShape: ShapeType = ShapeType.RECTANGLE,
     val selectedColor: Color = Color.Red,
     val strokeWidth: Float = 4f,
     val isDrawingMode: Boolean = false,
     val cropRect: IntRect = IntRect(0, 0, 0, 0),
-    val isCroppingMode: Boolean = false
+    val isCroppingMode: Boolean = false,
+    val showConfirmDialog: Boolean = false,
+    val showCancelDialog: Boolean = false,
+    val isTransformable: Boolean = true
 )

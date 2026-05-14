@@ -63,8 +63,6 @@ fun DrawingCanvas(
     var textInput by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
-    Log.d("DrawingCanvas", "isDrawingMode: $isDrawingMode, selectedTool: $selectedTool")
-
     Box(modifier = modifier) {
         Canvas(
             modifier = Modifier
@@ -74,7 +72,6 @@ fun DrawingCanvas(
                         .pointerInput(selectedTool, selectedShape, selectedColor, strokeWidth) {
                             detectDragGestures(
                                 onDragStart = { offset ->
-                                    Log.d("DrawingCanvas", "onDragStart: $offset, tool: $selectedTool")
                                     when (selectedTool) {
                                         DrawingTool.PEN, DrawingTool.ERASER -> {
                                             currentPath.reset()
@@ -179,7 +176,6 @@ fun DrawingCanvas(
         }
 
         textPosition?.let { position ->
-            Log.d("DrawingCanvas", "Showing TextField at: $position")
             LaunchedEffect(position) {
                 focusRequester.requestFocus()
             }
