@@ -22,6 +22,10 @@ import com.oracle.visualize.presentation.screens.notificationScreen.Notification
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
+import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
+import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
+import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
+import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 
 
 /**
@@ -74,7 +78,7 @@ fun MainScreen(
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = NavRoutes.Feed,
+        startDestination = NavRoutes.Splash,
         modifier = modifier
     ) {
         composable<NavRoutes.Feed> {
@@ -89,7 +93,34 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable<NavRoutes.Create> {
-            CreatePage(modifier = Modifier.fillMaxSize())
+            CreatePage(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateToSelection = {
+                    navController.navigate(NavRoutes.ChartSelection)
+                }
+            )
+        }
+
+        composable<NavRoutes.ChartSelection> {
+            ChartSelectionPage(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToShare = {
+                    navController.navigate(NavRoutes.ShareAndPost)
+                },
+                onNavigateToFeed = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.ChartSelection) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable<NavRoutes.ShareAndPost> {
+            ShareAndPostScreen(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable<NavRoutes.Notifications> {
@@ -100,8 +131,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             // TODO: Implement TeamsPage
         }
 
-        composable<NavRoutes.Profile> {
-            ProfilePage(modifier = Modifier.fillMaxSize())
+        composable<NavRoutes.Profile> { backStackEntry ->
+            val profile = backStackEntry.toRoute<NavRoutes.Profile>()
+            ProfilePage(
+                modifier = Modifier.fillMaxSize()
+            )
             // TODO: Pass profile.userId to ProfilePage
         }
 
@@ -123,7 +157,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
         composable<NavRoutes.Threads> { backStackEntry ->
             val route = backStackEntry.toRoute<NavRoutes.Threads>()
-
             ThreadsPage(
                 visualizationId = route.visualizationId,
                 modifier = Modifier.fillMaxSize(),
@@ -132,5 +165,40 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 }
             )
         }
+        composable<NavRoutes.Splash> {
+            SplashPage(
+                modifier = Modifier.fillMaxSize(),
+                onSessionActive = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.Splash) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onLoginClick = {
+                    navController.navigate(NavRoutes.Login)
+                },
+                onSignUpClick = {
+                    // TODO: Navigate to SignUp
+                }
+            )
+        }
+
+        composable<NavRoutes.Login> {
+            LoginPage(
+                modifier = Modifier.fillMaxSize(),
+                onLoginSuccess = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.Login) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onSignUpClick = {
+                    // TODO: Navigate to SignUp
+                }
+            )
+        }
+
     }
 }

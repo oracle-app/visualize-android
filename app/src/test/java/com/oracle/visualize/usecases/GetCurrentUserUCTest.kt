@@ -7,7 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-class GetCurrentUserUseCaseTest {
+class GetCurrentUserUCTest {
     private class FakeAuthRepository(
         private val currentUser: AuthUser?
     ) : AuthRepository {
@@ -16,7 +16,7 @@ class GetCurrentUserUseCaseTest {
             throw NotImplementedError()
         }
 
-        override suspend fun register(email: String, password: String): AuthUser {
+        override suspend fun register(name: String, email: String, password: String): AuthUser {
             throw NotImplementedError()
         }
 

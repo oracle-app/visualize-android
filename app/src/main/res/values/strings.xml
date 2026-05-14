@@ -25,7 +25,10 @@
 
     // Feed Top Bar
 
-    <string name="feed_top_bar_title">All Feed</string>
+    <string name="feed_filter_all">All Feed</string>
+    <string name="feed_filter_personal">Personal Feed</string>
+    <string name="feed_filter_shared">Shared Feed</string>
+
     <string name="feed_top_bar_options_description">Options</string>
 
     // Search Section
@@ -43,6 +46,11 @@
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
+    <string name="by_author">By %s</string>
+    <string name="bullet_separator">    •    %s</string>
+
+    //Chart Component
+    <string name="invalid_chart">"Invalid chart type was detected"</string>
 
     // Create View
 
@@ -61,6 +69,9 @@
     <string name="dataset_requirements_example_label">Example</string>
     <string name="dataset_requirements_footer">Each row should represent a single data entry. Avoid empty rows or merged cells.</string>
 
+    <string name="unknown_file">unknown_file</string>
+
+    // Mock Table
     <string name="table_header_date">Date</string>
     <string name="table_header_product">Product</string>
     <string name="table_header_sales">Sales</string>
@@ -69,11 +80,11 @@
     // Chart Selection Screen
 
     <string name="chart_selection_title">Choose visualization</string>
+    <string name="chart_selection_post_personal">Post to personal feed</string>
+    <string name="chart_selection_share_and_post">Share and post</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
     <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
-    <string name="chart_selection_post_personal">Post to personal feed</string>
-    <string name="chart_selection_share_and_post">Share and post</string>
 
     // Edit Chart Title Dialog
 
@@ -101,14 +112,20 @@
 
     // Errors
 
-
+    <string name="error_generic">Error</string>
     <string name="error_unknown">Unknown</string>
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
+    <string name="error_network">Connection error. Please check your internet.</string>
+    <string name="error_parsing">There was a problem reading some visualizations.</string>
+    <string name="error_viz_not_found">No visualizations found.</string>
+    <string name="error_chart_not_found">No chart found.</string>
+    <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>
     <string name="icon_back">Back</string>
+    <string name="icon_menu">Menu</string>
 
     // Profile Page
 
@@ -135,5 +152,43 @@
     <string name="no_threads">There\'s no more threads.</string>
 
 
+    // Snipping Tool
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+
+    <string name="toolbar_pen">Pen</string>
+    <string name="toolbar_eraser">Eraser</string>
+    <string name="toolbar_color">Color</string>
+    <string name="toolbar_thickness">Thickness</string>
+    <string name="toolbar_text">Text</string>
+    <string name="toolbar_shape">Shape</string>
+    <string name="toolbar_crop">Crop</string>
+
+    <string name="fab_confirm">Confirm</string>
+    <string name="fab_cancel">Cancel</string>
+    <string name="dialog_confirm_title">Share as New Thread</string>
+    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread. To reply to an existing thread, go to the Threads section.</string>
+    <string name="dialog_confirm_yes">Share</string>
+    <string name="dialog_confirm_no">Cancel</string>
+    <string name="dialog_cancel_title">Discard Changes</string>
+    <string name="dialog_cancel_message">If you cancel, your changes will not be saved.</string>
+    <string name="dialog_cancel_yes">Discard</string>
+    <string name="dialog_cancel_no">Cancel</string>
+
+    //Splash Page
+    <string name="visualize">Visualize</string>
+    <string name="slogan">Turn data into decisions.</string>
+    <string name="splash_description">Create, choose, and share AI-\n
+                        powered graphs in seconds.\n
+                        Fast, simple, and secure.</string>
+    <string name="login">Log In</string>
+    <string name="signup">Sign Up</string>
+    <string name="version">V1.0.0</string>
+
+    //Login Page
+    <string name="welcome">Welcome</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="no_account">Don\'t have an account?</string>
 
 </resources>

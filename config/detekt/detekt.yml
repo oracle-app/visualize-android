@@ -23,8 +23,20 @@ style:
   UseRequire:
     active: false
 
+  ReturnCount:
+    active: false
+
+  ThrowsCount:
+    active: false
+
+  NewLineAtEndOfFile:
+    active: false
+
   MagicNumber:
     active: false
+
+  ForbiddenComment:
+    active: true
 
   ForbiddenMethodCall:
     active: true
