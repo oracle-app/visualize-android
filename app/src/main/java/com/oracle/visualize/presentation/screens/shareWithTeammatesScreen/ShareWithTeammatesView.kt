@@ -138,7 +138,7 @@ private fun ShareWithTeammatesContent(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp)
             ) {
-                Spacer(modifier = Modifier.height(24.dp)) // Ajustado el margen superior
+                Spacer(modifier = Modifier.height(24.dp))
 
                 TeammateSearchBar(
                     query         = state.emailQuery,
@@ -164,7 +164,7 @@ private fun ShareWithTeammatesContent(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp)) // Espacio adaptado entre búsqueda y lista
+                Spacer(modifier = Modifier.height(24.dp))
 
                 TeammateList(
                     users    = state.sharedUsers,
