@@ -145,6 +145,29 @@
     <string name="snipping_tool">Snipping Tool</string>
     <string name="threads">Threads</string>
 
+    // Snipping Tool
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+
+    <string name="toolbar_pen">Pen</string>
+    <string name="toolbar_eraser">Eraser</string>
+    <string name="toolbar_color">Color</string>
+    <string name="toolbar_thickness">Thickness</string>
+    <string name="toolbar_text">Text</string>
+    <string name="toolbar_shape">Shape</string>
+    <string name="toolbar_crop">Crop</string>
+
+    <string name="fab_confirm">Confirm</string>
+    <string name="fab_cancel">Cancel</string>
+    <string name="dialog_confirm_title">Share as New Thread</string>
+    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread. To reply to an existing thread, go to the Threads section.</string>
+    <string name="dialog_confirm_yes">Share</string>
+    <string name="dialog_confirm_no">Cancel</string>
+    <string name="dialog_cancel_title">Discard Changes</string>
+    <string name="dialog_cancel_message">If you cancel, your changes will not be saved.</string>
+    <string name="dialog_cancel_yes">Discard</string>
+    <string name="dialog_cancel_no">Cancel</string>
+
     //Splash Page
     <string name="visualize">Visualize</string>
     <string name="slogan">Turn data into decisions.</string>

@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -104,4 +105,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+    implementation(libs.capturable)
 }
