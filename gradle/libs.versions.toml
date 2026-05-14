@@ -24,9 +24,6 @@ koalaplot = "0.11.0"
 mockk = "1.13.12"
 foundationLayout = "1.11.0"
 coroutinesTest = "1.10.2"
-material3 = "1.4.0"
-capturable = "3.0.1"
-foundationLayoutVersion = "1.11.1"
 
 
 [libraries]
@@ -66,10 +63,6 @@ koalaplot-core = { group = "io.github.koalaplot", name = "koalaplot-core", versi
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-capturable = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturable" }
-
-androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 
 
 

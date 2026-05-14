@@ -28,45 +28,47 @@ class SelectChartViewModel @Inject constructor() : ViewModel() {
     }
 
     fun toggleSelection(chartId: String) {
-        _uiState.update { currentState ->
-            if (currentState is ChartSelectionUiState.Success) {
+        val currentState = _uiState.value
+        if (currentState is ChartSelectionUiState.Success) {
+            _uiState.update {
                 currentState.copy(
                     charts = currentState.charts.map { 
                         if (it.visualization.id == chartId) it.copy(isSelected = !it.isSelected) 
                         else it 
                     }
                 )
-            } else currentState
+            }
         }
     }
 
     fun updateChartTitle(chartId: String, newTitle: String) {
-        _uiState.update { currentState ->
-            if (currentState is ChartSelectionUiState.Success) {
+        val currentState = _uiState.value
+        if (currentState is ChartSelectionUiState.Success) {
+            _uiState.update {
                 currentState.copy(
-                    hasTitleChanges = true,
                     charts = currentState.charts.map { 
                         if (it.visualization.id == chartId) {
                             it.copy(visualization = it.visualization.copy(title = newTitle))
                         } else it 
                     }
                 )
-            } else currentState
+            }
         }
     }
 
     fun showUnsavedChangesDialog(show: Boolean) {
-        _uiState.update { currentState ->
-            if (currentState is ChartSelectionUiState.Success) {
-                currentState.copy(isUnsavedChangesDialogVisible = show)
-            } else currentState
+        val currentState = _uiState.value
+        if (currentState is ChartSelectionUiState.Success) {
+            _uiState.update { currentState.copy(isUnsavedChangesDialogVisible = show) }
         }
     }
 
     fun hasSelections(): Boolean {
-        val state = _uiState.value
-        return if (state is ChartSelectionUiState.Success) {
-            state.charts.any { it.isSelected }
-        } else false
+        val currentState = _uiState.value
+        return if (currentState is ChartSelectionUiState.Success) {
+            currentState.charts.any { it.isSelected }
+        } else {
+            false
+        }
     }
 }

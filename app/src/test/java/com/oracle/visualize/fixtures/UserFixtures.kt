@@ -5,7 +5,6 @@ import com.oracle.visualize.domain.models.ShareUser
 
 object UserFixtures {
 
-    const val VALID_NAME = "Tester"
     const val VALID_EMAIL = "test@test.com"
     const val VALID_PASSWORD = "123456"
     const val VALID_UID = "user123"

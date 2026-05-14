@@ -6,7 +6,7 @@ sealed class Chart<T>(
     val chartTitle: String,
     val chartType: ChartTypes,
     val data: T,
-    val fieldNames: List<String>
+    val fieldNames: List<Any>
 )
 
 class VerticalBarChart(

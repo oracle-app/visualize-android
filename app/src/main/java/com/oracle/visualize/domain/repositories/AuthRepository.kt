@@ -7,7 +7,7 @@ import com.oracle.visualize.domain.models.AuthUser
  */
 interface AuthRepository {
     suspend fun login(email: String, password: String): AuthUser
-    suspend fun register(name: String, email: String, password: String): AuthUser
+    suspend fun register(email: String, password: String): AuthUser
     fun logout()
     fun getCurrentUser(): AuthUser?
 }

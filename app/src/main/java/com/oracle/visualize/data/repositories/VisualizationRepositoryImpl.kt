@@ -75,7 +75,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         val hiddenIDs = currentUser.hiddenVisualizations?.toSet() ?: emptySet()
 
         val visibleDTOs = dtos.filter { dto ->
-            val id = dto.id
+            val id = dto.id ?: return@filter false
             !hiddenIDs.contains(id)
         }
 

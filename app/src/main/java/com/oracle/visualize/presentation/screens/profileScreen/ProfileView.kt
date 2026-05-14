@@ -87,7 +87,7 @@ fun ProfilePage(
 
             // Check view model, decide if to draw or not.
 
-            when (uiState) {
+            when (val state = uiState) {
                 is ProfileUiState.Idle -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),

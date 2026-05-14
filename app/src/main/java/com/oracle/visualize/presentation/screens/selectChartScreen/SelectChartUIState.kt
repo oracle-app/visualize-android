@@ -10,8 +10,7 @@ sealed interface ChartSelectionUiState {
     
     data class Success(
         val charts: List<VisualizationSelection> = emptyList(),
-        val isUnsavedChangesDialogVisible: Boolean = false,
-        val hasTitleChanges: Boolean = false
+        val isUnsavedChangesDialogVisible: Boolean = false
     ) : ChartSelectionUiState
 
     data class Error(val message: String) : ChartSelectionUiState

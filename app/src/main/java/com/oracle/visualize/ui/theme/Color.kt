@@ -84,20 +84,3 @@ val Theme4_2 = Color(0xFFFF4D6D)
 val Theme4_3 = Color(0xFFFF85A1)
 val Theme4_4 = Color(0xFFFF99C8)
 val Theme4_5 = Color(0xFFF72585)
-
-// This is where the Snipping Tool draw colors are defined.
-
-val Draw_1 = Color(0xFF676767)
-
-val Draw_2 = Color(0xFFAA16FF)
-
-val Draw_3 = Color(0xFFFF6A00)
-
-val Draw_4 = Color(0xFF35D41D)
-
-val Draw_5 = Color(0xFF2154E2)
-
-val Draw_6 = Color(0xFFFF0000)
-
-val Draw_7 = Color.Black
-

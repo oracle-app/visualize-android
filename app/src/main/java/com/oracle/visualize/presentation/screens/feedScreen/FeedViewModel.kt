@@ -3,11 +3,12 @@ package com.oracle.visualize.presentation.screens.feedScreen
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
+import com.oracle.visualize.domain.usecases.GetMockChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,23 +26,12 @@ import javax.inject.Inject
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val getMockChartUseCase: GetMockChartUseCase
 ) : ViewModel() {
 
+    private val _uiState = MutableStateFlow(FeedUIState())
+    val uiState: StateFlow<FeedUIState> = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
-    val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
-
-    fun toggleSearch() {
-        _uiState.update { currentState ->
-            if (currentState is FeedUiState.Success) {
-                currentState.copy(
-                    isSearching = !currentState.isSearching
-                )
-            } else {
-                currentState
-            }
-        }
-    }
     private var allVisualizations: List<VisualizationCard> = emptyList()
 
     // TODO: Get from Auth Repository
@@ -52,49 +42,65 @@ class FeedViewModel @Inject constructor(
     }
 
     fun loadData(forceRefresh: Boolean = false) {
-
         if (forceRefresh) {
             allVisualizations = emptyList()
-            val current = _uiState.value
-            _uiState.value = if (current is FeedUiState.Success) {
-                current.copy(isRefreshing = true)
-            } else {
-                FeedUiState.Loading
-            }
-        } else {
-            _uiState.value = FeedUiState.Loading
+        }
+
+        if (allVisualizations.isEmpty()) {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         }
 
         viewModelScope.launch {
-
+            /*
+             * Get a chart from the mock chart repository.
+             *
+             * @param chartType The type of chart, according belongs to the
+             * ChartTypes enum.
+             *
+             * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
+             * - VERTICAL_BAR (Vertical Bar Chart)
+             * - HORIZONTAL_BAR (Vertical Bar Chart)
+             * - STACKED_BAR (Stacked Bar Chart)
+             * - LINE (Line Chart)
+             * - SCATTER (Scatter Chart)
+             * - PIE (Pie Chart)
+             * - DONUT (Donut Chart)
+             * - AREA (Area Chart)
+             *
+             * TODO: Get data from the microservice when it becomes available.
+             */
+            val mockChart = getMockChartUseCase(chartType = ChartTypes.STACKED_BAR).fold(
+                onSuccess = { it },
+                onFailure = { null }
+            )
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
-                    allVisualizations = items
+                    allVisualizations = items.map { i ->
+                        i.copy(chart = mockChart)
+                    }
                     applyLocalFilterAndSearch()
                 },
                 onFailure = { error ->
                     allVisualizations = emptyList()
                     val uiErrorMessage = when (error) {
-                        is AppError.NetworkError -> R.string.error_network
-                        is AppError.ParsingError -> R.string.error_parsing
-                        is AppError.NotFound     -> R.string.error_viz_not_found
-                        else                     -> R.string.error_unknown_retry
+                        is AppError.NetworkError -> "Connection error. Please check your internet."
+                        is AppError.ParsingError -> "There was a problem reading some visualizations."
+                        is AppError.NotFound -> "No visualizations found."
+                        else -> "An unexpected error occurred. Please try again."
                     }
                     Log.e("FeedViewModel", "Error fetching visualizations: ${error.message}", error)
-                    _uiState.value = FeedUiState.Error(uiErrorMessage)
+                    _uiState.update {
+                        it.copy(isLoading = false, items = emptyList(), errorMessage = uiErrorMessage)
+                    }
                 }
             )
         }
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
-        val currentState = _uiState.value
-        if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
+        if (_uiState.value.selectedFilter == filter) return
 
-        _uiState.value = when (currentState) {
-            is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
-            else -> currentState
-        }
+        _uiState.update { it.copy(selectedFilter = filter) }
 
         if (allVisualizations.isNotEmpty()) {
             applyLocalFilterAndSearch()
@@ -102,21 +108,14 @@ class FeedViewModel @Inject constructor(
             loadData()
         }
     }
-
     fun onSearchTextChange(newText: String) {
-        val currentState = _uiState.value
-        if(currentState is FeedUiState.Success){
-            _uiState.value = currentState.copy(searchText = newText)
-        }
+        _uiState.update { it.copy(searchText = newText) }
         applyLocalFilterAndSearch()
     }
 
     private fun applyLocalFilterAndSearch() {
-        val currentState = _uiState.value
-        val filter = if (currentState is FeedUiState.Success)
-            currentState.selectedFilter else VisualizationFilter.ALL
-        val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
-
+        val filter = _uiState.value.selectedFilter
+        val search = _uiState.value.searchText
 
         var filteredItems = when (filter) {
             VisualizationFilter.ALL -> allVisualizations
@@ -130,23 +129,12 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        _uiState.update { currentState ->
-            if (currentState is FeedUiState.Success) {
-                currentState.copy(
-                    items = filteredItems,
-                    searchText = search,
-                    selectedFilter = filter,
-                    isRefreshing = false
-                )
-            } else {
-                FeedUiState.Success(
-                    items = filteredItems,
-                    searchText = search,
-                    selectedFilter = filter,
-                    isRefreshing = false
-                )
-            }
+        _uiState.update {
+            it.copy(
+                items = filteredItems,
+                isLoading = false,
+                errorMessage = null
+            )
         }
-
     }
 }

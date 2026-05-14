@@ -20,7 +20,6 @@ data class VisualizationDTO(
     val authorID: String = "",
     val title: String = "",
     val configJSON: String = "{}",
-    val previewJSON: String = "{}",
     val sharedWithUsers: List<String> = emptyList(),
     val sharedWithTeams: List<String> = emptyList(),
     val createdAt: Timestamp = Timestamp.now(),

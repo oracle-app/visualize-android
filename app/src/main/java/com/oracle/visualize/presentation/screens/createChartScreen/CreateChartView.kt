@@ -36,14 +36,12 @@ import com.oracle.visualize.presentation.screens.createChartScreen.components.Fi
  * Screen for uploading a dataset to create new visualizations.
  *
  * @param modifier Modifier for the layout.
- * @param onNavigateToSelection Callback to navigate to the chart selection screen.
  * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
-    onNavigateToSelection: () -> Unit = {},
     viewModel: CreateChartViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -53,7 +51,7 @@ fun CreatePage(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             if (uri != null) {
-                val fileName = getFileName(context, uri) ?: context.getString(R.string.unknown_file)
+                val fileName = getFileName(context, uri) ?: "unknown_file"
                 val sizeBytes = getFileSizeBytes(context, uri)
 
                 viewModel.onFileSelected(SelectedDataset(fileName, sizeBytes))
@@ -122,7 +120,7 @@ fun CreatePage(
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = onNavigateToSelection,
+                    onClick = { /**/ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -218,7 +216,7 @@ fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateChartViewMod
         }
         is CreateChartUiState.Error -> {
             FileStatusItem(
-                fileName = state.fileName ?: stringResource(R.string.error_generic),
+                fileName = state.fileName ?: "Error",
                 fileSize = state.fileSize ?: "",
                 errorMessage = state.message,
                 onCancel = { viewModel.resetState() }
