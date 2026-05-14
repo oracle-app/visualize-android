@@ -6,13 +6,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 
+// In light mode, AlertDialog container should be white (secondaryContainer = White in LightColorScheme)
+// not surfaceVariant, to match the Figma design.
+private val DialogContainerColor: @Composable () -> Color = {
+    MaterialTheme.colorScheme.secondaryContainer
+}
+
 /**
- * Confirmation dialog shown before deleting a visualization for everyone.
+ * Confirmation dialog shown before deleting a visualization for everyone (owner action).
  * Permanently removes the visualization from all recipients' feeds.
  *
  * @param onDismiss Called when the user taps Cancel.
@@ -30,14 +37,14 @@ fun DeleteForEveryoneDialog(
                 text       = stringResource(R.string.feed_delete_title),
                 fontWeight = FontWeight.Normal,
                 style      = MaterialTheme.typography.headlineSmall,
-                color      = MaterialTheme.colorScheme.onSurface
+                color      = MaterialTheme.colorScheme.onPrimaryContainer
             )
         },
         text = {
             Text(
                 text  = stringResource(R.string.feed_delete_for_everyone_message),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onBackground
             )
         },
         confirmButton = {
@@ -60,13 +67,13 @@ fun DeleteForEveryoneDialog(
                 )
             }
         },
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = DialogContainerColor(),
         shape = RoundedCornerShape(28.dp)
     )
 }
 
 /**
- * Confirmation dialog shown before hiding a visualization from the current user's feed.
+ * Confirmation dialog shown before hiding a visualization from the current user's feed (non-owner action).
  * The visualization remains visible to other users with access.
  *
  * @param onDismiss Called when the user taps Cancel.
@@ -81,17 +88,17 @@ fun DeleteForMeDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text       = stringResource(R.string.feed_delete_title),
+                text       = stringResource(R.string.feed_hide_title),
                 fontWeight = FontWeight.Normal,
                 style      = MaterialTheme.typography.headlineSmall,
-                color      = MaterialTheme.colorScheme.onSurface
+                color      = MaterialTheme.colorScheme.onPrimaryContainer
             )
         },
         text = {
             Text(
                 text  = stringResource(R.string.feed_delete_for_me_message),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onBackground
             )
         },
         confirmButton = {
@@ -114,7 +121,7 @@ fun DeleteForMeDialog(
                 )
             }
         },
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = DialogContainerColor(),
         shape = RoundedCornerShape(28.dp)
     )
 }
