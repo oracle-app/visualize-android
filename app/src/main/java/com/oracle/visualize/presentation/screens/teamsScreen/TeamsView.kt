@@ -34,11 +34,6 @@ import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStack
 import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvatar
-import com.oracle.visualize.ui.theme.ErrorRed
-import com.oracle.visualize.ui.theme.LightBlue
-import com.oracle.visualize.ui.theme.LighterBlue
-import com.oracle.visualize.ui.theme.StrongBlue
-import com.oracle.visualize.ui.theme.StrongOrange
 
 /**
  * Entry-point composable for the Teams screen.
@@ -113,7 +108,7 @@ private fun TeamsContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(LightBlue)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(top = 48.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
             ) {
                 Text(
@@ -198,7 +193,7 @@ private fun TeamsContent(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp, end = 16.dp)
                 .size(80.dp),
-            containerColor = StrongOrange,
+            containerColor = MaterialTheme.colorScheme.secondary,
             contentColor   = MaterialTheme.colorScheme.onPrimary,
             shape          = RoundedCornerShape(24.dp)
         ) {
@@ -237,7 +232,7 @@ private fun MyTeamRow(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .clip(shape)
-            .background(LighterBlue)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         // Action buttons revealed on swipe (right side)
         Row(
@@ -251,7 +246,7 @@ private fun MyTeamRow(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .background(StrongBlue)
+                    .background(MaterialTheme.colorScheme.primary)
                     .clickable { onEdit(); onDismissSwipe() },
                 contentAlignment = Alignment.Center
             ) {
@@ -267,7 +262,7 @@ private fun MyTeamRow(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .background(ErrorRed)
+                    .background(MaterialTheme.colorScheme.error)
                     .clickable { onDelete(); onDismissSwipe() },
                 contentAlignment = Alignment.Center
             ) {
@@ -286,7 +281,7 @@ private fun MyTeamRow(
             modifier          = Modifier
                 .offset(x = offset)
                 .fillMaxWidth()
-                .background(LighterBlue)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures { _, dragAmount ->
                         if (dragAmount < -15f) onSwipe()
@@ -327,7 +322,7 @@ private fun TeamsImInRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(LighterBlue)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
