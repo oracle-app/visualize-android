@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
@@ -224,7 +225,7 @@ private fun ShareWithTeammatesTopBar(onBackPressed: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             modifier          = Modifier
                 .fillMaxWidth()
-                .requiredHeight(64.dp)
+                .height(64.dp)
                 .padding(start = 4.dp)
         ) {
             Box(
@@ -412,11 +413,12 @@ private fun TeammateShareBottomBar(
     onConfirmShare: () -> Unit
 ) {
     Row(
-        modifier              = Modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .requiredHeight(100.dp)
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(horizontal = 16.dp),
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp)
+            .height(100.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment     = Alignment.CenterVertically
     ) {
