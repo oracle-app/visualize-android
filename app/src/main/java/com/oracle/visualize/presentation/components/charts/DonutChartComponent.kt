@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.oracle.visualize.domain.models.DonutChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.pie.DefaultSlice
@@ -25,7 +26,7 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun RenderDonutChart(chart: DonutChart, modifier: Modifier = Modifier) {
+fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart) {
     val categories = chart.fieldNames
     val values = chart.data
     val colors = generateChartColors(categories.size)
@@ -33,12 +34,7 @@ fun RenderDonutChart(chart: DonutChart, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         PieChart(
             values = values,
-            label = { index ->
-                Text(
-                    text = values[index].toString(),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            },
+            label = { index -> Text(text = values[index].toString(), color = Color.DarkGray) },
             slice = { index -> DefaultSlice(color = colors[index]) },
             holeSize = 0.6f,
             holeContent = {
@@ -47,12 +43,12 @@ fun RenderDonutChart(chart: DonutChart, modifier: Modifier = Modifier) {
                         Text(
                             text = "Total",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = Color.DarkGray
                         )
                         Text(
                             text = (values.sum().roundToInt() / 1.0f).toString(),
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = Color.DarkGray
                         )
                     }
                 }
