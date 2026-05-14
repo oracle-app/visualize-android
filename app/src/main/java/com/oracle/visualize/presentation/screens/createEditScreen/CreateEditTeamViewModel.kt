@@ -99,6 +99,8 @@ class CreateEditTeamViewModel @Inject constructor(
                 _uiState.value = current.copy(searchQuery = event.query)
             }
             is CreateEditTeamUiEvent.AddMember -> {
+
+                if (!current.isEditMode) return
                 _uiState.value = current.copy(
                     members = current.members + event.user,
                     searchQuery = "",
@@ -107,6 +109,8 @@ class CreateEditTeamViewModel @Inject constructor(
                 _searchQuery.value = ""
             }
             is CreateEditTeamUiEvent.RemoveMember -> {
+                // Guard: member management is only allowed in edit mode.
+                if (!current.isEditMode) return
                 if (event.user.id != current.ownerID)
                     _uiState.value = current.copy(members = current.members - event.user)
             }
