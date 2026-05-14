@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.pie.DefaultSlice
@@ -23,7 +24,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
  */
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-fun RenderPieChart(chart: PieChartModel, modifier: Modifier = Modifier) {
+fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
     val categories = chart.fieldNames
     val values = chart.data
     val colors = generateChartColors(categories.size)
@@ -31,12 +32,7 @@ fun RenderPieChart(chart: PieChartModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         PieChart(
             values = values,
-            label = { index ->
-                Text(
-                    text = values[index].toString(),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            },
+            label = { index -> Text(text = values[index].toString(), color = Color.DarkGray) },
             slice = { index -> DefaultSlice(color = colors[index]) }
         )
     }

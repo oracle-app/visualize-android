@@ -28,13 +28,13 @@ object ChartMapper {
             val chartName = jsonObject.optString("chartName", "No Title")
             val chartTypeStr = jsonObject.optString("chartType", "")
 
-            // Metrics' field names, which mainly apply to Line and Scatter charts.
+            // Metrics' field names.
             val metricsObj = jsonObject.optJSONObject("metrics")
-            val metricsFieldNames = mutableListOf<String>()
+            val metricsNames = mutableListOf<String>()
             metricsObj?.let {
                 val keys = it.keys()
                 while (keys.hasNext()) {
-                    metricsFieldNames.add(it.getString(keys.next()))
+                    metricsNames.add(it.getString(keys.next()))
                 }
             }
 
@@ -48,29 +48,29 @@ object ChartMapper {
 
             when (chartTypeStr) {
                 "Vertical Bar Chart" -> {
-                    VerticalBarChart(chartName, parseToMapStringFloat(dataObj), field1FieldNames)
+                    VerticalBarChart(chartName, parseToMapStringFloat(dataObj), metricsNames, field1FieldNames)
                 }
                 "Horizontal Bar Chart" -> {
-                    HorizontalBarChart(chartName, parseToMapStringFloat(dataObj), field1FieldNames)
+                    HorizontalBarChart(chartName, parseToMapStringFloat(dataObj), metricsNames, field1FieldNames)
                 }
                 "Stacked Bar Chart" -> {
-                    val stackNames = getStackedBarStackNames(dataObj, metricsObj, metricsFieldNames)
-                    StackedBarChart(chartName, parseToMapStringListFloat(dataObj), stackNames)
+                    val stackNames = getStackedBarStackNames(dataObj, metricsObj, metricsNames)
+                    StackedBarChart(chartName, parseToMapStringListFloat(dataObj), metricsNames, stackNames)
                 }
                 "Line Chart", "Line" -> {
-                    LineChart(chartName, parseToMapFloatFloat(dataObj), metricsFieldNames)
+                    LineChart(chartName, parseToMapFloatFloat(dataObj), metricsNames, metricsNames)
                 }
                 "Pie Chart", "Pie" -> {
-                    PieChartModel(chartName, parseToListFloat(dataObj), field1FieldNames)
+                    PieChartModel(chartName, parseToListFloat(dataObj), metricsNames, field1FieldNames)
                 }
                 "Donut Chart", "Donut" -> {
-                    DonutChart(chartName, parseToListFloat(dataObj), field1FieldNames)
+                    DonutChart(chartName, parseToListFloat(dataObj), metricsNames, field1FieldNames)
                 }
                 "Scatter Chart", "Scatter" -> {
-                    ScatterChart(chartName, parseToMapFloatFloat(dataObj), metricsFieldNames)
+                    ScatterChart(chartName, parseToMapFloatFloat(dataObj), metricsNames, metricsNames)
                 }
                 "Area Chart", "Area" -> {
-                    AreaChart(chartName, parseToMapFloatListFloat(dataObj), field1FieldNames)
+                    AreaChart(chartName, parseToMapFloatListFloat(dataObj), metricsNames, field1FieldNames)
                 }
                 else -> {
                     throw AppError.ParsingError("Unsupported chart type: $chartTypeStr")

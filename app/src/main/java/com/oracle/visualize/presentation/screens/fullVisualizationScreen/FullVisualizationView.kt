@@ -152,7 +152,7 @@ fun FullVisualizationPage(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .background(MaterialTheme.colorScheme.background)
                                 .clipToBounds(),
                             contentAlignment = Alignment.Center
                         ) {
@@ -168,7 +168,7 @@ fun FullVisualizationPage(
                                     .heightIn(min = 260.dp, max = 420.dp)
                                     .capturable(captureController)
                             ) {
-                                ChartRenderFullScreen(chart = chart)
+                                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
                             }
                         }
                     }
