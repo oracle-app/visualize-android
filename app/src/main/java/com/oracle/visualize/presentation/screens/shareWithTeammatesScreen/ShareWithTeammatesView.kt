@@ -247,7 +247,7 @@ private fun ShareWithTeammatesTopBar(onBackPressed: () -> Unit) {
             Text(
                 text       = stringResource(R.string.share_with_teammates_title),
                 color      = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontSize   = 22.sp,
+                fontSize   = 28.sp,
                 fontWeight = FontWeight.Medium,
                 lineHeight = 1.29.em,
                 maxLines   = 1,
