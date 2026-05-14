@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
+import android.graphics.Bitmap
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
 

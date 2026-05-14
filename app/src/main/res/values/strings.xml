@@ -145,6 +145,56 @@
     <string name="snipping_tool">Snipping Tool</string>
     <string name="threads">Threads</string>
 
+    //Threads Page
+    <string name="reply">Reply</string>
+    <string name="add_note">Add note</string>
+    <string name="voice_note">Voice Note</string>
+    <string name="no_threads">There\'s no more threads.</string>
 
+
+    // Snipping Tool
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+
+    <string name="toolbar_pen">Pen</string>
+    <string name="toolbar_eraser">Eraser</string>
+    <string name="toolbar_color">Color</string>
+    <string name="toolbar_thickness">Thickness</string>
+    <string name="toolbar_text">Text</string>
+    <string name="toolbar_shape">Shape</string>
+    <string name="toolbar_crop">Crop</string>
+
+    <string name="fab_confirm">Confirm</string>
+    <string name="fab_cancel">Cancel</string>
+    <string name="dialog_confirm_title">Share as New Thread</string>
+    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread. To reply to an existing thread, go to the Threads section.</string>
+    <string name="dialog_confirm_yes">Share</string>
+    <string name="dialog_confirm_no">Cancel</string>
+    <string name="dialog_cancel_title">Discard Changes</string>
+    <string name="dialog_cancel_message">If you cancel, your changes will not be saved.</string>
+    <string name="dialog_cancel_yes">Discard</string>
+    <string name="dialog_cancel_no">Cancel</string>
+
+    //Splash Page
+    <string name="visualize">Visualize</string>
+    <string name="slogan">Turn data into decisions.</string>
+    <string name="splash_description">Create, choose, and share AI-\n
+                        powered graphs in seconds.\n
+                        Fast, simple, and secure.</string>
+    <string name="login">Log In</string>
+    <string name="signup">Sign Up</string>
+    <string name="version">V1.0.0</string>
+
+    //Login Page
+    <string name="welcome">Welcome</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="no_account">Don\'t have an account?</string>
+    
+    //Signup Page
+    <string name="already_have_account">Already have an account</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="name">Name</string>
+    <string name="create_account">Create your account</string>
 
 </resources>

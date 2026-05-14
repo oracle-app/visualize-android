@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
@@ -75,5 +76,10 @@ class FullVisualizationViewModel @Inject constructor(
             )
         }
     }
+
+    fun onSnipCompleted(bitmap: Bitmap) {
+        // TODO: attach to thread
+    }
+
 }
 
