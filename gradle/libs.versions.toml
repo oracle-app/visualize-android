@@ -26,6 +26,7 @@ foundationLayout = "1.11.0"
 coroutinesTest = "1.10.2"
 material3 = "1.4.0"
 capturable = "3.0.1"
+foundationLayoutVersion = "1.11.1"
 
 
 [libraries]
@@ -68,6 +69,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 capturable = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturable" }
 
+androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 
 
 
