@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.Chart
@@ -92,7 +93,7 @@ fun ChartRenderFullScreen(
                                 Text(
                                     cleanLabels[it],
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    color = Color.DarkGray
                                 ) }
                         )
                     }

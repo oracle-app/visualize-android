@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -16,6 +17,7 @@ import com.oracle.visualize.domain.models.StackedBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.bar.StackedVerticalBarPlot
 import io.github.koalaplot.core.bar.verticalSolidBar
+import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
@@ -46,18 +48,22 @@ fun RenderStackedBarChart(
     val seriesColors = generateChartColors(seriesNames.size)
     val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
 
-    if (categories.isNotEmpty() && seriesCount > 0) {
+    KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
         XYGraph(
             xAxisModel = remember { CategoryAxisModel(categories) },
             yAxisModel = rememberFloatLinearAxisModel(0f..maxOf(1f, maxY), minorTickCount = 0),
             xAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-                title = { if (showAxisLabels && !chart.metrics.isEmpty()) Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer) }
+                labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                title = {
+                    if (showAxisLabels && !chart.metrics.isEmpty()) {
+                        Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
+                    }
+                }
             ),
             yAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
                 title = {
                     if (showAxisLabels && !chart.metrics.isEmpty()) {
                         Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
@@ -66,7 +72,7 @@ fun RenderStackedBarChart(
                                 overflow = TextOverflow.Visible,
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = Color.DarkGray
                             )
                         }
                     }
@@ -74,11 +80,13 @@ fun RenderStackedBarChart(
             )
         ) {
             StackedVerticalBarPlot {
-                seriesNames.forEachIndexed { seriesIndex, _ ->
-                    series(defaultBar = verticalSolidBar(seriesColors[seriesIndex], RectangleShape, border = null)) {
-                        chart.data.forEach { (category, values) ->
-                            if (seriesIndex < values.size) {
-                                item(category, values[seriesIndex])
+                if (categories.isNotEmpty() && seriesCount > 0) {
+                    seriesNames.forEachIndexed { seriesIndex, _ ->
+                        series(defaultBar = verticalSolidBar(seriesColors[seriesIndex], RectangleShape, border = null)) {
+                            chart.data.forEach { (category, values) ->
+                                if (seriesIndex < values.size) {
+                                    item(category, values[seriesIndex])
+                                }
                             }
                         }
                     }

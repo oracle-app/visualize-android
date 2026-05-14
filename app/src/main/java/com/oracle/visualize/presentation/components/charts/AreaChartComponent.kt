@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -18,6 +19,7 @@ import io.github.koalaplot.core.line.StackedAreaPlot
 import io.github.koalaplot.core.line.StackedAreaPlotDataAdapter
 import io.github.koalaplot.core.line.StackedAreaStyle
 import io.github.koalaplot.core.style.AreaStyle
+import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 import io.github.koalaplot.core.xygraph.AxisContent
@@ -53,41 +55,47 @@ fun RenderAreaChart(
 
     val processedData = StackedAreaPlotDataAdapter(xData = sortedKeys, yData = seriesData)
 
-    XYGraph(
-        xAxisModel = rememberFloatLinearAxisModel(minX..maxOf(minX + 1f, maxX)),
-        yAxisModel = rememberFloatLinearAxisModel(0f..maxOf(1f, maxY)),
-        xAxisContent = AxisContent(
-            style = rememberAxisStyle(),
-            labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-            title = { if (showAxisLabels && !chart.metrics.isEmpty()) Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer) }
-        ),
-        yAxisContent = AxisContent(
-            style = rememberAxisStyle(),
-            labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-            title = {
-                if (showAxisLabels && !chart.metrics.isEmpty()) {
-                    Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
-                        Text(
-                            text = chart.metrics[1],
-                            overflow = TextOverflow.Visible,
-                            softWrap = false,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+    KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
+        XYGraph(
+            xAxisModel = rememberFloatLinearAxisModel(minX..maxOf(minX + 1f, maxX)),
+            yAxisModel = rememberFloatLinearAxisModel(0f..maxOf(1f, maxY)),
+            xAxisContent = AxisContent(
+                style = rememberAxisStyle(),
+                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                title = {
+                    if (showAxisLabels && !chart.metrics.isEmpty()) {
+                        Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
                     }
                 }
-            }
-        )
-    ) {
-        StackedAreaPlot(
-            data = processedData,
-            styles = seriesColors.map { col ->
-                StackedAreaStyle(
-                    lineStyle = LineStyle(SolidColor(col), strokeWidth = 2.dp),
-                    areaStyle = AreaStyle(SolidColor(col.copy(alpha = 0.2f))),
-                )
-            },
-            firstBaseline = AreaBaseline.HorizontalLine(0f),
-        )
+            ),
+            yAxisContent = AxisContent(
+                style = rememberAxisStyle(),
+                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                title = {
+                    if (showAxisLabels && !chart.metrics.isEmpty()) {
+                        Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
+                            Text(
+                                text = chart.metrics[1],
+                                overflow = TextOverflow.Visible,
+                                softWrap = false,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.DarkGray
+                            )
+                        }
+                    }
+                }
+            )
+        ) {
+            StackedAreaPlot(
+                data = processedData,
+                styles = seriesColors.map { col ->
+                    StackedAreaStyle(
+                        lineStyle = LineStyle(SolidColor(col), strokeWidth = 2.dp),
+                        areaStyle = AreaStyle(SolidColor(col.copy(alpha = 0.2f))),
+                    )
+                },
+                firstBaseline = AreaBaseline.HorizontalLine(0f),
+            )
+        }
     }
 }

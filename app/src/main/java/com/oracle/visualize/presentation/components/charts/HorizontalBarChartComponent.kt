@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,7 @@ import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.HorizontalBarPlot
+import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
@@ -43,42 +45,48 @@ fun RenderHorizontalBarChart(
     val barColors = generateChartColors(categories.size)
 
     Box {
-        XYGraph(
-            xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
-            yAxisModel = remember { CategoryAxisModel(categories) },
-            xAxisContent = AxisContent(
-                style = rememberAxisStyle(),
-                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-                title = { if (showAxisLabels && !chart.metrics.isEmpty()) Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer) }
-            ),
-            yAxisContent = AxisContent(
-                style = rememberAxisStyle(),
-                labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer) },
-                title = {
-                    if (showAxisLabels && !chart.metrics.isEmpty()) {
-                        Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
-                            Text(
-                                text = chart.metrics[1],
-                                overflow = TextOverflow.Visible,
-                                softWrap = false,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+        KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
+            XYGraph(
+                xAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
+                yAxisModel = remember { CategoryAxisModel(categories) },
+                xAxisContent = AxisContent(
+                    style = rememberAxisStyle(),
+                    labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                    title = {
+                        if (showAxisLabels && !chart.metrics.isEmpty()) {
+                            Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
                         }
                     }
-                }
-            )
-        ) {
-            HorizontalBarPlot(
-                xData = values,
-                yData = categories,
-                bar = { index, _, _ ->
-                    DefaultBar(
-                        brush = SolidColor(barColors[index]),
-                        modifier = modifier.fillMaxWidth()
-                    )
-                }
-            )
+                ),
+                yAxisContent = AxisContent(
+                    style = rememberAxisStyle(),
+                    labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                    title = {
+                        if (showAxisLabels && !chart.metrics.isEmpty()) {
+                            Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
+                                Text(
+                                    text = chart.metrics[1],
+                                    overflow = TextOverflow.Visible,
+                                    softWrap = false,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.DarkGray
+                                )
+                            }
+                        }
+                    }
+                )
+            ) {
+                HorizontalBarPlot(
+                    xData = values,
+                    yData = categories,
+                    bar = { index, _, _ ->
+                        DefaultBar(
+                            brush = SolidColor(barColors[index]),
+                            modifier = modifier.fillMaxWidth()
+                        )
+                    }
+                )
+            }
         }
     }
 }

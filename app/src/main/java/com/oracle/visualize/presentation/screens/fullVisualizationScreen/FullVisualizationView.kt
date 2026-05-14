@@ -117,7 +117,7 @@ fun FullVisualizationPage(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .background(MaterialTheme.colorScheme.background)
                                 .clipToBounds(),
                             contentAlignment = Alignment.Center
                         ) {
