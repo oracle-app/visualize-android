@@ -1,6 +1,6 @@
 <resources>
 
-    // Actions
+    <!-- Actions -->
 
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
@@ -10,7 +10,7 @@
     <string name="log_out">Log Out</string>
 
 
-    // Navigation Bar
+    <!-- Navigation Bar -->
 
     <string name="nav_create">Create</string>
     <string name="nav_teams">Teams</string>
@@ -18,22 +18,22 @@
     <string name="nav_notifications">Notifications</string>
     <string name="nav_profile">Profile</string>
 
-    // App Name
+    <!-- App Name -->
 
     <string name="app_name">Visualize</string>
 
 
-    // Feed Top Bar
+    <!-- Feed Top Bar -->
 
     <string name="feed_top_bar_title">All Feed</string>
     <string name="feed_top_bar_options_description">Options</string>
 
-    // Search Section
+    <!-- Search Section -->
 
     <string name="search_placeholder">Search by title</string>
     <string name="search_icon_description">Search</string>
 
-    // FeedCard Time Formatting
+    <!-- FeedCard Time Formatting -->
 
     <string name="time_just_now">just now</string>
     <string name="time_mins_ago">%d min ago</string>
@@ -44,7 +44,7 @@
         <item quantity="other">%d weeks ago</item>
     </plurals>
 
-    // Create View
+    <!-- Create View -->
 
     <string name="create_top_bar_title">Create Data Visualizations</string>
     <string name="create_description_success">Your dataset is ready! Generate visualizations to explore your data.</string>
@@ -66,7 +66,7 @@
     <string name="table_header_sales">Sales</string>
     <string name="table_header_region">Region</string>
 
-    // Chart Selection Screen
+    <!-- Chart Selection Screen -->
 
     <string name="chart_selection_title">Choose visualization</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
@@ -75,17 +75,18 @@
     <string name="chart_selection_post_personal">Post to personal feed</string>
     <string name="chart_selection_share_and_post">Share and post</string>
 
-    // Edit Chart Title Dialog
+    <!-- Edit Chart Title Dialog -->
 
     <string name="dialog_edit_title">Edit Chart Title</string>
     <string name="dialog_edit_title_label">New Title</string>
 
-    // Unsaved Changes Dialog
+    <!-- Unsaved Changes Dialog -->
 
     <string name="dialog_unsaved_title">Unsaved Changes</string>
     <string name="dialog_unsaved_message">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="dialog_leave">Leave</string>
-    //Share and Post
+
+    <!-- Share and Post -->
 
     <string name="team_member_count">%d members</string>
     <string name="unsaved_changes">Unsaved Changes</string>
@@ -107,19 +108,29 @@
     <string name="feed_delete_title">Delete Visualization?</string>
     <string name="feed_delete_for_everyone_message">This will permanently remove the visualization from the feed for you and everyone you shared it with. This action cannot be undone.</string>
     <string name="feed_delete_for_me_message">This will remove the visualization from your feed. To see it again, the owner will need to share it with you.</string>
+    <string name="feed_hide_title">Hide Visualization?</string>
 
-    // Errors
+    <!-- Share With Teammates Screen -->
 
+    <string name="share_with_teammates_title">Share to More Teammates</string>
+    <string name="share_with_teammates_empty">Search for teammates you\'d like to share with.</string>
+    <string name="share_no_results">No results found</string>
+    <string name="share_clear_search">Clear search</string>
+    <string name="share_send">Send</string>
+    <string name="share_remove_title">Remove %s?</string>
+    <string name="share_remove_confirm">Remove</string>
+
+    <!-- Errors -->
 
     <string name="error_unknown">Unknown</string>
     <string name="error_invalid_format">Please upload a .xlsx or .csv file to continue.</string>
 
+    <!-- Icon Descriptions -->
 
-    //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>
     <string name="icon_back">Back</string>
 
-    // Profile Page
+    <!-- Profile Page -->
 
     <string name="version_declaration">Version</string>
     <string name="chart_theme_title">Chart theme</string>
@@ -128,15 +139,14 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="licenses">Licenses and open source libraries</string>
 
-        // Descriptions
+    <!-- Descriptions -->
 
     <string name="edit_image_description">Edit Profile Image</string>
     <string name="profile_img_description">Profile Image</string>
 
-    // FullScreen Page
+    <!-- FullScreen Page -->
+
     <string name="snipping_tool">Snipping Tool</string>
     <string name="threads">Threads</string>
-
-
 
 </resources>
