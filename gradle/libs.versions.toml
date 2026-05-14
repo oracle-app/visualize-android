@@ -1,7 +1,7 @@
 [versions]
 detekt = "1.23.6"
 ktlint = "12.1.1"
-agp = "9.2.1"
+agp = "9.1.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -22,12 +22,11 @@ hiltNavigationCompose = "1.2.0"
 coil = "3.4.0"
 koalaplot = "0.11.0"
 mockk = "1.13.12"
-foundationLayout = "1.11.0"
 coroutinesTest = "1.10.2"
 material3 = "1.4.0"
 capturable = "3.0.1"
 foundationLayoutVersion = "1.11.1"
-
+retrofit = "2.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,12 +62,12 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 koalaplot-core = { group = "io.github.koalaplot", name = "koalaplot-core", version.ref = "koalaplot" }
-androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 capturable = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturable" }
-
+retrofit2 = { group = "com.squareup.retrofit2" , name = "retrofit", version.ref = "retrofit" }
+retrofit2-converter = { group = "com.squareup.retrofit2" , name = "retrofit2:converter-gson", version.ref = "retrofit" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 
 

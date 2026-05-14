@@ -89,7 +89,6 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
@@ -116,7 +115,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.converter)
     implementation(libs.capturable)
 }
