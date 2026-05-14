@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -68,7 +67,6 @@ fun CreateEditTeamPage(
             }
         }
         is CreateEditTeamUiState.Success -> {
-            // Handled by LaunchedEffect above
         }
     }
 }
@@ -114,7 +112,6 @@ private fun CreateEditTeamContent(
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
 
-                // Team name input (create mode only)
                 if (!state.isEditMode) {
                     item {
                         Box(
@@ -157,102 +154,68 @@ private fun CreateEditTeamContent(
                     }
                 }
 
-                // Add people section
-                item {
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        if (!state.isEditMode) {
-                            Text(
-                                text       = stringResource(R.string.create_team_add_people_section),
-                                fontSize   = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier   = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
 
-                        // Search bar
-                        TextField(
-                            value         = state.searchQuery,
-                            onValueChange = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged(it)) },
-                            placeholder   = {
-                                Text(
-                                    if (state.isEditMode) stringResource(R.string.edit_team_search_placeholder)
-                                    else stringResource(R.string.create_team_search_placeholder),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            modifier      = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .clip(RoundedCornerShape(32.dp)),
-                            leadingIcon   = {
-                                Icon(
-                                    Icons.Default.Search,
-                                    contentDescription = null,
-                                    tint               = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            colors        = TextFieldDefaults.colors(
-                                focusedContainerColor   = MaterialTheme.colorScheme.surface,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                focusedIndicatorColor   = MaterialTheme.colorScheme.primary,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.outline
-                            ),
-                            singleLine    = true
-                        )
-                    }
-                }
-
-                // Search results
-                if (state.searchQuery.isNotBlank() && state.searchResults.isNotEmpty()) {
-                    items(state.searchResults) { user ->
-                        SearchResultRow(
-                            user  = user,
-                            onAdd = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
-                        )
-                    }
-                }
-
-                // Suggestions horizontal row (create mode, not searching)
-                if (!state.isEditMode && state.searchQuery.isBlank()) {
+                if (state.isEditMode) {
                     item {
-                        Column {
-                            Text(
-                                text       = stringResource(R.string.create_team_suggestions_section),
-                                fontSize   = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier   = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-                            )
-                            LazyRow(
-                                contentPadding      = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                items(state.suggestions) { user ->
-                                    SuggestionItem(
-                                        user    = user,
-                                        onClick = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            // Search bar
+                            TextField(
+                                value         = state.searchQuery,
+                                onValueChange = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged(it)) },
+                                placeholder   = {
+                                    Text(
+                                        stringResource(R.string.edit_team_search_placeholder),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                }
-                            }
+                                },
+                                modifier      = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .clip(RoundedCornerShape(32.dp)),
+                                leadingIcon   = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = null,
+                                        tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                colors        = TextFieldDefaults.colors(
+                                    focusedContainerColor   = MaterialTheme.colorScheme.surface,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    focusedIndicatorColor   = MaterialTheme.colorScheme.primary,
+                                    unfocusedIndicatorColor = MaterialTheme.colorScheme.outline
+                                ),
+                                singleLine    = true
+                            )
                         }
                     }
-                }
 
-                // Member list header
-                item {
-                    Text(
-                        text       = stringResource(R.string.create_team_member_list_section),
-                        fontSize   = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier   = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
-                    )
-                }
+                    // Search results (edit mode only)
+                    if (state.searchQuery.isNotBlank() && state.searchResults.isNotEmpty()) {
+                        items(state.searchResults) { user ->
+                            SearchResultRow(
+                                user  = user,
+                                onAdd = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
+                            )
+                        }
+                    }
 
-                items(state.members) { member ->
-                    MemberRow(
-                        user     = member,
-                        isOwner  = member.id == state.ownerID,
-                        onRemove = { onEvent(CreateEditTeamUiEvent.RemoveMember(member)) }
-                    )
+                    item {
+                        Text(
+                            text       = stringResource(R.string.create_team_member_list_section),
+                            fontSize   = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier   = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                        )
+                    }
+
+                    items(state.members) { member ->
+                        MemberRow(
+                            user     = member,
+                            isOwner  = member.id == state.ownerID,
+                            onRemove = { onEvent(CreateEditTeamUiEvent.RemoveMember(member)) }
+                        )
+                    }
                 }
             }
         }
