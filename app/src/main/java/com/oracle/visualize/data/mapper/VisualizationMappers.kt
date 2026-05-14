@@ -49,10 +49,22 @@ fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
  */
 fun VisualizationDTO.toVisualizationCard(
     authorName: String,
-    teamsSharedWith: List<Team> = emptyList(),
-    usersSharedWith: List<User> = emptyList(),
-    allUsers: List<User> = emptyList()
-): VisualizationCard {
+    teamsSharedWith: List<Team>,
+    usersSharedWith: List<User>): VisualizationCard {
+    val allUsersDict = mutableMapOf<String, User>()
+
+    for (user in usersSharedWith) {
+        allUsersDict[user.id] = user
+    }
+
+    for (team in teamsSharedWith) {
+        for (member in team.members) {
+            allUsersDict[member.id] = member
+        }
+    }
+
+    val allUsers = allUsersDict.values.toList()
+
     return VisualizationCard(
         id = this.id,
         title = this.title,
