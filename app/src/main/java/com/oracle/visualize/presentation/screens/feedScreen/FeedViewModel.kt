@@ -7,8 +7,10 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.ChartTypes
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.usecases.DeleteVisualizationForEveryoneUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetMockChartUseCase
+import com.oracle.visualize.domain.usecases.HideVisualizationForMeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,14 +21,20 @@ import javax.inject.Inject
 
 /**
  * ViewModel for the Feed screen.
- * Handles fetching visualizations based on filters and search queries.
+ * Handles fetching visualizations based on filters and search queries,
+ * as well as delete/hide operations and dropdown menu state.
  *
  * @property getAllUserVisualizationsUseCase Use case to fetch visualizations for a user.
+ * @property getMockChartUseCase Use case to get a mock chart.
+ * @property deleteVisualizationForEveryoneUseCase Use case to permanently delete a visualization.
+ * @property hideVisualizationForMeUseCase Use case to hide a visualization from the current user's feed.
  */
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
-    private val getMockChartUseCase: GetMockChartUseCase
+    private val getMockChartUseCase: GetMockChartUseCase,
+    private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
+    private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeedUIState())
@@ -35,7 +43,7 @@ class FeedViewModel @Inject constructor(
     private var allVisualizations: List<VisualizationCard> = emptyList()
 
     // TODO: Get from Auth Repository
-    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
+    val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
 
     init {
         loadData(forceRefresh = false)
@@ -51,33 +59,13 @@ class FeedViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            /*
-             * Get a chart from the mock chart repository.
-             *
-             * @param chartType The type of chart, according belongs to the
-             * ChartTypes enum.
-             *
-             * CHART TYPES (Check "domain/models/enums/ChartTypes.kt"):
-             * - VERTICAL_BAR (Vertical Bar Chart)
-             * - HORIZONTAL_BAR (Vertical Bar Chart)
-             * - STACKED_BAR (Stacked Bar Chart)
-             * - LINE (Line Chart)
-             * - SCATTER (Scatter Chart)
-             * - PIE (Pie Chart)
-             * - DONUT (Donut Chart)
-             * - AREA (Area Chart)
-             *
-             * TODO: Get data from the microservice when it becomes available.
-             */
             val mockChart = getMockChartUseCase(chartType = ChartTypes.STACKED_BAR).fold(
                 onSuccess = { it },
                 onFailure = { null }
             )
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
-                    allVisualizations = items.map { i ->
-                        i.copy(chart = mockChart)
-                    }
+                    allVisualizations = items.map { i -> i.copy(chart = mockChart) }
                     applyLocalFilterAndSearch()
                 },
                 onFailure = { error ->
@@ -99,19 +87,80 @@ class FeedViewModel @Inject constructor(
 
     fun onFilterChange(filter: VisualizationFilter) {
         if (_uiState.value.selectedFilter == filter) return
-
         _uiState.update { it.copy(selectedFilter = filter) }
-
-        if (allVisualizations.isNotEmpty()) {
-            applyLocalFilterAndSearch()
-        } else {
-            loadData()
-        }
+        if (allVisualizations.isNotEmpty()) applyLocalFilterAndSearch() else loadData()
     }
+
     fun onSearchTextChange(newText: String) {
         _uiState.update { it.copy(searchText = newText) }
         applyLocalFilterAndSearch()
     }
+
+    // ─── Dropdown menu ────────────────────────────────────────────────────────
+
+    fun onOpenMenu(visualizationId: String) {
+        _uiState.update { it.copy(openMenuForId = visualizationId) }
+    }
+
+    fun onDismissMenu() {
+        _uiState.update { it.copy(openMenuForId = null) }
+    }
+
+    fun onShareSelected() {
+        _uiState.update { it.copy(openMenuForId = null) }
+    }
+
+    // ─── Delete / hide actions ────────────────────────────────────────────────
+
+    /** Called when the user taps "Delete for everyone" in the dropdown (owner only). */
+    fun onRequestDeleteForEveryone(visualizationId: String) {
+        _uiState.update {
+            it.copy(
+                openMenuForId = null,
+                deleteDialogState = DeleteDialogState.ShowDeleteForEveryone(visualizationId)
+            )
+        }
+    }
+
+    /** Called when the user taps "Delete for me" in the dropdown (non-owner). */
+    fun onRequestDeleteForMe(visualizationId: String) {
+        _uiState.update {
+            it.copy(
+                openMenuForId = null,
+                deleteDialogState = DeleteDialogState.ShowDeleteForMe(visualizationId)
+            )
+        }
+    }
+
+    fun onDismissDeleteDialog() {
+        _uiState.update { it.copy(deleteDialogState = DeleteDialogState.Hidden) }
+    }
+
+    fun onConfirmDeleteForEveryone(visualizationId: String) {
+        _uiState.update { it.copy(deleteDialogState = DeleteDialogState.Hidden) }
+        viewModelScope.launch {
+            deleteVisualizationForEveryoneUseCase(visualizationId).fold(
+                onSuccess = { loadData(forceRefresh = true) },
+                onFailure = { error ->
+                    Log.e("FeedViewModel", "Failed to delete visualization: ${error.message}", error)
+                }
+            )
+        }
+    }
+
+    fun onConfirmDeleteForMe(visualizationId: String) {
+        _uiState.update { it.copy(deleteDialogState = DeleteDialogState.Hidden) }
+        viewModelScope.launch {
+            hideVisualizationForMeUseCase(currentUserID, visualizationId).fold(
+                onSuccess = { loadData(forceRefresh = true) },
+                onFailure = { error ->
+                    Log.e("FeedViewModel", "Failed to hide visualization: ${error.message}", error)
+                }
+            )
+        }
+    }
+
+    // ─── Private helpers ──────────────────────────────────────────────────────
 
     private fun applyLocalFilterAndSearch() {
         val filter = _uiState.value.selectedFilter
@@ -130,11 +179,7 @@ class FeedViewModel @Inject constructor(
         }
 
         _uiState.update {
-            it.copy(
-                items = filteredItems,
-                isLoading = false,
-                errorMessage = null
-            )
+            it.copy(items = filteredItems, isLoading = false, errorMessage = null)
         }
     }
 }
