@@ -34,6 +34,9 @@ sealed interface NavRoutes {
     object Login : NavRoutes
 
     @Serializable
+    object Signup : NavRoutes
+
+    @Serializable
     object ChartSelection : NavRoutes
     @Serializable
     object ShareAndPost : NavRoutes

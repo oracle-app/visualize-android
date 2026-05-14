@@ -25,6 +25,7 @@ import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
+import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 
 
 /**
@@ -166,7 +167,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                     navController.navigate(NavRoutes.Login)
                 },
                 onSignUpClick = {
-                    // TODO: Navigate to SignUp
+                    navController.navigate(NavRoutes.Signup)
                 }
             )
         }
@@ -182,7 +183,27 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                     }
                 },
                 onSignUpClick = {
-                    // TODO: Navigate to SignUp
+                    navController.navigate(NavRoutes.Signup)
+                }
+            )
+        }
+
+        composable<NavRoutes.Signup> {
+            SignUpPage(
+                modifier = Modifier.fillMaxSize(),
+                onSignUpSuccess = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.Splash) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onLoginClick = {
+                    navController.navigate(NavRoutes.Login) {
+                        popUpTo(NavRoutes.Signup) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

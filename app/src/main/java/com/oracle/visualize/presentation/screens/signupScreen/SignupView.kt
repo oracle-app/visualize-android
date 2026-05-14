@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.loginScreen
+package com.oracle.visualize.presentation.screens.signupScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,14 +24,16 @@ import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AuthTextField
 
 @Composable
-fun LoginPage(
+fun SignUpPage(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit,
-    onSignUpClick: () -> Unit
+    viewModel: SignUpViewModel = hiltViewModel(),
+    onSignUpSuccess: () -> Unit,
+    onLoginClick: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // This is where the page fetches the current app version.
 
     val unknown = stringResource(R.string.error_unknown)
     val appVersion = remember {
@@ -42,7 +44,7 @@ fun LoginPage(
 
     LaunchedEffect(uiState.success) {
         if (uiState.success) {
-            onLoginSuccess()
+            onSignUpSuccess()
         }
     }
 
@@ -59,13 +61,12 @@ fun LoginPage(
                 .fillMaxHeight(0.18f),
             contentScale = ContentScale.Crop
         )
-
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .offset(y = (-18).dp)
                 .fillMaxWidth()
-                .fillMaxHeight(0.84f)
+                .fillMaxHeight(0.88f)
                 .clip(
                     RoundedCornerShape(
                         topStart = 26.dp,
@@ -73,18 +74,27 @@ fun LoginPage(
                     )
                 )
                 .background(MaterialTheme.colorScheme.background)
-                .padding(horizontal = 26.dp)
-                .padding(top = 62.dp, bottom = 44.dp),
+                .padding(horizontal = 36.dp)
+                .padding(top = 68.dp, bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
-                text = stringResource(R.string.welcome),
-                fontSize = 32.sp,
-                letterSpacing = 1.sp,
+                text = stringResource(R.string.create_account),
+                fontSize = 26.sp,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
             Spacer(modifier = Modifier.height(58.dp))
+
+            AuthTextField(
+                value = uiState.name,
+                onValueChange = viewModel::onNameChange,
+                placeholder = stringResource(R.string.name),
+                isError = uiState.nameError != null
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
 
             AuthTextField(
                 value = uiState.email,
@@ -93,7 +103,7 @@ fun LoginPage(
                 isError = uiState.emailError != null
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
             AuthTextField(
                 value = uiState.password,
@@ -105,24 +115,36 @@ fun LoginPage(
                 onVisibilityClick = viewModel::onPasswordVisibilityChange
             )
 
+            Spacer(modifier = Modifier.height(6.dp))
+
+            AuthTextField(
+                value = uiState.confirmPassword,
+                onValueChange = viewModel::onConfirmPasswordChange,
+                placeholder = stringResource(R.string.confirm_password),
+                isError = uiState.confirmPasswordError != null,
+                isPassword = true,
+                isPasswordVisible = uiState.isConfirmPasswordVisible,
+                onVisibilityClick = viewModel::onConfirmPasswordVisibilityChange
+            )
+
             uiState.error?.let {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = it,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
+                    fontSize = 12.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(82.dp))
+            Spacer(modifier = Modifier.height(34.dp))
 
             Button(
-                onClick = { viewModel.login() },
+                onClick = { viewModel.signUp() },
                 enabled = !uiState.isLoading,
                 modifier = Modifier
-                    .width(164.dp)
-                    .height(52.dp),
+                    .width(154.dp)
+                    .height(50.dp),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
@@ -136,27 +158,27 @@ fun LoginPage(
                     )
                 } else {
                     Text(
-                        text = stringResource(R.string.login),
-                        fontSize = 16.sp
+                        text = stringResource(R.string.signup),
+                        fontSize = 15.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = stringResource(R.string.no_account),
-                fontSize = 14.sp,
+                text = stringResource(R.string.already_have_account),
+                fontSize = 13.sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
 
             TextButton(
-                onClick = onSignUpClick,
+                onClick = onLoginClick,
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.signup),
-                    fontSize = 14.sp,
+                    text = stringResource(R.string.login),
+                    fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
