@@ -55,7 +55,6 @@ fun MainScreen(
             }
         }
     ) { innerPadding ->
-        // CORRECCIÓN 1: En lugar de aplicar el padding aquí, se lo pasamos al NavHost
         AppNavHost(
             navController = navController,
             innerPadding  = innerPadding,
@@ -67,7 +66,7 @@ fun MainScreen(
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    innerPadding: PaddingValues, // Añadimos este parámetro
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
     NavHost(
