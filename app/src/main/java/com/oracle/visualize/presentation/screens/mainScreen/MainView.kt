@@ -21,6 +21,7 @@ import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
+import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
@@ -149,10 +150,22 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                     navController.popBackStack()
                 },
                 onThreadsClick = {
+                    navController.navigate(
+                        NavRoutes.Threads(route.visualizationId)
+                    )
                 }
             )
         }
-
+        composable<NavRoutes.Threads> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.Threads>()
+            ThreadsPage(
+                visualizationId = route.visualizationId,
+                modifier = Modifier.fillMaxSize(),
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable<NavRoutes.Splash> {
             SplashPage(
                 modifier = Modifier.fillMaxSize(),

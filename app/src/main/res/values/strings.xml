@@ -145,6 +145,13 @@
     <string name="snipping_tool">Snipping Tool</string>
     <string name="threads">Threads</string>
 
+    //Threads Page
+    <string name="reply">Reply</string>
+    <string name="add_note">Add note</string>
+    <string name="voice_note">Voice Note</string>
+    <string name="no_threads">There\'s no more threads.</string>
+
+
     // Snipping Tool
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>

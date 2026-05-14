@@ -19,6 +19,16 @@ val GrayishBlue = Color(0xFFA9C8C4)
 val ErrorRed = Color(0xFFEC4848)
 val ScrimColor = Color(0xFF1A2F3F)
 
+val NotAsLightOrange = Color(0xFFEDAE62)
+
+val LightOrange = Color(0xFFF0C592)
+
+val GreyishBlue = Color(0xFFADC6C5)
+
+val LightGreyishBlue = Color(0xFFC5D5D4)
+
+val GreyContent = Color(0xFFFDF2E5)
+
 // And below are the colors of the Visualize Brand Identity (Dark Mode)
 
 val DarkMode_StrongBlue = Color(0xFF8AC1C4)
@@ -29,6 +39,16 @@ val DarkMode_Background = Color(0xFF282520)
 val DarkMode_NotAsLightGray = Color(0xFF7FA9A9)
 val DarkMode_LighterBlue = Color(0xFF3D504D)
 val DarkMode_GrayishBlue = Color(0xFFBBBBBB)
+
+val DarkMode_NotAsLightOrange = Color(0xFFBA7A2E)
+
+val DarkMode_LightOrange = Color(0xFF895D29)
+
+val DarkMode_GreyishBlue = Color(0xFF316465)
+
+val DarkMode_LightGreyishBlue = Color(0xFF2E4F4E)
+
+val DarkMode_GreyContent = Color(0xFF4B2F0E)
 
 
 // This is where the Chart Theme colors are defined.
