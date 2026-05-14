@@ -93,8 +93,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable<NavRoutes.Create> {
             CreatePage(
                 modifier = Modifier.fillMaxSize(),
-                onNavigateToSelection = {
-                    navController.navigate(NavRoutes.ChartSelection)
+                onNavigateToSelection = { taskId ->
+                    navController.navigate(NavRoutes.ChartSelection(taskId))
                 }
             )
         }
@@ -108,7 +108,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 },
                 onNavigateToFeed = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.ChartSelection) { inclusive = true }
+                        popUpTo<NavRoutes.ChartSelection> { inclusive = true }
                     }
                 }
             )

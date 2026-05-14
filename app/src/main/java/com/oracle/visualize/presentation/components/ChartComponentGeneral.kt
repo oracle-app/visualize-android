@@ -242,7 +242,7 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
         is PieChartModel -> {
             val categories = chart.fieldNames
             val values = chart.data
-            val colors = generateChartColors(categories.size)
+            val colors = generateChartColors(values.size)
 
             PieChart(
                 values = values,
@@ -267,7 +267,7 @@ fun ChartRenderGeneral(chart: Chart<*>, showTooltips: Boolean = true) {
         is DonutChart -> {
             val categories = chart.fieldNames
             val values = chart.data
-            val colors = generateChartColors(categories.size)
+            val colors = generateChartColors(values.size)
 
             PieChart(
                 values = values,

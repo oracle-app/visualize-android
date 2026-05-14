@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
@@ -30,6 +32,11 @@ android {
                 minorApiLevel = 1
             }
     }
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
 
     defaultConfig {
         applicationId = "com.oracle.visualize"
@@ -37,6 +44,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        val microUrl = localProperties.getProperty("MICROSERVICES_URL") ?: "\"http://10.0.2.2:8080/\""
+        buildConfigField("String", "MICROSERVICES_URL", microUrl)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -57,12 +66,14 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     testOptions {
         unitTests.all {
             it.useJUnit()
         }
     }
+
 }
 
 dependencies {
@@ -103,4 +114,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

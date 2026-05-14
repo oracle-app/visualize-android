@@ -1,13 +1,17 @@
 package com.oracle.visualize.data.repositories
 
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.AuthFirebasesource
+import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.AuthUser
+import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.repositories.AuthRepository
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -54,3 +58,4 @@ class AuthRepositoryImpl @Inject constructor(
       return authDatasource.getCurrentUser()?.toDomain()
     }
 }
+

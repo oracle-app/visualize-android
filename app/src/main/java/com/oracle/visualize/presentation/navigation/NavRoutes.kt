@@ -27,7 +27,7 @@ sealed interface NavRoutes {
     @Serializable
     data class FullScreen(val visualizationId: String) : NavRoutes
     @Serializable
-    object ChartSelection : NavRoutes
+    data class ChartSelection(val taskId: String) : NavRoutes
     @Serializable
     object ShareAndPost : NavRoutes
 }

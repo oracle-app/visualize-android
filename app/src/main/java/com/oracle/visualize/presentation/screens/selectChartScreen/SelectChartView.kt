@@ -236,16 +236,17 @@ fun ChartSelectionPage(
 
                         items(
                             items = state.charts,
-                            key = { it.visualization.id }
+                            key = { it.id }
                         ) { selection ->
                             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                                 ChartCard(
-                                    visualization = selection.visualization,
+                                    chart = selection.chart,
+                                    title = selection.customTitle,
                                     isSelected = selection.isSelected,
-                                    onSelect = { viewModel.toggleSelection(selection.visualization.id) },
+                                    onSelect = { viewModel.toggleSelection(selection.id) },
                                     onEditTitle = {
-                                        tempTitle = selection.visualization.title
-                                        showEditDialog = selection.visualization.id
+                                        tempTitle = selection.customTitle
+                                        showEditDialog = selection.id
                                     }
                                 )
                             }

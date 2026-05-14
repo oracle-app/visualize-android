@@ -2,8 +2,6 @@ package com.oracle.visualize.data.mapper
 
 import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
-import com.oracle.visualize.domain.models.ShareTeam
-import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.Visualization
