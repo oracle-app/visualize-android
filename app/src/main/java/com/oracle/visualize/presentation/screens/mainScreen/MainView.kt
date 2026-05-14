@@ -6,95 +6,70 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.oracle.visualize.domain.models.NavRoutes
+import androidx.navigation.toRoute
+import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
+import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
+import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
+import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
+import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
+import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
+import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
+import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
+import com.oracle.visualize.presentation.navigation.AppNavHost
 
-
-// Bottom nav destinations — screens outside this list hide the nav bar
-private val bottomNavRoutes = setOf(
-    NavRoutes.Feed.route,
-    NavRoutes.Create.route,
-    NavRoutes.Notifications.route,
-    NavRoutes.Teams.route,
-    NavRoutes.Profile.route
-)
-
+/**
+ * Main container screen that sets up the navigation host and bottom bar.
+ *
+ * @param viewModel The [MainViewModel] providing navigation items.
+ * Uses [AppNavHost] to manage navigation.
+ */
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = viewModel(),
-    onToggleTheme: () -> Unit = {},
-    isDarkMode: Boolean = false
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
 
-    // Only show bottom nav on main tab destinations
-    val showBottomBar = currentRoute in bottomNavRoutes
+    val currentDestination = viewModel.navItems.find { item ->
+        backStackEntry?.destination?.hasRoute(item.destination::class) == true
+    }?.destination
+
+    val showBottomBar = currentDestination != null
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
                     navItems = viewModel.navItems,
-                    navController = navController
+                    currentDestination = currentDestination,
+                    onItemSelected = { destination ->
+                        navController.navigate(destination) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+            modifier = Modifier.padding(innerPadding)
         )
-    }
-}
-
-// ─── NavHost ──────────────────────────────────────────────────────────────────
-
-@Composable
-fun AppNavHost(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController = navController,
-        startDestination = NavRoutes.Feed.route,
-        modifier = modifier
-    ) {
-        composable(NavRoutes.Feed.route) {
-            FeedPage(modifier = Modifier.fillMaxSize())
-        }
-
-        composable(NavRoutes.Create.route) {
-            CreatePage(modifier = Modifier.fillMaxSize())
-        }
-
-        composable(NavRoutes.Notifications.route) {
-            NotificationPage(modifier = Modifier.fillMaxSize())
-        }
-
-        /* Share screen — no bottom bar, navigates back to Feed
-        composable(NavRoutes.Share.route) {
-                // TODO: Add TeamsPage when implemented
-        }*/
-
-        // Teams and Profile — placeholders until screens are implemented
-        composable(NavRoutes.Teams.route) {
-            // TODO: Add TeamsPage when implemented
-        }
-
-        composable(NavRoutes.Profile.route) {
-            // TODO: Add ProfilePage when implemented
-        }
     }
 }

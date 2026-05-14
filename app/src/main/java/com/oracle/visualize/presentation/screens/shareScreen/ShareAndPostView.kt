@@ -32,8 +32,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.stringResource
 
 
+/**
+ * Screen for sharing a visualization with users or teams.
+ *
+ * @param viewModel The [ShareAndPostViewModel] that manages the sharing state.
+ * @param onNavigateBack Callback to navigate back.
+ */
 @Composable
 fun ShareAndPostScreen(
+    modifier: Modifier = Modifier,
     viewModel: ShareAndPostViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {
@@ -70,7 +77,7 @@ fun ShareAndPostScreen(
         is ShareUiState.Error -> {
             Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center) {
-                Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
             }
         }
     }
@@ -287,7 +294,7 @@ private fun ShareBottomBar(onConfirmShare: () -> Unit) {
         Button(
             onClick = onConfirmShare,
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = Color.White),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = MaterialTheme.colorScheme.onPrimary),
             modifier = Modifier.requiredWidth(184.dp).requiredHeight(56.dp)
         ) {
             Icon(imageVector = Icons.Default.Send, contentDescription = null, modifier = Modifier.size(24.dp))

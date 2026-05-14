@@ -12,6 +12,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
+/**
+ * Implementation of [UserRepository] to manage user-specific data.
+ *
+ * @property userDatasource Data source for user operations in Firestore.
+ */
 class UserRepositoryImpl @Inject constructor(
     private val userDatasource: UserDatasource
 ) : UserRepository {
@@ -23,14 +28,6 @@ class UserRepositoryImpl @Inject constructor(
             }
             deferredUsers.awaitAll()
         }
-    }
-
-    override suspend fun getUserByUserID(userId: String): User {
-        return userDatasource.getUserByID(userId).toDomain()
-    }
-
-    override suspend fun getTeamsIntegratedByUser(userId: String): List<Team> {
-        return userDatasource.getTeamsIntegratedByUser(userId).map { it.toDomain() }
     }
 }
 

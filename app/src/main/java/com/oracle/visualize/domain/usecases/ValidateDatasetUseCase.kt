@@ -1,11 +1,15 @@
 package com.oracle.visualize.domain.usecases
 
 import java.util.Locale
+import javax.inject.Inject
+import javax.inject.Singleton
 
-/*
- * Use case to validate if a dataset file has a supported format (.csv or .xlsx).
+/**
+ * Use case to validate if a dataset file has a supported format (.csv or .xlsx)
+ * and its size is within the allowed limits.
  */
-class ValidateDatasetUseCase {
+@Singleton
+class ValidateDatasetUseCase @Inject constructor() {
     operator fun invoke(fileName: String, fileSizeBytes: Long): Result<Unit> {
         val extension = fileName.substringAfterLast(".", "").lowercase(Locale.ROOT)
         val maxSizeBytes = 100 * 1024 * 1024 // 100 MB

@@ -1,73 +1,152 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.FirebaseFirestoreException
+import com.oracle.visualize.R
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+/**
+ * ViewModel for the Feed screen.
+ * Handles fetching visualizations based on filters and search queries.
+ *
+ * @property getAllUserVisualizationsUseCase Use case to fetch visualizations for a user.
+ */
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase
+    private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
 ) : ViewModel() {
 
-    var searchText by mutableStateOf("")
-        private set
 
-    var selectedFilter by mutableStateOf(VisualizationFilter.ALL)
-        private set
+    private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
+    val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
-    var items by mutableStateOf<List<VisualizationCard>>(emptyList())
-        private set
+    fun toggleSearch() {
+        _uiState.update { currentState ->
+            if (currentState is FeedUiState.Success) {
+                currentState.copy(
+                    isSearching = !currentState.isSearching
+                )
+            } else {
+                currentState
+            }
+        }
+    }
+    private var allVisualizations: List<VisualizationCard> = emptyList()
 
-    private var allItems: List<VisualizationCard> = emptyList()
+    // TODO: Get from Auth Repository
+    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
 
     init {
-        fetchItems(VisualizationFilter.ALL)
+        loadData(forceRefresh = false)
     }
 
-    private fun fetchItems(filter: VisualizationFilter) {
-        viewModelScope.launch {
-            try {
-                val userID = "oEJtQz0gdbRpTZ8ETPCy"
-                allItems = getAllUserVisualizationsUseCase.invoke(userID, filter)
-                applySearch()
-            } catch (ex: FirebaseFirestoreException) {
-                allItems = emptyList()
-                items = emptyList()
-                Log.e("Error", "Couldn't load the visualizations.")
-            } catch (ex: Exception) {
-                throw ex
+    fun loadData(forceRefresh: Boolean = false) {
+
+        if (forceRefresh) {
+            allVisualizations = emptyList()
+            val current = _uiState.value
+            _uiState.value = if (current is FeedUiState.Success) {
+                current.copy(isRefreshing = true)
+            } else {
+                FeedUiState.Loading
             }
+        } else {
+            _uiState.value = FeedUiState.Loading
+        }
+
+        viewModelScope.launch {
+
+            getAllUserVisualizationsUseCase(currentUserID).fold(
+                onSuccess = { items ->
+                    allVisualizations = items
+                    applyLocalFilterAndSearch()
+                },
+                onFailure = { error ->
+                    allVisualizations = emptyList()
+                    val uiErrorMessage = when (error) {
+                        is AppError.NetworkError -> R.string.error_network
+                        is AppError.ParsingError -> R.string.error_parsing
+                        is AppError.NotFound     -> R.string.error_viz_not_found
+                        else                     -> R.string.error_unknown_retry
+                    }
+                    Log.e("FeedViewModel", "Error fetching visualizations: ${error.message}", error)
+                    _uiState.value = FeedUiState.Error(uiErrorMessage)
+                }
+            )
         }
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
-        selectedFilter = filter
-        searchText = ""
-        fetchItems(filter)
+        val currentState = _uiState.value
+        if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
+
+        _uiState.value = when (currentState) {
+            is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
+            else -> currentState
+        }
+
+        if (allVisualizations.isNotEmpty()) {
+            applyLocalFilterAndSearch()
+        } else {
+            loadData()
+        }
     }
 
     fun onSearchTextChange(newText: String) {
-        searchText = newText
-        applySearch()
+        val currentState = _uiState.value
+        if(currentState is FeedUiState.Success){
+            _uiState.value = currentState.copy(searchText = newText)
+        }
+        applyLocalFilterAndSearch()
     }
 
-    private fun applySearch() {
-        items = if (searchText.isBlank()) {
-            allItems
-        } else {
-            allItems.filter { item ->
-                item.title.contains(searchText, ignoreCase = true)
+    private fun applyLocalFilterAndSearch() {
+        val currentState = _uiState.value
+        val filter = if (currentState is FeedUiState.Success)
+            currentState.selectedFilter else VisualizationFilter.ALL
+        val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
+
+
+        var filteredItems = when (filter) {
+            VisualizationFilter.ALL -> allVisualizations
+            VisualizationFilter.PERSONAL -> allVisualizations.filter { it.authorID == currentUserID }
+            VisualizationFilter.SHARED -> allVisualizations.filter { it.authorID != currentUserID }
+        }
+
+        if (search.isNotBlank()) {
+            filteredItems = filteredItems.filter { item ->
+                item.title.contains(search, ignoreCase = true)
             }
         }
+
+        _uiState.update { currentState ->
+            if (currentState is FeedUiState.Success) {
+                currentState.copy(
+                    items = filteredItems,
+                    searchText = search,
+                    selectedFilter = filter,
+                    isRefreshing = false
+                )
+            } else {
+                FeedUiState.Success(
+                    items = filteredItems,
+                    searchText = search,
+                    selectedFilter = filter,
+                    isRefreshing = false
+                )
+            }
+        }
+
     }
 }

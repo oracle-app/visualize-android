@@ -1,8 +1,8 @@
 package com.oracle.visualize.presentation.components
 
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,10 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.oracle.visualize.domain.models.Visualization
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
@@ -55,15 +55,20 @@ fun formatTime(date: Date, context: Context): String{
         else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
+/**
+ * A card component used in the feed to display a visualization's summary.
+ *
+ * @param item The [VisualizationCard] data to display.
+ */
 @Composable
-fun FeedCard(item: VisualizationCard) {
+fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
     val context = LocalContext.current
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        border = BorderStroke(2.dp,MaterialTheme.colorScheme.outline)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
     ) {
         Column {
@@ -85,12 +90,13 @@ fun FeedCard(item: VisualizationCard) {
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "By ${item.author}",
+                            text = stringResource(R.string.by_author, item.author),
                             color = MaterialTheme.colorScheme.tertiary,
                             fontSize = 13.sp
                         )
                         Text(
-                            text = "    •    ${formatTime(item.createdAt.toDate(), context)}",
+                            text = stringResource(R.string.bullet_separator,
+                                formatTime(item.createdAt, context)),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
@@ -99,21 +105,41 @@ fun FeedCard(item: VisualizationCard) {
 
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "Menu",
+                    contentDescription = stringResource(R.string.icon_menu),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .background(MaterialTheme.colorScheme.onPrimary),
-                contentAlignment = Alignment.Center
+                    .padding(horizontal = 20.dp)
             ) {
-                Text("Graph", color = MaterialTheme.colorScheme.onSurface)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(all = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val chart = item.chart
+                    if (chart != null) {
+                        ChartRenderGeneral(chart = chart, showAxisLabels = false)
+                    } else {
+                        Text(
+                            text = "Chart not found",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -124,7 +150,7 @@ fun FeedCard(item: VisualizationCard) {
                     .heightIn(min = 41.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MemberAvatarStackFeed(item.sharedWith)
+                MemberAvatarStackFeed(item.allUsersSharedWith)
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }

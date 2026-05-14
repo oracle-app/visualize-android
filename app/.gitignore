@@ -1,1 +1,6 @@
 /build
+/debug
+google-services.json
+*.sh
+*.txt
+*.log

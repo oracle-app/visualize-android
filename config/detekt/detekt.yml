@@ -1,0 +1,86 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: false
+
+naming:
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    ignoreAnnotated:
+      - Composable
+
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][a-zA-Z0-9]*'
+
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+
+style:
+  UseRequire:
+    active: false
+
+  ReturnCount:
+    active: false
+
+  ThrowsCount:
+    active: false
+
+  NewLineAtEndOfFile:
+    active: false
+
+  MagicNumber:
+    active: false
+
+  ForbiddenComment:
+    active: true
+
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - 'androidx.compose.ui.graphics.Color'
+
+  WildcardImport:
+    active: false
+
+  MaxLineLength:
+    active: false
+
+complexity:
+  LargeClass:
+    active: false
+
+  LongMethod:
+    active: false
+
+  NestedBlockDepth:
+    active: false
+
+  LongParameterList:
+    active: false
+
+  CyclomaticComplexMethod:
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+  RethrowCaughtException:
+    active: false
+
+  SwallowedException:
+    active: false
+
+  TooGenericExceptionThrown:
+    active: false
+
+  PrintStackTrace:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: false

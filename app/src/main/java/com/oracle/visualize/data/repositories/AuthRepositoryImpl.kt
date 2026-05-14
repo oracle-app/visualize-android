@@ -1,21 +1,61 @@
 package com.oracle.visualize.data.repositories
 
-import com.oracle.visualize.data.datasources.AuthFirebaseSource
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
+import com.oracle.visualize.data.datasources.UserDatasource
+import com.oracle.visualize.data.datasources.dtos.UserDTO
+import com.oracle.visualize.data.datasources.AuthFirebasesource
+import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.data.mapper.toDomain
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.AuthUser
+import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.repositories.AuthRepository
+import java.io.File
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(private val source: AuthFirebaseSource): AuthRepository {
+/**
+ * Implementation of [AuthRepository] using Firebase Authentication.
+ *
+ * @property authDatasource The [AuthFirebasesource] to interact with Firebase Auth.
+ */
+class AuthRepositoryImpl @Inject constructor(
+    private val authDatasource: AuthFirebasesource,
+    private val userDatasource: UserDatasource
+
+    ): AuthRepository {
     override suspend fun login(email: String, password: String): AuthUser {
-        return source.login(email,password).toDomain()
+        return authDatasource.login(email,password).toDomain()
     }
 
-    override suspend fun register(email: String, password: String): AuthUser {
-        return source.register(email, password).toDomain()
+    override suspend fun register(name: String, email: String, password: String): AuthUser {
+        try {
+
+            // 1. Register in Firebase Auth (Receive a DTO or data model)
+            val authUserDTO = authDatasource.register(email, password)
+
+            // 2. Map to the Domain Entity
+            val authUser = authUserDTO.toDomain()
+
+            // 3. Persist the profile in Firestore using the raw ID (String)
+            val userDto = UserDTO(username = name, email = email)
+            userDatasource.saveUserProfile(authUser.uid, userDto)
+
+            // 4. Return the raw entity to fulfill the contract
+            return authUser
+
+        } catch (e: FirebaseAuthUserCollisionException) {
+            throw AppError.EmailAlreadyExists()
+
+        } catch (e: Exception) {
+            throw AppError.AuthFailed(e.message ?: "Register error")
+        }
     }
 
-    override fun logout() = source.logout()
+    override fun logout() = authDatasource.logout()
 
-    override fun getCurrentUser(): AuthUser? = source.getCurrentUser()?.toDomain()
+    override fun getCurrentUser(): AuthUser? {
+      return authDatasource.getCurrentUser()?.toDomain()
+    }
 }
+

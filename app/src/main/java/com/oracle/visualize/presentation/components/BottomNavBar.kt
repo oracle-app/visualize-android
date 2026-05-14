@@ -1,47 +1,32 @@
 package com.oracle.visualize.presentation.components
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.oracle.visualize.domain.models.NavItem
+import com.oracle.visualize.presentation.navigation.NavItem
+import com.oracle.visualize.presentation.navigation.NavRoutes
 
+/**
+ * A stateless UI component for the Bottom Navigation Bar.
+ * * @param navItems The list of navigation items to display.
+ * @param currentDestination The current active route object/class for selection highlighting.
+ * @param onItemSelected Callback triggered when a navigation item is tapped.
+ */
 @Composable
 fun BottomNavBar(
     navItems: List<NavItem>,
-    navController: NavController  // NavController replaces selectedIndex + onItemSelected
+    currentDestination: NavRoutes?,
+    onItemSelected: (NavRoutes) -> Unit
 ) {
-    // Observe current back stack to highlight the correct tab
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
-
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         navItems.forEach { item ->
+            val isSelected = currentDestination?.let { it::class == item.destination::class } == true
+
             NavigationBarItem(
-                selected = currentRoute == item.route,
-                onClick = {
-                    navController.navigate(item.route) {
-                        // Pop up to the start destination to avoid stacking screens
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
-                        // Avoid duplicate copies of the same destination
-                        launchSingleTop = true
-                        // Restore state when navigating back to a tab
-                        restoreState = true
-                    }
-                },
+                selected = isSelected,
+                onClick = { onItemSelected(item.destination) },
                 icon = {
                     BadgedBox(
                         badge = {
@@ -50,7 +35,10 @@ fun BottomNavBar(
                             }
                         }
                     ) {
-                        Icon(imageVector = item.icon, contentDescription = stringResource(item.label))
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = stringResource(item.label)
+                        )
                     }
                 },
                 label = { Text(text = stringResource(item.label)) },
@@ -62,6 +50,6 @@ fun BottomNavBar(
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        }
-    }
+     }
+ }
 }
