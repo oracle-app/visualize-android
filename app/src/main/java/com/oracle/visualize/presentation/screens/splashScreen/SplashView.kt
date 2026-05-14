@@ -12,10 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,8 +36,15 @@ fun SplashPage(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit
 ) {
-
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val unknown = stringResource(R.string.error_unknown)
+    val appVersion = remember {
+        context.packageManager
+            .getPackageInfo(context.packageName, 0)
+            .versionName ?: unknown
+    }
 
     LaunchedEffect(Unit) {
         viewModel.checkSession()
@@ -67,8 +76,8 @@ fun SplashPage(
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 115.dp)
-                .size(95.dp)
+                .padding(top = 70.dp)
+                .size(275.dp)
         )
 
         Column(
@@ -159,7 +168,7 @@ fun SplashPage(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = stringResource(R.string.version),
+                text = "V${appVersion}",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
