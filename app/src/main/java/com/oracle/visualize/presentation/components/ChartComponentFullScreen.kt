@@ -20,8 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.Chart
+import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
+import com.oracle.visualize.domain.models.VerticalBarChart
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
 import io.github.koalaplot.core.legend.FlowLegend
@@ -58,9 +60,8 @@ fun ChartRenderFullScreen(
     val colors = generateChartColors(cleanLabels.size)
 
     when (chart) {
-        is LineChart, is ScatterChart -> {
+        is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {
             Column(modifier = modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(60.dp))
                 Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
                     .padding(horizontal = 10.dp).fillMaxSize()) {
                     ChartRenderGeneral(modifier, chart)
@@ -101,7 +102,6 @@ fun ChartRenderFullScreen(
                 legendLocation = LegendLocation.TOP
             ) {
                 Column(modifier = modifier.fillMaxSize()) {
-                    Spacer(modifier = Modifier.height(60.dp))
                     Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
                         .padding(horizontal = 10.dp).fillMaxSize()) {
                         ChartRenderGeneral(modifier, chart, showAxisLabels)
