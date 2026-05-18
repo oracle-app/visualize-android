@@ -20,11 +20,8 @@ class GetUserSuggestionsUseCase @Inject constructor(
             return Result.success(emptyList())
         }
 
-        return try {
-            val suggestions = userRepository.getUserSuggestionsByEmail(query)
-            Result.success(suggestions)
-        } catch (ex: Exception) {
-            Result.failure(ex)
+        return runCatching {
+            userRepository.getUserSuggestionsByEmail(query)
         }
     }
 }
