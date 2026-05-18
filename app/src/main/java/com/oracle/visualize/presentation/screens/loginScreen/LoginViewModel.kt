@@ -81,24 +81,48 @@ class LoginViewModel @Inject constructor(
                     }
                 },
                 onFailure = { exception ->
-                    when {
-                        exception is AppError.ValidationError &&
-                            exception.message?.contains("Email") == true -> {
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    emailError = exception.message
-                                )
+                    val message = exception.message ?: "Unable to sign in. Please try again"
+
+                    when (exception) {
+
+
+                        is AppError.AuthValidationError -> {
+
+                            when (exception.field) {
+                                AppError.AuthField.EMAIL -> _uiState.update {
+                                    it.copy(isLoading = false, emailError = message)
+                                }
+
+                                AppError.AuthField.PASSWORD -> _uiState.update {
+                                    it.copy(isLoading = false, passwordError = message)
+                                }
+
+                                AppError.AuthField.NAME,
+                                AppError.AuthField.CONFIRM_PASSWORD -> _uiState.update {
+                                        it.copy(error = message)
+                                }
                             }
                         }
 
-                        exception is AppError.ValidationError &&
-                            exception.message?.contains("Password") == true -> {
+                        is AppError.GeneralValidationError -> {
+                            _uiState.update { it.copy(error = message) }
+                        }
+
+                        is AppError.InvalidCredentials -> {
                             _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    passwordError = exception.message
-                                )
+                                it.copy(isLoading = false, error = message)
+                            }
+                        }
+
+                        is AppError.NetworkError -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, error = message)
+                            }
+                        }
+
+                        is AppError.AuthFailed -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, error = message)
                             }
                         }
 

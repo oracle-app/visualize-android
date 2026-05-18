@@ -70,9 +70,8 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideVisualizationDataSource(
-        db: FirebaseFirestore,
-        teamsDatasource: TeamDatasource
-    ): VisualizationDatasource = VisualizationDatasource(db, teamsDatasource)
+        db: FirebaseFirestore
+    ): VisualizationDatasource = VisualizationDatasource(db)
 
     /**
      * Alternative provider for [FirebaseFirestore] using the [Firebase] accessor.

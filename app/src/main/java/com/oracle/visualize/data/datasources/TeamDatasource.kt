@@ -20,32 +20,23 @@ class TeamDatasource @Inject constructor(
     /**
      * Creates a new team in the database.
      *
-     * @param memberIDs List of user IDs to be added as members.
+     * @param membersIDs List of user IDs to be added as members.
      * @param name The name of the team.
      * @param ownerID The user ID of the team owner.
-     * @throws AppError.ValidationError If any of the parameters are empty.
+     * @throws AppError.TeamValidationError If any of the parameters are empty.
      * @throws AppError.NetworkError If the operation fails due to a network issue.
      */
     suspend fun createTeam(
-        memberIDs: List<String>,
+        membersIDs: List<String>,
         name: String,
         ownerID: String
     ) {
-        try {
-            if (ownerID.isNotEmpty() && name.isNotEmpty() && memberIDs.isNotEmpty()) {
-                val formattedVisualization = hashMapOf(
-                    "memberIDs" to memberIDs,
-                    "name" to name,
-                    "ownerID" to ownerID
-                )
-                teamsRef.add(formattedVisualization).await()
-            } else {
-                throw AppError.ValidationError("OwnerID, Name and MemberIDs cannot be empty")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to create team: ${ex.message}")
-        }
+        val teamData = hashMapOf(
+            "membersIDs" to membersIDs,
+            "name" to name,
+            "ownerID" to ownerID
+        )
+        teamsRef.add(teamData).await()
     }
 
     /**
@@ -57,18 +48,12 @@ class TeamDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getTeamByTeamID(teamID: String): TeamDTO? {
-        return try {
-            val teamSnapshot = teamsRef.document(teamID).get().await()
-            if (teamSnapshot.exists()) {
-                teamSnapshot.toObject(TeamDTO::class.java)
-                    ?: throw AppError.ParsingError("Error parsing TeamDTO")
-            } else {
-                null
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch team: ${ex.message}")
-        }
+        val teamSnapshot = teamsRef.document(teamID).get().await()
+
+        if (!teamSnapshot.exists()) return null
+
+        return teamSnapshot.toObject(
+            TeamDTO::class.java) ?: throw AppError.ParsingError("Error parsing TeamDTO")
     }
 
     /**
@@ -79,13 +64,8 @@ class TeamDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getTeamsUserOwns(userID: String): List<TeamDTO> {
-        return try {
-            val snapshot = teamsRef.whereEqualTo("ownerID", userID).get().await()
-            snapshot.toObjects(TeamDTO::class.java)
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch owned teams: ${ex.message}")
-        }
+        val snapshot = teamsRef.whereEqualTo("ownerID", userID).get().await()
+        return snapshot.toObjects(TeamDTO::class.java)
     }
 
     /**
@@ -96,34 +76,26 @@ class TeamDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
-        return try {
-            val snapshot = teamsRef.whereArrayContains("membersIDs", userID).get().await()
-            if (snapshot.isEmpty) return emptyList()
+        val snapshot = teamsRef.whereArrayContains("membersIDs", userID).get().await()
+        if (snapshot.isEmpty) return emptyList()
 
-            snapshot.documents.map { doc ->
-                doc.toObject(TeamDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch user's teams: ${ex.message}")
+        return snapshot.documents.map { doc ->
+            doc.toObject(TeamDTO::class.java)
+                ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
         }
     }
 
     suspend fun getTeamsByIDs(ids: List<String>): List<TeamDTO> {
         if (ids.isEmpty()) return emptyList()
-        return try {
-            val snapshot = db.collection("teams")
-                .whereIn(FieldPath.documentId(), ids)
-                .get()
-                .await()
-            snapshot.documents.map { doc ->
-                doc.toObject(TeamDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch user's teams: ${ex.message}")
+
+        val snapshot = db.collection("teams")
+            .whereIn(FieldPath.documentId(), ids)
+            .get()
+            .await()
+
+        return snapshot.documents.map { doc ->
+            doc.toObject(TeamDTO::class.java)
+                ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
         }
     }
 }
