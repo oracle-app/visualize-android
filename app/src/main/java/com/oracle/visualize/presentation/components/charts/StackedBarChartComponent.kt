@@ -8,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
@@ -16,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -24,7 +24,6 @@ import com.oracle.visualize.domain.models.StackedBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.StackedVerticalBarPlot
-import io.github.koalaplot.core.bar.verticalSolidBar
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
@@ -96,7 +95,8 @@ fun RenderStackedBarChart(
                                 chart.data.forEach { (category, values) ->
                                     if (seriesIndex < values.size) {
                                         item(
-                                            x = category, y = values[seriesIndex],
+                                            x = category,
+                                            y = values[seriesIndex],
                                             bar = { _, itemIndex, plotEntry ->
                                                 val tooltipDisplayState = rememberTooltipState(
                                                     initialIsVisible = false, isPersistent = true
@@ -105,8 +105,10 @@ fun RenderStackedBarChart(
                                                 val currentYValue = plotEntry.y.end - plotEntry.y.start
 
                                                 TooltipBox(
-                                                    tooltip = { PlainTooltip { Text(text = "${seriesNames[itemIndex]} : $currentYValue") } },
-                                                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                                                    tooltip = { PlainTooltip { Text(text = "${seriesNames[itemIndex]}: $currentYValue") } },
+                                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                                        positioning = TooltipAnchorPosition.Above,
+                                                    ),
                                                     state = tooltipDisplayState,
                                                 ) {
                                                     DefaultBar(

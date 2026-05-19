@@ -2,8 +2,14 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +28,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
  * @param modifier The composable Modifier variable so a parent component can
  * modify its appearance.
  */
-@OptIn(ExperimentalKoalaPlotApi::class)
+@OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
     val categories = chart.fieldNames
@@ -32,7 +38,21 @@ fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         PieChart(
             values = values,
-            label = { index -> Text(text = values[index].toString(), color = Color.DarkGray) },
+            label = { index ->
+                val tooltipDisplayState = rememberTooltipState(
+                    initialIsVisible = false, isPersistent = true
+                )
+
+                TooltipBox(
+                    tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        positioning = TooltipAnchorPosition.Above,
+                    ),
+                    state = tooltipDisplayState,
+                ) {
+                    Text(text = values[index].toString(), color = Color.DarkGray)
+                }
+            },
             slice = { index -> DefaultSlice(color = colors[index]) }
         )
     }
