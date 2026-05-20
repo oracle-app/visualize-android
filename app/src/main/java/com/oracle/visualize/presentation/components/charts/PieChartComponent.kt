@@ -3,7 +3,6 @@ package com.oracle.visualize.presentation.components.charts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
@@ -19,6 +18,7 @@ import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.util.toString
 
 /**
  * Renders a pie chart based on the provided [PieChart] data using
@@ -33,6 +33,8 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
     val categories = chart.fieldNames
     val values = chart.data
+    val valuesTotal = values.sum()
+    val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
     val colors = generateChartColors(categories.size)
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -46,11 +48,11 @@ fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
                 TooltipBox(
                     tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },
                     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                        positioning = TooltipAnchorPosition.Above,
+                        positioning = TooltipAnchorPosition.Above
                     ),
                     state = tooltipDisplayState,
                 ) {
-                    Text(text = values[index].toString(), color = Color.DarkGray)
+                    Text(text = "${percentageValues[index].toString(2)} %", color = Color.DarkGray)
                 }
             },
             slice = { index -> DefaultSlice(color = colors[index]) }

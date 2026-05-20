@@ -100,7 +100,7 @@ fun RenderScatterChart(
                     TooltipBox(
                         tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },
                         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                            positioning = TooltipAnchorPosition.Above,
+                            positioning = TooltipAnchorPosition.Above
                         ),
                         state = tooltipDisplayState,
                     ) {

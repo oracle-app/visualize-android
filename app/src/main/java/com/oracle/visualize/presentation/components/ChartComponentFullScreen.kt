@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
@@ -54,7 +56,7 @@ fun ChartRenderFullScreen(
     }
 
     val cleanLabels = labels.ifEmpty {
-        List(dSize) { "Cat ${it + 1}" }
+        List(dSize) { "${stringResource(R.string.chart_legend_cat_label)} ${it + 1}" }
     }
 
     val colors = generateChartColors(cleanLabels.size)
@@ -73,7 +75,7 @@ fun ChartRenderFullScreen(
                 modifier = Modifier.fillMaxSize(),
                 title = {},
                 legend = {
-                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp)) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 2.dp)) {
                         FlowLegend(
                             modifier = Modifier
                                 .border(1.dp,

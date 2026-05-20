@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -110,7 +109,7 @@ fun RenderLineChart(
                     TooltipBox(
                         tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },
                         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                            positioning = TooltipAnchorPosition.Above,
+                            positioning = TooltipAnchorPosition.Above
                         ),
                         state = tooltipDisplayState,
                     ) {

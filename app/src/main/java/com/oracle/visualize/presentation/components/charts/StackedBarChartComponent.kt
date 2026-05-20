@@ -109,7 +109,7 @@ fun RenderStackedBarChart(
                                                     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
                                                         positioning = TooltipAnchorPosition.Above,
                                                     ),
-                                                    state = tooltipDisplayState,
+                                                    state = tooltipDisplayState
                                                 ) {
                                                     DefaultBar(
                                                         brush = SolidColor(seriesColors[itemIndex]),

@@ -20,6 +20,7 @@ import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.util.toString
 import kotlin.math.roundToInt
 
 /**
@@ -35,6 +36,8 @@ import kotlin.math.roundToInt
 fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart) {
     val categories = chart.fieldNames
     val values = chart.data
+    val valuesTotal = values.sum()
+    val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
     val colors = generateChartColors(categories.size)
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -48,11 +51,11 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart) {
                 TooltipBox(
                     tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },
                     positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                        positioning = TooltipAnchorPosition.Above,
+                        positioning = TooltipAnchorPosition.Above
                     ),
                     state = tooltipDisplayState,
                 ) {
-                    Text(text = values[index].toString(), color = Color.DarkGray)
+                    Text(text = "${percentageValues[index].toString(2)} %", color = Color.DarkGray)
                 }
              },
             slice = { index -> DefaultSlice(color = colors[index]) },
