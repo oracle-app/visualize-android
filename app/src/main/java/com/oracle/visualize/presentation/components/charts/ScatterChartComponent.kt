@@ -44,9 +44,8 @@ import kotlin.collections.component2
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderScatterChart(
-    modifier: Modifier = Modifier,
-    chart: ScatterChart,
-    showAxisLabels: Boolean
+    modifier: Modifier = Modifier, chart: ScatterChart, showAxisLabels: Boolean,
+    enableTooltips: Boolean
 ) {
     val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     val dotColor = generateChartColors(1).firstOrNull() ?: Color.Blue
@@ -96,6 +95,10 @@ fun RenderScatterChart(
                     val tooltipDisplayState = rememberTooltipState(
                         initialIsVisible = false, isPersistent = true
                     )
+
+                    if (!enableTooltips && tooltipDisplayState.isVisible) {
+                        tooltipDisplayState.dismiss()
+                    }
 
                     TooltipBox(
                         tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },

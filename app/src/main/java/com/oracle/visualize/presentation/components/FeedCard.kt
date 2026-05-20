@@ -91,7 +91,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(R.string.by_author, item.author),
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 13.sp
                         )
                         Text(
@@ -131,7 +131,9 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                 ) {
                     val chart = item.chart
                     if (chart != null) {
-                        ChartRenderGeneral(chart = chart, showAxisLabels = false)
+                        ChartRenderGeneral(
+                            chart = chart, showAxisLabels = false, enableTooltips = false
+                        )
                     } else {
                         Text(
                             text = "Chart not found",

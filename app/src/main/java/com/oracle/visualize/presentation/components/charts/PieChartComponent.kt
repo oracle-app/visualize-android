@@ -30,7 +30,10 @@ import io.github.koalaplot.core.util.toString
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
+fun RenderPieChart(
+    modifier: Modifier = Modifier, chart: PieChartModel,
+    enableTooltips: Boolean
+) {
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
@@ -44,6 +47,10 @@ fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel) {
                 val tooltipDisplayState = rememberTooltipState(
                     initialIsVisible = false, isPersistent = true
                 )
+
+                if (!enableTooltips && tooltipDisplayState.isVisible) {
+                    tooltipDisplayState.dismiss()
+                }
 
                 TooltipBox(
                     tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },

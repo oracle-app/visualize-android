@@ -42,9 +42,8 @@ import kotlin.collections.component2
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderStackedBarChart(
-    modifier: Modifier = Modifier,
-    chart: StackedBarChart,
-    showAxisLabels: Boolean
+    modifier: Modifier = Modifier, chart: StackedBarChart, showAxisLabels: Boolean,
+    enableTooltips: Boolean
 ) {
     val categories = chart.data.keys.toList()
     val seriesCount = chart.data.values.firstOrNull()?.size ?: 0
@@ -101,6 +100,10 @@ fun RenderStackedBarChart(
                                                 val tooltipDisplayState = rememberTooltipState(
                                                     initialIsVisible = false, isPersistent = true
                                                 )
+
+                                                if (!enableTooltips && tooltipDisplayState.isVisible) {
+                                                    tooltipDisplayState.dismiss()
+                                                }
 
                                                 val currentYValue = plotEntry.y.end - plotEntry.y.start
 

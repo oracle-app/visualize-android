@@ -43,9 +43,8 @@ import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderVerticalBarChart(
-    chart: VerticalBarChart,
-    modifier: Modifier = Modifier,
-    showAxisLabels: Boolean
+    chart: VerticalBarChart, modifier: Modifier = Modifier, showAxisLabels: Boolean,
+    enableTooltips: Boolean
 ) {
     val categories = chart.data.keys.toList()
     val values = chart.data.values.toList()
@@ -95,6 +94,10 @@ fun RenderVerticalBarChart(
                         val tooltipDisplayState = rememberTooltipState(
                             initialIsVisible = false, isPersistent = true
                         )
+
+                        if (!enableTooltips && tooltipDisplayState.isVisible) {
+                            tooltipDisplayState.dismiss()
+                        }
 
                         TooltipBox(
                             tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },

@@ -33,7 +33,10 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart) {
+fun RenderDonutChart(
+    modifier: Modifier = Modifier, chart: DonutChart,
+    enableTooltips: Boolean
+) {
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
@@ -47,6 +50,10 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart) {
                 val tooltipDisplayState = rememberTooltipState(
                     initialIsVisible = false, isPersistent = true
                 )
+
+                if (!enableTooltips && tooltipDisplayState.isVisible) {
+                    tooltipDisplayState.dismiss()
+                }
 
                 TooltipBox(
                     tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },

@@ -3,7 +3,9 @@ package com.oracle.visualize.presentation.components.charts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
@@ -13,7 +15,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -46,9 +47,8 @@ import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderAreaChart(
-    modifier: Modifier = Modifier,
-    chart: AreaChart,
-    showAxisLabels: Boolean
+    modifier: Modifier = Modifier, chart: AreaChart, showAxisLabels: Boolean,
+    enableTooltips: Boolean
 ) {
     val sortedKeys = chart.data.keys.sorted()
     val minX = sortedKeys.firstOrNull() ?: 0f
@@ -116,33 +116,37 @@ fun RenderAreaChart(
                 previousLayerAreaPoints = seriesAreaPoints
             }
 
-            linePoints.forEachIndexed { index, points ->
-                LinePlot2(
-                    data = points,
-                    lineStyle = null,
-                    symbol = { plotAreaPoint ->
-                        val tooltipDisplayState = rememberTooltipState(
-                            initialIsVisible = false, isPersistent = true
-                        )
-
-                        val pointValue = chart.data[plotAreaPoint.x]?.get(index) ?: 0f
-
-                        TooltipBox(
-                            tooltip = { PlainTooltip { Text(text = "${seriesNames[index]}: $pointValue") } },
-                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                positioning = TooltipAnchorPosition.Above
-                            ),
-                            state = tooltipDisplayState,
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .background(Color.DarkGray.copy(alpha = 0.3f))
-                                    .width(60.dp)
-                                    .height(8.dp)
+            if (enableTooltips) {
+                linePoints.forEachIndexed { index, points ->
+                    LinePlot2(
+                        data = points,
+                        lineStyle = null,
+                        symbol = { plotAreaPoint ->
+                            val tooltipDisplayState = rememberTooltipState(
+                                initialIsVisible = false, isPersistent = true
                             )
+
+                            val pointValue = chart.data[plotAreaPoint.x]?.get(index) ?: 0f
+
+                            TooltipBox(
+                                tooltip = { PlainTooltip { Text(text = "${seriesNames[index]}: $pointValue") } },
+                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                    positioning = TooltipAnchorPosition.Above
+                                ),
+                                state = tooltipDisplayState,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color.DarkGray.copy(alpha = 0.3f),
+                                            shape = CircleShape
+                                        )
+                                        .size(24.dp)
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
