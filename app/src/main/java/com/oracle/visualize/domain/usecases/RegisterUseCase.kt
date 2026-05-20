@@ -26,30 +26,51 @@ class RegisterUseCase @Inject constructor(
 
         // 1. Validations using Fail Fast with Result
         if (name.isBlank()){
-            return Result.failure(AppError.ValidationError("Name is required"))
+            return Result.failure(AppError.AuthValidationError(
+                AppError.AuthField.NAME,
+                "Name is required")
+            )
         }
 
         if (email.isBlank()) {
-            return Result.failure(AppError.ValidationError("Email is required"))
+            return Result.failure(AppError.AuthValidationError(
+                AppError.AuthField.EMAIL,
+                "Email is required")
+            )
         }
         if (!email.matches(emailRegex)) {
-            return Result.failure(AppError.ValidationError("Valid Email required"))
+            return Result.failure(AppError.AuthValidationError(
+                AppError.AuthField.EMAIL,
+                "Valid Email required")
+            )
         }
         if (password.isBlank()) {
-            return Result.failure(AppError.ValidationError("Password is required"))
+            return Result.failure(AppError.AuthValidationError(
+                AppError.AuthField.PASSWORD,
+                "Password is required")
+            )
         }
         if (password.length < 6) {
             return Result.failure(
-                AppError.ValidationError("Password must be at least 6 characters"))
+                AppError.AuthValidationError(
+                    AppError.AuthField.PASSWORD,
+                    "Password must be at least 6 characters")
+            )
         }
 
         if (confirmPassword.isBlank()) {
             return Result.failure(
-                AppError.ValidationError("Confirm Password is required"))
+                AppError.AuthValidationError(
+                    AppError.AuthField.CONFIRM_PASSWORD,
+                    "Confirm Password is required")
+            )
         }
 
         if (password != confirmPassword){
-            return Result.failure(AppError.ValidationError("Passwords mismatch"))
+            return Result.failure(AppError.AuthValidationError(
+                AppError.AuthField.CONFIRM_PASSWORD,
+                "Passwords mismatch")
+            )
         }
 
         return runCatching {

@@ -54,7 +54,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
@@ -74,7 +74,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
@@ -92,7 +92,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
@@ -110,7 +110,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
@@ -129,7 +129,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
@@ -147,7 +147,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
@@ -202,7 +202,7 @@ class RegisterUseCaseTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.register(any(), any(), any()) }
     }
 
