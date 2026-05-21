@@ -25,7 +25,7 @@ import org.junit.Test
  */
 class CreateTeamUCTest {
 
-    @Mock
+    @MockK
     private lateinit var teamRepository: TeamRepository
     private lateinit var createTeamUseCase: CreateTeamUseCase
 
@@ -47,7 +47,7 @@ class CreateTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.createTeam(any(), any(), any()) }
     }
 
@@ -61,7 +61,7 @@ class CreateTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.createTeam(any(), any(), any()) }
     }
 
@@ -77,7 +77,7 @@ class CreateTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.createTeam(any(), any(), any()) }
     }
 
