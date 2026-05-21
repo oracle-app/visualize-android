@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
+import com.oracle.visualize.presentation.screens.createEditScreen.CreateEditTeamPage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
@@ -17,6 +18,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectio
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
+import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
 
@@ -49,7 +51,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             CreatePage(
                 modifier = Modifier.fillMaxSize(),
                 onNavigateToSelection = {
-                    navController.navigate(NavRoutes.ChartSelection)
+                    navController.navigate(NavRoutes.ChartSelection(taskId = ""))
                 }
             )
         }
@@ -63,7 +65,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 },
                 onNavigateToFeed = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.ChartSelection) { inclusive = true }
+                        popUpTo<NavRoutes.ChartSelection> { inclusive = true }
                     }
                 }
             )
@@ -81,7 +83,21 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable<NavRoutes.Teams> {
-            // TODO: Implement TeamsPage
+            TeamsPage(
+                modifier = Modifier.fillMaxSize(),
+                onNavigateToCreate = {
+                    navController.navigate(NavRoutes.CreateEditTeam(teamId = null))
+                },
+                onNavigateToEdit = { teamId ->
+                    navController.navigate(NavRoutes.CreateEditTeam(teamId = teamId))
+                }
+            )
+        }
+
+        composable<NavRoutes.CreateEditTeam> {
+            CreateEditTeamPage(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable<NavRoutes.Profile> {
