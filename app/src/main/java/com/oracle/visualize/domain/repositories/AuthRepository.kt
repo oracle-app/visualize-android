@@ -10,4 +10,6 @@ interface AuthRepository {
     suspend fun register(name: String, email: String, password: String): AuthUser
     fun logout()
     fun getCurrentUser(): AuthUser?
+
+    fun getCurrentUserID(): String
 }
