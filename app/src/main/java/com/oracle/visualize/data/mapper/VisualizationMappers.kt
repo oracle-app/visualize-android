@@ -2,8 +2,6 @@ package com.oracle.visualize.data.mapper
 
 import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
-import com.oracle.visualize.domain.models.ShareTeam
-import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.models.Visualization
@@ -66,15 +64,14 @@ fun VisualizationDTO.toVisualizationCard(
     val allUsers = allUsersDict.values.toList()
 
     return VisualizationCard(
-        id = this.id ?: "",
+        id = this.id,
         title = this.title,
-        author = authorName,
         authorID = this.authorID,
+        author = authorName,
         createdAt = this.createdAt.toDate(),
-        configJSON = this.configJSON,
         teamsSharedWith = teamsSharedWith,
         usersSharedWith = usersSharedWith,
         allUsersSharedWith = allUsers,
-        chart = null
+        chart = ChartMapper.fromPreviewJson(this.previewJSON)
     )
 }

@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases
 
+import com.oracle.visualize.domain.exceptions.AppError
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,12 +17,14 @@ class ValidateDatasetUseCase @Inject constructor() {
 
         // 1. Validate extension
         if (extension != "csv" && extension != "xlsx") {
-            return Result.failure(IllegalArgumentException("Please upload a .xlsx or .csv file to continue."))
+            return Result.failure(AppError.GeneralValidationError(
+                "Please upload a .xlsx or .csv file to continue.")
+            )
         }
 
         // 2. Validate size
         if (fileSizeBytes > maxSizeBytes) {
-            return Result.failure(IllegalArgumentException("Please upload a smaller dataset (Max 100 MB)."))
+            return Result.failure(AppError.GeneralValidationError("Please upload a smaller dataset (Max 100 MB)."))
         }
 
         return Result.success(Unit)

@@ -23,10 +23,13 @@ class MainActivity : ComponentActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Prevent screenshots and screen recording for security
-        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        
+
+        // Apply window security measures only in production (Release) builds.
+        // Allows screenshots in debug builds to facilitate testing and QA reporting.
+        if (!BuildConfig.DEBUG){
+            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+
         enableEdgeToEdge()
         setContent {
             VisualizeTheme {

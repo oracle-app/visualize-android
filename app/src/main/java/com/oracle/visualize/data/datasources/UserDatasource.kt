@@ -29,22 +29,17 @@ class UserDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getUserByID(userID: String): UserDTO {
-        try {
-            val snapshot = firestore.collection("users")
-                .document(userID)
-                .get()
-                .await()
+        val snapshot = firestore.collection("users")
+            .document(userID)
+            .get()
+            .await()
 
-            if (snapshot.exists()) {
-                return snapshot.toObject(UserDTO::class.java)
-                    ?: throw AppError.ParsingError("Error when parsing UserDTO for ID: $userID")
-            } else {
-                throw AppError.NotFound("User with ID $userID does not exist in the database.")
-            }
-        } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.NetworkError("Network error while fetching user: ${e.message}")
+        if(!snapshot.exists()) {
+            throw AppError.NotFound("User with ID $userID does not exist in the database.")
         }
+
+        return snapshot.toObject(UserDTO::class.java)
+            ?: throw AppError.ParsingError("Error when parsing UserDTO for ID: $userID")
     }
 
     /**
@@ -55,23 +50,14 @@ class UserDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getUserSuggestionsForSearch(email: String): List<UserDTO> {
-        return try {
-            val snapshot = firestore.collection("users")
-                .whereGreaterThanOrEqualTo("email", email)
-                .whereLessThanOrEqualTo("email", email + "\uf8ff")
-                .limit(5)
-                .get()
-                .await()
+        val snapshot = firestore.collection("users")
+            .whereGreaterThanOrEqualTo("email", email)
+            .whereLessThanOrEqualTo("email", email + "\uf8ff")
+            .limit(5)
+            .get()
+            .await()
 
-            if (snapshot.isEmpty) {
-                emptyList()
-            } else {
-                snapshot.toObjects(UserDTO::class.java)
-            }
-        } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.NetworkError("Error fetching user suggestions: ${e.message}")
-        }
+        return snapshot.toObjects(UserDTO::class.java)
     }
 
     suspend fun getUsersByIDs(ids: List<String>): List<UserDTO> {
@@ -81,6 +67,7 @@ class UserDatasource @Inject constructor(
             .whereIn(FieldPath.documentId(), ids)
             .get()
             .await()
+
         return snapshot.toObjects(UserDTO::class.java)
     }
 

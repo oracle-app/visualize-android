@@ -1,7 +1,9 @@
 package com.oracle.visualize.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -9,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,10 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
@@ -45,70 +50,91 @@ import com.oracle.visualize.domain.models.enums.VisualizationFilter
 fun FeedTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
-    onFilterSelected: (VisualizationFilter) -> Unit = {}
+    onFilterSelected: (VisualizationFilter) -> Unit = {},
+    onSearchClick: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     val filterLabels = mapOf(
-        VisualizationFilter.ALL      to "All Feed",
-        VisualizationFilter.PERSONAL to "Personal Feed",
-        VisualizationFilter.SHARED   to "Shared Feed"
+        VisualizationFilter.ALL      to stringResource(R.string.feed_filter_all),
+        VisualizationFilter.PERSONAL to stringResource(R.string.feed_filter_personal),
+        VisualizationFilter.SHARED   to stringResource(R.string.feed_filter_shared)
     )
 
     TopAppBar(
         windowInsets = TopAppBarDefaults.windowInsets,
         title = {
-            Text(
-                text = filterLabels[selectedFilter] ?: stringResource(R.string.feed_top_bar_title),
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = filterLabels[selectedFilter]
+                            ?: stringResource(R.string.feed_filter_all),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp
+                    )
+
+                    IconButton(
+                        onClick = { expanded = !expanded }
+                    ) {
+                        Icon(
+                            imageVector = if (expanded)
+                                Icons.Filled.KeyboardArrowUp
+                            else
+                                Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "Filter"
+                        )
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .width(200.dp)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .align(Alignment.TopStart)
+                ) {
+                    VisualizationFilter.entries.forEach { filter ->
+                        val isSelected = filter == selectedFilter
+
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = filterLabels[filter] ?: filter.name,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
+                            },
+                            onClick = {
+                                onFilterSelected(filter)
+                                expanded = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 5.dp)
+                                .background(
+                                    color = if (isSelected)
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                    else
+                                        MaterialTheme.colorScheme.primaryContainer
+                                )
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+                        )
+                    }
+                }
+            }
         },
         actions = {
             IconButton(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.padding(end = 8.dp)
+                onClick = { onSearchClick() }
             ) {
                 Icon(
-                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp
-                    else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.feed_top_bar_options_description)
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search"
                 )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.width(200.dp).background(MaterialTheme.colorScheme.primary)
-            ) {
-                VisualizationFilter.entries.forEach { filter ->
-                    val isSelected = filter == selectedFilter
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = filterLabels[filter] ?: filter.name,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                fontSize = 16.sp
-                            )
-                        },
-                        onClick = {
-                            onFilterSelected(filter)
-                            expanded = false
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 5.dp)
-                            .background(
-                                color = if (isSelected)
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                                else
-                                    MaterialTheme.colorScheme.primaryContainer
-                            )
-                            .clip(RoundedCornerShape(10.dp)),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
-                    )
-                }
             }
         },
         scrollBehavior = scrollBehavior,

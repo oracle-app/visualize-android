@@ -21,13 +21,8 @@ class AuthFirebasesource @Inject constructor(private val auth: FirebaseAuth) {
      * @throws AppError.AuthFailed If login fails or the user object is null.
      */
     suspend fun login(email: String, password: String): FirebaseUser {
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            result.user ?: throw AppError.AuthFailed("Login failed: User object is null")
-        } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.AuthFailed(e.message ?: "Authentication failed during login")
-        }
+        val result = auth.signInWithEmailAndPassword(email, password).await()
+        return result.user ?: throw AppError.AuthFailed("Login failed: User object is null")
     }
 
     /**
@@ -39,13 +34,8 @@ class AuthFirebasesource @Inject constructor(private val auth: FirebaseAuth) {
      * @throws AppError.AuthFailed If registration fails or the user object is null.
      */
     suspend fun register(email: String, password: String): FirebaseUser {
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            result.user ?: throw AppError.AuthFailed("Registration failed: User object is null")
-        } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.AuthFailed(e.message ?: "Authentication failed during registration")
-        }
+        val result = auth.createUserWithEmailAndPassword(email, password).await()
+        return result.user ?: throw AppError.AuthFailed("Registration failed: User object is null")
     }
 
     /**

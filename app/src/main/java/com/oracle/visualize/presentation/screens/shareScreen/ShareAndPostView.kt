@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
  */
 @Composable
 fun ShareAndPostScreen(
-    visualizationId: String = "",
+    modifier: Modifier = Modifier,
     viewModel: ShareAndPostViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {
@@ -77,7 +77,7 @@ fun ShareAndPostScreen(
         is ShareUiState.Error -> {
             Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer),
                 contentAlignment = Alignment.Center) {
-                Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
             }
         }
     }

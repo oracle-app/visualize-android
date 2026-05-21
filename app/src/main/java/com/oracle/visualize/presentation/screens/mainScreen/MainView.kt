@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.mainScreen
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,21 +14,32 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.navigation.NavRoutes
+import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
-import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
+import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
+import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
+import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
+import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
-import com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.ShareWithTeammatesScreen
+import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
+import com.oracle.visualize.presentation.navigation.AppNavHost
 
+/**
+ * Main container screen that sets up the navigation host and bottom bar.
+ *
+ * @param viewModel The [MainViewModel] providing navigation items.
+ * Uses [AppNavHost] to manage navigation.
+ */
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
-    val navController  = rememberNavController()
+    val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val currentDestination = viewModel.navItems.find { item ->
@@ -42,13 +52,15 @@ fun MainScreen(
         bottomBar = {
             if (showBottomBar) {
                 BottomNavBar(
-                    navItems           = viewModel.navItems,
+                    navItems = viewModel.navItems,
                     currentDestination = currentDestination,
-                    onItemSelected     = { destination ->
+                    onItemSelected = { destination ->
                         navController.navigate(destination) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
                             launchSingleTop = true
-                            restoreState    = true
+                            restoreState = true
                         }
                     }
                 )
@@ -57,77 +69,7 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            innerPadding  = innerPadding,
-            modifier      = Modifier.fillMaxSize()
+            modifier = Modifier.padding(innerPadding)
         )
-    }
-}
-
-@Composable
-fun AppNavHost(
-    navController: NavHostController,
-    innerPadding: PaddingValues,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController    = navController,
-        startDestination = NavRoutes.Feed,
-        modifier         = modifier
-    ) {
-        composable<NavRoutes.Feed> {
-            FeedPage(
-                modifier             = Modifier.fillMaxSize().padding(innerPadding),
-                onVisualizationClick = { visualizationId ->
-                    navController.navigate(NavRoutes.FullScreen(visualizationId))
-                },
-                onShareVisualization = { visualizationId ->
-                    navController.navigate(NavRoutes.ShareWithTeammates(visualizationId))
-                }
-            )
-        }
-
-        composable<NavRoutes.Create> {
-            CreatePage(modifier = Modifier.fillMaxSize().padding(innerPadding))
-        }
-
-        composable<NavRoutes.Notifications> {
-            NotificationPage(modifier = Modifier.fillMaxSize().padding(innerPadding))
-        }
-
-        composable<NavRoutes.Teams> {
-            // TODO: Implement TeamsPage
-
-        }
-
-        composable<NavRoutes.Profile> {
-            ProfilePage(modifier = Modifier.fillMaxSize().padding(innerPadding))
-        }
-
-
-        composable<NavRoutes.FullScreen> { backStackEntry ->
-            val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
-            FullVisualizationPage(
-                visualizationId = route.visualizationId,
-                modifier        = Modifier.fillMaxSize(),
-                onBackClick     = { navController.popBackStack() },
-                onThreadsClick  = {}
-            )
-        }
-
-        composable<NavRoutes.Share> { backStackEntry ->
-            val route = backStackEntry.toRoute<NavRoutes.Share>()
-            ShareAndPostScreen(
-                visualizationId = route.visualizationId,
-                onNavigateBack  = { navController.popBackStack() }
-            )
-        }
-
-        composable<NavRoutes.ShareWithTeammates> { backStackEntry ->
-            val route = backStackEntry.toRoute<NavRoutes.ShareWithTeammates>()
-            ShareWithTeammatesScreen(
-                visualizationId = route.visualizationId,
-                onNavigateBack  = { navController.popBackStack() }
-            )
-        }
     }
 }

@@ -1,0 +1,195 @@
+package com.oracle.visualize.presentation.screens.signupScreen
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oracle.visualize.R
+import com.oracle.visualize.presentation.components.AuthTextField
+
+@Composable
+fun SignUpPage(
+    modifier: Modifier = Modifier,
+    viewModel: SignUpViewModel = hiltViewModel(),
+    onSignUpSuccess: () -> Unit,
+    onLoginClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // This is where the page fetches the current app version.
+
+    val unknown = stringResource(R.string.error_unknown)
+    val appVersion = remember {
+        context.packageManager
+            .getPackageInfo(context.packageName, 0)
+            .versionName ?: unknown
+    }
+
+    LaunchedEffect(uiState.success) {
+        if (uiState.success) {
+            onSignUpSuccess()
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.splashbackground),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.18f),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = (-18).dp)
+                .fillMaxWidth()
+                .fillMaxHeight(0.88f)
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 26.dp,
+                        topEnd = 26.dp
+                    )
+                )
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 36.dp)
+                .padding(top = 68.dp, bottom = 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Text(
+                text = stringResource(R.string.create_account),
+                fontSize = 26.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+
+            Spacer(modifier = Modifier.height(58.dp))
+
+            AuthTextField(
+                value = uiState.name,
+                onValueChange = viewModel::onNameChange,
+                placeholder = stringResource(R.string.name),
+                isError = uiState.nameError != null
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+            AuthTextField(
+                value = uiState.email,
+                onValueChange = viewModel::onEmailChange,
+                placeholder = stringResource(R.string.email),
+                isError = uiState.emailError != null
+            )
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+            AuthTextField(
+                value = uiState.password,
+                onValueChange = viewModel::onPasswordChange,
+                placeholder = stringResource(R.string.password),
+                isError = uiState.passwordError != null,
+                isPassword = true,
+                isPasswordVisible = uiState.isPasswordVisible,
+                onVisibilityClick = viewModel::onPasswordVisibilityChange
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            AuthTextField(
+                value = uiState.confirmPassword,
+                onValueChange = viewModel::onConfirmPasswordChange,
+                placeholder = stringResource(R.string.confirm_password),
+                isError = uiState.confirmPasswordError != null,
+                isPassword = true,
+                isPasswordVisible = uiState.isConfirmPasswordVisible,
+                onVisibilityClick = viewModel::onConfirmPasswordVisibilityChange
+            )
+
+            uiState.error?.let {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 12.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(34.dp))
+
+            Button(
+                onClick = { viewModel.signUp() },
+                enabled = !uiState.isLoading,
+                modifier = Modifier
+                    .width(154.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.signup),
+                        fontSize = 15.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = stringResource(R.string.already_have_account),
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            TextButton(
+                onClick = onLoginClick,
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.login),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = "V${appVersion}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+    }
+}

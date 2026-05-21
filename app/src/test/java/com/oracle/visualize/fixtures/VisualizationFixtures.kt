@@ -16,8 +16,7 @@ object VisualizationFixtures {
         createdAt = Date(),
         teamsSharedWith = emptyList(),
         usersSharedWith = emptyList(),
-        allUsersSharedWith = emptyList(),
-        configJSON = "{}"
+        allUsersSharedWith = emptyList()
     )
 
     val fakeValidVisualization = Visualization(

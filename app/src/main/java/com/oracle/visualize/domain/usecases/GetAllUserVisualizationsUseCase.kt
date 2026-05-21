@@ -20,16 +20,13 @@ class GetAllUserVisualizationsUseCase @Inject constructor(
 ){
     // Return type Result<List<VisualizationCard>>
     suspend operator fun invoke(userID: String): Result<List<VisualizationCard>> {
-        if (userID.isBlank()) return Result.failure(AppError.ValidationError("User ID empty"))
-        return try {
+        if (userID.isBlank()) return Result.failure(AppError.GeneralValidationError("User ID empty"))
+        return runCatching {
             coroutineScope {
                 val shared = async { visualizationRepository.getSharedVisualizations(userID) }
                 val personal = async { visualizationRepository.getPersonalVisualizations(userID) }
-                val cards = shared.await() + personal.await()
-                Result.success(cards)
+                shared.await() + personal.await()
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 }

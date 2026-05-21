@@ -15,7 +15,6 @@ import javax.inject.Inject
  */
 class VisualizationDatasource @Inject constructor(
     private val db: FirebaseFirestore,
-    private val teamsDatasource: TeamDatasource
 ) {
     private val visualizationsRef = db.collection("visualizations")
 
@@ -40,54 +39,28 @@ class VisualizationDatasource @Inject constructor(
     /**
      * Creates a new visualization in the database.
      *
-     * @param visualization The [Visualization] domain model to be saved.
-     * @throws AppError.ValidationError If required fields are empty.
-     * @throws AppError.NetworkError If a network error occurs.
+     * @param vDTO The [VisualizationDTO] dtos model to be saved.
      */
-    suspend fun createVisualization(visualization: Visualization) {
-        try {
-            if (visualization.authorID.isNotEmpty() && visualization.title.isNotEmpty() &&
-                visualization.configJSON.isNotEmpty()) {
-                val vDTO = VisualizationDTO(
-                    id = visualization.id,
-                    authorID = visualization.authorID,
-                    title = visualization.title,
-                    configJSON = visualization.configJSON,
-                    sharedWithUsers = visualization.sharedWithUsers,
-                    sharedWithTeams = visualization.sharedWithTeams,
-                    createdAt = Timestamp(visualization.createdAt)
-                )
-                val formattedVisualization = formatVisualization(vDTO)
-                visualizationsRef.add(formattedVisualization).await()
-            } else {
-                throw AppError.ValidationError("AuthorID, title, and configJSON cannot be empty")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to create visualization: ${ex.message}")
-        }
+    suspend fun createVisualization(vDTO: VisualizationDTO) {
+        val formattedVisualization = formatVisualization(vDTO)
+        visualizationsRef.add(formattedVisualization).await()
     }
 
     /**
      * Fetches all visualizations from the database.
      *
      * @return A list of [VisualizationDTO] objects.
-     * @throws AppError.ParsingError If any document cannot be parsed.
-     * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getAllVisualizations(): List<VisualizationDTO> {
-        return try {
-            val visualizations = visualizationsRef.get().await()
-            if (visualizations.isEmpty) return emptyList()
+        val visualizations = visualizationsRef.get().await()
 
-            visualizations.documents.map { doc ->
-                doc.toObject(VisualizationDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch all visualizations: ${ex.message}")
+        if (visualizations.isEmpty) return emptyList()
+
+        return visualizations.documents.map { doc ->
+            doc.toObject(VisualizationDTO::class.java)
+                ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
         }
+
     }
 
     /**
@@ -95,25 +68,18 @@ class VisualizationDatasource @Inject constructor(
      *
      * @param userID The unique ID of the user.
      * @return A list of [VisualizationDTO] objects.
-     * @throws AppError.ParsingError If any document cannot be parsed.
-     * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getVisualizationsSharedWithUser(userID: String): List<VisualizationDTO> {
-        return try {
-            val visualizations = visualizationsRef
-                .whereArrayContains("sharedWithUsers", userID)
-                .get()
-                .await()
+        val visualizations = visualizationsRef
+            .whereArrayContains("sharedWithUsers", userID)
+            .get()
+            .await()
 
-            if (visualizations.isEmpty) return emptyList()
+        if (visualizations.isEmpty) return emptyList()
 
-            visualizations.documents.map { doc ->
-                doc.toObject(VisualizationDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch shared visualizations: ${ex.message}")
+        return visualizations.documents.map { doc ->
+            doc.toObject(VisualizationDTO::class.java)
+                ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
         }
     }
 
@@ -122,101 +88,51 @@ class VisualizationDatasource @Inject constructor(
      *
      * @param userID The unique ID of the user.
      * @return A list of [VisualizationDTO] objects authored by the user.
-     * @throws AppError.ParsingError If any document cannot be parsed.
-     * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getPersonalVisualizations(userID: String): List<VisualizationDTO> {
-        return try {
-            val visualizations = visualizationsRef
-                .whereEqualTo("authorID", userID)
-                .get().await()
+        val visualizations = visualizationsRef
+            .whereEqualTo("authorID", userID)
+            .get().await()
 
-            if (visualizations.isEmpty) return emptyList()
+        if (visualizations.isEmpty) return emptyList()
 
-            visualizations.documents.map { doc ->
-                doc.toObject(VisualizationDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to fetch personal visualizations: ${ex.message}")
-        }
-    }
-
-    private suspend fun getVisualizationsSharedWithTeamsUserIsIn(userID: String): List<VisualizationDTO> {
-        return try {
-            val userTeams = teamsDatasource.getTeamsUserIsIn(userID)
-            val teamIDs = userTeams.mapNotNull { it.id }
-
-            if (teamIDs.isEmpty()) return emptyList()
-
-            val snapshot = db.collection("visualizations")
-                .whereArrayContainsAny("sharedWithTeams", teamIDs)
-                .get()
-                .await()
-
-            if (snapshot.isEmpty) return emptyList()
-
-            snapshot.documents.map { doc ->
-                doc.toObject(VisualizationDTO::class.java)
-                    ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
-            }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Error fetching team visualizations: ${ex.message}")
-        }
-    }
-
-    suspend fun getAllSharedVisualizations(userID: String): List<VisualizationDTO> {
-        return try {
-            val sharedWithUser = getVisualizationsSharedWithUser(userID)
-            val sharedWithTeams = getVisualizationsSharedWithTeamsUserIsIn(userID)
-
-            val allShared = sharedWithUser + sharedWithTeams
-            allShared.distinctBy { it.id }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Error fetching all shared visualizations: ${ex.message}")
+        return visualizations.documents.map { doc ->
+            doc.toObject(VisualizationDTO::class.java)
+                ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: ${doc.id}")
         }
     }
 
     /**
      * Publishes all user's visualizations to the database in bulk.
      *
-     * @param visualizations The list of visualizations [List<VisualizationDTO>].
-     * @throws AppError.NetworkError If a network error occurs.
+     * @param visualizations The list of visualizations [List<VisualizationDTO>].ß
      */
     suspend fun publishVisualizationsInBulk(visualizations: List<VisualizationDTO>) {
-        try {
-            visualizations.chunked(500).forEach { chunk ->
-                val batch = db.batch()
-                for (v in chunk) {
-                    val doc = visualizationsRef.document()
-                    val formattedVisualization = formatVisualization(v)
-                    batch.set(doc, formattedVisualization)
-                }
-                batch.commit().await()
+        visualizations.chunked(500).forEach { chunk ->
+            val batch = db.batch()
+            for (v in chunk) {
+                val doc = visualizationsRef.document()
+                val formattedVisualization = formatVisualization(v)
+                batch.set(doc, formattedVisualization)
             }
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to publish visualizations: ${ex.message}")
+            batch.commit().await()
         }
     }
 
-    /**
-     * Permanently deletes a visualization document from Firestore.
-     *
-     * @param visualizationId The unique ID of the visualization to delete.
-     * @throws AppError.NetworkError If the operation fails.
-     */
-    suspend fun deleteVisualization(visualizationId: String) {
-        try {
-            visualizationsRef.document(visualizationId).delete().await()
-        } catch (ex: Exception) {
-            if (ex is AppError) throw ex
-            throw AppError.NetworkError("Failed to delete visualization: ${ex.message}")
+
+    suspend fun getVisualizationsSharedWithTeams(teamIDs: List<String>): List<VisualizationDTO> {
+        if (teamIDs.isEmpty()) return emptyList()
+
+        val chunks = teamIDs.chunked(10)
+        val results = mutableListOf<VisualizationDTO>()
+
+        for (chunk in chunks) {
+            val snapshot = visualizationsRef.whereArrayContainsAny("sharedWithTeams", chunk)
+                .get()
+                .await()
+
+            results.addAll(snapshot.toObjects(VisualizationDTO::class.java))
         }
+        return results
     }
 }
-
-

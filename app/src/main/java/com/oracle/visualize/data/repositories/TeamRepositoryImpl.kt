@@ -8,10 +8,12 @@ import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.mapper.toShareTeam
 import com.oracle.visualize.data.mapper.toShareUser
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareTeam
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.internal.throwMissingFieldException
 
 /**
  * Implementation of [TeamRepository] that coordinates team-related data operations.
@@ -27,47 +29,63 @@ class TeamRepositoryImpl @Inject constructor(
 ) : TeamRepository {
 
     override suspend fun createTeam(memberIDs: List<String>, name: String, ownerID: String) {
-        teamsDatasource.createTeam(memberIDs, name, ownerID)
+        try {
+            teamsDatasource.createTeam(memberIDs, name, ownerID)
+        } catch (e: Exception) {
+            throw AppError.NetworkError("Failed to create team: ${e.message}")
+        }
     }
 
     override suspend fun getTeamsOwnedByUser(userID: String): List<ShareTeam> {
 
         // Uses coroutines for a more efficient search since it uses parallel computing.
-        return coroutineScope {
-            val teamsOwnedByUserRaw: List<TeamDTO> = teamsDatasource.getTeamsUserOwns(userID)
+        return try {
+            coroutineScope {
+                val teamsOwnedByUserRaw: List<TeamDTO> = teamsDatasource.getTeamsUserOwns(userID)
 
-            val deferredTeams = teamsOwnedByUserRaw.map { teamDTO ->
-                async {
-                    val deferredUsers = teamDTO.membersIDs.map { id ->
-                        async { userDataSource.getUserByID(id) }
+                val deferredTeams = teamsOwnedByUserRaw.map { teamDTO ->
+                    async {
+                        val deferredUsers = teamDTO.membersIDs.map { id ->
+                            async { userDataSource.getUserByID(id) }
+                        }
+                        val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
+                        val users = rawUsers.map { dto -> dto.toShareUser() }
+                        teamDTO.toShareTeam(users)
+
                     }
-                    val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
-                    val users = rawUsers.map { dto -> dto.toShareUser() }
-                    teamDTO.toShareTeam(users)
-
                 }
-
+                deferredTeams.awaitAll()
             }
-            deferredTeams.awaitAll()
+        } catch (e: AppError) {
+            throw e
+        } catch (e: Exception) {
+            throw AppError.NetworkError("Failed to fetch owned teams: ${e.message}")
         }
     }
 
     override suspend fun getTeamsUserIsIn(userID: String): List<ShareTeam> {
-        return coroutineScope {
-            val teamsUserIsIn: List<TeamDTO> = teamsDatasource.getTeamsUserIsIn(userID)
+        return try {
 
-            val deferredTeams = teamsUserIsIn.map { teamDTO ->
-                async {
-                    val deferredUsers = teamDTO.membersIDs.map { id ->
-                        async { userDataSource.getUserByID(id) }
+            coroutineScope {
+                val teamsUserIsIn: List<TeamDTO> = teamsDatasource.getTeamsUserIsIn(userID)
+
+                val deferredTeams = teamsUserIsIn.map { teamDTO ->
+                    async {
+                        val deferredUsers = teamDTO.membersIDs.map { id ->
+                            async { userDataSource.getUserByID(id) }
+                        }
+                        val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
+                        val users = rawUsers.map { dto -> dto.toShareUser() }
+                        teamDTO.toShareTeam(users)
+
                     }
-                    val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
-                    val users = rawUsers.map { dto -> dto.toShareUser() }
-                    teamDTO.toShareTeam(users)
-
                 }
+                deferredTeams.awaitAll()
             }
-            deferredTeams.awaitAll()
+        } catch (e: AppError) {
+            throw e
+        } catch (e: Exception) {
+            throw AppError.NetworkError("Failed to fetch user is in ${e.message}")
         }
     }
 
