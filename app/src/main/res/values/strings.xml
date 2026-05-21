@@ -218,11 +218,24 @@
     <string name="edit_team_title">Edit Your Team</string>
     <string name="create_team_name_placeholder">Team\'s Name</string>
     <string name="create_team_add_people_section">Add people to your team</string>
-    <string name="edit_team_search_placeholder">Search by email</string>
+    <string name="create_team_search_placeholder">Search by email</string>
+    <string name="edit_team_search_placeholder">Add more people</string>
     <string name="create_team_suggestions_section">People in the same teams as you</string>
     <string name="create_team_member_list_section">Member List</string>
     <string name="create_team_save_description">Save team</string>
     <string name="create_team_remove_member_description">Remove member</string>
     <string name="create_team_empty_hint">Search for teammates and add them to the list.</string>
+
+    <!-- Unsaved Changes Dialog (Create/Edit Team) -->
+    <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
+    <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="dialog_unsaved_changes_cancel">Cancel</string>
+    <string name="dialog_unsaved_changes_confirm">Leave</string>
+
+    <!-- Delete Team Dialog (Teams Screen) -->
+    <string name="dialog_delete_team_title">Delete Team?</string>
+    <string name="dialog_delete_team_message">This team and its members will be removed. This action cannot be undone.</string>
+    <string name="dialog_delete_team_cancel">Cancel</string>
+    <string name="dialog_delete_team_confirm">Delete</string>
 
 </resources>
