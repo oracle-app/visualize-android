@@ -32,7 +32,7 @@ import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvat
 
 /**
  * Entry-point composable for the Create/Edit Team screen.
- * Observes [CreateEditTeamViewModel] and navigates back automatically on success.
+ * Observes [CreateEditTeamViewModel] state and navigates back on success or discard.
  *
  * @param onNavigateBack Callback invoked when the operation completes or the user taps back.
  * @param viewModel The [CreateEditTeamViewModel] instance (injected by Hilt).
@@ -42,12 +42,15 @@ fun CreateEditTeamPage(
     onNavigateBack: () -> Unit,
     viewModel: CreateEditTeamViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState      by viewModel.uiState.collectAsStateWithLifecycle()
+    val navigateBack by viewModel.navigateBack.collectAsStateWithLifecycle()
 
+    // Navigate back when the ViewModel signals it (submit success or confirmed discard)
     LaunchedEffect(uiState) {
-        if (uiState is CreateEditTeamUiState.Success) {
-            onNavigateBack()
-        }
+        if (uiState is CreateEditTeamUiState.Success) onNavigateBack()
+    }
+    LaunchedEffect(navigateBack) {
+        if (navigateBack) onNavigateBack()
     }
 
     when (val state = uiState) {
@@ -59,9 +62,15 @@ fun CreateEditTeamPage(
         is CreateEditTeamUiState.Content -> {
             CreateEditTeamContent(
                 state   = state,
-                onEvent = viewModel::onEvent,
-                onBack  = onNavigateBack
+                onEvent = viewModel::onEvent
             )
+            // Unsaved changes dialog — rendered on top of content
+            if (state.showUnsavedChangesDialog) {
+                UnsavedChangesDialog(
+                    onConfirm = { viewModel.onEvent(CreateEditTeamUiEvent.ConfirmDiscard) },
+                    onDismiss = { viewModel.onEvent(CreateEditTeamUiEvent.DismissUnsavedChangesDialog) }
+                )
+            }
         }
         is CreateEditTeamUiState.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -72,11 +81,63 @@ fun CreateEditTeamPage(
     }
 }
 
+// ── Dialogs ───────────────────────────────────────────────────────────────────
+
+/**
+ * Dialog shown when the user taps back with unsaved changes.
+ * Matches the Figma design: neutral confirm button color (primary).
+ */
+@Composable
+private fun UnsavedChangesDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor   = MaterialTheme.colorScheme.surface,
+        shape            = RoundedCornerShape(28.dp),
+        title = {
+            Text(
+                text       = stringResource(R.string.dialog_unsaved_changes_title),
+                fontSize   = 24.sp,
+                fontWeight = FontWeight.Normal,
+                color      = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Text(
+                text  = stringResource(R.string.dialog_unsaved_changes_message),
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text  = stringResource(R.string.dialog_unsaved_changes_cancel),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text  = stringResource(R.string.dialog_unsaved_changes_confirm),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    )
+}
+
 @Composable
 private fun CreateEditTeamContent(
     state: CreateEditTeamUiState.Content,
-    onEvent: (CreateEditTeamUiEvent) -> Unit,
-    onBack: () -> Unit
+    onEvent: (CreateEditTeamUiEvent) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -90,20 +151,21 @@ private fun CreateEditTeamContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .padding(top = 48.dp, bottom = 16.dp, start = 8.dp, end = 16.dp)
+                    .padding(top = 48.dp, bottom = 24.dp, start = 8.dp, end = 16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { onEvent(CreateEditTeamUiEvent.RequestBack) }) {
                         Icon(
                             imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.icon_back),
-                            tint               = MaterialTheme.colorScheme.onSurface
+                            tint               = MaterialTheme.colorScheme.onSurface,
+                            modifier           = Modifier.size(28.dp)
                         )
                     }
                     Text(
                         text       = if (state.isEditMode) stringResource(R.string.edit_team_title)
                         else stringResource(R.string.create_team_title),
-                        fontSize   = 28.sp,
+                        fontSize   = 32.sp,
                         fontWeight = FontWeight.Normal,
                         color      = MaterialTheme.colorScheme.onSurface
                     )
@@ -136,10 +198,9 @@ private fun CreateEditTeamContent(
                                 focusedContainerColor   = MaterialTheme.colorScheme.surfaceVariant,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                                 errorContainerColor     = MaterialTheme.colorScheme.errorContainer,
-                                focusedIndicatorColor   = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor  = Color.Transparent,
-                                errorIndicatorColor     = Color.Transparent,
+                                focusedIndicatorColor   = MaterialTheme.colorScheme.onSurface,
+                                unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                errorIndicatorColor     = MaterialTheme.colorScheme.error,
                                 focusedTextColor        = MaterialTheme.colorScheme.onSurface,
                                 unfocusedTextColor      = MaterialTheme.colorScheme.onSurface,
                             ),
@@ -158,17 +219,16 @@ private fun CreateEditTeamContent(
                     }
                 }
 
-                // ── "Add people to your team" header — CREATE mode only ──────
                 if (!state.isEditMode) {
                     item {
                         Text(
                             text       = stringResource(R.string.create_team_add_people_section),
-                            fontSize   = 18.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize   = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
                             color      = MaterialTheme.colorScheme.onSurface,
                             modifier   = Modifier.padding(
                                 start  = 16.dp, end = 16.dp,
-                                top    = 8.dp,  bottom = 8.dp
+                                top    = 16.dp,  bottom = 8.dp
                             )
                         )
                     }
@@ -183,7 +243,10 @@ private fun CreateEditTeamContent(
                         onValueChange = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged(it)) },
                         placeholder   = {
                             Text(
-                                text  = stringResource(R.string.edit_team_search_placeholder),
+                                text  = stringResource(
+                                    if (state.isEditMode) R.string.edit_team_search_placeholder
+                                    else R.string.create_team_search_placeholder
+                                ),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
@@ -245,8 +308,8 @@ private fun CreateEditTeamContent(
                     item {
                         Text(
                             text       = stringResource(R.string.create_team_suggestions_section),
-                            fontSize   = 14.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize   = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                             color      = MaterialTheme.colorScheme.onSurface,
                             modifier   = Modifier.padding(
                                 start  = 16.dp, end = 16.dp,
@@ -268,12 +331,11 @@ private fun CreateEditTeamContent(
                     }
                 }
 
-                // ── Member list header ───────────────────────────────────────
                 item {
                     Text(
                         text       = stringResource(R.string.create_team_member_list_section),
-                        fontSize   = 14.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize   = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color      = MaterialTheme.colorScheme.onSurface,
                         modifier   = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                     )
@@ -341,6 +403,7 @@ private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
         Text(
             text       = user.username,
             fontSize   = 12.sp,
+            fontWeight = FontWeight.SemiBold,
             textAlign  = TextAlign.Center,
             maxLines   = 2,
             lineHeight = 14.sp,
