@@ -10,58 +10,75 @@ import javax.inject.Inject
 /**
  * Data source for team-related operations using Firestore.
  *
+ * Design note — ownerID inside membersIDs:
+ *   The owner is always written into membersIDs so that:
+ *     1. whereArrayContains("membersIDs", ownerID) returns their own teams,
+ *        which powers the suggestions carousel in Create mode.
+ *     2. Member count and member list in the UI always include the owner
+ *        without any special-casing in the mapper or repository.
+ *
  * @property db The [FirebaseFirestore] instance used for database operations.
  */
 class TeamDatasource @Inject constructor(
     private val db: FirebaseFirestore
-){
+) {
     private val teamsRef = db.collection("teams")
 
     /**
-     * Creates a new team in the database.
-     *
-     * @param membersIDs List of user IDs to be added as members.
-     * @param name The name of the team.
-     * @param ownerID The user ID of the team owner.
-     * @throws AppError.TeamValidationError If any of the parameters are empty.
-     * @throws AppError.NetworkError If the operation fails due to a network issue.
+     * Creates a new team.
+     * The [ownerID] is merged into [membersIDs] before writing so that
+     * the owner is always reflected in the full member list.
      */
     suspend fun createTeam(
         membersIDs: List<String>,
         name: String,
         ownerID: String
     ) {
+        val allMemberIDs = (membersIDs + ownerID).distinct()
         val teamData = hashMapOf(
-            "membersIDs" to membersIDs,
-            "name" to name,
-            "ownerID" to ownerID
+            "membersIDs" to allMemberIDs,
+            "name"       to name,
+            "ownerID"    to ownerID
         )
         teamsRef.add(teamData).await()
     }
 
     /**
+     * Updates an existing team's name and member list.
+     * The owner's ID must already be present in [membersIDs]; the caller
+     * (ViewModel / UseCase) is responsible for passing the complete list.
+     */
+    suspend fun updateTeam(
+        teamID: String,
+        membersIDs: List<String>,
+        name: String
+    ) {
+        val updates = mapOf(
+            "membersIDs" to membersIDs,
+            "name"       to name
+        )
+        teamsRef.document(teamID).update(updates).await()
+    }
+
+    /**
+     * Deletes a team document by its unique ID.
+     */
+    suspend fun deleteTeam(teamID: String) {
+        teamsRef.document(teamID).delete().await()
+    }
+
+    /**
      * Fetches a team by its unique ID.
-     *
-     * @param teamID The unique ID of the team.
-     * @return The [TeamDTO] if found, null otherwise.
-     * @throws AppError.ParsingError If the document exists but cannot be parsed.
-     * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getTeamByTeamID(teamID: String): TeamDTO? {
         val teamSnapshot = teamsRef.document(teamID).get().await()
-
         if (!teamSnapshot.exists()) return null
-
-        return teamSnapshot.toObject(
-            TeamDTO::class.java) ?: throw AppError.ParsingError("Error parsing TeamDTO")
+        return teamSnapshot.toObject(TeamDTO::class.java)
+            ?: throw AppError.ParsingError("Error parsing TeamDTO")
     }
 
     /**
      * Fetches all teams owned by a specific user.
-     *
-     * @param userID The unique ID of the user.
-     * @return A list of [TeamDTO] objects owned by the user.
-     * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getTeamsUserOwns(userID: String): List<TeamDTO> {
         val snapshot = teamsRef.whereEqualTo("ownerID", userID).get().await()
@@ -69,16 +86,12 @@ class TeamDatasource @Inject constructor(
     }
 
     /**
-     * Fetches all teams that a specific user is a member of.
-     *
-     * @param userID The unique ID of the user.
-     * @return A list of [TeamDTO] objects where the user is a member.
-     * @throws AppError.NetworkError If a network error occurs.
+     * Fetches all teams that a specific user is a member of (including owned teams,
+     * since the owner is stored in membersIDs).
      */
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
         val snapshot = teamsRef.whereArrayContains("membersIDs", userID).get().await()
         if (snapshot.isEmpty) return emptyList()
-
         return snapshot.documents.map { doc ->
             doc.toObject(TeamDTO::class.java)
                 ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
@@ -87,12 +100,10 @@ class TeamDatasource @Inject constructor(
 
     suspend fun getTeamsByIDs(ids: List<String>): List<TeamDTO> {
         if (ids.isEmpty()) return emptyList()
-
         val snapshot = db.collection("teams")
             .whereIn(FieldPath.documentId(), ids)
             .get()
             .await()
-
         return snapshot.documents.map { doc ->
             doc.toObject(TeamDTO::class.java)
                 ?: throw AppError.ParsingError("Failed to parse TeamDTO: ${doc.id}")
