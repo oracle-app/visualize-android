@@ -1,8 +1,6 @@
 package com.oracle.visualize.data.repositories
 
 import com.oracle.visualize.data.datasources.TeamDatasource
-import com.oracle.visualize.domain.repositories.TeamRepository
-import javax.inject.Inject
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
@@ -10,18 +8,20 @@ import com.oracle.visualize.data.mapper.toShareTeam
 import com.oracle.visualize.data.mapper.toShareUser
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareTeam
+import com.oracle.visualize.domain.repositories.TeamRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.internal.throwMissingFieldException
+import javax.inject.Inject
 
 /**
- * Implementation of [TeamRepository] that coordinates team-related data operations.
- * It uses both [TeamDatasource] and [UserDatasource] to fetch complete team information,
- * including member details.
+ * Implementation of [TeamRepository].
  *
- * @property teamsDatasource Data source for team operations in Firestore.
- * @property userDataSource Data source for user operations in Firestore.
+ * Owner resolution:
+ *   New teams always have the ownerID included in membersIDs (enforced by
+ *   TeamDatasource.createTeam). For legacy documents that pre-date this
+ *   contract, [resolveMembersIncludingOwner] ensures the owner is fetched
+ *   and prepended to the members list so the UI always shows them.
  */
 class TeamRepositoryImpl @Inject constructor(
     private val teamsDatasource: TeamDatasource,
@@ -36,25 +36,29 @@ class TeamRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTeamsOwnedByUser(userID: String): List<ShareTeam> {
+    override suspend fun updateTeam(teamID: String, memberIDs: List<String>, name: String) {
+        try {
+            teamsDatasource.updateTeam(teamID, memberIDs, name)
+        } catch (e: Exception) {
+            throw AppError.NetworkError("Failed to update team: ${e.message}")
+        }
+    }
 
-        // Uses coroutines for a more efficient search since it uses parallel computing.
+    override suspend fun deleteTeam(teamID: String) {
+        try {
+            teamsDatasource.deleteTeam(teamID)
+        } catch (e: Exception) {
+            throw AppError.NetworkError("Failed to delete team: ${e.message}")
+        }
+    }
+
+    override suspend fun getTeamsOwnedByUser(userID: String): List<ShareTeam> {
         return try {
             coroutineScope {
-                val teamsOwnedByUserRaw: List<TeamDTO> = teamsDatasource.getTeamsUserOwns(userID)
-
-                val deferredTeams = teamsOwnedByUserRaw.map { teamDTO ->
-                    async {
-                        val deferredUsers = teamDTO.membersIDs.map { id ->
-                            async { userDataSource.getUserByID(id) }
-                        }
-                        val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
-                        val users = rawUsers.map { dto -> dto.toShareUser() }
-                        teamDTO.toShareTeam(users)
-
-                    }
-                }
-                deferredTeams.awaitAll()
+                val rawTeams: List<TeamDTO> = teamsDatasource.getTeamsUserOwns(userID)
+                rawTeams.map { teamDTO ->
+                    async { resolveMembersIncludingOwner(teamDTO) }
+                }.awaitAll()
             }
         } catch (e: AppError) {
             throw e
@@ -65,28 +69,43 @@ class TeamRepositoryImpl @Inject constructor(
 
     override suspend fun getTeamsUserIsIn(userID: String): List<ShareTeam> {
         return try {
-
             coroutineScope {
-                val teamsUserIsIn: List<TeamDTO> = teamsDatasource.getTeamsUserIsIn(userID)
-
-                val deferredTeams = teamsUserIsIn.map { teamDTO ->
-                    async {
-                        val deferredUsers = teamDTO.membersIDs.map { id ->
-                            async { userDataSource.getUserByID(id) }
-                        }
-                        val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
-                        val users = rawUsers.map { dto -> dto.toShareUser() }
-                        teamDTO.toShareTeam(users)
-
-                    }
-                }
-                deferredTeams.awaitAll()
+                val rawTeams: List<TeamDTO> = teamsDatasource.getTeamsUserIsIn(userID)
+                rawTeams.map { teamDTO ->
+                    async { resolveMembersIncludingOwner(teamDTO) }
+                }.awaitAll()
             }
         } catch (e: AppError) {
             throw e
         } catch (e: Exception) {
-            throw AppError.NetworkError("Failed to fetch user is in ${e.message}")
+            throw AppError.NetworkError("Failed to fetch teams user is in: ${e.message}")
         }
     }
 
+    /**
+     * Resolves all member [ShareUser] objects for a [TeamDTO], guaranteeing
+     * the owner is always present in the returned list.
+     *
+     * Steps:
+     *  1. Collect the unique IDs to fetch: membersIDs union {ownerID}
+     *  2. Fetch all users in parallel
+     *  3. Sort so the owner appears first
+     */
+    private suspend fun resolveMembersIncludingOwner(teamDTO: TeamDTO): ShareTeam {
+        return coroutineScope {
+            // Ensure ownerID is included even for legacy documents
+            val allIDs = (teamDTO.membersIDs + teamDTO.ownerID).distinct()
+
+            val deferredUsers = allIDs.map { id ->
+                async { userDataSource.getUserByID(id) }
+            }
+            val rawUsers: List<UserDTO> = deferredUsers.awaitAll()
+            val users = rawUsers
+                .map { dto -> dto.toShareUser() }
+                // Owner first, then the rest in original order
+                .sortedByDescending { it.id == teamDTO.ownerID }
+
+            teamDTO.toShareTeam(users)
+        }
+    }
 }
