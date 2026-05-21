@@ -13,9 +13,6 @@ import javax.inject.Inject
 
 /**
  * ViewModel for the Teams screen.
- *
- * @property getUsersTeamsUseCase Use case for fetching the user's teams.
- * @property deleteTeamUseCase Use case for deleting a team.
  */
 @HiltViewModel
 class TeamsViewModel @Inject constructor(
@@ -26,6 +23,7 @@ class TeamsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
     val uiState: StateFlow<TeamsUiState> = _uiState.asStateFlow()
 
+    // TODO: Replace with actual session user ID from AuthRepository
     private val userID = "e9Nk8XrxHJAtwN3Hf2FL"
 
     init { loadTeams() }
@@ -37,20 +35,18 @@ class TeamsViewModel @Inject constructor(
             val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
             val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
 
-            myTeamsResult.fold(
-                onFailure = { e ->
-                    _uiState.value = TeamsUiState.Error(e.message ?: "Failed to load teams")
-                    return@launch
-                },
-                onSuccess = {}
-            )
-            teamsImInResult.fold(
-                onFailure = { e ->
-                    _uiState.value = TeamsUiState.Error(e.message ?: "Failed to load teams")
-                    return@launch
-                },
-                onSuccess = {}
-            )
+            if (myTeamsResult.isFailure) {
+                _uiState.value = TeamsUiState.Error(
+                    myTeamsResult.exceptionOrNull()?.message ?: "Failed to load teams"
+                )
+                return@launch
+            }
+            if (teamsImInResult.isFailure) {
+                _uiState.value = TeamsUiState.Error(
+                    teamsImInResult.exceptionOrNull()?.message ?: "Failed to load teams"
+                )
+                return@launch
+            }
 
             _uiState.value = TeamsUiState.Content(
                 myTeams   = myTeamsResult.getOrDefault(emptyList()),
@@ -69,19 +65,39 @@ class TeamsViewModel @Inject constructor(
                     current.expandedTeamIds + event.teamId
                 _uiState.value = current.copy(expandedTeamIds = updated)
             }
+
             is TeamsUiEvent.SwipeTeam ->
                 _uiState.value = current.copy(swipedTeamId = event.teamId)
-            is TeamsUiEvent.DeleteTeam -> {
+
+            // Step 1 — show the confirmation dialog
+            is TeamsUiEvent.RequestDeleteTeam ->
+                _uiState.value = current.copy(
+                    swipedTeamId       = null,
+                    teamPendingDeleteId = event.teamId
+                )
+
+            // Step 2 — user confirmed, perform the delete
+            is TeamsUiEvent.ConfirmDeleteTeam -> {
+                _uiState.value = current.copy(teamPendingDeleteId = null)
                 viewModelScope.launch {
                     deleteTeamUseCase(event.teamId).fold(
                         onSuccess = { loadTeams() },
                         onFailure = { e ->
-                            _uiState.value = TeamsUiState.Error(e.message ?: "Failed to delete team")
+                            _uiState.value = TeamsUiState.Error(
+                                e.message ?: "Failed to delete team"
+                            )
                         }
                     )
                 }
             }
+
+            // User cancelled — just close the dialog
+            is TeamsUiEvent.DismissDeleteDialog ->
+                _uiState.value = current.copy(teamPendingDeleteId = null)
+
             is TeamsUiEvent.Refresh -> loadTeams()
+
+            // Navigation events are handled in the View layer
             else -> Unit
         }
     }
