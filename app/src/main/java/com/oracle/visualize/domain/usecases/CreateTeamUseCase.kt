@@ -15,8 +15,8 @@ class CreateTeamUseCase @Inject constructor(
     private val teamRepository: TeamRepository
 ) {
     suspend operator fun invoke(memberIDs: List<String>, name: String, ownerID: String): Result<Unit> {
-        if (name.isBlank()) return Result.failure(AppError.ValidationError("Team name cannot be empty"))
-        if (memberIDs.isEmpty()) return Result.failure(AppError.ValidationError("Team must have at least one member"))
+        if (name.isBlank()) return Result.failure(AppError.GeneralValidationError("Team name cannot be empty"))
+        if (memberIDs.isEmpty()) return Result.failure(AppError.GeneralValidationError("Team must have at least one member"))
         return try {
             teamRepository.createTeam(memberIDs, name, ownerID)
             Result.success(Unit)
