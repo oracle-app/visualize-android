@@ -47,7 +47,7 @@ class DeleteTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.deleteTeam(any()) }
     }
 
@@ -61,7 +61,7 @@ class DeleteTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.deleteTeam(any()) }
     }
 

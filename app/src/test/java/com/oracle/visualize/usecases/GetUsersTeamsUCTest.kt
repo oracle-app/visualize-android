@@ -47,7 +47,7 @@ class GetUsersTeamsUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.getTeamsOwnedByUser(any()) }
     }
 
@@ -61,7 +61,7 @@ class GetUsersTeamsUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.getTeamsOwnedByUser(any()) }
     }
 
@@ -124,7 +124,7 @@ class GetUsersTeamsUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.getTeamsUserIsIn(any()) }
     }
 
@@ -138,7 +138,7 @@ class GetUsersTeamsUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.getTeamsUserIsIn(any()) }
     }
 

@@ -47,7 +47,7 @@ class UpdateTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.updateTeam(any(), any(), any()) }
     }
 
@@ -61,7 +61,7 @@ class UpdateTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.updateTeam(any(), any(), any()) }
     }
 
@@ -77,7 +77,7 @@ class UpdateTeamUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) { teamRepository.updateTeam(any(), any(), any()) }
     }
 
