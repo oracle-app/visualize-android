@@ -16,7 +16,7 @@ class GetUsersTeamsUseCase @Inject constructor(
     private val teamRepository: TeamRepository
 ) {
     suspend fun getTeamsUserOwns(userID: String): Result<List<ShareTeam>> {
-        if (userID.isBlank()) return Result.failure(AppError.ValidationError("User ID cannot be empty"))
+        if (userID.isBlank()) return Result.failure(AppError.GeneralValidationError("User ID cannot be empty"))
         return try {
             Result.success(teamRepository.getTeamsOwnedByUser(userID))
         } catch (e: Exception) {
@@ -25,7 +25,7 @@ class GetUsersTeamsUseCase @Inject constructor(
     }
 
     suspend fun getTeamsUserIsIn(userID: String): Result<List<ShareTeam>> {
-        if (userID.isBlank()) return Result.failure(AppError.ValidationError("User ID cannot be empty"))
+        if (userID.isBlank()) return Result.failure(AppError.GeneralValidationError("User ID cannot be empty"))
         return try {
             Result.success(teamRepository.getTeamsUserIsIn(userID))
         } catch (e: Exception) {
