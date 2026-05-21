@@ -45,7 +45,7 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = DarkMode_NotAsDarkGray,
     error = ErrorRed,
     onError = White,
-    scrim = ScrimColor
+    scrim = ScrimColor,
 )
 
 private val LightColorScheme = lightColorScheme(

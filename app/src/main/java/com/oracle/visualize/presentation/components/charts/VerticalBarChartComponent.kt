@@ -1,11 +1,17 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.TooltipBox
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,6 +24,7 @@ import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.VerticalBarPlot
+import io.github.koalaplot.core.gestures.GestureConfig
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
@@ -33,11 +40,11 @@ import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
  * @param modifier The composable Modifier variable so a parent component can
  * modify its appearance.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderVerticalBarChart(
-    chart: VerticalBarChart,
-    modifier: Modifier = Modifier,
-    showAxisLabels: Boolean
+    chart: VerticalBarChart, modifier: Modifier = Modifier, showAxisLabels: Boolean,
+    enableTooltips: Boolean
 ) {
     val categories = chart.data.keys.toList()
     val values = chart.data.values.toList()
@@ -48,7 +55,10 @@ fun RenderVerticalBarChart(
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = remember { CategoryAxisModel(categories) },
-                yAxisModel = rememberFloatLinearAxisModel(0f..maxValue, minorTickCount = 0),
+                yAxisModel = rememberFloatLinearAxisModel(
+                    range = 0f..maxValue,
+                    minorTickCount = 0
+                ),
                 xAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
@@ -71,16 +81,36 @@ fun RenderVerticalBarChart(
                             }
                         }
                     }
+                ),
+                gestureConfig = GestureConfig(
+                    panXEnabled = true,
+                    panYEnabled = true
                 )
             ) {
                 VerticalBarPlot(
                     xData = categories,
                     yData = values,
                     bar = { index, _, _ ->
-                        DefaultBar(
-                            brush = SolidColor(barColors[index]),
-                            modifier = modifier.fillMaxWidth()
+                        val tooltipDisplayState = rememberTooltipState(
+                            initialIsVisible = false, isPersistent = true
                         )
+
+                        if (!enableTooltips && tooltipDisplayState.isVisible) {
+                            tooltipDisplayState.dismiss()
+                        }
+
+                        TooltipBox(
+                            tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                positioning = TooltipAnchorPosition.Above,
+                            ),
+                            state = tooltipDisplayState
+                        ) {
+                            DefaultBar(
+                                brush = SolidColor(barColors[index]),
+                                modifier = modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 )
             }

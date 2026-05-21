@@ -52,6 +52,9 @@
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
 
+    // Chart legends full screen
+    <string name="chart_legend_cat_label">Category</string>
+
     // Create View
 
     <string name="create_top_bar_title">Create Data Visualizations</string>
