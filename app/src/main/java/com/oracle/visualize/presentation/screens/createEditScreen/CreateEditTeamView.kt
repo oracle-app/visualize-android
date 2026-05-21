@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -16,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvatar
-
 
 /**
  * Entry-point composable for the Create/Edit Team screen.
@@ -66,8 +68,7 @@ fun CreateEditTeamPage(
                 Text(text = state.message, color = MaterialTheme.colorScheme.error)
             }
         }
-        is CreateEditTeamUiState.Success -> {
-        }
+        is CreateEditTeamUiState.Success -> {}
     }
 }
 
@@ -77,13 +78,14 @@ private fun CreateEditTeamContent(
     onEvent: (CreateEditTeamUiEvent) -> Unit,
     onBack: () -> Unit
 ) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // Header
+            // ── Header ───────────────────────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -94,13 +96,14 @@ private fun CreateEditTeamContent(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.icon_back)
+                            contentDescription = stringResource(R.string.icon_back),
+                            tint               = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Text(
                         text       = if (state.isEditMode) stringResource(R.string.edit_team_title)
                         else stringResource(R.string.create_team_title),
-                        fontSize   = 32.sp,
+                        fontSize   = 28.sp,
                         fontWeight = FontWeight.Normal,
                         color      = MaterialTheme.colorScheme.onSurface
                     )
@@ -112,131 +115,237 @@ private fun CreateEditTeamContent(
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
 
+                // ── Team name field — CREATE mode only ───────────────────────
                 if (!state.isEditMode) {
                     item {
-                        Box(
-                            modifier = Modifier
-                                .padding(16.dp)
+                        TextField(
+                            value         = state.teamName,
+                            onValueChange = { onEvent(CreateEditTeamUiEvent.NameChanged(it)) },
+                            placeholder   = {
+                                Text(
+                                    text     = stringResource(R.string.create_team_name_placeholder),
+                                    fontSize = 16.sp,
+                                    color    = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            modifier   = Modifier
                                 .fillMaxWidth()
-                                .height(64.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                        ) {
-                            TextField(
-                                value         = state.teamName,
-                                onValueChange = { onEvent(CreateEditTeamUiEvent.NameChanged(it)) },
-                                placeholder   = {
-                                    Text(
-                                        stringResource(R.string.create_team_name_placeholder),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                },
-                                modifier      = Modifier.fillMaxSize(),
-                                colors        = TextFieldDefaults.colors(
-                                    focusedContainerColor   = MaterialTheme.colorScheme.surfaceVariant,
-                                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    focusedIndicatorColor   = MaterialTheme.colorScheme.primary,
-                                    unfocusedIndicatorColor = MaterialTheme.colorScheme.outline
-                                ),
-                                isError       = state.nameError != null,
-                                singleLine    = true
-                            )
-                        }
-                        // Name validation error
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            colors     = TextFieldDefaults.colors(
+                                focusedContainerColor   = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                errorContainerColor     = MaterialTheme.colorScheme.errorContainer,
+                                focusedIndicatorColor   = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor  = Color.Transparent,
+                                errorIndicatorColor     = Color.Transparent,
+                                focusedTextColor        = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor      = MaterialTheme.colorScheme.onSurface,
+                            ),
+                            textStyle  = LocalTextStyle.current.copy(fontSize = 16.sp),
+                            isError    = state.nameError != null,
+                            singleLine = true
+                        )
                         if (state.nameError != null) {
                             Text(
                                 text     = state.nameError,
                                 color    = MaterialTheme.colorScheme.error,
                                 fontSize = 12.sp,
-                                modifier = Modifier.padding(horizontal = 20.dp)
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp)
                             )
                         }
                     }
                 }
 
-
-                if (state.isEditMode) {
-                    item {
-                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            // Search bar
-                            TextField(
-                                value         = state.searchQuery,
-                                onValueChange = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged(it)) },
-                                placeholder   = {
-                                    Text(
-                                        stringResource(R.string.edit_team_search_placeholder),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                },
-                                modifier      = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                                    .clip(RoundedCornerShape(32.dp)),
-                                leadingIcon   = {
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = null,
-                                        tint               = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                },
-                                colors        = TextFieldDefaults.colors(
-                                    focusedContainerColor   = MaterialTheme.colorScheme.surface,
-                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                    focusedIndicatorColor   = MaterialTheme.colorScheme.primary,
-                                    unfocusedIndicatorColor = MaterialTheme.colorScheme.outline
-                                ),
-                                singleLine    = true
-                            )
-                        }
-                    }
-
-                    // Search results (edit mode only)
-                    if (state.searchQuery.isNotBlank() && state.searchResults.isNotEmpty()) {
-                        items(state.searchResults) { user ->
-                            SearchResultRow(
-                                user  = user,
-                                onAdd = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
-                            )
-                        }
-                    }
-
+                // ── "Add people to your team" header — CREATE mode only ──────
+                if (!state.isEditMode) {
                     item {
                         Text(
-                            text       = stringResource(R.string.create_team_member_list_section),
-                            fontSize   = 16.sp,
+                            text       = stringResource(R.string.create_team_add_people_section),
+                            fontSize   = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier   = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                            color      = MaterialTheme.colorScheme.onSurface,
+                            modifier   = Modifier.padding(
+                                start  = 16.dp, end = 16.dp,
+                                top    = 8.dp,  bottom = 8.dp
+                            )
                         )
                     }
+                }
 
-                    items(state.members) { member ->
-                        MemberRow(
-                            user     = member,
-                            isOwner  = member.id == state.ownerID,
-                            onRemove = { onEvent(CreateEditTeamUiEvent.RemoveMember(member)) }
+                // ── Search bar ───────────────────────────────────────────────
+                item {
+                    // In edit mode: leadingIcon lupa + trailingIcon X cuando hay texto
+                    // In create mode: solo trailingIcon lupa
+                    TextField(
+                        value         = state.searchQuery,
+                        onValueChange = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged(it)) },
+                        placeholder   = {
+                            Text(
+                                text  = stringResource(R.string.edit_team_search_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier     = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                            .clip(RoundedCornerShape(32.dp)),
+                        leadingIcon  = if (state.isEditMode) ({
+                            Icon(
+                                imageVector        = Icons.Default.Search,
+                                contentDescription = null,
+                                tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }) else null,
+                        trailingIcon = if (state.isEditMode && state.searchQuery.isNotBlank()) ({
+                            IconButton(onClick = {
+                                onEvent(CreateEditTeamUiEvent.SearchQueryChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector        = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }) else if (!state.isEditMode) ({
+                            Icon(
+                                imageVector        = Icons.Default.Search,
+                                contentDescription = null,
+                                tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }) else null,
+                        colors     = TextFieldDefaults.colors(
+                            focusedContainerColor   = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedIndicatorColor   = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor  = Color.Transparent,
+                            errorIndicatorColor     = Color.Transparent,
+                            focusedTextColor        = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor      = MaterialTheme.colorScheme.onSurface,
+                        ),
+                        singleLine = true
+                    )
+                }
+
+                // ── Search results ───────────────────────────────────────────
+                if (state.searchQuery.isNotBlank() && state.searchResults.isNotEmpty()) {
+                    items(state.searchResults) { user ->
+                        SearchResultRow(
+                            user  = user,
+                            onAdd = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
+                        )
+                    }
+                }
+
+                // ── Suggestions ("People in the same teams as you") ──────────
+                // Only shown in create mode when suggestions are available
+                if (!state.isEditMode && state.suggestions.isNotEmpty()) {
+                    item {
+                        Text(
+                            text       = stringResource(R.string.create_team_suggestions_section),
+                            fontSize   = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color      = MaterialTheme.colorScheme.onSurface,
+                            modifier   = Modifier.padding(
+                                start  = 16.dp, end = 16.dp,
+                                top    = 16.dp, bottom = 8.dp
+                            )
+                        )
+                        LazyRow(
+                            contentPadding        = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(state.suggestions) { user ->
+                                SuggestionItem(
+                                    user    = user,
+                                    onClick = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                // ── Member list header ───────────────────────────────────────
+                item {
+                    Text(
+                        text       = stringResource(R.string.create_team_member_list_section),
+                        fontSize   = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = MaterialTheme.colorScheme.onSurface,
+                        modifier   = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                    )
+                }
+
+                // ── Member rows ──────────────────────────────────────────────
+                items(state.members) { member ->
+                    MemberRow(
+                        user     = member,
+                        isOwner  = member.id == state.ownerID,
+                        onRemove = { onEvent(CreateEditTeamUiEvent.RemoveMember(member)) }
+                    )
+                }
+
+                // ── Empty state hint — shown when only the owner is present ──
+                if (state.members.size <= 1) {
+                    item {
+                        Text(
+                            text     = stringResource(R.string.create_team_empty_hint),
+                            fontSize = 14.sp,
+                            color    = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp, vertical = 8.dp)
                         )
                     }
                 }
             }
         }
 
-        // FAB — submit
+        // ── FAB ──────────────────────────────────────────────────────────────
+        // Create mode: + icon  |  Edit mode: ✓ icon
         FloatingActionButton(
             onClick        = { onEvent(CreateEditTeamUiEvent.Submit) },
             modifier       = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 16.dp, end = 16.dp)
-                .size(80.dp),
+                .padding(bottom = 24.dp, end = 24.dp)
+                .size(72.dp),
             containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor   = MaterialTheme.colorScheme.onPrimary,
-            shape          = RoundedCornerShape(24.dp)
+            contentColor   = MaterialTheme.colorScheme.onSecondary,
+            shape          = RoundedCornerShape(20.dp)
         ) {
             Icon(
-                imageVector        = Icons.Default.Check,
+                imageVector        = if (state.isEditMode) Icons.Default.Check else Icons.Default.Add,
                 contentDescription = stringResource(R.string.create_team_save_description),
-                modifier           = Modifier.size(40.dp)
+                modifier           = Modifier.size(36.dp)
             )
         }
+    }
+}
+
+// ── Private composables ───────────────────────────────────────────────────────
+
+@Composable
+private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier            = Modifier
+            .width(80.dp)
+            .clickable { onClick() }
+    ) {
+        UserAvatar(user = user, size = 64)
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text       = user.username,
+            fontSize   = 12.sp,
+            textAlign  = TextAlign.Center,
+            maxLines   = 2,
+            lineHeight = 14.sp,
+            color      = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
@@ -252,30 +361,17 @@ private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
         UserAvatar(user = user, size = 40)
         Spacer(modifier = Modifier.width(12.dp))
         Column {
-            Text(text = user.username, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
-            Text(text = user.email,    fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text       = user.username,
+                fontWeight = FontWeight.SemiBold,
+                color      = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text     = user.email,
+                fontSize = 12.sp,
+                color    = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-    }
-}
-
-@Composable
-private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier            = Modifier
-            .width(80.dp)
-            .clickable { onClick() }
-    ) {
-        UserAvatar(user = user, size = 64)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text      = user.username,
-            fontSize  = 12.sp,
-            textAlign = TextAlign.Center,
-            maxLines  = 2,
-            lineHeight = 14.sp,
-            color     = MaterialTheme.colorScheme.onSurface
-        )
     }
 }
 
@@ -287,11 +383,20 @@ private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        UserAvatar(user = user, size = 50)
+        UserAvatar(user = user, size = 52)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = user.username, fontWeight = FontWeight.Normal, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
-            Text(text = user.email,    fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text       = user.username,
+                fontWeight = FontWeight.Normal,
+                fontSize   = 18.sp,
+                color      = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text     = user.email,
+                fontSize = 14.sp,
+                color    = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         if (isOwner) {
             Text(
