@@ -37,12 +37,6 @@ import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvat
 
 /**
  * Entry-point composable for the Teams screen.
- * Observes [TeamsViewModel] state and delegates rendering to [TeamsContent].
- *
- * @param modifier Modifier applied to the root layout.
- * @param onNavigateToCreate Callback triggered when the user taps the create FAB.
- * @param onNavigateToEdit Callback triggered when the user selects edit on a team row.
- * @param viewModel The [TeamsViewModel] instance (injected by Hilt).
  */
 @Composable
 fun TeamsPage(
@@ -53,7 +47,6 @@ fun TeamsPage(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Refresh data when navigating back to this screen
     LaunchedEffect(Unit) {
         viewModel.onEvent(TeamsUiEvent.Refresh)
     }
@@ -64,7 +57,6 @@ fun TeamsPage(
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
-
         is TeamsUiState.Content -> {
             TeamsContent(
                 state    = state,
@@ -73,12 +65,11 @@ fun TeamsPage(
                     when (event) {
                         is TeamsUiEvent.NavigateToCreateTeam -> onNavigateToCreate()
                         is TeamsUiEvent.NavigateToEditTeam   -> onNavigateToEdit(event.teamId)
-                        else -> viewModel.onEvent(event)
+                        else                                 -> viewModel.onEvent(event)
                     }
                 }
             )
         }
-
         is TeamsUiState.Error -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -128,28 +119,29 @@ private fun TeamsContent(
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
-                        text     = stringResource(R.string.teams_my_teams_section),
-                        fontSize = 24.sp,
+                        text       = stringResource(R.string.teams_my_teams_section),
+                        fontSize   = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color    = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        color      = MaterialTheme.colorScheme.onSurface,
+                        modifier   = Modifier.padding(bottom = 12.dp)
                     )
                 }
 
                 itemsIndexed(state.myTeams) { index, team ->
                     MyTeamRow(
-                        team          = team,
-                        isSwiped      = state.swipedTeamId == team.id,
-                        position      = when {
-                            state.myTeams.size == 1              -> TeamPosition.SINGLE
-                            index == 0                           -> TeamPosition.TOP
-                            index == state.myTeams.size - 1      -> TeamPosition.BOTTOM
-                            else                                 -> TeamPosition.MIDDLE
+                        team           = team,
+                        isSwiped       = state.swipedTeamId == team.id,
+                        position       = when {
+                            state.myTeams.size == 1         -> TeamPosition.SINGLE
+                            index == 0                      -> TeamPosition.TOP
+                            index == state.myTeams.size - 1 -> TeamPosition.BOTTOM
+                            else                            -> TeamPosition.MIDDLE
                         },
-                        onSwipe       = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
+                        onSwipe        = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
                         onDismissSwipe = { onEvent(TeamsUiEvent.SwipeTeam(null)) },
-                        onEdit        = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
-                        onDelete      = { onEvent(TeamsUiEvent.DeleteTeam(team.id)) }
+                        onEdit         = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
+                        // Opens the dialog instead of deleting directly
+                        onDelete       = { onEvent(TeamsUiEvent.RequestDeleteTeam(team.id)) }
                     )
                     if (index < state.myTeams.size - 1) {
                         Spacer(modifier = Modifier.height(3.dp))
@@ -160,11 +152,11 @@ private fun TeamsContent(
 
                 item {
                     Text(
-                        text     = stringResource(R.string.teams_im_in_section),
-                        fontSize = 24.sp,
+                        text       = stringResource(R.string.teams_im_in_section),
+                        fontSize   = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color    = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        color      = MaterialTheme.colorScheme.onSurface,
+                        modifier   = Modifier.padding(bottom = 12.dp)
                     )
                 }
 
@@ -173,10 +165,10 @@ private fun TeamsContent(
                         team       = team,
                         isExpanded = team.id in state.expandedTeamIds,
                         position   = when {
-                            state.teamsImIn.size == 1              -> TeamPosition.SINGLE
-                            index == 0                             -> TeamPosition.TOP
-                            index == state.teamsImIn.size - 1      -> TeamPosition.BOTTOM
-                            else                                   -> TeamPosition.MIDDLE
+                            state.teamsImIn.size == 1         -> TeamPosition.SINGLE
+                            index == 0                        -> TeamPosition.TOP
+                            index == state.teamsImIn.size - 1 -> TeamPosition.BOTTOM
+                            else                              -> TeamPosition.MIDDLE
                         },
                         onToggle   = { onEvent(TeamsUiEvent.ToggleExpand(team.id)) }
                     )
@@ -187,24 +179,90 @@ private fun TeamsContent(
             }
         }
 
+        // ── FAB ──────────────────────────────────────────────────────────────
         FloatingActionButton(
             onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
             modifier       = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 16.dp, end = 16.dp)
-                .size(80.dp),
+                .padding(bottom = 24.dp, end = 24.dp)
+                .size(72.dp),
             containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor   = MaterialTheme.colorScheme.onPrimary,
-            shape          = RoundedCornerShape(24.dp)
+            contentColor   = MaterialTheme.colorScheme.onSecondary,
+            shape          = RoundedCornerShape(20.dp)
         ) {
             Icon(
                 imageVector        = Icons.Default.Add,
                 contentDescription = stringResource(R.string.teams_create_fab_description),
-                modifier           = Modifier.size(40.dp)
+                modifier           = Modifier.size(36.dp)
+            )
+        }
+
+        // ── Delete confirmation dialog ────────────────────────────────────────
+        if (state.teamPendingDeleteId != null) {
+            DeleteTeamDialog(
+                onConfirm = {
+                    onEvent(TeamsUiEvent.ConfirmDeleteTeam(state.teamPendingDeleteId))
+                },
+                onDismiss = { onEvent(TeamsUiEvent.DismissDeleteDialog) }
             )
         }
     }
 }
+
+// ── Dialogs ───────────────────────────────────────────────────────────────────
+
+/**
+ * Confirmation dialog shown before permanently deleting a team.
+ * Matches the Figma design: title "Delete Team?", destructive confirm button in error color.
+ */
+@Composable
+private fun DeleteTeamDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor   = MaterialTheme.colorScheme.surface,
+        shape            = RoundedCornerShape(28.dp),
+        title = {
+            Text(
+                text       = stringResource(R.string.dialog_delete_team_title),
+                fontSize   = 24.sp,
+                fontWeight = FontWeight.Normal,
+                color      = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Text(
+                text  = stringResource(R.string.dialog_delete_team_message),
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text  = stringResource(R.string.dialog_delete_team_cancel),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text       = stringResource(R.string.dialog_delete_team_confirm),
+                    color      = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    )
+}
+
+// ── Row composables ───────────────────────────────────────────────────────────
 
 enum class TeamPosition { SINGLE, TOP, MIDDLE, BOTTOM }
 
@@ -234,14 +292,12 @@ private fun MyTeamRow(
             .clip(shape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        // Action buttons revealed on swipe (right side)
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .width(140.dp)
                 .fillMaxHeight()
         ) {
-            // Edit button
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -257,13 +313,12 @@ private fun MyTeamRow(
                     modifier           = Modifier.size(28.dp)
                 )
             }
-            // Delete button
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.error)
-                    .clickable { onDelete(); onDismissSwipe() },
+                    .clickable { onDelete() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -275,7 +330,6 @@ private fun MyTeamRow(
             }
         }
 
-        // Main card content (slides left on swipe)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier          = Modifier
@@ -291,7 +345,12 @@ private fun MyTeamRow(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = team.name, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    text       = team.name,
+                    fontSize   = 18.sp,
+                    fontWeight = FontWeight.Normal,
+                    color      = MaterialTheme.colorScheme.onSurface
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text     = stringResource(R.string.teams_member_count, team.memberCount),
@@ -332,7 +391,12 @@ private fun TeamsImInRow(
                 .clickable { onToggle() }
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = team.name, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    text       = team.name,
+                    fontSize   = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = MaterialTheme.colorScheme.onSurface
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text     = stringResource(R.string.teams_member_count, team.memberCount),
