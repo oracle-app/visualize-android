@@ -74,5 +74,12 @@ class AuthRepositoryImpl @Inject constructor(
     override fun getCurrentUser(): AuthUser? {
       return authDatasource.getCurrentUser()?.toDomain()
     }
+
+    override fun getCurrentUserID(): String {
+        val currentUser = authDatasource.getCurrentUser()
+
+        return currentUser?.uid ?: throw AppError.AuthFailed("No user logged in")
+    }
+
 }
 

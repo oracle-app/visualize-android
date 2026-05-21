@@ -7,6 +7,7 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
 
@@ -43,12 +45,15 @@ class FeedViewModel @Inject constructor(
         }
     }
     private var allVisualizations: List<VisualizationCard> = emptyList()
-
-    // TODO: Get from Auth Repository
-    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
+    private var currentUserID: String = ""
 
     init {
-        loadData(forceRefresh = false)
+        try {
+            currentUserID = authRepository.getCurrentUserID()
+            loadData(forceRefresh = false)
+        } catch (e: Exception) {
+            _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+        }
     }
 
     fun loadData(forceRefresh: Boolean = false) {

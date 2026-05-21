@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,19 +29,23 @@ import kotlinx.coroutines.launch
 class ShareAndPostViewModel @Inject constructor(
     private val teamRepository: TeamRepository,
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
     val uiState: StateFlow<ShareUiState> = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
-
-    // TODO: This will be acquired from the Auth Repository eventually.
-    val userID = "e9Nk8XrxHJAtwN3Hf2FL"
+    private var userID = ""
 
     init {
-        loadData()
-        setupSearchDebounce()
+        try {
+            userID = authRepository.getCurrentUserID()
+            loadData()
+            setupSearchDebounce()
+        } catch (e: Exception) {
+            _uiState.value = ShareUiState.Error(R.string.error_unknown_retry)
+        }
     }
 
     private fun setupSearchDebounce() {
