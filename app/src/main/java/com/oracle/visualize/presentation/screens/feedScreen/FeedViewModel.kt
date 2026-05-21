@@ -45,7 +45,7 @@ class FeedViewModel @Inject constructor(
         }
     }
     private var allVisualizations: List<VisualizationCard> = emptyList()
-    private var currentUserID: String = ""
+    private var currentUserID: String = "rcONSHwWXHbUo3NsO6bhg0J4D8u2"
 
     init {
         try {
