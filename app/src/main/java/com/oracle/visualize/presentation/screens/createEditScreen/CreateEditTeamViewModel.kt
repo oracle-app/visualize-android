@@ -16,15 +16,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for the Create/Edit Team screen.
- *
- * Owner visibility contract:
- *   The owner is always the first entry in [CreateEditTeamUiState.Content.members].
- *   This guarantees it appears at the top of the Member List with the "owner" label.
- *   On submit, [state.members] already contains the owner so the full membersIDs
- *   list (owner + added members) is sent to the use case as-is.
- */
 @HiltViewModel
 class CreateEditTeamViewModel @Inject constructor(
     private val createTeamUseCase: CreateTeamUseCase,
@@ -36,6 +27,10 @@ class CreateEditTeamViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<CreateEditTeamUiState>(CreateEditTeamUiState.Loading)
     val uiState: StateFlow<CreateEditTeamUiState> = _uiState.asStateFlow()
+
+    // Emits Unit once to signal the View to call onNavigateBack()
+    private val _navigateBack = MutableStateFlow(false)
+    val navigateBack: StateFlow<Boolean> = _navigateBack.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     private val teamIdArg: String? = savedStateHandle["teamId"]
@@ -53,12 +48,9 @@ class CreateEditTeamViewModel @Inject constructor(
             _uiState.value = CreateEditTeamUiState.Loading
 
             if (teamIdArg != null) {
-                // ── Edit mode ────────────────────────────────────────────────
                 getUsersTeamsUseCase.getTeamsUserOwns(userID).fold(
                     onSuccess = { teams ->
                         val team = teams.find { it.id == teamIdArg }
-                        // members already includes the owner because TeamDatasource
-                        // stores ownerID inside membersIDs
                         _uiState.value = CreateEditTeamUiState.Content(
                             teamId      = teamIdArg,
                             teamName    = team?.name ?: "",
@@ -74,21 +66,16 @@ class CreateEditTeamViewModel @Inject constructor(
                     }
                 )
             } else {
-                // ── Create mode ──────────────────────────────────────────────
-                // Fetch owner's ShareUser so we can show them at the top of
-                // the Member List immediately, before any members are added.
                 val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(userID) }
                 val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(userID) }
 
                 val ownedTeams  = ownedDeferred.await().getOrNull()  ?: emptyList()
                 val memberTeams = memberDeferred.await().getOrNull() ?: emptyList()
 
-                // Resolve the owner's ShareUser from any team where they appear as a member
                 val ownerAsUser = (ownedTeams + memberTeams)
                     .flatMap { it.members }
                     .firstOrNull { it.id == userID }
 
-                // Suggestions: teammates the owner has worked with, excluding themselves
                 val suggestions = (ownedTeams + memberTeams)
                     .flatMap { it.members }
                     .filter    { it.id != userID }
@@ -96,7 +83,6 @@ class CreateEditTeamViewModel @Inject constructor(
 
                 _uiState.value = CreateEditTeamUiState.Content(
                     ownerID     = userID,
-                    // Seed the member list with the owner so they always appear at the top
                     members     = listOfNotNull(ownerAsUser),
                     suggestions = suggestions
                 )
@@ -149,10 +135,28 @@ class CreateEditTeamViewModel @Inject constructor(
             }
 
             is CreateEditTeamUiEvent.RemoveMember -> {
-                // Owner cannot be removed
                 if (event.user.id != current.ownerID)
                     _uiState.value = current.copy(members = current.members - event.user)
             }
+
+            // Back tapped: show dialog if there are unsaved changes, otherwise leave
+            is CreateEditTeamUiEvent.RequestBack -> {
+                if (current.hasUnsavedChanges) {
+                    _uiState.value = current.copy(showUnsavedChangesDialog = true)
+                } else {
+                    _navigateBack.value = true
+                }
+            }
+
+            // User confirmed leaving — discard everything and go back
+            is CreateEditTeamUiEvent.ConfirmDiscard -> {
+                _uiState.value = current.copy(showUnsavedChangesDialog = false)
+                _navigateBack.value = true
+            }
+
+            // User chose to stay
+            is CreateEditTeamUiEvent.DismissUnsavedChangesDialog ->
+                _uiState.value = current.copy(showUnsavedChangesDialog = false)
 
             is CreateEditTeamUiEvent.Submit -> submitTeam(current)
         }
@@ -165,7 +169,6 @@ class CreateEditTeamViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _uiState.value = state.copy(isSubmitting = true)
-            // state.members already includes the owner, so memberIDs is the complete list
             val memberIDs = state.members.map { it.id }
             val result = if (state.isEditMode)
                 updateTeamUseCase(state.teamId!!, memberIDs, state.teamName.trim())
