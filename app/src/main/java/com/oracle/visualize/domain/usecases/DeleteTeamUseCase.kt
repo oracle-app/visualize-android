@@ -15,7 +15,7 @@ class DeleteTeamUseCase @Inject constructor(
     private val teamRepository: TeamRepository
 ) {
     suspend operator fun invoke(teamID: String): Result<Unit> {
-        if (teamID.isBlank()) return Result.failure(AppError.ValidationError("Team ID cannot be empty"))
+        if (teamID.isBlank()) return Result.failure(AppError.GeneralValidationError("Team ID cannot be empty"))
         return try {
             teamRepository.deleteTeam(teamID)
             Result.success(Unit)
