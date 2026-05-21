@@ -1,5 +1,6 @@
 package com.oracle.visualize.data.repositories
 
+import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
@@ -9,12 +10,12 @@ import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
 import com.oracle.visualize.data.mapper.toVisualizationDTO
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import java.util.Date
 import javax.inject.Inject
 import kotlin.collections.flatMap
 
@@ -39,30 +40,65 @@ class VisualizationRepositoryImpl @Inject constructor(
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
     ) {
-        val visualization = Visualization(
-            id = "",
-            authorID = authorID,
-            title = title,
-            configJSON = configJSON,
-            sharedWithUsers = sharedWithUsers,
-            sharedWithTeams = sharedWithTeams,
-            createdAt = Date(),
-        )
-        visualizationDataSource.createVisualization(visualization)
+        try {
+            val dto = VisualizationDTO(
+                id = "",
+                authorID = authorID,
+                title = title,
+                configJSON = configJSON,
+                sharedWithUsers = sharedWithUsers,
+                sharedWithTeams = sharedWithTeams,
+                createdAt = Timestamp.now(),
+            )
+            visualizationDataSource.createVisualization(dto)
+
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to create visualization: ${e.message}")
+        }
+
     }
 
     override suspend fun getAllVisualizations(): List<Visualization> {
-        return visualizationDataSource.getAllVisualizations().map { it.toDomain() }
+        return try {
+            visualizationDataSource.getAllVisualizations().map { it.toDomain() }
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to fetch all visualizations: ${e.message}")
+        }
     }
 
     override suspend fun getSharedVisualizations(userID: String): List<VisualizationCard> {
-        val dtos = visualizationDataSource.getAllSharedVisualizations(userID)
-        return fetchDetailsAndMapBatch(dtos, userID)
+        return try {
+            val userVisualizations = visualizationDataSource.getVisualizationsSharedWithUser(userID)
+
+            val userTeams = teamsDatasource.getTeamsUserIsIn(userID)
+            val teamIDs = userTeams.mapNotNull { it.id }
+
+            val teamVisualizations = if (teamIDs.isNotEmpty()) {
+                visualizationDataSource.getVisualizationsSharedWithTeams(teamIDs)
+            } else {
+                emptyList()
+            }
+
+            val allSharedDTOs = (userVisualizations + teamVisualizations).distinctBy { it.id }
+
+            fetchDetailsAndMapBatch(allSharedDTOs, userID)
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to fetch shared visualizations: ${e.message}")
+        }
     }
 
     override suspend fun getPersonalVisualizations(userID: String): List<VisualizationCard> {
-        val dtos = visualizationDataSource.getPersonalVisualizations(userID)
-        return fetchDetailsAndMapBatch(dtos, userID)
+        return try {
+            val dtos = visualizationDataSource.getPersonalVisualizations(userID)
+            fetchDetailsAndMapBatch(dtos, userID)
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to fetch personal visualizations: ${e.message}")
+        }
+
     }
 
     private suspend fun fetchDetailsAndMapBatch(
@@ -74,11 +110,7 @@ class VisualizationRepositoryImpl @Inject constructor(
         val currentUser = userDatasource.getUserByID(userID)
         val hiddenIDs = currentUser.hiddenVisualizations?.toSet() ?: emptySet()
 
-        val visibleDTOs = dtos.filter { dto ->
-            val id = dto.id ?: return@filter false
-            !hiddenIDs.contains(id)
-        }
-
+        val visibleDTOs = dtos.filter { !hiddenIDs.contains(it.id) }
         if (visibleDTOs.isEmpty()) return@coroutineScope emptyList()
 
         val authorIDs = visibleDTOs.map { it.authorID }.toSet()
@@ -125,7 +157,7 @@ class VisualizationRepositoryImpl @Inject constructor(
 
     private suspend fun fetchUsersInChunks(ids: List<String>): List<UserDTO> {
         val allUsers = mutableListOf<UserDTO>()
-        val chunkSize = 30
+        val chunkSize = 10
 
         // ´chunked()´ is equivalent to Swift's ´stride´ for splitting the array
         ids.chunked(chunkSize).forEach { chunk ->
@@ -149,7 +181,13 @@ class VisualizationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>) {
-        val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
-        visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
+        try{
+            val visualizationsDTO = visualizations.map { it.toVisualizationDTO() }
+            visualizationDataSource.publishVisualizationsInBulk(visualizationsDTO)
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to publish visualizations: ${e.message}")
+        }
+
     }
 }

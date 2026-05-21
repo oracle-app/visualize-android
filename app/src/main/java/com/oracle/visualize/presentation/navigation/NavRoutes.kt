@@ -1,65 +1,41 @@
 package com.oracle.visualize.presentation.navigation
 
+import com.oracle.visualize.domain.models.Chart
 import kotlinx.serialization.Serializable
 
 /**
  * Defines the navigation graph destinations using type-safe objects.
- * Each destination exposes a stable [route] string for use with the
- * string-based composable API while retaining type-safety.
+ * This replaces string-based route matching with class-based matching.
  */
 @Serializable
 sealed interface NavRoutes {
-
-    val route: String
 
     @Serializable
     sealed interface MainTab : NavRoutes
 
     @Serializable
-    object Feed : MainTab {
-        override val route = "feed"
-    }
+    object Feed : MainTab
+    @Serializable
+    object Create : MainTab
+    @Serializable
+    object Notifications : MainTab
+    @Serializable
+    object Teams : MainTab
+    @Serializable
+    data class Profile(val userId: String) : MainTab
 
     @Serializable
-    object Create : MainTab {
-        override val route = "create"
-    }
-
+    data class Threads(val visualizationId: String) : NavRoutes
     @Serializable
-    object Notifications : MainTab {
-        override val route = "notifications"
-    }
-
+    data class FullScreen(val visualizationId: String) : NavRoutes
     @Serializable
-    object Teams : MainTab {
-        override val route = "teams"
-    }
-
+    object Splash : NavRoutes
     @Serializable
-    data class Profile(
-        val userId: String
-    ) : MainTab {
-
-        override val route: String
-            get() = "profile/$userId"
-
-        companion object {
-            const val ROUTE_PATTERN =
-                "profile/{userId}"
-        }
-    }
-
+    object Login : NavRoutes
     @Serializable
-    data class FullScreen(
-        val visualizationId: String
-    ) : NavRoutes {
-
-        override val route: String
-            get() = "full_screen/$visualizationId"
-
-        companion object {
-            const val ROUTE_PATTERN =
-                "full_screen/{visualizationId}"
-        }
-    }
+    object Signup : NavRoutes
+    @Serializable
+    data class ChartSelection(val taskId: String) : NavRoutes
+    @Serializable
+    object ShareAndPost : NavRoutes
 }

@@ -1,8 +1,10 @@
 package com.oracle.visualize.presentation.screens.createChartScreen
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
@@ -31,17 +33,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 /**
  * Screen for uploading a dataset to create new visualizations.
  *
  * @param modifier Modifier for the layout.
+ * @param onNavigateToSelection Callback to navigate to the chart selection screen.
  * @param viewModel The [CreateChartViewModel] that manages the creation process.
  */
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePage(
     modifier: Modifier = Modifier,
+    onNavigateToSelection: (String) -> Unit = {},
     viewModel: CreateChartViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -51,10 +59,14 @@ fun CreatePage(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             if (uri != null) {
-                val fileName = getFileName(context, uri) ?: "unknown_file"
+                val fileName = getFileName(context, uri) ?: context.getString(R.string.unknown_file)
                 val sizeBytes = getFileSizeBytes(context, uri)
-
-                viewModel.onFileSelected(SelectedDataset(fileName, sizeBytes))
+                val file = copyUriToTempFile(context, uri, fileName)
+                if (file != null){
+                    viewModel.onFileSelected(SelectedDataset(fileName, sizeBytes), file)
+                } else {
+                    Log.e("CreatePage", "Failed to create temp file from URI")
+                }
             }
         }
     )
@@ -120,7 +132,7 @@ fun CreatePage(
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
-                    onClick = { /**/ },
+                    onClick = { onNavigateToSelection((uiState as CreateChartUiState.Success).taskId) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -216,7 +228,7 @@ fun FileStatusSection(uiState: CreateChartUiState, viewModel: CreateChartViewMod
         }
         is CreateChartUiState.Error -> {
             FileStatusItem(
-                fileName = state.fileName ?: "Error",
+                fileName = state.fileName ?: stringResource(R.string.error_generic),
                 fileSize = state.fileSize ?: "",
                 errorMessage = state.message,
                 onCancel = { viewModel.resetState() }
@@ -312,4 +324,20 @@ private fun getFileSizeBytes(context: Context, uri: Uri): Long {
         }
     }
     return size
+}
+private  fun copyUriToTempFile(context: Context, uri: Uri, fileName: String): File? {
+    return try {
+        val inputStream : InputStream? = context.contentResolver.openInputStream(uri)
+        if (inputStream == null) return null
+        val tempFile = File(context.cacheDir, fileName)
+        val outputStream = FileOutputStream(tempFile)
+        inputStream.copyTo(outputStream)
+        inputStream.close()
+        outputStream.close()
+
+        tempFile
+    } catch (e: Exception) {
+        Log.e("FileHelper", "Error copying Uri to File: ${e.message}")
+        null
+    }
 }

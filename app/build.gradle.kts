@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
@@ -30,6 +32,11 @@ android {
                 minorApiLevel = 1
             }
     }
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
 
     defaultConfig {
         applicationId = "com.oracle.visualize"
@@ -37,6 +44,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        val microUrl = localProperties.getProperty("MICROSERVICES_URL") ?: "\"http://10.0.2.2:8080/\""
+        buildConfigField("String", "MICROSERVICES_URL", microUrl)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -57,17 +66,19 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     testOptions {
         unitTests.all {
             it.useJUnit()
         }
     }
+
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -78,7 +89,7 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -104,4 +115,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.koalaplot.core)
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.converter)
+    implementation(libs.capturable)
 }

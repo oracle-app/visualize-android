@@ -1,22 +1,26 @@
 package com.oracle.visualize.di
 
+import com.oracle.visualize.BuildConfig
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
+import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
 import com.oracle.visualize.data.datasources.AuthFirebasesource
 import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
+import com.oracle.visualize.data.repositories.AnalyzeRepositoryImpl
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
-import com.oracle.visualize.data.repositories.ChartRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
 import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.data.repositories.UserRepositoryImpl
-import com.oracle.visualize.domain.repositories.ChartRepository
+import com.oracle.visualize.domain.repositories.AnalyzeRepository
 import com.oracle.visualize.domain.repositories.UserRepository
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -66,15 +70,47 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideVisualizationDataSource(
-        db: FirebaseFirestore,
-        teamsDatasource: TeamDatasource
-    ): VisualizationDatasource = VisualizationDatasource(db, teamsDatasource)
+        db: FirebaseFirestore
+    ): VisualizationDatasource = VisualizationDatasource(db)
 
     /**
      * Alternative provider for [FirebaseFirestore] using the [Firebase] accessor.
      */
     fun providesFirestore(): FirebaseFirestore {
         return Firebase.firestore
+    }
+    @Provides
+    @Singleton
+    fun provideAnalyzeRepository(
+        apiMicroService: AnalyzeApiMicroService
+    ) : AnalyzeRepository {
+        return AnalyzeRepositoryImpl(apiMicroService)
+    }
+}
+
+/**
+ * Hilt module that provides Network-related dependencies.
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.MICROSERVICES_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    /**
+     * Provides a singleton instance of [AnalyzeApiMicroService].
+     */
+    @Provides
+    @Singleton
+    fun provideAnalyzeApiMicroService(retrofit: Retrofit): AnalyzeApiMicroService {
+        return retrofit.create(AnalyzeApiMicroService::class.java)
     }
 }
 
@@ -119,12 +155,4 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
-
-    /**
-     * Binds [ChartRepositoryImpl] to [ChartRepository].
-     */
-    @Binds
-    abstract fun bindChartRepository(
-        chartRepositoryImpl: ChartRepositoryImpl
-    ): ChartRepository
 }
