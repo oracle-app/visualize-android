@@ -9,6 +9,7 @@ import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
+import com.oracle.visualize.presentation.utils.FeedCacheManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,6 +60,7 @@ class FeedViewModel @Inject constructor(
     fun loadData(forceRefresh: Boolean = false) {
 
         if (forceRefresh) {
+            FeedCacheManager.chachedFeed = null
             allVisualizations = emptyList()
             val current = _uiState.value
             _uiState.value = if (current is FeedUiState.Success) {
@@ -70,6 +72,13 @@ class FeedViewModel @Inject constructor(
             _uiState.value = FeedUiState.Loading
         }
 
+        val cachedData = FeedCacheManager.chachedFeed
+        if (!forceRefresh && cachedData != null) {
+            allVisualizations = cachedData
+            applyLocalFilterAndSearch()
+            return
+        }
+
         if (!forceRefresh) {
             _uiState.value = FeedUiState.Loading
         }
@@ -79,6 +88,7 @@ class FeedViewModel @Inject constructor(
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
                     allVisualizations = items
+                    FeedCacheManager.chachedFeed = items
                     applyLocalFilterAndSearch()
                 },
                 onFailure = { error ->
