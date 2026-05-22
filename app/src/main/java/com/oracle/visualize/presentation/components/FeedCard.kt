@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -24,6 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,8 +41,14 @@ import androidx.compose.ui.unit.sp
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
+import com.oracle.visualize.data.mapper.ChartMapper
+import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
+import com.oracle.visualize.presentation.utils.ChartCacheManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 fun formatTime(date: Date, context: Context): String{
     val now = Date()
@@ -63,6 +75,8 @@ fun formatTime(date: Date, context: Context): String{
 @Composable
 fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
     val context = LocalContext.current
+    var chartState by remember { mutableStateOf<Chart<*>?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -129,35 +143,62 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val chart = item.chart
-                    if (chart != null) {
+                    LaunchedEffect(key1 = item.id) {
+                        val cachedChart = ChartCacheManager.getChart(item.id)
+                        if (cachedChart != null) {
+                            chartState = cachedChart
+                            isLoading = false
+                            return@LaunchedEffect
+                        }
+
+                        val parsedChart = withContext(Dispatchers.IO) {
+                            ChartMapper.fromPreviewJson(item.previewJSON)
+                        }
+
+                        parsedChart?.let {
+                            ChartCacheManager.saveChart(item.id, it)
+                            chartState = it
+                        }
+                        isLoading = false
+                    }
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp))
+                                .skeletonEffect()
+                        )
+                    } else if (chartState != null) {
                         ChartRenderGeneral(
-                            chart = chart, showAxisLabels = false, enableTooltips = false
+                            chart = chartState!!,
+                            showAxisLabels = false,
+                            enableTooltips = false
                         )
                     } else {
                         Text(
-                            text = "Chart not found",
+                            text = "Failed to load chart",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier
-                    .padding(start = 12.dp, bottom = 12.dp)
-                    .heightIn(min = 41.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                MemberAvatarStackFeed(item.allUsersSharedWith)
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+        Row(
+            modifier = Modifier
+                .padding(start = 12.dp, bottom = 12.dp)
+                .heightIn(min = 41.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            MemberAvatarStackFeed(item.allUsersSharedWith)
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
+
 
 @Composable
 private fun UserAvatar() {

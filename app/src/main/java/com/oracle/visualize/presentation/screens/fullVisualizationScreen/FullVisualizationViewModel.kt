@@ -4,15 +4,19 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
+import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
+import com.oracle.visualize.presentation.utils.ChartCacheManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 /**
  * ViewModel for the FullScreen visualization screen.
@@ -46,15 +50,27 @@ class FullVisualizationViewModel @Inject constructor(
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }
-                    val chart = visualization?.chart
+                    if (visualization == null) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = R.string.error_viz_not_found
+                            )
+                        }
+                        return@fold
+                    }
+                    val chart = withContext(Dispatchers.IO) {
+                        ChartCacheManager.getChart(visualization.id)
+                            ?: ChartMapper.fromPreviewJson(visualization.previewJSON)?.also { parsedChart ->
+                                ChartCacheManager.saveChart(visualization.id, parsedChart)
+                            }
+                    }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualization = visualization,
                             chart = chart,
-                            errorMessage = if (visualization == null) {
-                                R.string.error_viz_not_found
-                            } else if (chart == null) {
+                            errorMessage = if (chart == null) {
                                 R.string.error_chart_not_found
                             } else {
                                 null

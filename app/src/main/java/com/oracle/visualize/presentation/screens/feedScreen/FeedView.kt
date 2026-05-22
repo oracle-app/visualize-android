@@ -30,6 +30,7 @@ import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
 import com.oracle.visualize.R
 import androidx.compose.runtime.collectAsState
+import com.oracle.visualize.presentation.screens.feedScreen.components.SkeletonFeedCard
 
 /**
  * Composable representing the Feed screen.
@@ -72,7 +73,17 @@ fun FeedPage(
             when (val state = uiState) {
 
                 is FeedUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 22.dp)
+                    ) {
+                        items(3) {
+                            SkeletonFeedCard()
+                        }
+                    }
                 }
 
                 is FeedUiState.Error -> {
