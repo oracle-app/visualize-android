@@ -8,5 +8,6 @@ import com.oracle.visualize.domain.models.Notification
 interface NotificationRepository {
 
     suspend fun getNotificationsForUser(userID: String): List<Notification>
-
+    suspend fun markAsRead(notificationID: String)
+    suspend fun markAllAsRead(userID: String)
 }

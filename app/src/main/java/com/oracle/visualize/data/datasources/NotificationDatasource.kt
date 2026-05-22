@@ -28,9 +28,28 @@ class NotificationDatasource @Inject constructor(
         val snapshot = notificationsRef.whereEqualTo("userID", userID).get().await()
         if (snapshot.isEmpty) return emptyList()
 
-        return snapshot.toObjects(NotificationDTO::class.java)
+        return snapshot.documents.map { doc ->
+            doc.toObject(NotificationDTO::class.java)
+                ?: throw AppError.ParsingError("Failed to parse NotificationDTO: ${doc.id}")
+        }
     }
 
+    suspend fun markAllNotificationsAsRead(userID: String) {
+        val snapshot = notificationsRef
+            .whereEqualTo("userID", userID)
+            .whereEqualTo("isRead",false)
+            .get()
+            .await()
+        snapshot.documents.forEach { doc ->
+            doc.reference.update("isRead", true).await()
+        }
+    }
+
+    suspend fun markNotificationAsRead(notificationId: String) {
+        notificationsRef.document(notificationId)
+            .update("isRead", true)
+            .await()
+    }
 
 
 }

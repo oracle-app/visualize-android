@@ -27,4 +27,21 @@ class NotificationRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun markAllAsRead(userID: String) {
+        return try {
+            notificationDS.markAllNotificationsAsRead(userID)
+        } catch (e: Exception){
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to mark notification as read: ${e.message}")
+        }    }
+
+    override suspend fun markAsRead(notificationID: String) {
+        return try {
+            notificationDS.markNotificationAsRead(notificationID)
+        } catch (e: Exception){
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to mark notification as read: ${e.message}")
+        }
+    }
+
 }
