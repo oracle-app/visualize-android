@@ -1,5 +1,6 @@
 package com.oracle.visualize.usecases
 
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Notification
 import com.oracle.visualize.domain.repositories.NotificationRepository
 import com.oracle.visualize.domain.usecases.GetNotificationsForUserUseCase
@@ -14,7 +15,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-class GetNotificationsForUserUCT {
+class GetNotificationsForUserUCTest {
 
     @MockK
     private lateinit var notificationRepository: NotificationRepository
@@ -24,6 +25,22 @@ class GetNotificationsForUserUCT {
     fun setUp() {
         MockKAnnotations.init(this)
         getNotificationsUseCase = GetNotificationsForUserUseCase(notificationRepository)
+    }
+
+    // Validation
+
+    @Test
+    fun blankUserID_returnsValidationError_doesNotCallRepository() = runTest {
+        // given
+        val blankUserID = ""
+
+        // when
+        val result = getNotificationsUseCase(blankUserID)
+
+        // then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
+        coVerify(exactly = 0) { notificationRepository.getNotificationsForUser(any()) }
     }
 
     // Repository Calls
