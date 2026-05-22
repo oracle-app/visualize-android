@@ -9,7 +9,7 @@ import com.oracle.visualize.domain.models.Notification
  * @return a [Notification] object
  */
 
-fun NotificationDTO.onDomain(): Notification = Notification(
+fun NotificationDTO.toDomain(): Notification = Notification(
     id = id,
     isRead = isRead,
     body = body,

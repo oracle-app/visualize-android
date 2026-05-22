@@ -24,7 +24,7 @@ class NotificationDatasource @Inject constructor(
      * @return A list of [NotificationDTO] objects sent to the user.
      * @throws AppError.NetworkError If a network error occurs.
      */
-    suspend fun getNotificationsUserHas(userID: String): List<NotificationDTO> {
+    suspend fun getNotificationsForUser(userID: String): List<NotificationDTO> {
         val snapshot = notificationsRef.whereEqualTo("userID", userID).get().await()
         if (snapshot.isEmpty) return emptyList()
 
