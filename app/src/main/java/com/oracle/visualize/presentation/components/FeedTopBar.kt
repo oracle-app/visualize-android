@@ -140,6 +140,7 @@ fun FeedTopBar(
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
+            scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
