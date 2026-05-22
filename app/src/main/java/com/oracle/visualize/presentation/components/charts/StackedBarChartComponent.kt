@@ -18,8 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.StackedBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -47,20 +49,28 @@ fun RenderStackedBarChart(
     modifier: Modifier = Modifier, chart: StackedBarChart, showAxisLabels: Boolean,
     enableTooltips: Boolean
 ) {
-    val categories = chart.data.keys.toList()
-    val seriesCount = chart.data.values.firstOrNull()?.size ?: 0
-    val seriesNames = if (chart.stackNames.size >= seriesCount) {
-        chart.stackNames
-    } else {
-        List(seriesCount) { i -> "Series ${i + 1}" }
+    val categories = remember(chart) { chart.data.keys.toList() }
+    val seriesCount = remember(chart) { chart.data.values.firstOrNull()?.size ?: 0 }
+    val seriesLabel = stringResource(R.string.stacked_bar_series)
+
+    val seriesNames = remember(seriesCount) {
+        if (chart.stackNames.size >= seriesCount) {
+            chart.stackNames
+        } else {
+            List(seriesCount) { i -> seriesLabel + "${i + 1}" }
+        }
     }
-    val seriesColors = generateChartColors(seriesNames.size, ChartPalette.THEME1)
-    val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
+
+    val seriesColors = remember(seriesNames.size) {
+        generateChartColors(seriesNames.size, ChartPalette.THEME1)
+    }
+
+    val maxY = remember(chart) { chart.data.values.maxOfOrNull { it.sum() } ?: 0f }
 
     Box {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
-                xAxisModel = remember { CategoryAxisModel(categories) },
+                xAxisModel = remember(categories) { CategoryAxisModel(categories) },
                 yAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxOf(1f, maxY),
                     minViewExtent = 0.01f,

@@ -1,7 +1,9 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,10 +15,13 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -37,6 +42,7 @@ import io.github.koalaplot.core.xygraph.autoScaleXRange
 import io.github.koalaplot.core.xygraph.autoScaleYRange
 import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
+import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -54,6 +60,7 @@ fun RenderLineChart(
 ) {
     val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     val lineColor = generateChartColors(1, ChartPalette.THEME1).firstOrNull() ?: Color.Blue
+    val dotColors = generateChartColors(2, ChartPalette.THEME1)
 
     var xMetric = stringResource(R.string.line_scatter_x_metric)
     var yMetric = stringResource(R.string.line_scatter_y_metric)
@@ -123,6 +130,7 @@ fun RenderLineChart(
             LinePlot2(
                 data = processedData,
                 symbol = { plotPoint ->
+                    val coroutineScope = rememberCoroutineScope()
                     val tooltipDisplayState = rememberTooltipState(
                         initialIsVisible = false, isPersistent = true
                     )
@@ -138,7 +146,17 @@ fun RenderLineChart(
                         ),
                         state = tooltipDisplayState,
                     ) {
-                        Symbol(fillBrush = SolidColor(lineColor), shape = CircleShape)
+                        Symbol(
+                            modifier = Modifier
+                                .size(if (enableTooltips) 30.dp else 10.dp)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                },
+                            fillBrush = SolidColor(dotColors[0]),
+                            outlineBrush = SolidColor(dotColors[1]),
+                            outlineStroke = Stroke(width = 4f),
+                            shape = CircleShape
+                        )
                     }
                 }
             )

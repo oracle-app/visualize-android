@@ -53,6 +53,7 @@
     <string name="invalid_chart">"Invalid chart type was detected"</string>
     <string name="line_scatter_x_metric">x</string>
     <string name="line_scatter_y_metric">y</string>
+    <string name="stacked_bar_series">Series</string>
 
     // Chart legends full screen
     <string name="chart_legend_cat_label">Category</string>

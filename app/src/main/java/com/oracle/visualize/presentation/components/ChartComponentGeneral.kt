@@ -105,7 +105,6 @@ fun generateChartColors(n: Int, colorTheme: ChartPalette): List<Color> {
 
     val colors = colorTheme.colors
     val colorsSize = colors.size
-
     return List(n) { i ->
         if (i < colorsSize) {
             colors[i]

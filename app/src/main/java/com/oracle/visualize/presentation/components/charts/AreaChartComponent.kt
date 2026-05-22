@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -15,10 +16,12 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.AreaChart
@@ -38,6 +41,7 @@ import io.github.koalaplot.core.xygraph.DefaultPoint
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
+import kotlinx.coroutines.launch
 
 /**
  * Renders an area chart based on the provided [AreaChart] data using
@@ -136,6 +140,8 @@ fun RenderAreaChart(
             }
 
             if (enableTooltips) {
+                val coroutineScope = rememberCoroutineScope()
+
                 linePoints.forEachIndexed { index, points ->
                     LinePlot2(
                         data = points,
@@ -156,11 +162,11 @@ fun RenderAreaChart(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .background(
-                                            color = Color.DarkGray.copy(alpha = 0.3f),
-                                            shape = CircleShape
-                                        )
-                                        .size(30.dp)
+                                        .background(color = Color.DarkGray.copy(alpha = 0.3f), shape = CircleShape)
+                                        .size(44.dp)
+                                        .pointerInput(Unit) {
+                                            detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                        }
                                 )
                             }
                         }
