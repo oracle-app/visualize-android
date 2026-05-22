@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.oracle.visualize.domain.models.DonutChart
 import com.oracle.visualize.presentation.components.generateChartColors
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -41,7 +42,7 @@ fun RenderDonutChart(
     val values = chart.data
     val valuesTotal = values.sum()
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
-    val colors = generateChartColors(categories.size)
+    val colors = generateChartColors(categories.size, ChartPalette.THEME1)
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         PieChart(

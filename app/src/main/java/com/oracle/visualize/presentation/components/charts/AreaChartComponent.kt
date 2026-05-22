@@ -23,6 +23,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.presentation.components.generateChartColors
+import com.oracle.visualize.ui.theme.ChartPalette
+import io.github.koalaplot.core.gestures.GestureConfig
 import io.github.koalaplot.core.line.AreaBaseline
 import io.github.koalaplot.core.line.AreaBaseline.HorizontalLine
 import io.github.koalaplot.core.line.AreaPlot2
@@ -31,7 +33,6 @@ import io.github.koalaplot.core.style.AreaStyle
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
-import io.github.koalaplot.core.util.toString
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.DefaultPoint
 import io.github.koalaplot.core.xygraph.XYGraph
@@ -55,15 +56,27 @@ fun RenderAreaChart(
     val maxX = sortedKeys.lastOrNull() ?: 0f
     val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
     val seriesNames = chart.stackNames
-    val seriesColors = generateChartColors(seriesNames.size)
+    val seriesColors = generateChartColors(seriesNames.size, ChartPalette.THEME1)
 
     KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
         XYGraph(
-            xAxisModel = rememberFloatLinearAxisModel(minX..maxOf(minX + 1f, maxX)),
-            yAxisModel = rememberFloatLinearAxisModel(0f..maxOf(1f, maxY)),
+            xAxisModel = rememberFloatLinearAxisModel(
+                range = minX..maxOf(minX + 1f, maxX),
+                minViewExtent = 0.01f,
+                minorTickCount = 10,
+                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickSpacing = 60.dp
+            ),
+            yAxisModel = rememberFloatLinearAxisModel(
+                range = 0f..maxOf(1f, maxY),
+                minViewExtent = 0.01f,
+                minorTickCount = 10,
+                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickSpacing = 30.dp
+            ),
             xAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(2), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
                 title = {
                     if (showAxisLabels && !chart.metrics.isEmpty()) {
                         Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
@@ -72,7 +85,7 @@ fun RenderAreaChart(
             ),
             yAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(2), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
                 title = {
                     if (showAxisLabels && !chart.metrics.isEmpty()) {
                         Box(modifier = modifier
@@ -89,6 +102,12 @@ fun RenderAreaChart(
                         }
                     }
                 }
+            ),
+            gestureConfig = GestureConfig(
+                zoomXEnabled = true,
+                zoomYEnabled = true,
+                panXEnabled = true,
+                panYEnabled = true,
             )
         ) {
             var previousLayerAreaPoints: List<DefaultPoint<Float, Float>>? = null
@@ -141,7 +160,7 @@ fun RenderAreaChart(
                                             color = Color.DarkGray.copy(alpha = 0.3f),
                                             shape = CircleShape
                                         )
-                                        .size(24.dp)
+                                        .size(30.dp)
                                 )
                             }
                         }

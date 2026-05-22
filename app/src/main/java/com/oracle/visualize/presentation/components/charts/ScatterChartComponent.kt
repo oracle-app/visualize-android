@@ -1,7 +1,9 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,14 +19,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.presentation.components.generateChartColors
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.Symbol
+import io.github.koalaplot.core.gestures.GestureConfig
 import io.github.koalaplot.core.line.LinePlot2
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.util.toString
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.DefaultPoint
 import io.github.koalaplot.core.xygraph.XYGraph
@@ -48,23 +55,35 @@ fun RenderScatterChart(
     enableTooltips: Boolean
 ) {
     val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
-    val dotColor = generateChartColors(1).firstOrNull() ?: Color.Blue
+    val dotColor = generateChartColors(1, ChartPalette.THEME1).firstOrNull() ?: Color.Blue
 
-    var xMetric = "x"
-    var yMetric = "y"
+    var xMetric = stringResource(R.string.line_scatter_x_metric)
+    var yMetric = stringResource(R.string.line_scatter_y_metric)
 
     if (!chart.metrics.isEmpty()) {
-        xMetric = chart.metrics[0].ifBlank { "" }
-        yMetric = chart.metrics[1].ifEmpty { "" }
+        xMetric = chart.metrics[0].ifBlank { xMetric }
+        yMetric = chart.metrics[1].ifBlank { yMetric }
     }
 
     KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
         XYGraph (
-            xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),
-            yAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleYRange()),
+            xAxisModel = rememberFloatLinearAxisModel(
+                range = processedData.autoScaleXRange(),
+                minViewExtent = 0.01f,
+                minorTickCount = 10,
+                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickSpacing = 60.dp
+            ),
+            yAxisModel = rememberFloatLinearAxisModel(
+                range = processedData.autoScaleYRange(),
+                minViewExtent = 0.01f,
+                minorTickCount = 10,
+                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickSpacing = 30.dp
+            ),
             xAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                labels = { Text(it.toString(2), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
                 title = {
                     if (showAxisLabels) {
                         Text(xMetric, style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
@@ -73,7 +92,7 @@ fun RenderScatterChart(
             ),
             yAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                labels = { Text(it.toString(2), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
                 title = {
                     if (showAxisLabels) {
                         Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
@@ -87,6 +106,12 @@ fun RenderScatterChart(
                         }
                     }
                 }
+            ),
+            gestureConfig = GestureConfig(
+                zoomXEnabled = true,
+                zoomYEnabled = true,
+                panXEnabled = true,
+                panYEnabled = true,
             )
         ) {
             LinePlot2(
@@ -107,7 +132,7 @@ fun RenderScatterChart(
                         ),
                         state = tooltipDisplayState,
                     ) {
-                        Symbol(fillBrush = SolidColor(dotColor), shape = CircleShape)
+                        Symbol(modifier = Modifier.size(30.dp), fillBrush = SolidColor(dotColor), shape = CircleShape)
                     }
                 },
             )

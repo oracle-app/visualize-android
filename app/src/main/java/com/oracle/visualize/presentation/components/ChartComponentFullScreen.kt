@@ -26,6 +26,7 @@ import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.VerticalBarChart
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
 import io.github.koalaplot.core.legend.FlowLegend
@@ -59,7 +60,7 @@ fun ChartRenderFullScreen(
         List(dSize) { "${stringResource(R.string.chart_legend_cat_label)} ${it + 1}" }
     }
 
-    val colors = generateChartColors(cleanLabels.size)
+    val colors = generateChartColors(cleanLabels.size, ChartPalette.THEME1)
 
     when (chart) {
         is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {

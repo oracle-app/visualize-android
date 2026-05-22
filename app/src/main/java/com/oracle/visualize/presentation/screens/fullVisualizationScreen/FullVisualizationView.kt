@@ -162,15 +162,16 @@ fun FullVisualizationPage(
                                 },
                                 modifier = Modifier.matchParentSize()
                             )
-                            ZoomableChart(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    //.heightIn(min = 260.dp, max = 420.dp)
-                                    .fillMaxHeight()
-                                    .capturable(captureController)
-                            ) {
-                                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
-                            }
+//                            ZoomableChart(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    //.heightIn(min = 260.dp, max = 420.dp)
+//                                    .fillMaxHeight()
+//                                    .capturable(captureController)
+//                            ) {
+//                                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
+//                            }
+                            ChartRenderFullScreen(chart = chart, showAxisLabels = true)
                         }
                     }
                 }

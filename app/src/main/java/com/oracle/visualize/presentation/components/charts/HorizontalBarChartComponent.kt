@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.HorizontalBarPlot
 import io.github.koalaplot.core.gestures.GestureConfig
@@ -49,14 +50,17 @@ fun RenderHorizontalBarChart(
     val categories = chart.data.keys.toList()
     val values = chart.data.values.toList()
     val maxValue = values.maxOrNull() ?: 0f
-    val barColors = generateChartColors(categories.size)
+    val barColors = generateChartColors(categories.size, ChartPalette.THEME1)
 
     Box {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxValue,
-                    minorTickCount = 0
+                    minViewExtent = 0.01f,
+                    minorTickCount = 10,
+                    minimumMajorTickIncrement = 0.0001f,
+                    minimumMajorTickSpacing = 60.dp
                 ),
                 yAxisModel = remember { CategoryAxisModel(categories) },
                 xAxisContent = AxisContent(
@@ -86,8 +90,10 @@ fun RenderHorizontalBarChart(
                     }
                 ),
                 gestureConfig = GestureConfig(
+                    zoomXEnabled = true,
+                    zoomYEnabled = true,
                     panXEnabled = true,
-                    panYEnabled = true
+                    panYEnabled = true,
                 )
             ) {
                 HorizontalBarPlot(

@@ -22,8 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.StackedBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.StackedVerticalBarPlot
+import io.github.koalaplot.core.gestures.GestureConfig
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.CategoryAxisModel
@@ -52,14 +54,20 @@ fun RenderStackedBarChart(
     } else {
         List(seriesCount) { i -> "Series ${i + 1}" }
     }
-    val seriesColors = generateChartColors(seriesNames.size)
+    val seriesColors = generateChartColors(seriesNames.size, ChartPalette.THEME1)
     val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
 
     Box {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = remember { CategoryAxisModel(categories) },
-                yAxisModel = rememberFloatLinearAxisModel(0f..maxOf(1f, maxY), minorTickCount = 0),
+                yAxisModel = rememberFloatLinearAxisModel(
+                    range = 0f..maxOf(1f, maxY),
+                    minViewExtent = 0.01f,
+                    minorTickCount = 10,
+                    minimumMajorTickIncrement = 0.0001f,
+                    minimumMajorTickSpacing = 30.dp
+                ),
                 xAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
@@ -85,6 +93,12 @@ fun RenderStackedBarChart(
                             }
                         }
                     }
+                ),
+                gestureConfig = GestureConfig(
+                    zoomXEnabled = true,
+                    zoomYEnabled = true,
+                    panXEnabled = true,
+                    panYEnabled = true,
                 )
             ) {
                 StackedVerticalBarPlot {

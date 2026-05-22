@@ -26,6 +26,7 @@ import com.oracle.visualize.presentation.components.charts.RenderPieChart
 import com.oracle.visualize.presentation.components.charts.RenderScatterChart
 import com.oracle.visualize.presentation.components.charts.RenderStackedBarChart
 import com.oracle.visualize.presentation.components.charts.RenderVerticalBarChart
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
 /**
@@ -99,9 +100,17 @@ fun ChartRenderGeneral(
  * @param n The amount of colors to be created.
  * @returns a list of [Color] objects.
  * */
-fun generateChartColors(n: Int): List<Color> {
+fun generateChartColors(n: Int, colorTheme: ChartPalette): List<Color> {
     if (n <= 0) return emptyList()
+
+    val colors = colorTheme.colors
+    val colorsSize = colors.size
+
     return List(n) { i ->
-        Color.hsv(i * 360f / n, 0.6f, 0.9f)
+        if (i < colorsSize) {
+            colors[i]
+        } else {
+            colors[i % colorsSize]
+        }
     }
 }

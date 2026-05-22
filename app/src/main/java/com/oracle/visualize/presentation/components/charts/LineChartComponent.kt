@@ -17,11 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.presentation.components.generateChartColors
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.Symbol
+import io.github.koalaplot.core.gestures.GestureConfig
 import io.github.koalaplot.core.line.LinePlot2
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.style.LineStyle
@@ -49,20 +53,32 @@ fun RenderLineChart(
     enableTooltips: Boolean
 ) {
     val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
-    val lineColor = generateChartColors(1).firstOrNull() ?: Color.Blue
+    val lineColor = generateChartColors(1, ChartPalette.THEME1).firstOrNull() ?: Color.Blue
 
-    var xMetric = "x"
-    var yMetric = "y"
+    var xMetric = stringResource(R.string.line_scatter_x_metric)
+    var yMetric = stringResource(R.string.line_scatter_y_metric)
 
     if (!chart.metrics.isEmpty()) {
-        xMetric = chart.metrics[0].ifBlank { "" }
-        yMetric = chart.metrics[1].ifEmpty { "" }
+        xMetric = chart.metrics[0].ifBlank { xMetric }
+        yMetric = chart.metrics[1].ifBlank { yMetric }
     }
 
     KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
         XYGraph (
-            xAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleXRange()),
-            yAxisModel = rememberFloatLinearAxisModel(processedData.autoScaleYRange()),
+            xAxisModel = rememberFloatLinearAxisModel(
+                range = processedData.autoScaleXRange(),
+                minViewExtent = 0.01f,
+                minorTickCount = 10,
+                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickSpacing = 60.dp
+            ),
+            yAxisModel = rememberFloatLinearAxisModel(
+                range = processedData.autoScaleYRange(),
+                minViewExtent = 0.01f,
+                minorTickCount = 10,
+                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickSpacing = 30.dp
+            ),
             xAxisContent = AxisContent(
                 style = rememberAxisStyle(),
                 labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
@@ -91,6 +107,12 @@ fun RenderLineChart(
                         }
                     }
                 }
+            ),
+            gestureConfig = GestureConfig(
+                zoomXEnabled = true,
+                zoomYEnabled = true,
+                panXEnabled = true,
+                panYEnabled = true,
             )
         ) {
             LinePlot2(
