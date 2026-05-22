@@ -70,6 +70,10 @@ class FeedViewModel @Inject constructor(
             _uiState.value = FeedUiState.Loading
         }
 
+        if (!forceRefresh) {
+            _uiState.value = FeedUiState.Loading
+        }
+
         viewModelScope.launch {
 
             getAllUserVisualizationsUseCase(currentUserID).fold(
