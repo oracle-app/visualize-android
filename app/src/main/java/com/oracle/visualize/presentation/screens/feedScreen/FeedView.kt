@@ -128,11 +128,14 @@ fun FeedPage(
                         } else {
                             items(
                                 items = state.items,
-                                key = { it.id }
-                            ) { item ->
+                                key = { it.card.id }
+                            ) { feedItem ->
                                 FeedCard(
-                                    item = item,
-                                    onClick = { onVisualizationClick(item.id) }
+                                    item = feedItem.card,
+                                    chart = feedItem.chart,
+                                    isChartLoading = feedItem.isChartLoading,
+                                    onLoadChartRequest = { feedViewModel.loadChartForCard(feedItem.card) },
+                                    onClick = { onVisualizationClick(feedItem.card.id) }
                                 )
                             }
                         }

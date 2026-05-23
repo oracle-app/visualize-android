@@ -46,7 +46,7 @@ import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
-import com.oracle.visualize.presentation.utils.ChartCacheManager
+import com.oracle.visualize.data.datasources.local.ChartCacheManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -67,13 +67,30 @@ fun formatTime(date: Date, context: Context): String{
         else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
+@Composable
+private fun UserAvatar() {
+    Box(
+        modifier = Modifier
+            .size(28.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.onPrimary)
+    )
+}
+
+
 /**
  * A card component used in the feed to display a visualization's summary.
  *
  * @param item The [VisualizationCard] data to display.
  */
 @Composable
-fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
+fun FeedCard(
+    item: VisualizationCard,
+    onClick: () -> Unit = {},
+    chart: Chart<*>?,
+    isChartLoading: Boolean,
+    onLoadChartRequest: () -> Unit
+) {
     val context = LocalContext.current
     var chartState by remember { mutableStateOf<Chart<*>?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -143,34 +160,22 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    LaunchedEffect(key1 = item.id) {
-                        val cachedChart = ChartCacheManager.getChart(item.id)
-                        if (cachedChart != null) {
-                            chartState = cachedChart
-                            isLoading = false
-                            return@LaunchedEffect
+                    LaunchedEffect(item.id) {
+                        if (isChartLoading && chart == null) {
+                            onLoadChartRequest()
                         }
-
-                        val parsedChart = withContext(Dispatchers.IO) {
-                            ChartMapper.fromPreviewJson(item.previewJSON)
-                        }
-
-                        parsedChart?.let {
-                            ChartCacheManager.saveChart(item.id, it)
-                            chartState = it
-                        }
-                        isLoading = false
                     }
-                    if (isLoading) {
+
+                    if (isChartLoading) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(8.dp))
                                 .skeletonEffect()
                         )
-                    } else if (chartState != null) {
+                    } else if (chart != null) {
                         ChartRenderGeneral(
-                            chart = chartState!!,
+                            chart = chart,
                             showAxisLabels = false,
                             enableTooltips = false
                         )
@@ -197,15 +202,4 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.width(8.dp))
         }
     }
-}
-
-
-@Composable
-private fun UserAvatar() {
-    Box(
-        modifier = Modifier
-            .size(28.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-    )
 }

@@ -8,7 +8,7 @@ import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
-import com.oracle.visualize.presentation.utils.ChartCacheManager
+import com.oracle.visualize.data.datasources.local.ChartCacheManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val chartCacheManager: ChartCacheManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
@@ -60,9 +61,9 @@ class FullVisualizationViewModel @Inject constructor(
                         return@fold
                     }
                     val chart = withContext(Dispatchers.IO) {
-                        ChartCacheManager.getChart(visualization.id)
+                        chartCacheManager.getChart(visualization.id)
                             ?: ChartMapper.fromPreviewJson(visualization.previewJSON)?.also { parsedChart ->
-                                ChartCacheManager.saveChart(visualization.id, parsedChart)
+                                chartCacheManager.saveChart(visualization.id, parsedChart)
                             }
                     }
                     _uiState.update {

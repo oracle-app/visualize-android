@@ -1,9 +1,12 @@
-package com.oracle.visualize.presentation.utils
+package com.oracle.visualize.data.datasources.local
 
 import android.util.LruCache
 import com.oracle.visualize.domain.models.Chart
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object ChartCacheManager {
+@Singleton
+class ChartCacheManager @Inject constructor() {
     private val cache = LruCache<String, Chart<*>>(50)
 
     fun getChart(id: String): Chart<*>? {

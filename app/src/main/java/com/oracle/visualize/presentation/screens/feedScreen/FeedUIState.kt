@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
+import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 
@@ -10,7 +11,7 @@ sealed interface FeedUiState {
     data class Error(val message: Int) : FeedUiState
 
     data class Success(
-        val items: List<VisualizationCard>,
+        val items: List<FeedItem>,
         val searchText: String = "",
         val selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
         val isRefreshing: Boolean = false,
