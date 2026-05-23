@@ -38,4 +38,6 @@ sealed interface NavRoutes {
     data class ChartSelection(val taskId: String) : NavRoutes
     @Serializable
     object ShareAndPost : NavRoutes
+    @Serializable
+    data class ShareWithTeammates(val visualizationId: String) : NavRoutes
 }
