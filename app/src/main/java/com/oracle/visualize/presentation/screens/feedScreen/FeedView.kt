@@ -43,7 +43,8 @@ import androidx.compose.runtime.collectAsState
 fun FeedPage(
     modifier: Modifier = Modifier,
     feedViewModel: FeedViewModel = hiltViewModel(),
-    onVisualizationClick: (String) -> Unit = {}
+    onVisualizationClick: (String) -> Unit = {},
+    onShareVisualization: (String) -> Unit = {}
 ) {
     val uiState by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
