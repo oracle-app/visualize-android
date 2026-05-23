@@ -73,32 +73,83 @@ fun ThreadsPage(
                 onBackClick = onBackClick
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    end = 20.dp,
-                    top = 10.dp,
-                    bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.comments) { comment ->
-                    CommentCard(
-                        comment = comment,
-                        isCurrentUser = comment.authorId == uiState.currentUserId
-                    )
+            when {
+                uiState.isLoading -> {
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
                 }
-                item {
-                    Text(
-                        text = stringResource(R.string.no_threads),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
+
+                uiState.errorMessage != null -> {
+                    val errorMessage = uiState.errorMessage ?: R.string.error_unknown_retry
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+
+                        Text(
+                            text = stringResource(errorMessage),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                uiState.comments.isEmpty() -> {
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+
+                        Text(
+                            text = stringResource(R.string.no_threads_yet),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                else -> {
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            end = 20.dp,
+                            top = 10.dp,
+                            bottom = 16.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+
+                        items(uiState.comments) { comment ->
+
+                            CommentCard(
+                                comment = comment,
+                                isCurrentUser = comment.authorId == uiState.currentUserId
+                            )
+                        }
+                        item {
+                            Text(
+                                text = stringResource(R.string.no_threads),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }

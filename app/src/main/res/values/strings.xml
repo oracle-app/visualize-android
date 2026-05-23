@@ -126,6 +126,7 @@
     <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
+    <string name="error_empty_comment">Comment cannot be empty.</string>
 
 
     //Icon Descriptions
@@ -154,8 +155,9 @@
     //Threads Page
     <string name="reply">Reply</string>
     <string name="add_note">Add note</string>
-    <string name="voice_note">Voice Note</string>
+    <string name="send">Send message</string>
     <string name="no_threads">There\'s no more threads.</string>
+    <string name="no_threads_yet">There\'s no comments yet.</string>
 
 
     // Snipping Tool

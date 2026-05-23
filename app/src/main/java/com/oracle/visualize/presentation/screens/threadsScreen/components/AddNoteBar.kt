@@ -1,11 +1,11 @@
 package com.oracle.visualize.presentation.screens.threadsScreen.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Crop
-import androidx.compose.material.icons.filled.KeyboardVoice
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,6 +16,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
@@ -25,7 +26,9 @@ fun AddNoteBar(
     modifier: Modifier = Modifier,
     onSendClick: (String) -> Unit
 ) {
+    val context = LocalContext.current
     var noteText by remember { mutableStateOf("") }
+    val emptyCommentMessage = stringResource(R.string.error_empty_comment)
 
     Row(
         modifier = modifier
@@ -59,15 +62,21 @@ fun AddNoteBar(
         )
         IconButton(
             onClick = {
-                if (noteText.isNotBlank()) {
-                    onSendClick(noteText)
+                if (noteText.isBlank()) {
+                    Toast.makeText(
+                        context,
+                        emptyCommentMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    onSendClick(noteText.trim())
                     noteText = ""
                 }
             }
         ) {
             Icon(
                 imageVector = Icons.Filled.Send,
-                contentDescription = stringResource(R.string.voice_note),
+                contentDescription = stringResource(R.string.send),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }

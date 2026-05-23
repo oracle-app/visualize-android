@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Comment
+import com.oracle.visualize.presentation.components.UserAvatar
 
 @Composable
 fun CommentCard(
@@ -53,10 +54,10 @@ fun CommentCard(
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
 
-            ThreadAvatar(
+            UserAvatar(
                 username = comment.authorName,
-                profilePictureUrl = comment.authorImageUrl,
-                size = 38.dp
+                profilePictureURL = comment.authorImageUrl,
+                size = 38
             )
 
             Spacer(modifier = Modifier.width(8.dp))

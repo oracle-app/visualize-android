@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.Thread
+import com.oracle.visualize.presentation.components.UserAvatar
 
 @Composable
 fun ThreadCard(
@@ -29,10 +30,10 @@ fun ThreadCard(
             contentAlignment = Alignment.TopCenter
         ) {
 
-            ThreadAvatar(
+            UserAvatar(
                 username = thread.authorName,
-                profilePictureUrl = thread.authorImageUrl,
-                size = 32.dp,
+                profilePictureURL = thread.authorImageUrl,
+                size = 32,
                 modifier = Modifier.border(
                     width = 3.dp,
                     color = MaterialTheme.colorScheme.tertiaryFixed,
