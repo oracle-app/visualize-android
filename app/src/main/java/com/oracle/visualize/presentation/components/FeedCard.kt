@@ -123,7 +123,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         .fillMaxWidth()
                         .height(200.dp)
                         .background(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.surface,
                             shape = RoundedCornerShape(12.dp)
                         )
                         .padding(all = 12.dp),
@@ -136,7 +136,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         )
                     } else {
                         Text(
-                            text = "Chart not found",
+                            text  = stringResource(R.string.error_chart_not_found),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
