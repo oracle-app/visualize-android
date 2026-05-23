@@ -14,12 +14,13 @@ import com.google.firebase.firestore.DocumentId
  * @property createdAt The timestamp the notification was created.
  */
 
-class NotificationDTO (
+data class NotificationDTO (
     @DocumentId
     val id: String = "",
-    val userID: String = "",
+    val receiverID: String = "",
     val isRead: Boolean = false,
     val type: String = "",
     val body: String = "",
-    val createdAt:Timestamp = Timestamp.now()
+    val createdAt:Timestamp = Timestamp.now(),
+    val senderProfilePictureURL: String = ""
 )

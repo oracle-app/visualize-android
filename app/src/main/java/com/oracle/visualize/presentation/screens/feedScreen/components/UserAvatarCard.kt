@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.shareScreen.components
+package com.oracle.visualize.presentation.screens.feedScreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

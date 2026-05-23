@@ -8,4 +8,5 @@ data class Notification (
     val isRead: Boolean,
     val body: String,
     val createdAt: Date,
+    val senderProfilePictureURL: String?,
     )

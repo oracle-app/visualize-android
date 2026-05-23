@@ -14,6 +14,7 @@ fun NotificationDTO.toDomain(): Notification = Notification(
     isRead = isRead,
     body = body,
     createdAt = createdAt.toDate(),
+    senderProfilePictureURL = senderProfilePictureURL
 )
 
 
@@ -26,5 +27,6 @@ fun Notification.toNotificationDTO(): NotificationDTO = NotificationDTO(
     id = id,
     isRead = isRead,
     body = body,
-    createdAt = Timestamp(createdAt)
+    createdAt = Timestamp(createdAt),
+    //senderProfilePictureURL = senderProfilePictureURL
 )

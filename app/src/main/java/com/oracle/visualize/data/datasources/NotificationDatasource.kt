@@ -25,7 +25,7 @@ class NotificationDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun getNotificationsForUser(userID: String): List<NotificationDTO> {
-        val snapshot = notificationsRef.whereEqualTo("userID", userID).get().await()
+        val snapshot = notificationsRef.whereEqualTo("receiverID", userID).get().await()
         if (snapshot.isEmpty) return emptyList()
 
         return snapshot.documents.map { doc ->
@@ -36,7 +36,7 @@ class NotificationDatasource @Inject constructor(
 
     suspend fun markAllNotificationsAsRead(userID: String) {
         val snapshot = notificationsRef
-            .whereEqualTo("userID", userID)
+            .whereEqualTo("receiverID", userID)
             .whereEqualTo("isRead",false)
             .get()
             .await()
