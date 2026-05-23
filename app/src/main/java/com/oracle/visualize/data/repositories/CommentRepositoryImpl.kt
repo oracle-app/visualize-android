@@ -4,6 +4,7 @@ import com.oracle.visualize.data.datasources.CommentDatasource
 import com.oracle.visualize.data.datasources.dtos.CommentDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.models.Comment
+import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.domain.repositories.CommentRepository
 import javax.inject.Inject
 
@@ -36,6 +37,18 @@ class CommentRepositoryImpl @Inject constructor(
     ): List<Comment> {
         return commentDatasource
             .getComments(visualizationId)
+            .map { it.toDomain() }
+    }
+
+    override suspend fun getThreads(
+        visualizationId: String,
+        commentId: String
+    ): List<Thread> {
+        return commentDatasource
+            .getThreads(
+                visualizationId = visualizationId,
+                commentId = commentId
+            )
             .map { it.toDomain() }
     }
 }

@@ -10,6 +10,7 @@ import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.CreateCommentUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
+import com.oracle.visualize.domain.usecases.GetThreadsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +34,7 @@ import javax.inject.Inject
 class ThreadsViewModel @Inject constructor(
     private val createCommentUseCase: CreateCommentUseCase,
     private val getCommentsUseCase: GetCommentsUseCase,
+    private val getThreadsUseCase: GetThreadsUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -69,12 +71,23 @@ class ThreadsViewModel @Inject constructor(
 
             commentsResult.fold(
                 onSuccess = { comments ->
+                    val commentsWithThreads = comments.map { comment ->
+                        val threads = getThreadsUseCase(
+                            visualizationId = visualizationId,
+                            commentId = comment.id
+                        ).getOrElse {
+                            emptyList()
+                        }
+                        comment.copy(
+                            threads = threads
+                        )
+                    }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualizationTitle = visualizationTitle,
                             currentUserId = currentUserID,
-                            comments = comments
+                            comments = commentsWithThreads
                         )
                     }
                 },
