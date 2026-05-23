@@ -279,5 +279,15 @@ object ChartMapper {
         }
         return list
     }
+    fun chartToJson(chart: Chart<*>): String{
+        val json = JSONObject()
+        json.put("chartName", chart.chartTitle)
+        json.put("chartType", chart.chartType)
+        json.put("metrics", chart.metrics)
+        json.put("data", chart.data)
+        return json.toString()
+    }
+
+
 }
 

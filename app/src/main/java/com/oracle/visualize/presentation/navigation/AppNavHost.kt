@@ -48,8 +48,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable<NavRoutes.Create> {
             CreatePage(
                 modifier = Modifier.fillMaxSize(),
-                onNavigateToSelection = {
-                    navController.navigate(NavRoutes.ChartSelection)
+                onNavigateToSelection = { taskId ->
+                    navController.navigate(NavRoutes.ChartSelection(taskId))
                 }
             )
         }
