@@ -232,35 +232,25 @@ private fun FeedCardMenu(
     onDeleteForEveryone: () -> Unit,
     onHideForMe: () -> Unit
 ) {
-    // Use secondaryContainer (= White in light, surface fallback in dark)
-    val bgColor = MaterialTheme.colorScheme.secondaryContainer.let { c ->
-        if (c == Color.Transparent) MaterialTheme.colorScheme.surface else c
-    }
-
     Card(
-        shape   = RoundedCornerShape(16.dp),
-        colors  = CardDefaults.cardColors(containerColor = bgColor),
+        shape   = RoundedCornerShape(12.dp),
+        colors  = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
             .shadow(
                 elevation        = 8.dp,
-                shape            = RoundedCornerShape(16.dp),
+                shape            = RoundedCornerShape(12.dp),
                 ambientColor     = Color.Black.copy(alpha = 0.15f),
                 spotColor        = Color.Black.copy(alpha = 0.15f)
             )
-            .width(260.dp)
+            .width(200.dp)
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             if (isOwner) {
                 // Share
                 MenuTextItem(
                     label    = stringResource(R.string.feed_menu_share),
-                    color    = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color    = MaterialTheme.colorScheme.onSurface,
                     onClick  = { onDismiss(); onShare() }
-                )
-                HorizontalDivider(
-                    modifier  = Modifier.padding(horizontal = 16.dp),
-                    thickness = 0.5.dp,
-                    color     = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                 )
                 // Delete for everyone
                 MenuTextItem(
@@ -269,7 +259,7 @@ private fun FeedCardMenu(
                     onClick = { onDismiss(); onDeleteForEveryone() }
                 )
             } else {
-                // Hide for me
+                // Delete for me
                 MenuTextItem(
                     label   = stringResource(R.string.feed_menu_hide_for_me),
                     color   = MaterialTheme.colorScheme.error,
@@ -290,12 +280,12 @@ private fun MenuTextItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Text(
             text       = label,
             color      = color,
-            fontSize   = 20.sp,
+            fontSize   = 16.sp,
             fontWeight = FontWeight.Normal,
             style      = MaterialTheme.typography.bodyLarge
         )
