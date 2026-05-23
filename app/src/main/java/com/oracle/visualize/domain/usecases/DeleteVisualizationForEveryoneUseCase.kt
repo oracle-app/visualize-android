@@ -17,12 +17,9 @@ class DeleteVisualizationForEveryoneUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(visualizationId: String): Result<Unit> {
         if (visualizationId.isBlank())
-            return Result.failure(AppError.ValidationError("Visualization ID cannot be empty"))
-        return try {
+            return Result.failure(AppError.GeneralValidationError("Visualization ID cannot be empty"))
+        return runCatching {
             visualizationRepository.deleteVisualizationForEveryone(visualizationId)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 }
