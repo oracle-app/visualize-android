@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.shareScreen.components
+package com.oracle.visualize.presentation.screens.feedScreen.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.User
+import com.oracle.visualize.presentation.components.UserAvatar
 
 private val AVATAR_SIZE    = 33.dp
 private val AVATAR_OFFSET  = 16.dp
@@ -71,7 +72,11 @@ fun MemberAvatarStackFeed(
                             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape)
                     ) {
                         members.getOrNull(memberIndex)?.let { user ->
-                            UserAvatarCard(user = user, size = AVATAR_SIZE.value.toInt())
+                            UserAvatar(
+                                username = user.username,
+                                size = AVATAR_SIZE.value.toInt(),
+                                profilePictureURL = user.profilePictureURL
+                            )
                         }
                     }
                 }
