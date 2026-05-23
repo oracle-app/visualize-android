@@ -1,8 +1,8 @@
 package com.oracle.visualize.data.repositories
 
+import com.oracle.visualize.data.datasources.UserDatasource
 import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.TeamDatasource
-import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
@@ -192,10 +192,20 @@ class VisualizationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteVisualizationForEveryone(visualizationId: String) {
-        visualizationDataSource.deleteVisualization(visualizationId)
+        try {
+            visualizationDataSource.deleteVisualization(visualizationId)
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to delete visualization: ${e.message}")
+        }
     }
 
     override suspend fun hideVisualizationForMe(userID: String, visualizationId: String) {
-        userDatasource.hideVisualizationForUser(userID, visualizationId)
+        try {
+            userDatasource.hideVisualizationForUser(userID, visualizationId)
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to hide visualization for user: ${e.message}")
+        }
     }
 }
