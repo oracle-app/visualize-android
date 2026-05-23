@@ -18,7 +18,7 @@ data class NotificationDTO (
     @DocumentId
     val id: String = "",
     val receiverID: String = "",
-    val isRead: Boolean = false,
+    @JvmField val isRead: Boolean = false,
     val type: String = "",
     val body: String = "",
     val createdAt:Timestamp = Timestamp.now(),
