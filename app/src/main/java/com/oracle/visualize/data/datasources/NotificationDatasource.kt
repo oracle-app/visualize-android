@@ -40,9 +40,14 @@ class NotificationDatasource @Inject constructor(
             .whereEqualTo("isRead",false)
             .get()
             .await()
+        if (snapshot.isEmpty) return
+
+        val batch = db.batch()
         snapshot.documents.forEach { doc ->
-            doc.reference.update("isRead", true).await()
+            batch.update(doc.reference, "isRead", true)
         }
+        //Transaction
+        batch.commit().await()
     }
 
     suspend fun markNotificationAsRead(notificationId: String) {
