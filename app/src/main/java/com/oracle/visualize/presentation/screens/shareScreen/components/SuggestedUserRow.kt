@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.presentation.components.UserAvatar
 
 @Composable
 fun SuggestedUserRow(
@@ -31,7 +32,7 @@ fun SuggestedUserRow(
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 10.dp)
     ) {
-        UserAvatar(user, size = 44)
+        UserAvatar(username = user.username, size = 44, profilePictureURL = user.profilePictureURL)
 
         Spacer(modifier = Modifier.width(16.dp))
 
