@@ -1,5 +1,7 @@
 package com.oracle.visualize.domain.models
 
+import java.util.Date
+
 /**
  * Domain model representing a Thread
  */
@@ -10,6 +12,5 @@ data class Thread (
     val authorImageUrl: String? = null,
     val content: String,
     val imageUrl: String? = null,
-    val timestamp: String,
-    val comments: List<Comment> = emptyList()
+    val createdAt: Date
 )

@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.presentation.screens.threadsScreen.components.AddNoteBar
-import com.oracle.visualize.presentation.screens.threadsScreen.components.ThreadCard
 import com.oracle.visualize.presentation.screens.threadsScreen.components.ThreadsTopBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.screens.threadsScreen.components.CommentCard
 
 /**
  * Screen that displays the discussion threads of a selected visualization.
@@ -30,7 +30,6 @@ import com.oracle.visualize.R
  * @param visualizationId ID of the visualization whose threads are displayed (still not implemented).
  * @param modifier Modifier for the screen layout.
  * @param viewModel The [ThreadsViewModel] that manages the screen state.
- * @param onBackClick Callback to navigate back.
  */
 
 @Composable
@@ -53,7 +52,13 @@ fun ThreadsPage(
             AddNoteBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 8.dp)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                onSendClick = { content ->
+                    viewModel.createComment(
+                        visualizationId = visualizationId,
+                        content = content
+                    )
+                }
             )
         }
     ) { paddingValues ->
@@ -78,13 +83,12 @@ fun ThreadsPage(
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.threads) { thread ->
-                    ThreadCard(
-                        thread = thread,
-                        isCurrentUser = thread.authorId == uiState.currentUserId
+                items(uiState.comments) { comment ->
+                    CommentCard(
+                        comment = comment,
+                        isCurrentUser = comment.authorId == uiState.currentUserId
                     )
                 }
-
                 item {
                     Text(
                         text = stringResource(R.string.no_threads),

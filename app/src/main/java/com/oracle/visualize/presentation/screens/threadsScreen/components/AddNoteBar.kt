@@ -6,8 +6,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.KeyboardVoice
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
@@ -19,7 +22,8 @@ import com.oracle.visualize.R
 
 @Composable
 fun AddNoteBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSendClick: (String) -> Unit
 ) {
     var noteText by remember { mutableStateOf("") }
 
@@ -35,12 +39,11 @@ fun AddNoteBar(
             tint = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(start = 14.dp)
         )
-
         TextField(
             value = noteText,
             onValueChange = { noteText = it },
             placeholder = {
-                androidx.compose.material3.Text(
+                Text(
                     text = stringResource(R.string.add_note),
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -54,12 +57,19 @@ fun AddNoteBar(
                 unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
             )
         )
-
-        Icon(
-            imageVector = Icons.Filled.KeyboardVoice,
-            contentDescription = stringResource(R.string.voice_note),
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(end = 14.dp)
-        )
+        IconButton(
+            onClick = {
+                if (noteText.isNotBlank()) {
+                    onSendClick(noteText)
+                    noteText = ""
+                }
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Send,
+                contentDescription = stringResource(R.string.voice_note),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
