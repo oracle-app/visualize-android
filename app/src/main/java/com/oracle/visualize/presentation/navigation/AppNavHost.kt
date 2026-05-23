@@ -17,6 +17,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectio
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
+import com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.ShareWithTeammatesScreen
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
 
@@ -38,9 +39,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             FeedPage(
                 modifier = Modifier.fillMaxSize(),
                 onVisualizationClick = { visualizationId ->
-                    navController.navigate(
-                        NavRoutes.FullScreen(visualizationId)
-                    )
+                    navController.navigate(NavRoutes.FullScreen(visualizationId))
+                },
+                onShareVisualization = { visualizationId ->
+                    navController.navigate(NavRoutes.ShareWithTeammates(visualizationId))
                 }
             )
         }
@@ -115,6 +117,13 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 onBackClick = {
                     navController.popBackStack()
                 }
+            )
+        }
+        composable<NavRoutes.ShareWithTeammates> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.ShareWithTeammates>()
+            ShareWithTeammatesScreen(
+                visualizationId = route.visualizationId,
+                onNavigateBack  = { navController.popBackStack() }
             )
         }
         composable<NavRoutes.Splash> {
