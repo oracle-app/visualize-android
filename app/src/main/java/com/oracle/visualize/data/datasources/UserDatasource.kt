@@ -83,14 +83,10 @@ class UserDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun hideVisualizationForUser(userID: String, visualizationId: String) {
-        try {
-            firestore.collection("users")
-                .document(userID)
-                .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
-                .await()
-        } catch (e: Exception) {
-            throw AppError.NetworkError("Error hiding visualization for user: ${e.message}")
-        }
+        firestore.collection("users")
+            .document(userID)
+            .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
+            .await()
     }
 
 }
