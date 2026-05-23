@@ -1,11 +1,12 @@
 package com.oracle.visualize.presentation.screens.shareWithTeammatesScreen
 
-import android.util.Log
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.presentation.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,27 +23,28 @@ import javax.inject.Inject
  *
  * Loads the current sharing state of a visualization, allows searching for new
  * users by email, and supports removing previously-shared users.
+ * The current user is excluded from suggestions to prevent the owner being
+ * added as a sharedWith user (which causes a crash).
  *
  * @property getUserSuggestionsUseCase Use case for searching users by partial email.
+ * @property authRepository Repository to obtain the current user ID.
  * @property savedStateHandle Provides the navigation arguments (visualizationId).
  */
 @HiltViewModel
 class ShareWithTeammatesViewModel @Inject constructor(
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
+    private val authRepository: AuthRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val visualizationId: String =
-        savedStateHandle.toRoute<NavRoutes.ShareWithTeammates>().visualizationId
-
+        savedStateHandle.get<String>("visualizationId") ?: ""
     private val _uiState = MutableStateFlow<ShareWithTeammatesUiState>(ShareWithTeammatesUiState.Loading)
     val uiState: StateFlow<ShareWithTeammatesUiState> = _uiState.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
 
-    // TODO: Replace with real data from VisualizationRepository when available.
-    // TODO: Get currentUserID from AuthRepository.
-    private val currentUserID = "e9Nk8XrxHJAtwN3Hf2FL"
+    private val currentUserID: String = authRepository.getCurrentUserID()
 
     init {
         loadData()
@@ -61,7 +63,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
                     sharedUsers     = alreadySharedWith
                 )
             } catch (e: Exception) {
-                Log.e("ShareWithTeammatesVM", "Failed to load data", e)
                 _uiState.value = ShareWithTeammatesUiState.Error(
                     "Failed to load sharing info. Please try again."
                 )
@@ -79,14 +80,15 @@ class ShareWithTeammatesViewModel @Inject constructor(
                         onSuccess = { results ->
                             val current = _uiState.value as? ShareWithTeammatesUiState.Content
                                 ?: return@fold
-                            // Exclude users already shared with
+                            // Exclude the current user (owner) and users already shared with.
+                            // Owner being in sharedWith causes the app to crash.
                             val filtered = results.filter { suggestion ->
-                                current.sharedUsers.none { it.id == suggestion.id }
+                                suggestion.id != currentUserID &&
+                                    current.sharedUsers.none { it.id == suggestion.id }
                             }
                             _uiState.value = current.copy(suggestedUsers = filtered)
                         },
-                        onFailure = { error ->
-                            Log.e("ShareWithTeammatesVM", "Search error: ${error.message}")
+                        onFailure = {
                             updateContent { it.copy(suggestedUsers = emptyList()) }
                         }
                     )
@@ -105,8 +107,10 @@ class ShareWithTeammatesViewModel @Inject constructor(
             }
 
             is ShareWithTeammatesUiEvent.SelectSuggestion -> {
+                // Guard: never add the current user as a shared user.
                 val alreadyShared = current.sharedUsers.any { it.id == event.user.id }
-                if (!alreadyShared) {
+                val isOwner       = event.user.id == currentUserID
+                if (!alreadyShared && !isOwner) {
                     _uiState.value = current.copy(
                         sharedUsers    = current.sharedUsers + event.user,
                         emailQuery     = "",
