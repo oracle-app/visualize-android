@@ -36,7 +36,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
+import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 
 fun formatTime(date: Date, context: Context): String{
     val now = Date()
