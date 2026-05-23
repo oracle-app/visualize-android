@@ -1,4 +1,5 @@
 package com.oracle.visualize.data.repositories
+import android.net.Uri
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.Team
 import com.oracle.visualize.domain.models.User
@@ -33,5 +34,22 @@ class UserRepositoryImpl @Inject constructor(
             throw AppError.NetworkError("Failed to fetch user suggestions: ${e.message}")
         }
     }
+
+    override suspend fun getUserByUserID(userId: String): User {
+        return userDatasource.getUserByID(userId).toDomain()
+    }
+
+    override suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
+        return uploadProfilePicture(userID, uri)
+    }
+
+    override suspend fun setProfilePicture(userId: String, url: String): Unit {
+        return userDatasource.setProfilePicture(userId, url)
+    }
+
+    override suspend fun setChartTheme(userId: String, selectedPalette: String): Unit {
+        return userDatasource.setChartTheme(userId, selectedPalette)
+    }
+
 }
 

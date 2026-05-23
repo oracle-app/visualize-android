@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.snippingTool
+package com.oracle.visualize.presentation.screens.snippingTool.completeSnippingTool
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect

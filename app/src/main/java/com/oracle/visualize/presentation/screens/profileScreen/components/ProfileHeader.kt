@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 
@@ -22,19 +23,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
+import coil3.compose.AsyncImage
 
 @Composable
 fun ProfileHeader(
     modifier: Modifier = Modifier,
     userName: String,
     email: String,
-    profileImage: Painter,
-    onEditClick: () -> Unit
+    profileImageUrl: Any,
+    onEditClick: () -> Unit,
+    preview: Boolean = false
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -43,47 +46,55 @@ fun ProfileHeader(
         Box(
             contentAlignment = Alignment.BottomEnd
         ) {
-            Image(
-                painter = profileImage,
+            AsyncImage(
+                model = profileImageUrl,
                 contentDescription = stringResource(R.string.profile_img_description),
                 modifier = Modifier
                     .size(180.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(R.drawable.profile_placeholder),
+                error = painterResource(R.drawable.profile_placeholder)
             )
 
-            OutlinedIconButton(
-                onClick = onEditClick,
-                modifier = Modifier
-                    .size(48.dp)
-                    .offset(x = (-6).dp, y = (-6).dp),
-                colors = IconButtonDefaults.outlinedIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(R.string.edit_image_description)
-                )
+            Log.d("ProfileHeader", "Image URL received: $profileImageUrl")
+
+            if (!preview) {
+                OutlinedIconButton(
+                    onClick = onEditClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .offset(x = (-6).dp, y = (-6).dp),
+                    colors = IconButtonDefaults.outlinedIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = stringResource(R.string.edit_image_description)
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (!preview) {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = userName,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
+            Text(
+                text = userName,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
 
-        Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-        Text(
-            text = email,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+            Text(
+                text = email,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
     }
 }

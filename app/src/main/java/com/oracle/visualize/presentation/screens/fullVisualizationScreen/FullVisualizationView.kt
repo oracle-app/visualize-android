@@ -21,7 +21,6 @@ import com.oracle.visualize.presentation.components.ChartRenderFullScreen
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.FullVisualizationTopBar
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,9 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.drawToBitmap
-import com.oracle.visualize.presentation.components.ChartRenderFullScreen
-import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
+import com.oracle.visualize.presentation.screens.snippingTool.completeSnippingTool.SnippingToolView
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.launch

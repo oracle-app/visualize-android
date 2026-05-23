@@ -1,7 +1,9 @@
 package com.oracle.visualize.data.datasources
 
+import android.net.Uri
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import kotlinx.coroutines.tasks.await
@@ -15,7 +17,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class UserDatasource @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val storage: FirebaseStorage
 ) {
 
     /**
@@ -73,4 +76,32 @@ class UserDatasource @Inject constructor(
     suspend fun saveUserProfile(uid: String, user: UserDTO){
         firestore.collection("users").document(uid).set(user).await()
     }
+
+    // UPLOAD FUNCTIONS
+
+    // This function uploads an image in Uri format and returns the upload URL.
+
+    suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
+        val storageRef = storage.reference.child("users/$userID/profilePicture")
+        storageRef.putFile(uri).await()
+
+        return storageRef.downloadUrl.await().toString()
+    }
+
+    // This function uses the uid to update the user's profile picture URL with a new value.
+
+    suspend fun setProfilePicture(userID: String, url: String) {
+        firestore.collection("users")
+            .document(userID)
+            .update("profilePictureURL", url)
+            .await()
+    }
+
+    suspend fun setChartTheme(userID: String, selectedPalette: String) {
+        firestore.collection("users")
+            .document(userID)
+            .update("chartTheme", selectedPalette)
+            .await()
+    }
+
 }
