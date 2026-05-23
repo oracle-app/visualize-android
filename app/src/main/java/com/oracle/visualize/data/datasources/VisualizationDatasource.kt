@@ -135,4 +135,14 @@ class VisualizationDatasource @Inject constructor(
         }
         return results
     }
+
+    /**
+     * Permanently deletes a visualization document from the database.
+     *
+     * @param visualizationId The unique ID of the visualization to delete.
+     * @throws AppError.NotFound If the visualization does not exist.
+     */
+    suspend fun deleteVisualization(visualizationId: String) {
+        visualizationsRef.document(visualizationId).delete().await()
+    }
 }
