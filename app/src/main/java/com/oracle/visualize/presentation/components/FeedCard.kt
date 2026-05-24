@@ -41,14 +41,9 @@ import androidx.compose.ui.unit.sp
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
-import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
-import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
-import com.oracle.visualize.data.datasources.local.ChartCacheManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 
 fun formatTime(date: Date, context: Context): String{
