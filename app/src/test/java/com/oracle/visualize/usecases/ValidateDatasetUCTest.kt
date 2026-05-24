@@ -1,5 +1,6 @@
 package com.oracle.visualize.usecases
 
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import com.oracle.visualize.fixtures.DatasetFixtures
 import junit.framework.TestCase.assertTrue
@@ -50,7 +51,7 @@ class ValidateDatasetUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        assertTrue(result.exceptionOrNull() is AppError)
     }
 
     @Test
@@ -63,7 +64,7 @@ class ValidateDatasetUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        assertTrue(result.exceptionOrNull() is AppError)
     }
 
     @Test
@@ -76,7 +77,7 @@ class ValidateDatasetUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        assertTrue(result.exceptionOrNull() is AppError)
     }
 
     @Test
@@ -121,7 +122,7 @@ class ValidateDatasetUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        assertTrue(result.exceptionOrNull() is AppError)
     }
 
     @Test
@@ -134,7 +135,7 @@ class ValidateDatasetUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        assertTrue(result.exceptionOrNull() is AppError)
     }
 
     @Test
