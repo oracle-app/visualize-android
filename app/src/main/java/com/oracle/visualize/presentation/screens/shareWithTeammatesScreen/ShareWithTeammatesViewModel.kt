@@ -1,15 +1,16 @@
 package com.oracle.visualize.presentation.screens.shareWithTeammatesScreen
 
-
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
-import com.oracle.visualize.presentation.navigation.NavRoutes
+import com.oracle.visualize.domain.usecases.UpdateSharedUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,27 +19,15 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for the "Share to More Teammates" screen.
- *
- * Loads the current sharing state of a visualization, allows searching for new
- * users by email, and supports removing previously-shared users.
- * The current user is excluded from suggestions to prevent the owner being
- * added as a sharedWith user (which causes a crash).
- *
- * @property getUserSuggestionsUseCase Use case for searching users by partial email.
- * @property authRepository Repository to obtain the current user ID.
- * @property savedStateHandle Provides the navigation arguments (visualizationId).
- */
 @HiltViewModel
 class ShareWithTeammatesViewModel @Inject constructor(
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
+    private val updateSharedUsersUseCase: UpdateSharedUsersUseCase,
     private val authRepository: AuthRepository,
+    private val teamRepository: TeamRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val visualizationId: String =
-        savedStateHandle.get<String>("visualizationId") ?: ""
     private val _uiState = MutableStateFlow<ShareWithTeammatesUiState>(ShareWithTeammatesUiState.Loading)
     val uiState: StateFlow<ShareWithTeammatesUiState> = _uiState.asStateFlow()
 
@@ -46,29 +35,48 @@ class ShareWithTeammatesViewModel @Inject constructor(
 
     private val currentUserID: String = authRepository.getCurrentUserID()
 
+    private val visualizationId: String = run {
+        val id = savedStateHandle.get<String>("visualizationId") ?: ""
+        if (id.isBlank()) Log.e("ShareVM", "visualizationId is NULL or blank from SavedStateHandle")
+        else Log.d("ShareVM", "visualizationId='$id'")
+        id
+    }
+
     init {
+        Log.d("ShareVM", "ViewModel init — visualizationId='$visualizationId' currentUserID='$currentUserID'")
         loadData()
         setupSearchDebounce()
     }
+
+    // ─── Data loading ──────────────────────────────────────────────────────────
 
     private fun loadData() {
         viewModelScope.launch {
             _uiState.value = ShareWithTeammatesUiState.Loading
             try {
-                // TODO: Replace with actual repository call to fetch shared users for visualizationId.
-                val alreadySharedWith = emptyList<ShareUser>()
+                // Load teams owned by user and teams the user is member of in parallel
+                val myTeamsDeferred    = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
+                val teamsImInDeferred  = async { teamRepository.getTeamsUserIsIn(currentUserID) }
+
+                val myTeams   = myTeamsDeferred.await()
+                val teamsImIn = teamsImInDeferred.await()
 
                 _uiState.value = ShareWithTeammatesUiState.Content(
                     visualizationId = visualizationId,
-                    sharedUsers     = alreadySharedWith
+                    sharedUsers     = emptyList(),
+                    myTeams         = myTeams,
+                    teamsImIn       = teamsImIn
                 )
             } catch (e: Exception) {
+                Log.e("ShareVM", "loadData error: ${e.message}")
                 _uiState.value = ShareWithTeammatesUiState.Error(
                     "Failed to load sharing info. Please try again."
                 )
             }
         }
     }
+
+    // ─── Search debounce ───────────────────────────────────────────────────────
 
     private fun setupSearchDebounce() {
         viewModelScope.launch {
@@ -80,8 +88,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
                         onSuccess = { results ->
                             val current = _uiState.value as? ShareWithTeammatesUiState.Content
                                 ?: return@fold
-                            // Exclude the current user (owner) and users already shared with.
-                            // Owner being in sharedWith causes the app to crash.
                             val filtered = results.filter { suggestion ->
                                 suggestion.id != currentUserID &&
                                     current.sharedUsers.none { it.id == suggestion.id }
@@ -96,6 +102,8 @@ class ShareWithTeammatesViewModel @Inject constructor(
         }
     }
 
+    // ─── Events ────────────────────────────────────────────────────────────────
+
     fun onEvent(event: ShareWithTeammatesUiEvent) {
         val current = _uiState.value as? ShareWithTeammatesUiState.Content ?: return
         when (event) {
@@ -107,7 +115,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
             }
 
             is ShareWithTeammatesUiEvent.SelectSuggestion -> {
-                // Guard: never add the current user as a shared user.
                 val alreadyShared = current.sharedUsers.any { it.id == event.user.id }
                 val isOwner       = event.user.id == currentUserID
                 if (!alreadyShared && !isOwner) {
@@ -135,17 +142,47 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 )
             }
 
+            is ShareWithTeammatesUiEvent.ToggleTeam -> {
+                val newSelected = if (event.teamId in current.selectedTeamIds) {
+                    current.selectedTeamIds - event.teamId
+                } else {
+                    current.selectedTeamIds + event.teamId
+                }
+                _uiState.value = current.copy(selectedTeamIds = newSelected)
+            }
+
             is ShareWithTeammatesUiEvent.ConfirmShare -> {
+                val userIds = current.sharedUsers.map { it.id }
+                val teamIds = current.selectedTeamIds.toList()
+
+                Log.d("ShareVM", "ConfirmShare — vizId='$visualizationId' users=$userIds teams=$teamIds")
+                _uiState.value = current.copy(isSubmitting = true, errorMessage = null)
+
                 viewModelScope.launch {
-                    updateContent { it.copy(isSubmitting = true) }
-                    // TODO: call VisualizationRepository.updateSharedUsers(visualizationId, sharedUsers)
-                    updateContent { it.copy(isSubmitting = false) }
+                    Log.d("ShareVM", "Calling updateSharedUsersUseCase...")
+                    updateSharedUsersUseCase(visualizationId, userIds, teamIds).fold(
+                        onSuccess = {
+                            Log.d("ShareVM", "updateSharedUsersUseCase SUCCESS")
+                            updateContent { it.copy(isSubmitting = false, shareSuccess = true) }
+                        },
+                        onFailure = { error ->
+                            Log.e("ShareVM", "updateSharedUsersUseCase FAILURE: ${error::class.simpleName} — ${error.message}")
+                            updateContent {
+                                it.copy(
+                                    isSubmitting = false,
+                                    errorMessage = error.message ?: "Failed to share. Please try again."
+                                )
+                            }
+                        }
+                    )
                 }
             }
 
             is ShareWithTeammatesUiEvent.BackPressed -> { /* handled in View */ }
         }
     }
+
+    // ─── Helpers ───────────────────────────────────────────────────────────────
 
     private fun updateContent(
         block: (ShareWithTeammatesUiState.Content) -> ShareWithTeammatesUiState.Content
