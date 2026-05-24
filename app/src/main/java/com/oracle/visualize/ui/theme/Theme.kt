@@ -70,14 +70,14 @@ private val LightColorScheme = lightColorScheme(
 
     background = VeryLightGray,
     onBackground = NotAsLightGray,
-    surface = White,
-    onSurface = Color.Black,
+    surface = VeryLightGray,
+    onSurface = NotAsLightGray,
 
     surfaceVariant = LighterBlue,
-    onSurfaceVariant = NotAsLightGray,
+    onSurfaceVariant = StrongBlue,
 
     outline = GrayishBlue,
-    outlineVariant = NotAsDarkGray,
+    outlineVariant = SearchHint,
     error = ErrorRed,
     onError = White,
     scrim = ScrimColor
