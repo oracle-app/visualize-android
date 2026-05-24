@@ -88,10 +88,10 @@ fun RenderVerticalBarChart(
                                 .width(25.dp)
                                 .height(1.dp)
                                 .rotate(90f)) {
-                                Text(
-                                    text = chart.metrics[1], overflow = TextOverflow.Visible, softWrap = false,
-                                    style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray
-                                )
+                                    Text(
+                                        text = chart.metrics[1], overflow = TextOverflow.Visible, softWrap = false,
+                                        style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray
+                                    )
                             }
                         }
                     }
@@ -126,8 +126,8 @@ fun RenderVerticalBarChart(
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
                                 modifier = modifier.fillMaxWidth().pointerInput(Unit) {
-                                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
-                                }
+                                        detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                    }
                             )
                         }
                     },
