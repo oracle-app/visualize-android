@@ -1,11 +1,11 @@
 package com.oracle.visualize
 
+import MainScreen
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.oracle.visualize.presentation.screens.mainScreen.MainScreen
 import com.oracle.visualize.ui.theme.VisualizeTheme
 import dagger.hilt.android.AndroidEntryPoint
 

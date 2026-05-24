@@ -25,6 +25,10 @@ class GetCurrentUserUCTest {
         override fun getCurrentUser(): AuthUser? {
             return currentUser
         }
+
+        override fun getCurrentUserID(): String {
+            return currentUser?.uid ?: ""
+        }
     }
 
     @Test

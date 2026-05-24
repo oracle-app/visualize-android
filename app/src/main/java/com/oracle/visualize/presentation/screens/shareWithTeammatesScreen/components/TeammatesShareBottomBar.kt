@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.components
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,6 +29,7 @@ import com.oracle.visualize.R
 @Composable
 fun TeammateShareBottomBar(
     isSubmitting: Boolean,
+    hasUsers: Boolean,
     onConfirmShare: () -> Unit
 ) {
     Row(
@@ -44,11 +44,13 @@ fun TeammateShareBottomBar(
     ) {
         Button(
             onClick  = onConfirmShare,
-            enabled  = !isSubmitting,
+            enabled  = !isSubmitting && hasUsers,
             shape    = RoundedCornerShape(16.dp),
             colors   = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor   = Color.White
+                containerColor         = MaterialTheme.colorScheme.secondary,
+                contentColor           = Color.White,
+                disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                disabledContentColor   = Color.White.copy(alpha = 0.6f)
             ),
             modifier = Modifier
                 .requiredWidth(80.dp)
