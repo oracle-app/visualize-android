@@ -16,12 +16,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.presentation.components.UserAvatar
+import com.oracle.visualize.presentation.screens.threadsScreen.CommentUiModel
 
 @Composable
 fun CommentCard(
-    comment: Comment,
+    comment: CommentUiModel,
     isCurrentUser: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -55,7 +55,7 @@ fun CommentCard(
         ) {
 
             UserAvatar(
-                username = comment.authorID,
+                username = comment.authorName,
                 profilePictureURL = null,
                 size = 38
             )
@@ -65,7 +65,7 @@ fun CommentCard(
             Column(modifier = Modifier.weight(1f)) {
 
                 Text(
-                    text = comment.authorID,
+                    text = comment.authorName,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )

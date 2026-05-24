@@ -36,7 +36,8 @@ class ThreadsViewModel @Inject constructor(
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getThreadsUseCase: GetThreadsUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ThreadsUIState())
     val uiState: StateFlow<ThreadsUIState> = _uiState.asStateFlow()
@@ -51,6 +52,22 @@ class ThreadsViewModel @Inject constructor(
             currentUserName = currentUser?.email ?: "Current User"
         } catch (e: Exception) {
             Log.e("ThreadsViewModel", "Failed to retrieve current user", e)
+        }
+    }
+
+    private suspend fun getUserDisplayData(
+        userID: String
+    ): Pair<String, String?> {
+        return try {
+            val user = userRepository.getUserByUserID(userID)
+
+            Pair(
+                user?.username ?: userID,
+                user?.profilePictureURL
+            )
+        } catch (e: Exception) {
+            Log.e("ThreadsViewModel", "User not found for ID: $userID", e)
+            Pair(userID, null)
         }
     }
 
@@ -71,7 +88,9 @@ class ThreadsViewModel @Inject constructor(
 
             commentsResult.fold(
                 onSuccess = { comments ->
-                    val commentsWithThreads = comments.map { comment ->
+                    val commentsUi = comments.map { comment ->
+
+                        val commentAuthor = getUserDisplayData(comment.authorID)
 
                         val threads = getThreadsUseCase(
                             visualizationId = visualizationId,
@@ -80,8 +99,29 @@ class ThreadsViewModel @Inject constructor(
                             emptyList()
                         }
 
-                        comment.copy(
-                            threads = threads
+                        val threadsUi = threads.map { thread ->
+
+                            val threadAuthor = getUserDisplayData(thread.authorID)
+
+                            ThreadUiModel(
+                                id = thread.id,
+                                authorID = thread.authorID,
+                                authorName = threadAuthor.first,
+                                authorImageURL = threadAuthor.second,
+                                content = thread.content,
+                                createdAt = thread.createdAt
+                            )
+                        }
+
+                        CommentUiModel(
+                            id = comment.id,
+                            authorID = comment.authorID,
+                            authorName = commentAuthor.first,
+                            authorImageURL = commentAuthor.second,
+                            content = comment.content,
+                            imageURL = comment.imageURL,
+                            createdAt = comment.createdAt,
+                            threads = threadsUi
                         )
                     }
                     _uiState.update {
@@ -89,7 +129,7 @@ class ThreadsViewModel @Inject constructor(
                             isLoading = false,
                             visualizationTitle = visualizationTitle,
                             currentUserId = currentUserID,
-                            comments = commentsWithThreads
+                            comments = commentsUi
                         )
                     }
                 },

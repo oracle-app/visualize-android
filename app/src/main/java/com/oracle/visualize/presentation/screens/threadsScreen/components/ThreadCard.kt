@@ -14,10 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.presentation.components.UserAvatar
+import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
 
 @Composable
 fun ThreadCard(
-    thread: Thread,
+    thread: ThreadUiModel,
     modifier: Modifier = Modifier
 ) {
 
@@ -31,7 +32,7 @@ fun ThreadCard(
         ) {
 
             UserAvatar(
-                username = thread.authorID,
+                username = thread.authorName,
                 profilePictureURL = null,
                 size = 32,
                 modifier = Modifier.border(
@@ -72,7 +73,7 @@ fun ThreadCard(
                 ) {
 
                     Text(
-                        text = thread.authorID,
+                        text = thread.authorName,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.weight(1f)
