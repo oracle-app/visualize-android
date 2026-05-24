@@ -94,8 +94,8 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                             fontSize = 13.sp
                         )
                         Text(
-                            text = " ${stringResource(R.string.bullet_separator,
-                                formatTime(item.createdAt, context))}",
+                            text = stringResource(R.string.bullet_separator,
+                                formatTime(item.createdAt, context)),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
