@@ -163,6 +163,7 @@ fun FullVisualizationPage(
                                 modifier = Modifier.matchParentSize()
                             )
                             ZoomableChart(
+                                chart = chart,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .fillMaxHeight()

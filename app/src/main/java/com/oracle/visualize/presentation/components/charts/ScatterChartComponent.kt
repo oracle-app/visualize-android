@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -52,12 +53,16 @@ import kotlin.collections.component2
  * KoalaPlot.
  *
  * @param chart The chart configuration and data to render.
+ * @param modifier The composable Modifier variable so a parent component can
+ * modify its appearance.
+ * @param showAxisLabels Enables or disables the property of axis labels to be shown.
+ * @param enableTooltips Enables or disables the property of tooltips to be shown.
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderScatterChart(
     modifier: Modifier = Modifier, chart: ScatterChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     val dotColors = generateChartColors(2, ChartPalette.THEME1)
@@ -75,15 +80,13 @@ fun RenderScatterChart(
             xAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleXRange(),
                 minViewExtent = 0.01f,
-                minorTickCount = 10,
-                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickIncrement = 0.001f,
                 minimumMajorTickSpacing = 60.dp
             ),
             yAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleYRange(),
                 minViewExtent = 0.01f,
-                minorTickCount = 10,
-                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickIncrement = 0.001f,
                 minimumMajorTickSpacing = 30.dp
             ),
             xAxisContent = AxisContent(
@@ -113,10 +116,10 @@ fun RenderScatterChart(
                 }
             ),
             gestureConfig = GestureConfig(
-                zoomXEnabled = true,
-                zoomYEnabled = true,
-                panXEnabled = true,
-                panYEnabled = true,
+                zoomXEnabled = enableZoomAndPan,
+                zoomYEnabled = enableZoomAndPan,
+                panXEnabled = enableZoomAndPan,
+                panYEnabled = enableZoomAndPan,
             )
         ) {
             LinePlot2(
@@ -151,6 +154,7 @@ fun RenderScatterChart(
                         )
                     }
                 },
+                animationSpec = tween(0)
             )
         }
     }

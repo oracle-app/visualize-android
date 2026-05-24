@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -48,12 +49,16 @@ import kotlinx.coroutines.launch
  * KoalaPlot.
  *
  * @param chart The chart configuration and data to render.
+ * @param modifier The composable Modifier variable so a parent component can
+ * modify its appearance.
+ * @param showAxisLabels Enables or disables the property of axis labels to be shown.
+ * @param enableTooltips Enables or disables the property of tooltips to be shown.
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderAreaChart(
     modifier: Modifier = Modifier, chart: AreaChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val sortedKeys = chart.data.keys.sorted()
     val minX = sortedKeys.firstOrNull() ?: 0f
@@ -67,15 +72,13 @@ fun RenderAreaChart(
             xAxisModel = rememberFloatLinearAxisModel(
                 range = minX..maxOf(minX + 1f, maxX),
                 minViewExtent = 0.01f,
-                minorTickCount = 10,
-                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickIncrement = 0.001f,
                 minimumMajorTickSpacing = 60.dp
             ),
             yAxisModel = rememberFloatLinearAxisModel(
                 range = 0f..maxOf(1f, maxY),
                 minViewExtent = 0.01f,
-                minorTickCount = 10,
-                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickIncrement = 0.001f,
                 minimumMajorTickSpacing = 30.dp
             ),
             xAxisContent = AxisContent(
@@ -108,10 +111,10 @@ fun RenderAreaChart(
                 }
             ),
             gestureConfig = GestureConfig(
-                zoomXEnabled = true,
-                zoomYEnabled = true,
-                panXEnabled = true,
-                panYEnabled = true,
+                zoomXEnabled = enableZoomAndPan,
+                zoomYEnabled = enableZoomAndPan,
+                panXEnabled = enableZoomAndPan,
+                panYEnabled = enableZoomAndPan,
             )
         ) {
             var previousLayerAreaPoints: List<DefaultPoint<Float, Float>>? = null
@@ -134,6 +137,7 @@ fun RenderAreaChart(
                     },
                     areaStyle = AreaStyle(SolidColor(seriesColors[sNIndex].copy(alpha = 0.2f))),
                     lineStyle = LineStyle(SolidColor(seriesColors[sNIndex]), strokeWidth = 2.dp),
+                    animationSpec = tween(0)
                 )
 
                 previousLayerAreaPoints = seriesAreaPoints
@@ -169,7 +173,8 @@ fun RenderAreaChart(
                                         }
                                 )
                             }
-                        }
+                        },
+                        animationSpec = tween(0)
                     )
                 }
             }

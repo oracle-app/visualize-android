@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -51,12 +52,16 @@ import kotlin.collections.component2
  * KoalaPlot.
  *
  * @param chart The chart configuration and data to render.
+ * @param modifier The composable Modifier variable so a parent component can
+ * modify its appearance.
+ * @param showAxisLabels Enables or disables the property of axis labels to be shown.
+ * @param enableTooltips Enables or disables the property of tooltips to be shown.
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderLineChart(
     modifier: Modifier = Modifier, chart: LineChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     val lineColor = generateChartColors(1, ChartPalette.THEME1).firstOrNull() ?: Color.Blue
@@ -75,15 +80,13 @@ fun RenderLineChart(
             xAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleXRange(),
                 minViewExtent = 0.01f,
-                minorTickCount = 10,
-                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickIncrement = 0.001f,
                 minimumMajorTickSpacing = 60.dp
             ),
             yAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleYRange(),
                 minViewExtent = 0.01f,
-                minorTickCount = 10,
-                minimumMajorTickIncrement = 0.0001f,
+                minimumMajorTickIncrement = 0.001f,
                 minimumMajorTickSpacing = 30.dp
             ),
             xAxisContent = AxisContent(
@@ -116,15 +119,16 @@ fun RenderLineChart(
                 }
             ),
             gestureConfig = GestureConfig(
-                zoomXEnabled = true,
-                zoomYEnabled = true,
-                panXEnabled = true,
-                panYEnabled = true,
+                zoomXEnabled = enableZoomAndPan,
+                zoomYEnabled = enableZoomAndPan,
+                panXEnabled = enableZoomAndPan,
+                panYEnabled = enableZoomAndPan,
             )
         ) {
             LinePlot2(
                 data = processedData,
-                lineStyle = LineStyle(SolidColor(lineColor), strokeWidth = 2.dp)
+                lineStyle = LineStyle(SolidColor(lineColor), strokeWidth = 2.dp),
+                animationSpec = tween(0)
             )
 
             LinePlot2(
@@ -158,7 +162,8 @@ fun RenderLineChart(
                             shape = CircleShape
                         )
                     }
-                }
+                },
+                animationSpec = tween(0)
             )
         }
     }

@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,15 +16,18 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
+import io.github.koalaplot.core.animation.StartAnimationUseCase
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.HorizontalBarPlot
 import io.github.koalaplot.core.gestures.GestureConfig
@@ -32,6 +37,7 @@ import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
+import kotlinx.coroutines.launch
 
 /**
  * Renders a horizontal bar chart based on the provided [HorizontalBarChart] data using
@@ -40,12 +46,14 @@ import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
  * @param chart The chart configuration and data to render.
  * @param modifier The composable Modifier variable so a parent component can
  * modify its appearance.
+ * @param showAxisLabels Enables or disables the property of axis labels to be shown.
+ * @param enableTooltips Enables or disables the property of tooltips to be shown.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderHorizontalBarChart(
     modifier: Modifier = Modifier, chart: HorizontalBarChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val categories = chart.data.keys.toList()
     val values = chart.data.values.toList()
@@ -58,8 +66,7 @@ fun RenderHorizontalBarChart(
                 xAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxValue,
                     minViewExtent = 0.01f,
-                    minorTickCount = 10,
-                    minimumMajorTickIncrement = 0.0001f,
+                    minimumMajorTickIncrement = 0.001f,
                     minimumMajorTickSpacing = 60.dp
                 ),
                 yAxisModel = remember { CategoryAxisModel(categories) },
@@ -90,16 +97,17 @@ fun RenderHorizontalBarChart(
                     }
                 ),
                 gestureConfig = GestureConfig(
-                    zoomXEnabled = true,
-                    zoomYEnabled = true,
-                    panXEnabled = true,
-                    panYEnabled = true,
+                    zoomXEnabled = enableZoomAndPan,
+                    zoomYEnabled = enableZoomAndPan,
+                    panXEnabled = enableZoomAndPan,
+                    panYEnabled = enableZoomAndPan,
                 )
             ) {
                 HorizontalBarPlot(
                     xData = values,
                     yData = categories,
                     bar = { index, _, _ ->
+                        val coroutineScope = rememberCoroutineScope()
                         val tooltipDisplayState = rememberTooltipState(
                             initialIsVisible = false, isPersistent = true
                         )
@@ -117,10 +125,16 @@ fun RenderHorizontalBarChart(
                         ) {
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
-                                modifier = modifier.fillMaxWidth()
+                                modifier = modifier.fillMaxWidth().pointerInput(Unit) {
+                                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                }
                             )
                         }
-                    }
+                    },
+                    startAnimationUseCase = StartAnimationUseCase(
+                        executionType = StartAnimationUseCase.ExecutionType.None,
+                        chartAnimationSpecs = arrayOf(tween(0))
+                    )
                 )
             }
         }

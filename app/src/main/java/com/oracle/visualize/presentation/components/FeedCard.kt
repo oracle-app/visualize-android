@@ -91,12 +91,12 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(R.string.by_author, item.author),
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                         Text(
-                            text = stringResource(R.string.bullet_separator,
-                                formatTime(item.createdAt, context)),
+                            text = " ${stringResource(R.string.bullet_separator,
+                                formatTime(item.createdAt, context))}",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
@@ -132,7 +132,8 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     val chart = item.chart
                     if (chart != null) {
                         ChartRenderGeneral(
-                            chart = chart, showAxisLabels = false, enableTooltips = false
+                            chart = chart, showAxisLabels = false, enableTooltips = false,
+                            enableZoomAndPan = false
                         )
                     } else {
                         Text(

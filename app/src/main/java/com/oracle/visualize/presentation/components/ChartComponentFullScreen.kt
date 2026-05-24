@@ -65,48 +65,42 @@ fun ChartRenderFullScreen(
     when (chart) {
         is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {
             Column(modifier = modifier.fillMaxSize()) {
-                Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-                    .padding(horizontal = 10.dp).fillMaxSize()) {
+                Column(
+                    modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                        .padding(horizontal = 10.dp).fillMaxSize()
+                ) {
                     ChartRenderGeneral(modifier, chart)
                 }
             }
         }
         else -> {
             ChartLayout(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                    .fillMaxSize(),
                 title = {},
                 legend = {
                     Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 2.dp)) {
                         FlowLegend(
                             modifier = Modifier
-                                .border(1.dp,
-                                    MaterialTheme.colorScheme.onPrimaryContainer,
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimary,
-                                    RoundedCornerShape(12.dp)
-                                )
+                                .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp))
+                                .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(12.dp))
                                 .padding(16.dp).align(Alignment.Center),
                             itemCount = cleanLabels.size,
-                            symbol = { Symbol(
-                                shape = CircleShape,
-                                fillBrush = SolidColor(colors[it])
-                            ) },
+                            symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
                             label = {
-                                Text(
-                                    cleanLabels[it],
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = Color.DarkGray
-                                ) }
+                                Text(text = cleanLabels[it], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray) }
                         )
                     }
                 },
                 legendLocation = LegendLocation.TOP
             ) {
                 Column(modifier = modifier.fillMaxSize()) {
-                    Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-                        .padding(horizontal = 10.dp).fillMaxSize()) {
+                    Column(
+                        modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                            .padding(horizontal = 10.dp)
+                            .fillMaxSize()
+                    ) {
                         ChartRenderGeneral(modifier, chart, showAxisLabels)
                     }
                 }

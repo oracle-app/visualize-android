@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.components.charts
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,10 +16,12 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -25,6 +29,7 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.StackedBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
+import io.github.koalaplot.core.animation.StartAnimationUseCase
 import io.github.koalaplot.core.bar.DefaultBar
 import io.github.koalaplot.core.bar.StackedVerticalBarPlot
 import io.github.koalaplot.core.gestures.GestureConfig
@@ -34,6 +39,7 @@ import io.github.koalaplot.core.xygraph.CategoryAxisModel
 import io.github.koalaplot.core.xygraph.XYGraph
 import io.github.koalaplot.core.xygraph.rememberAxisStyle
 import io.github.koalaplot.core.xygraph.rememberFloatLinearAxisModel
+import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -42,12 +48,16 @@ import kotlin.collections.component2
  * KoalaPlot.
  *
  * @param chart The chart configuration and data to render.
+ * @param modifier The composable Modifier variable so a parent component can
+ * modify its appearance.
+ * @param showAxisLabels Enables or disables the property of axis labels to be shown.
+ * @param enableTooltips Enables or disables the property of tooltips to be shown.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderStackedBarChart(
     modifier: Modifier = Modifier, chart: StackedBarChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val categories = remember(chart) { chart.data.keys.toList() }
     val seriesCount = remember(chart) { chart.data.values.firstOrNull()?.size ?: 0 }
@@ -74,8 +84,7 @@ fun RenderStackedBarChart(
                 yAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxOf(1f, maxY),
                     minViewExtent = 0.01f,
-                    minorTickCount = 10,
-                    minimumMajorTickIncrement = 0.0001f,
+                    minimumMajorTickIncrement = 0.001f,
                     minimumMajorTickSpacing = 30.dp
                 ),
                 xAxisContent = AxisContent(
@@ -105,13 +114,18 @@ fun RenderStackedBarChart(
                     }
                 ),
                 gestureConfig = GestureConfig(
-                    zoomXEnabled = true,
-                    zoomYEnabled = true,
-                    panXEnabled = true,
-                    panYEnabled = true,
+                    zoomXEnabled = enableZoomAndPan,
+                    zoomYEnabled = enableZoomAndPan,
+                    panXEnabled = enableZoomAndPan,
+                    panYEnabled = enableZoomAndPan,
                 )
             ) {
-                StackedVerticalBarPlot {
+                StackedVerticalBarPlot(
+                    startAnimationUseCase = StartAnimationUseCase(
+                        executionType = StartAnimationUseCase.ExecutionType.None,
+                        chartAnimationSpecs = arrayOf(tween(0))
+                    )
+                ) {
                     if (categories.isNotEmpty() && seriesCount > 0) {
                         seriesNames.forEachIndexed { seriesIndex, _ ->
                             series {
@@ -121,6 +135,7 @@ fun RenderStackedBarChart(
                                             x = category,
                                             y = values[seriesIndex],
                                             bar = { _, itemIndex, plotEntry ->
+                                                val coroutineScope = rememberCoroutineScope()
                                                 val tooltipDisplayState = rememberTooltipState(
                                                     initialIsVisible = false, isPersistent = true
                                                 )
@@ -140,7 +155,9 @@ fun RenderStackedBarChart(
                                                 ) {
                                                     DefaultBar(
                                                         brush = SolidColor(seriesColors[itemIndex]),
-                                                        modifier = modifier.fillMaxWidth()
+                                                        modifier = modifier.fillMaxWidth().pointerInput(Unit) {
+                                                            detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                                        }
                                                     )
                                                 }
                                             }
