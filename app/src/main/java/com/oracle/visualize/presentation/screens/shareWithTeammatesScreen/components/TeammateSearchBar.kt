@@ -54,14 +54,14 @@ fun TeammateSearchBar(
                 Icon(
                     imageVector        = Icons.Default.Search,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.onSecondaryContainer,
+                    tint               = MaterialTheme.colorScheme.primary,
                     modifier           = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
                     imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.onSecondaryContainer,
+                    tint               = MaterialTheme.colorScheme.primary,
                     modifier           = Modifier.size(24.dp)
                 )
             }
@@ -73,7 +73,7 @@ fun TeammateSearchBar(
             placeholder   = {
                 Text(
                     text     = stringResource(R.string.input_email),
-                    color    = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f),
+                    color    = MaterialTheme.colorScheme.outlineVariant,
                     fontSize = 16.sp
                 )
             },
@@ -105,6 +105,3 @@ fun TeammateSearchBar(
         }
     }
 }
-
-
-
