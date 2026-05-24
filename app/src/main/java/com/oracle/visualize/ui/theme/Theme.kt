@@ -70,11 +70,11 @@ private val LightColorScheme = lightColorScheme(
 
     background = VeryLightGray,
     onBackground = NotAsLightGray,
-    surface = VeryLightGray,
-    onSurface = NotAsLightGray,
+    surface = White,
+    onSurface = Color.Black,
 
     surfaceVariant = LighterBlue,
-    onSurfaceVariant = StrongBlue,
+    onSurfaceVariant = NotAsLightGray,
 
     outline = GrayishBlue,
     outlineVariant = NotAsDarkGray,
