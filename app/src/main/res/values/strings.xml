@@ -47,7 +47,8 @@
         <item quantity="other">%d weeks ago</item>
     </plurals>
     <string name="by_author">By %s</string>
-    <string name="bullet_separator">    •    %s</string>
+    <string name="by_me">By Me</string>
+    <string name="bullet_separator">•</string>
 
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>

@@ -139,6 +139,7 @@ class FeedViewModel @Inject constructor(
             if (currentState is FeedUiState.Success) {
                 currentState.copy(
                     items = filteredItems,
+                    currentUserID = currentUserID,
                     searchText = search,
                     selectedFilter = filter,
                     isRefreshing = false
@@ -146,6 +147,7 @@ class FeedViewModel @Inject constructor(
             } else {
                 FeedUiState.Success(
                     items = filteredItems,
+                    currentUserID = currentUserID,
                     searchText = search,
                     selectedFilter = filter,
                     isRefreshing = false

@@ -85,10 +85,10 @@ fun FeedPage(
                 is FeedUiState.Success -> {
 
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = 20.dp)
                     ) {
 
                         item {
@@ -121,6 +121,7 @@ fun FeedPage(
                             ) { item ->
                                 FeedCard(
                                     item = item,
+                                    currentUserID = state.currentUserID,
                                     onClick = { onVisualizationClick(item.id) }
                                 )
                             }

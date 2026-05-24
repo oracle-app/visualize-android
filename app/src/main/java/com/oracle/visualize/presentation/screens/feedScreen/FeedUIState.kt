@@ -11,6 +11,7 @@ sealed interface FeedUiState {
 
     data class Success(
         val items: List<VisualizationCard>,
+        val currentUserID: String = "",
         val searchText: String = "",
         val selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
         val isRefreshing: Boolean = false,
