@@ -1,8 +1,8 @@
 package com.oracle.visualize.data.repositories
 
-import com.oracle.visualize.data.datasources.UserDatasource
 import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.TeamDatasource
+import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
@@ -206,6 +206,21 @@ class VisualizationRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             if (e is AppError) throw e
             throw AppError.NetworkError("Failed to hide visualization for user: ${e.message}")
+        }
+    }
+
+    override suspend fun updateSharedUsers(
+        visualizationId: String,
+        userIds: List<String>,
+        teamIds: List<String>
+    ) {
+        try {
+            visualizationDataSource.updateSharedUsers(visualizationId, userIds, teamIds)
+        } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+            throw AppError.NetworkError("Request timed out. Check your connection and try again.")
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to update shared users: ${e.message}")
         }
     }
 }
