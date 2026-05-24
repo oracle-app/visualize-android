@@ -1,6 +1,5 @@
 package com.oracle.visualize.data.datasources
 
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
@@ -105,7 +104,7 @@ class VisualizationDatasource @Inject constructor(
     /**
      * Publishes all user's visualizations to the database in bulk.
      *
-     * @param visualizations The list of visualizations [List<VisualizationDTO>].ß
+     * @param visualizations The list of visualizations [List<VisualizationDTO>].
      */
     suspend fun publishVisualizationsInBulk(visualizations: List<VisualizationDTO>) {
         visualizations.chunked(500).forEach { chunk ->
@@ -134,5 +133,20 @@ class VisualizationDatasource @Inject constructor(
             results.addAll(snapshot.toObjects(VisualizationDTO::class.java))
         }
         return results
+    }
+
+    /**
+     * Searches a visualization from the database by its ID.
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @return [VisualizationDTO] object.
+     */
+    suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
+        val visualization = visualizationsRef.document(visualizationID).get().await()
+
+        if(!visualization.exists()) return null
+
+        return visualization.toObject(VisualizationDTO::class.java)
+            ?: throw AppError.ParsingError("Error parsing VisualizationDTO.")
     }
 }

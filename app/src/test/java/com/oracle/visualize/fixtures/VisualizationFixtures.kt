@@ -7,9 +7,10 @@ import java.util.Date
 object VisualizationFixtures {
 
     const val VALID_USER_ID = "user123"
+    const val VALID_VISUALIZATION_ID = "1"
 
     val fakeVisualizationCard = VisualizationCard(
-        id = "1",
+        id = VALID_VISUALIZATION_ID,
         title = "Chart A",
         author = "John",
         authorID = "2",
