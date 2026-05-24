@@ -74,7 +74,7 @@ class FeedViewModel @Inject constructor(
 
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
-                    allVisualizations = items
+                    allVisualizations = items.distinctBy { it.id }
                     applyLocalFilterAndSearch()
                 },
                 onFailure = { error ->
