@@ -16,6 +16,7 @@ val VeryLightGray = Color(0xFFF5F4F2)
 val NotAsLightGray = Color(0xFF597271)
 val LighterBlue = Color(0xFFE6EDEC)
 val GrayishBlue = Color(0xFFA9C8C4)
+val SearchHint = Color(0xFF7FA9A9)
 val ErrorRed = Color(0xFFEC4848)
 val ScrimColor = Color(0xFF1A2F3F)
 
@@ -100,4 +101,3 @@ val Draw_5 = Color(0xFF2154E2)
 val Draw_6 = Color(0xFFFF0000)
 
 val Draw_7 = Color.Black
-
