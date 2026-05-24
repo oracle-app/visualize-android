@@ -6,11 +6,9 @@ import com.oracle.visualize.domain.models.Thread
 interface CommentRepository {
     suspend fun createComment(
         visualizationId: String,
-        authorId: String,
-        authorName: String,
-        authorImageUrl: String?,
+        authorID: String,
         content: String,
-        imageUrl: String?
+        imageURL: String?
     )
 
     suspend fun getComments(

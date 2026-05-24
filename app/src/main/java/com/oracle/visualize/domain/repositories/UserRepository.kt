@@ -9,5 +9,4 @@ import com.oracle.visualize.domain.models.User
  */
 interface UserRepository {
     suspend fun getUserSuggestionsByEmail(email: String): List<ShareUser>
-
 }

@@ -5,12 +5,9 @@ import java.util.Date
 /**
  * Domain model representing a Thread
  */
-data class Thread (
-    val id: String,
-    val authorId: String,
-    val authorName: String,
-    val authorImageUrl: String? = null,
-    val content: String,
-    val imageUrl: String? = null,
-    val createdAt: Date
+data class Thread(
+    val id: String = "",
+    val authorID: String = "",
+    val content: String = "",
+    val createdAt: Date = Date()
 )

@@ -1,12 +1,12 @@
 package com.oracle.visualize.presentation.screens.threadsScreen
 
 import android.util.Log
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.CreateCommentUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
@@ -72,12 +72,14 @@ class ThreadsViewModel @Inject constructor(
             commentsResult.fold(
                 onSuccess = { comments ->
                     val commentsWithThreads = comments.map { comment ->
+
                         val threads = getThreadsUseCase(
                             visualizationId = visualizationId,
                             commentId = comment.id
                         ).getOrElse {
                             emptyList()
                         }
+
                         comment.copy(
                             threads = threads
                         )
@@ -120,10 +122,9 @@ class ThreadsViewModel @Inject constructor(
         viewModelScope.launch {
             createCommentUseCase(
                 visualizationId = visualizationId,
-                authorId = currentUserID,
-                authorName = currentUserName,
-                authorImageUrl = currentUserImageUrl,
-                content = content
+                authorID = currentUserID,
+                content = content,
+                imageURL = null
             ).fold(
                 onSuccess = {
                     loadThreads(visualizationId)

@@ -1,5 +1,3 @@
-@file:JvmName("CommentCardKt")
-
 package com.oracle.visualize.presentation.screens.threadsScreen.components
 
 import androidx.compose.foundation.background
@@ -13,8 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.presentation.components.UserAvatar
@@ -55,8 +55,8 @@ fun CommentCard(
         ) {
 
             UserAvatar(
-                username = comment.authorName,
-                profilePictureURL = comment.authorImageUrl,
+                username = comment.authorID,
+                profilePictureURL = null,
                 size = 38
             )
 
@@ -65,7 +65,7 @@ fun CommentCard(
             Column(modifier = Modifier.weight(1f)) {
 
                 Text(
-                    text = comment.authorName,
+                    text = comment.authorID,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -90,7 +90,18 @@ fun CommentCard(
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
         )
-
+        if (!comment.imageURL.isNullOrBlank()) {
+            SubcomposeAsyncImage(
+                model = comment.imageURL,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 14.dp, bottom = 12.dp)
+                    .width(155.dp)
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.FillBounds
+            )
+        }
         Box(
             modifier = Modifier
                 .padding(start = 24.dp, end = 14.dp, bottom = 14.dp)
@@ -110,7 +121,6 @@ fun CommentCard(
             Column(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-
                 comment.threads.forEach { thread ->
                     ThreadCard(thread = thread)
                 }

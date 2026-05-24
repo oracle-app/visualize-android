@@ -28,17 +28,16 @@ class CommentDatasource @Inject constructor(
         visualizationId: String,
         commentDTO: CommentDTO
     ) {
-        val docRef = commentsRef(visualizationId).document()
-
         val formattedComment = hashMapOf(
-            "authorId" to commentDTO.authorId,
-            "authorName" to commentDTO.authorName,
-            "authorImageUrl" to commentDTO.authorImageUrl,
+            "authorID" to commentDTO.authorID,
             "content" to commentDTO.content,
-            "imageUrl" to commentDTO.imageUrl,
-            "createdAt" to Timestamp.now()
+            "createdAt" to Timestamp.now(),
+            "imageURL" to commentDTO.imageURL
         )
-        docRef.set(formattedComment).await()
+        commentsRef(visualizationId)
+            .document()
+            .set(formattedComment)
+            .await()
     }
 
     suspend fun getComments(visualizationId: String): List<CommentDTO> {

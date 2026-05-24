@@ -130,12 +130,10 @@ fun ThreadsPage(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-
                         items(uiState.comments) { comment ->
-
                             CommentCard(
                                 comment = comment,
-                                isCurrentUser = comment.authorId == uiState.currentUserId
+                                isCurrentUser = comment.authorID == uiState.currentUserId
                             )
                         }
                         item {

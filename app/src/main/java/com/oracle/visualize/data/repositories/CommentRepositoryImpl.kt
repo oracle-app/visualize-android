@@ -14,20 +14,16 @@ class CommentRepositoryImpl @Inject constructor(
 
     override suspend fun createComment(
         visualizationId: String,
-        authorId: String,
-        authorName: String,
-        authorImageUrl: String?,
+        authorID: String,
         content: String,
-        imageUrl: String?
+        imageURL: String?
     ) {
         commentDatasource.createComment(
             visualizationId = visualizationId,
             commentDTO = CommentDTO(
-                authorId = authorId,
-                authorName = authorName,
-                authorImageUrl = authorImageUrl,
+                authorID = authorID,
                 content = content,
-                imageUrl = imageUrl
+                imageURL = imageURL
             )
         )
     }

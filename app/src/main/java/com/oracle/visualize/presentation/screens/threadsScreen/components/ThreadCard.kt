@@ -31,8 +31,8 @@ fun ThreadCard(
         ) {
 
             UserAvatar(
-                username = thread.authorName,
-                profilePictureURL = thread.authorImageUrl,
+                username = thread.authorID,
+                profilePictureURL = null,
                 size = 32,
                 modifier = Modifier.border(
                     width = 3.dp,
@@ -72,7 +72,7 @@ fun ThreadCard(
                 ) {
 
                     Text(
-                        text = thread.authorName,
+                        text = thread.authorID,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.weight(1f)

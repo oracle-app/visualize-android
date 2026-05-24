@@ -16,11 +16,9 @@ class CreateCommentUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         visualizationId: String,
-        authorId: String,
-        authorName: String,
-        authorImageUrl: String?,
+        authorID: String,
         content: String,
-        imageUrl: String? = null
+        imageURL: String? = null
     ): Result<Unit> {
 
         if (content.isBlank()) {
@@ -29,11 +27,9 @@ class CreateCommentUseCase @Inject constructor(
         return runCatching {
             commentsRepository.createComment(
                 visualizationId = visualizationId,
-                authorId = authorId,
-                authorName = authorName,
-                authorImageUrl = authorImageUrl,
+                authorID = authorID,
                 content = content.trim(),
-                imageUrl = imageUrl
+                imageURL = imageURL
             )
         }
     }
