@@ -60,6 +60,7 @@ class ShareWithTeammatesViewModel @Inject constructor(
 
                 val myTeams   = myTeamsDeferred.await()
                 val teamsImIn = teamsImInDeferred.await()
+                    .filter { team -> myTeams.none { it.id == team.id } }
 
                 _uiState.value = ShareWithTeammatesUiState.Content(
                     visualizationId = visualizationId,
