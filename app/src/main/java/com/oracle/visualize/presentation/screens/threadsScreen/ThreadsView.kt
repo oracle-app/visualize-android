@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.presentation.screens.threadsScreen.components.AddNoteBar
-import com.oracle.visualize.presentation.screens.threadsScreen.components.ThreadCard
 import com.oracle.visualize.presentation.screens.threadsScreen.components.ThreadsTopBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.screens.threadsScreen.components.CommentCard
 
 /**
  * Screen that displays the discussion threads of a selected visualization.
@@ -30,7 +30,6 @@ import com.oracle.visualize.R
  * @param visualizationId ID of the visualization whose threads are displayed (still not implemented).
  * @param modifier Modifier for the screen layout.
  * @param viewModel The [ThreadsViewModel] that manages the screen state.
- * @param onBackClick Callback to navigate back.
  */
 
 @Composable
@@ -53,7 +52,13 @@ fun ThreadsPage(
             AddNoteBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 8.dp)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                onSendClick = { content ->
+                    viewModel.createComment(
+                        visualizationId = visualizationId,
+                        content = content
+                    )
+                }
             )
         }
     ) { paddingValues ->
@@ -68,33 +73,81 @@ fun ThreadsPage(
                 onBackClick = onBackClick
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    end = 20.dp,
-                    top = 10.dp,
-                    bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.threads) { thread ->
-                    ThreadCard(
-                        thread = thread,
-                        isCurrentUser = thread.authorId == uiState.currentUserId
-                    )
+            when {
+                uiState.isLoading -> {
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
                 }
 
-                item {
-                    Text(
-                        text = stringResource(R.string.no_threads),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
+                uiState.errorMessage != null -> {
+                    val errorMessage = uiState.errorMessage ?: R.string.error_unknown_retry
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+
+                        Text(
+                            text = stringResource(errorMessage),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                uiState.comments.isEmpty() -> {
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+
+                        Text(
+                            text = stringResource(R.string.no_threads_yet),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                else -> {
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 20.dp,
+                            end = 20.dp,
+                            top = 10.dp,
+                            bottom = 16.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.comments) { comment ->
+                            CommentCard(
+                                comment = comment,
+                                isCurrentUser = comment.authorID == uiState.currentUserId
+                            )
+                        }
+                        item {
+                            Text(
+                                text = stringResource(R.string.no_threads),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
         }
