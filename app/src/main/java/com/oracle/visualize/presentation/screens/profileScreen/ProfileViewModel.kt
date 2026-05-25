@@ -16,6 +16,8 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartUiState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,20 +27,17 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val uid = FirebaseAuth.getInstance().currentUser?.uid
-        ?: throw IllegalStateException("LOGIN ERROR, REPLACE WITH PROPER ERROR HANDLING LATER")
+    private val uid = auth.currentUser?.uid ?: ""
 
 
 
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
-    private val _user = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = _user
-
-    suspend fun fetchUserData(): Result<Unit> {
+    private suspend fun fetchUserData(): Result<Unit> {
 
         if (uid == null) {
             return Result.failure(AppError.AuthFailed())
@@ -50,13 +49,8 @@ class ProfileViewModel @Inject constructor(
             val user = userRepository.getUserByUserID(uid)
                 ?: return Result.failure(AppError.NotFound("User not found for id: $uid"))
 
-            // This is a DEBUGGING log, remove when finished.
-
-            Log.d("ProfileViewModel", "Profile picture URL: ${user.profilePictureURL}")
-
             // If the uid is successful, then take those values and bring them to the uiState
 
-            _user.value = user
             _uiState.value = ProfileUiState.Ready(user.username, user.email, user.profilePictureURL, user.chartTheme)
             Result.success(Unit)
 
@@ -78,14 +72,17 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    private var chartThemeJob: Job? = null
+
     fun setChartTheme(selectedPalette: String) {
-        viewModelScope.launch {
+        _uiState.update { current ->
+            if (current is ProfileUiState.Ready) current.copy(chartTheme = selectedPalette)
+            else current
+        }
+        chartThemeJob?.cancel()
+        chartThemeJob = viewModelScope.launch {
+            delay(500)
             userRepository.setChartTheme(uid, selectedPalette)
-            _uiState.update { current ->
-                if (current is ProfileUiState.Ready) {
-                    current.copy(chartTheme = selectedPalette)
-                } else current
-            }
         }
     }
 
@@ -108,15 +105,30 @@ class ProfileViewModel @Inject constructor(
         _uiState.value = ProfileUiState.PfpUpload(pfp = uri)
     }
 
-    fun updatePfp(url: String) {
+
+
+    fun updatePfp(uri: Uri) {
         viewModelScope.launch {
+            val url = userRepository.uploadProfilePicture(uid, uri)
             userRepository.setProfilePicture(uid, url)
+            fetchUserData()
         }
     }
 
-    fun logout() {
-        FirebaseAuth.getInstance().signOut()
 
+    fun logout() {
+        auth.signOut()
+    }
+
+    fun deleteProfilePicture() {
+        viewModelScope.launch {
+            try {
+                userRepository.deleteProfilePicture(uid)
+            } catch (e: AppError.NotFound) {
+                Log.e("ProfileViewModel", "Unexpected error: ${e.message}")
+            }
+            userRepository.setProfilePicture(uid, "")
+        }
     }
 
     init {

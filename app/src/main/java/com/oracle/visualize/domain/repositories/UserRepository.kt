@@ -19,4 +19,6 @@ interface UserRepository {
 
     suspend fun setChartTheme(userID: String, url: String): Unit
 
+    suspend fun deleteProfilePicture(userID: String): Unit
+
 }

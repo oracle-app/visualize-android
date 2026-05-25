@@ -30,7 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.viewinterop.AndroidView
-import com.oracle.visualize.presentation.screens.snippingTool.completeSnippingTool.SnippingToolView
+import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
 import kotlinx.coroutines.launch

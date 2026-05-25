@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -16,12 +17,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -38,19 +53,22 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AppDropdownMenu
 import com.oracle.visualize.presentation.navigation.NavRoutes
 import com.oracle.visualize.presentation.screens.profileScreen.components.ChartThemePicker
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
 import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
-import com.oracle.visualize.presentation.screens.snippingTool.completeSnippingTool.SnippingToolView
 import com.yalantis.ucrop.UCrop
 import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
+    navController: NavController,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
 
@@ -59,10 +77,12 @@ fun ProfilePage(
     val context = LocalContext.current
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var snippingBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
+    // Launchers
 
-    // EDIT THIS LATER TO ASSIGN THE TAKEN IMAGE TO AN EMPTY VALUE IN VIEWMODEL
+    var showDeletePhotoDialog by remember { mutableStateOf(false) }
+    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -93,8 +113,56 @@ fun ProfilePage(
     val uCropLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val resultUri = UCrop.getOutput(result.data!!)
-        resultUri?.let { profileViewModel.setPfpCapturedValue(it) }
+        if (result.resultCode == RESULT_OK) {
+            val resultUri = result.data?.let { UCrop.getOutput(it) }
+            resultUri?.let { profileViewModel.setPfpCapturedValue(it) }
+        }
+    }
+
+
+    //Dialogs
+
+    if (showDeletePhotoDialog) {
+        BasicDialog(
+            title = stringResource(R.string.delete_photo),
+            message = stringResource(R.string.delete_photo_message),
+            confirm = stringResource(R.string.delete),
+            cancel = stringResource(R.string.cancel),
+            onConfirm = {
+                profileViewModel.deleteProfilePicture()
+                showDeletePhotoDialog = false
+            },
+            onDismiss = { showDeletePhotoDialog = false }
+        )
+    }
+
+    if (showUnsavedChangesDialog) {
+        BasicDialog(
+            title = stringResource(R.string.dialog_unsaved_title),
+            message = stringResource(R.string.dialog_unsaved_message),
+            confirm = stringResource(R.string.dialog_leave),
+            cancel = stringResource(R.string.cancel),
+            onConfirm = {
+                profileViewModel.setUiState()
+                showUnsavedChangesDialog = false
+            },
+            onDismiss = { showUnsavedChangesDialog = false }
+        )
+    }
+
+    if (showLogoutDialog) {
+        BasicDialog(
+            title = stringResource(R.string.log_out_title),
+            message = "",
+            confirm = stringResource(R.string.log_out),
+            cancel = stringResource(R.string.cancel),
+            onConfirm = {
+                profileViewModel.logout()
+                navController.navigate(NavRoutes.Login)
+                showLogoutDialog = false
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
     }
 
     // This is where the page fetches the current app version.
@@ -106,10 +174,15 @@ fun ProfilePage(
             .versionName ?: unknown
     }
 
+    // Page layout start
+
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         when (val state = uiState) {
+
             is ProfileUiState.Idle -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -179,7 +252,7 @@ fun ProfilePage(
                                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                     )
                                 },
-                                stringResource(R.string.delete_photo) to { /* delete pfp */ }
+                                stringResource(R.string.delete_photo) to { showDeletePhotoDialog = true }
                             )
                         )
                     }
@@ -209,7 +282,7 @@ fun ProfilePage(
                     Spacer(modifier = Modifier.height(64.dp))
 
                     OutlinedButton(
-                        onClick = { profileViewModel.logout() },
+                        onClick = { showLogoutDialog = true },
                         border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.outlinedButtonColors(
@@ -230,30 +303,54 @@ fun ProfilePage(
             }
             is ProfileUiState.PfpUpload -> {
 
-                Column{
-                    ProfileHeader(
-                        userName = "",
-                        email = "",
-                        profileImageUrl = state.pfp ?: "",
-                        onEditClick = {}
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                )
+                {
+                    TopAppBar(
+                        title = { Text(stringResource(R.string.preview)) },
+                        navigationIcon = {
+                            IconButton(onClick = { showUnsavedChangesDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(R.string.back)
+                                )
+                            }
+                        }
+                    )
+                    AsyncImage(
+                        model = state.pfp,
+                        contentDescription = stringResource(R.string.profile_img_description),
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(R.drawable.profile_placeholder),
+                        error = painterResource(R.drawable.profile_placeholder),
                     )
 
                     OutlinedButton(
                         onClick = {
                             state.pfp?.let { pfp ->
                                 val destUri = Uri.fromFile(File(context.cacheDir, "cropped_pfp.jpg"))
+                                val options = UCrop.Options().apply {
+                                    setCircleDimmedLayer(true)
+                                    setShowCropGrid(false)
+                                    setShowCropFrame(false)
+                                }
+
                                 val cropIntent = UCrop.of(pfp, destUri)
                                     .withAspectRatio(1f, 1f)
                                     .withMaxResultSize(512, 512)
+                                    .withOptions(options)
                                     .getIntent(context)
                                 uCropLauncher.launch(cropIntent)
                             }
                         },
-                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.error
+                            contentColor = MaterialTheme.colorScheme.primary
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -261,17 +358,16 @@ fun ProfilePage(
                             .height(64.dp)
                     ) {
                         Text(
-                            text = "Edit photo",
+                            text = stringResource(R.string.edit),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
 
                     OutlinedButton(
-                        onClick = { },
+                        onClick = { showDeletePhotoDialog = true },
                         border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.error
                         ),
                         modifier = Modifier
@@ -280,7 +376,28 @@ fun ProfilePage(
                             .height(64.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.log_out),
+                            text = stringResource(R.string.delete),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            profileViewModel.updatePfp(state.pfp ?: Uri.EMPTY)
+                            profileViewModel.setUiState()
+                                  },
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 48.dp)
+                            .height(64.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.save_changes),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -291,4 +408,30 @@ fun ProfilePage(
             else -> {}
         }
     }
+}
+
+@Composable
+fun BasicDialog(
+    title: String,
+    message: String,
+    confirm: String,
+    cancel: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(message) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(confirm)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(cancel)
+            }
+        }
+    )
 }

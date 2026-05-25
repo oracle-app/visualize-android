@@ -40,7 +40,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
-        return uploadProfilePicture(userID, uri)
+        return userDatasource.uploadProfilePicture(userID, uri)
     }
 
     override suspend fun setProfilePicture(userId: String, url: String): Unit {
@@ -49,6 +49,10 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun setChartTheme(userId: String, selectedPalette: String): Unit {
         return userDatasource.setChartTheme(userId, selectedPalette)
+    }
+
+    override suspend fun deleteProfilePicture(userId: String): Unit {
+        return userDatasource.deleteProfilePicture(userId)
     }
 
 }

@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.snippingTool.croppingTool
+package com.oracle.visualize.presentation.screens.snippingTool
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -26,11 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -39,24 +38,30 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.snippingTool.components.CropOverlay
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingCanvas
+import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
+import com.oracle.visualize.presentation.screens.snippingTool.components.SnippingToolActionBar
+import com.oracle.visualize.presentation.screens.snippingTool.components.SnippingToolbar
 import kotlinx.coroutines.launch
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.oracle.visualize.R
 
 @Composable
-fun CroppingToolView(
+fun SnippingToolView(
     bitmap: Bitmap,
     onDone: (Bitmap) -> Unit,
     onCancel: () ->  Unit,
     modifier: Modifier = Modifier,
-    viewModel: CroppingToolViewModel = hiltViewModel()
+    viewModel: SnippingToolViewModel = hiltViewModel()
 ) {
 
     val view = LocalView.current
@@ -153,7 +158,10 @@ fun CroppingToolView(
                 .onSizeChanged { size ->
                     viewModel.setCropRect(IntRect((size.width * 0.1f).toInt(), (size.height * 0.1f).toInt(), (size.width * 0.9f).toInt(), (size.height * 0.9f).toInt()))
                 }
-                .transformable(state = transformState)
+                .then(
+                    if (uiState.isTransformable) Modifier.transformable(state = transformState)
+                    else Modifier
+                )
                 .drawWithContent {
                     graphicsLayer.record { this@drawWithContent.drawContent() }
                     drawLayer(graphicsLayer)
@@ -172,13 +180,60 @@ fun CroppingToolView(
                         translationY = offset.y
                     }
             )
+
+            DrawingCanvas(
+                elements = uiState.elements,
+                selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
+                selectedShape = uiState.selectedShape,
+                selectedColor = uiState.selectedColor,
+                strokeWidth = uiState.strokeWidth,
+                onAddElement = { viewModel.addElement(it) },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = offset.x
+                        translationY = offset.y
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    },
+                isDrawingMode = uiState.isDrawingMode
+            )
         }
 
         CropOverlay(
             cropRect = uiState.cropRect,
             onCropRectChange = { viewModel.setCropRect(it) },
-            isCropDraggable = true,
+            isCropDraggable = uiState.isCroppingMode,
             modifier = Modifier.fillMaxSize()
+        )
+
+        SnippingToolbar(
+            onPenClick = { viewModel.selectTool(DrawingTool.PEN) },
+            onEraserClick = { viewModel.selectTool(DrawingTool.ERASER) },
+            onColorClick = { color -> viewModel.setColor(color.selectedColor) },
+            strokeWidth = uiState.strokeWidth,
+            onThicknessClick = { viewModel.setStrokeWidth(it) },
+            onTextClick = { viewModel.selectTool(DrawingTool.TEXT) },
+            onShapeClick = { shape ->
+                viewModel.selectTool(DrawingTool.SHAPE)
+                viewModel.setShape(shape)
+            },
+            onCropClick = { viewModel.toggleCrop() },
+            selectedColor = uiState.selectedColor,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp, bottom = 48.dp),
+            selectedTool = uiState.selectedTool,
+            cropMode = uiState.isCroppingMode
+        )
+
+        SnippingToolActionBar(
+            onUndo = { viewModel.undo() },
+            onRedo = { viewModel.redo() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 64.dp)
         )
 
         Column(

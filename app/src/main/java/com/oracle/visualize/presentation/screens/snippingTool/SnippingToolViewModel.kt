@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.snippingTool.completeSnippingTool
+package com.oracle.visualize.presentation.screens.snippingTool
 
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color

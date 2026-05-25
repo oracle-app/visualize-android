@@ -86,7 +86,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.Profile> {
             ProfilePage(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                navController = navController
             )
             // TODO: Pass profile.userId to ProfilePage
         }

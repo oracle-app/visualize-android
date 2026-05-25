@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import coil3.compose.AsyncImage
+import com.oracle.visualize.presentation.components.Avatar
 
 @Composable
 fun ProfileHeader(
@@ -36,8 +37,7 @@ fun ProfileHeader(
     userName: String,
     email: String,
     profileImageUrl: Any,
-    onEditClick: () -> Unit,
-    preview: Boolean = false
+    onEditClick: () -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -46,55 +46,44 @@ fun ProfileHeader(
         Box(
             contentAlignment = Alignment.BottomEnd
         ) {
-            AsyncImage(
-                model = profileImageUrl,
-                contentDescription = stringResource(R.string.profile_img_description),
-                modifier = Modifier
-                    .size(180.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.profile_placeholder),
-                error = painterResource(R.drawable.profile_placeholder)
+            Avatar(
+                modifier = Modifier.size(180.dp),
+                userName = userName,
+                profileImageUrl = profileImageUrl
             )
 
-            Log.d("ProfileHeader", "Image URL received: $profileImageUrl")
-
-            if (!preview) {
-                OutlinedIconButton(
-                    onClick = onEditClick,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .offset(x = (-6).dp, y = (-6).dp),
-                    colors = IconButtonDefaults.outlinedIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.edit_image_description)
-                    )
-                }
+            OutlinedIconButton(
+                onClick = onEditClick,
+                modifier = Modifier
+                    .size(48.dp)
+                    .offset(x = (-6).dp, y = (-6).dp),
+                colors = IconButtonDefaults.outlinedIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onPrimary)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = stringResource(R.string.edit_image_description)
+                )
             }
         }
 
-        if (!preview) {
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = userName,
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
+        Text(
+            text = userName,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = email,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
+        Text(
+            text = email,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }

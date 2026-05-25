@@ -4,6 +4,7 @@ import android.net.Uri
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import kotlinx.coroutines.tasks.await
@@ -102,6 +103,20 @@ class UserDatasource @Inject constructor(
             .document(userID)
             .update("chartTheme", selectedPalette)
             .await()
+    }
+
+    // DELETE
+
+    //This function deletes the files at user/userID/profilePicture
+
+    suspend fun deleteProfilePicture(userID: String) {
+        try {
+            storage.reference.child("users/$userID/profilePicture").delete().await()
+        } catch (e: StorageException) {
+            if (e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                throw AppError.NotFound("Image located at users/$userID/profilePicture could not be found.")
+            } else throw e
+        }
     }
 
 }
