@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.oracle.visualize.ui.theme.SearchHint
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,7 +74,7 @@ fun TeammateSearchBar(
             placeholder   = {
                 Text(
                     text     = stringResource(R.string.input_email),
-                    color    = MaterialTheme.colorScheme.outlineVariant,
+                    color    = SearchHint,
                     fontSize = 16.sp
                 )
             },
