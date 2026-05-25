@@ -31,8 +31,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
-import com.oracle.visualize.presentation.screens.shareScreen.components.UserAvatar
-
+import com.oracle.visualize.presentation.components.UserAvatar
 @Composable
 fun TeammateList(
     users: List<ShareUser>,
@@ -71,7 +70,11 @@ fun TeammateRow(
             .fillMaxWidth()
             .padding(vertical = 12.dp)
     ) {
-        UserAvatar(user = user, size = 44)
+        UserAvatar(
+            username          = user.username,
+            profilePictureURL = user.profilePictureURL,
+            size              = 44
+        )
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
