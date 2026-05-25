@@ -1,15 +1,12 @@
-package com.oracle.visualize.domain.models
+package com.oracle.visualize.data.datasources.dtos
 
-import java.util.Date
+import com.google.firebase.Timestamp
 
-/**
- * Domain model representing a Thread
- */
-data class Thread(
+data class ThreadDTO(
     val id: String = "",
     val authorID: String = "",
     val authorName: String = "",
     val authorAvatarURL: String? = null,
     val content: String = "",
-    val createdAt: Date = Date()
+    val createdAt: Timestamp = Timestamp.now()
 )
