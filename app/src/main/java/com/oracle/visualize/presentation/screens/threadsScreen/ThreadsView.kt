@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.threadsScreen
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,7 +38,8 @@ fun ThreadsPage(
     visualizationId: String,
     modifier: Modifier = Modifier,
     viewModel: ThreadsViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    image: Uri? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -54,10 +56,11 @@ fun ThreadsPage(
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp, vertical = 8.dp),
                 onSendClick = { content ->
-                    viewModel.createComment(
-                        visualizationId = visualizationId,
-                        content = content
-                    )
+                    if (image != null) {
+                        viewModel.createCommentWithSnip(visualizationId, content, image)
+                    } else {
+                        viewModel.createComment(visualizationId, content)
+                    }
                 }
             )
         }

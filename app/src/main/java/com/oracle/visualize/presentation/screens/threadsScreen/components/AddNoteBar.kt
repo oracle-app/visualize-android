@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.threadsScreen.components
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,7 +25,8 @@ import com.oracle.visualize.R
 @Composable
 fun AddNoteBar(
     modifier: Modifier = Modifier,
-    onSendClick: (String) -> Unit
+    onSendClick: (String) -> Unit,
+    image: Uri? = null
 ) {
     val context = LocalContext.current
     var noteText by remember { mutableStateOf("") }

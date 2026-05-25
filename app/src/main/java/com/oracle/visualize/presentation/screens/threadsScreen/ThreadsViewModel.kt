@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.threadsScreen
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
@@ -10,6 +11,7 @@ import com.oracle.visualize.domain.usecases.CreateCommentUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
 import com.oracle.visualize.domain.usecases.GetThreadsUseCase
+import com.oracle.visualize.domain.usecases.UploadSnipUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +37,7 @@ class ThreadsViewModel @Inject constructor(
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getThreadsUseCase: GetThreadsUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val uploadSnipUseCase: UploadSnipUseCase,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
@@ -143,22 +146,35 @@ class ThreadsViewModel @Inject constructor(
         }
     }
 
+    suspend fun uploadSnip(uri: Uri): String? {
+        return uploadSnipUseCase(
+            userID = currentUserID,
+            uri = uri
+        ).fold(
+            onSuccess = { url -> url },
+            onFailure = {
+                _uiState.update { it.copy(errorMessage = R.string.error_upload_snip) }
+                null
+            }
+        )
+    }
+
     fun createComment(
         visualizationId: String,
-        content: String
+        content: String,
+        imageURL: String? = null
     ) {
         viewModelScope.launch {
             createCommentUseCase(
                 visualizationId = visualizationId,
                 authorID = currentUserID,
                 content = content,
-                imageURL = null
+                imageURL = imageURL
             ).fold(
                 onSuccess = {
                     loadThreads(visualizationId)
                 },
                 onFailure = { error ->
-
                     _uiState.update {
                         it.copy(
                             errorMessage = R.string.error_create_comment
@@ -166,6 +182,17 @@ class ThreadsViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    fun createCommentWithSnip(
+        visualizationId: String,
+        content: String,
+        uri: Uri
+    ) {
+        viewModelScope.launch {
+            val imageURL = uploadSnip(uri)
+            createComment(visualizationId, content, imageURL)
         }
     }
 }
