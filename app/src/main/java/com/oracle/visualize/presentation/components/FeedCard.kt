@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.components
 
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
+import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 
 fun formatTime(date: Date, context: Context): String{
     val now = Date()
@@ -91,7 +90,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(R.string.by_author, item.author),
-                            color = MaterialTheme.colorScheme.tertiary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 13.sp
                         )
                         Text(
@@ -131,7 +130,9 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                 ) {
                     val chart = item.chart
                     if (chart != null) {
-                        ChartRenderGeneral(chart = chart, showAxisLabels = false)
+                        ChartRenderGeneral(
+                            chart = chart, showAxisLabels = false, enableTooltips = false
+                        )
                     } else {
                         Text(
                             text = "Chart not found",

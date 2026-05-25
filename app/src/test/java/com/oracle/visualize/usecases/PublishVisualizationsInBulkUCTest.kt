@@ -61,7 +61,7 @@ class PublishVisualizationsInBulkUCTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify (exactly = 0) {
             visualizationRepository.publishVisualizationsInBulk(visList)
         }
@@ -181,7 +181,7 @@ class PublishVisualizationsInBulkUCTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify (exactly = 0) {
             visualizationRepository.publishVisualizationsInBulk(visList)
         }

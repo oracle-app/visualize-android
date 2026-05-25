@@ -11,6 +11,7 @@ import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.repositories.AnalyzeRepositoryImpl
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
+import com.oracle.visualize.data.repositories.CommentRepositoryImpl
 import com.oracle.visualize.data.repositories.TeamRepositoryImpl
 import com.oracle.visualize.data.repositories.VisualizationRepositoryImpl
 import com.oracle.visualize.domain.repositories.AuthRepository
@@ -18,6 +19,7 @@ import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.data.repositories.UserRepositoryImpl
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
+import com.oracle.visualize.domain.repositories.CommentRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -70,9 +72,8 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideVisualizationDataSource(
-        db: FirebaseFirestore,
-        teamsDatasource: TeamDatasource
-    ): VisualizationDatasource = VisualizationDatasource(db, teamsDatasource)
+        db: FirebaseFirestore
+    ): VisualizationDatasource = VisualizationDatasource(db)
 
     /**
      * Alternative provider for [FirebaseFirestore] using the [Firebase] accessor.
@@ -156,4 +157,12 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
+
+    /**
+     * Binds [CommentRepositoryImpl] to [CommentRepository].
+     */
+    @Binds
+    abstract fun bindCommentRepository(
+        impl: CommentRepositoryImpl
+    ): CommentRepository
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.presentation.components.UserAvatar
 
 private val CardShape   = RoundedCornerShape(12.dp)
 
@@ -50,8 +51,9 @@ fun SelectedUserRow(
                 .requiredHeight(44.dp)
         ) {
             UserAvatar(
-                user,
-                size = 40
+                username = user.username,
+                size = 40,
+                profilePictureURL = user.profilePictureURL
             )
             Column(
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,

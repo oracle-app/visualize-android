@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +24,15 @@ import javax.inject.Inject
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
-    private val currentUserID: String = "e9Nk8XrxHJAtwN3Hf2FL"
+    private var currentUserID: String = ""
+
+    init {
+        currentUserID = authRepository.getCurrentUserID()
+    }
 
     fun loadVisualization(visualizationId: String) {
         viewModelScope.launch {
@@ -37,7 +43,6 @@ class FullVisualizationViewModel @Inject constructor(
                 )
             }
 
-            //TODO: Get from Auth Repository
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { visualizations ->
                     val visualization = visualizations.find { it.id == visualizationId }

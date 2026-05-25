@@ -38,39 +38,56 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
 fun ChartRenderGeneral(
-    modifier: Modifier = Modifier,
-    chart: Chart<*>,
-    showAxisLabels: Boolean = true
+    modifier: Modifier = Modifier, chart: Chart<*>, showAxisLabels: Boolean = true,
+    enableTooltips: Boolean = true
 ) {
     Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
         .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)) {
         when (chart) {
             is VerticalBarChart -> {
-                RenderVerticalBarChart(chart = chart, showAxisLabels = showAxisLabels)
+                RenderVerticalBarChart(
+                    chart = chart, showAxisLabels = showAxisLabels,
+                    enableTooltips = enableTooltips
+                )
             }
 
             is HorizontalBarChart -> {
-                RenderHorizontalBarChart(chart = chart, showAxisLabels = showAxisLabels)
+                RenderHorizontalBarChart(
+                    chart = chart, showAxisLabels = showAxisLabels,
+                    enableTooltips = enableTooltips
+                )
             }
 
             is StackedBarChart -> {
-                RenderStackedBarChart(chart = chart, showAxisLabels = showAxisLabels)
+                RenderStackedBarChart(
+                    chart = chart, showAxisLabels = showAxisLabels,
+                    enableTooltips = enableTooltips
+                )
             }
 
             is LineChart -> {
-                RenderLineChart(chart = chart, showAxisLabels = showAxisLabels)
+                RenderLineChart(
+                    chart = chart, showAxisLabels = showAxisLabels,
+                    enableTooltips = enableTooltips
+                )
             }
 
             is ScatterChart -> {
-                RenderScatterChart(chart = chart, showAxisLabels = showAxisLabels)
+                RenderScatterChart(
+                    chart = chart, showAxisLabels = showAxisLabels,
+                    enableTooltips = enableTooltips
+                )
             }
 
-            is PieChartModel -> RenderPieChart(chart = chart)
+            is PieChartModel -> RenderPieChart(chart = chart, enableTooltips = enableTooltips)
 
-            is DonutChart -> RenderDonutChart(chart = chart)
+            is DonutChart -> RenderDonutChart(chart = chart, enableTooltips = enableTooltips)
 
             is AreaChart -> {
-                RenderAreaChart(chart = chart, showAxisLabels = showAxisLabels)
+                RenderAreaChart(
+                    chart = chart, showAxisLabels = showAxisLabels,
+                    enableTooltips = enableTooltips
+                )
             }
         }
     }

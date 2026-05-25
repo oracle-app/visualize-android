@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.User
-import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
+import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 
 @Composable
 fun FullVisualizationTopBar(

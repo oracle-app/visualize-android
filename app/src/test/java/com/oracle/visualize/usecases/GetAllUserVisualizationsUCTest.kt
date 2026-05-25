@@ -52,7 +52,7 @@ class GetAllUserVisualizationsUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) {
             visualizationRepository.getSharedVisualizations(any())
             visualizationRepository.getPersonalVisualizations(any())
