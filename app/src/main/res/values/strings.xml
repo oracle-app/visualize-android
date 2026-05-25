@@ -158,6 +158,8 @@
     <string name="send">Send message</string>
     <string name="no_threads">There\'s no more threads.</string>
     <string name="no_threads_yet">There\'s no comments yet.</string>
+    <string name="reply_to">Replying to %s</string>
+    <string name="cancel_reply">Cancel reply</string>
 
 
     // Snipping Tool
