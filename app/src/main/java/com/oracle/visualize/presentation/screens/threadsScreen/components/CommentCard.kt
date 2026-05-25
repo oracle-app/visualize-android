@@ -56,7 +56,7 @@ fun CommentCard(
 
             UserAvatar(
                 username = comment.authorName,
-                profilePictureURL = null,
+                profilePictureURL = comment.authorImageURL,
                 size = 38
             )
 

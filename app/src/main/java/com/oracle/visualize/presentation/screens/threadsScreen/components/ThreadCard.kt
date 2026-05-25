@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
 
@@ -33,7 +32,7 @@ fun ThreadCard(
 
             UserAvatar(
                 username = thread.authorName,
-                profilePictureURL = null,
+                profilePictureURL = thread.authorImageURL,
                 size = 32,
                 modifier = Modifier.border(
                     width = 3.dp,
