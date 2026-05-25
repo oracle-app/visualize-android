@@ -18,12 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareUser
+import com.oracle.visualize.presentation.components.UserAvatar
 
 private val AVATAR_SIZE    = 29.dp
 private val AVATAR_OFFSET  = 15.dp
@@ -58,8 +58,9 @@ fun MemberAvatarStack(
                 ) {
                     members.getOrNull(index)?.let { user ->
                         UserAvatar(
-                            user = user,
-                            size = AVATAR_SIZE.value.toInt()
+                            username = user.username,
+                            size = AVATAR_SIZE.value.toInt(),
+                            profilePictureURL = user.profilePictureURL
                         )
                     }
                 }
