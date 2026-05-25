@@ -21,7 +21,7 @@ import javax.inject.Inject
 /**
  * ViewModel for the Feed screen.
  * Handles fetching visualizations, filtering, searching,
- * and the delete/hide actions triggered from the card menu.
+ * and the delete/hide/share actions triggered from the card menu.
  *
  * @property getAllUserVisualizationsUseCase Fetches all visualizations for the current user.
  * @property deleteVisualizationForEveryoneUseCase Permanently deletes a visualization (owner only).
@@ -56,6 +56,7 @@ class FeedViewModel @Inject constructor(
     fun loadData(forceRefresh: Boolean = false) {
         if (forceRefresh) {
             allVisualizations = emptyList()
+
             val current = _uiState.value
             _uiState.value = if (current is FeedUiState.Success) {
                 current.copy(isRefreshing = true)
@@ -69,17 +70,19 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             getAllUserVisualizationsUseCase(currentUserID).fold(
                 onSuccess = { items ->
-                    allVisualizations = items
+                    allVisualizations = items.distinctBy { it.id }
                     applyLocalFilterAndSearch()
                 },
                 onFailure = { error ->
                     allVisualizations = emptyList()
+
                     val uiErrorMessage = when (error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.ParsingError -> R.string.error_parsing
                         is AppError.NotFound     -> R.string.error_viz_not_found
                         else                     -> R.string.error_unknown_retry
                     }
+
                     _uiState.value = FeedUiState.Error(uiErrorMessage)
                 }
             )
@@ -90,28 +93,41 @@ class FeedViewModel @Inject constructor(
 
     fun toggleSearch() {
         _uiState.update { state ->
-            if (state is FeedUiState.Success) state.copy(isSearching = !state.isSearching)
-            else state
+            if (state is FeedUiState.Success) {
+                state.copy(isSearching = !state.isSearching)
+            } else {
+                state
+            }
         }
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
         val currentState = _uiState.value
-        if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
+
+        if (
+            currentState is FeedUiState.Success &&
+            currentState.selectedFilter == filter
+        ) return
 
         _uiState.value = when (currentState) {
             is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
             else -> currentState
         }
 
-        if (allVisualizations.isNotEmpty()) applyLocalFilterAndSearch() else loadData()
+        if (allVisualizations.isNotEmpty()) {
+            applyLocalFilterAndSearch()
+        } else {
+            loadData()
+        }
     }
 
     fun onSearchTextChange(newText: String) {
         val currentState = _uiState.value
+
         if (currentState is FeedUiState.Success) {
             _uiState.value = currentState.copy(searchText = newText)
         }
+
         applyLocalFilterAndSearch()
     }
 
@@ -127,45 +143,86 @@ class FeedViewModel @Inject constructor(
         it.copy(menuOpenForId = null)
     }
 
+    /** Sets pendingShareId so the View can navigate safely on next frame. */
+    fun onRequestShare(visualizationId: String) = updateSuccess {
+        it.copy(
+            menuOpenForId = null,
+            pendingShareId = visualizationId
+        )
+    }
+
+    /** Clears pendingShareId after navigation has been handled. */
+    fun onShareNavigated() = updateSuccess {
+        it.copy(pendingShareId = null)
+    }
+
     /** Shows the "Delete for everyone" confirmation dialog. */
     fun onRequestDeleteForEveryone(visualizationId: String) = updateSuccess {
-        it.copy(menuOpenForId = null, deleteDialogForId = visualizationId)
+        it.copy(
+            menuOpenForId = null,
+            deleteDialogForId = visualizationId
+        )
     }
 
     /** Shows the "Hide for me" confirmation dialog. */
     fun onRequestHideForMe(visualizationId: String) = updateSuccess {
-        it.copy(menuOpenForId = null, hideDialogForId = visualizationId)
+        it.copy(
+            menuOpenForId = null,
+            hideDialogForId = visualizationId
+        )
     }
 
     /** Dismisses any open confirmation dialog. */
     fun onDismissDialog() = updateSuccess {
-        it.copy(deleteDialogForId = null, hideDialogForId = null)
+        it.copy(
+            deleteDialogForId = null,
+            hideDialogForId = null
+        )
     }
 
     /** Permanently deletes the visualization for every user. */
     fun onConfirmDeleteForEveryone(visualizationId: String) {
-        updateSuccess { it.copy(deleteDialogForId = null) }
+        updateSuccess {
+            it.copy(deleteDialogForId = null)
+        }
+
         viewModelScope.launch {
             deleteVisualizationForEveryoneUseCase(visualizationId).fold(
                 onSuccess = {
-                    allVisualizations = allVisualizations.filter { it.id != visualizationId }
+                    allVisualizations =
+                        allVisualizations.filter { it.id != visualizationId }
+
                     applyLocalFilterAndSearch()
                 },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
+                onFailure = {
+                    _uiState.value =
+                        FeedUiState.Error(R.string.error_unknown_retry)
+                }
             )
         }
     }
 
     /** Hides the visualization from the current user's feed only. */
     fun onConfirmHideForMe(visualizationId: String) {
-        updateSuccess { it.copy(hideDialogForId = null) }
+        updateSuccess {
+            it.copy(hideDialogForId = null)
+        }
+
         viewModelScope.launch {
-            hideVisualizationForMeUseCase(currentUserID, visualizationId).fold(
+            hideVisualizationForMeUseCase(
+                currentUserID,
+                visualizationId
+            ).fold(
                 onSuccess = {
-                    allVisualizations = allVisualizations.filter { it.id != visualizationId }
+                    allVisualizations =
+                        allVisualizations.filter { it.id != visualizationId }
+
                     applyLocalFilterAndSearch()
                 },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
+                onFailure = {
+                    _uiState.value =
+                        FeedUiState.Error(R.string.error_unknown_retry)
+                }
             )
         }
     }
@@ -174,42 +231,66 @@ class FeedViewModel @Inject constructor(
 
     private fun applyLocalFilterAndSearch() {
         val currentState = _uiState.value
-        val filter = if (currentState is FeedUiState.Success) currentState.selectedFilter
-        else VisualizationFilter.ALL
-        val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
+
+        val filter =
+            if (currentState is FeedUiState.Success) {
+                currentState.selectedFilter
+            } else {
+                VisualizationFilter.ALL
+            }
+
+        val search =
+            if (currentState is FeedUiState.Success) {
+                currentState.searchText
+            } else {
+                ""
+            }
 
         var filtered = when (filter) {
-            VisualizationFilter.ALL      -> allVisualizations
-            VisualizationFilter.PERSONAL -> allVisualizations.filter { it.authorID == currentUserID }
-            VisualizationFilter.SHARED   -> allVisualizations.filter { it.authorID != currentUserID }
+            VisualizationFilter.ALL ->
+                allVisualizations
+
+            VisualizationFilter.PERSONAL ->
+                allVisualizations.filter {
+                    it.authorID == currentUserID
+                }
+
+            VisualizationFilter.SHARED ->
+                allVisualizations.filter {
+                    it.authorID != currentUserID
+                }
         }
 
         if (search.isNotBlank()) {
-            filtered = filtered.filter { it.title.contains(search, ignoreCase = true) }
+            filtered = filtered.filter {
+                it.title.contains(search, ignoreCase = true)
+            }
         }
 
         _uiState.update { state ->
             if (state is FeedUiState.Success) {
                 state.copy(
-                    items          = filtered,
-                    searchText     = search,
+                    items = filtered,
+                    searchText = search,
                     selectedFilter = filter,
-                    isRefreshing   = false,
-                    currentUserID  = currentUserID
+                    isRefreshing = false,
+                    currentUserID = currentUserID
                 )
             } else {
                 FeedUiState.Success(
-                    items          = filtered,
-                    searchText     = search,
+                    items = filtered,
+                    searchText = search,
                     selectedFilter = filter,
-                    isRefreshing   = false,
-                    currentUserID  = currentUserID
+                    isRefreshing = false,
+                    currentUserID = currentUserID
                 )
             }
         }
     }
 
-    private fun updateSuccess(block: (FeedUiState.Success) -> FeedUiState.Success) {
+    private fun updateSuccess(
+        block: (FeedUiState.Success) -> FeedUiState.Success
+    ) {
         val current = _uiState.value as? FeedUiState.Success ?: return
         _uiState.value = block(current)
     }
