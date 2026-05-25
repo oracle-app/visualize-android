@@ -77,7 +77,7 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = StrongBlue,
 
     outline = GrayishBlue,
-    outlineVariant = SearchHint,
+    outlineVariant = NotAsDarkGray,
     error = ErrorRed,
     onError = White,
     scrim = ScrimColor
