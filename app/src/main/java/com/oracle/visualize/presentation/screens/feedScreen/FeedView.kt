@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +58,15 @@ fun FeedPage(
 
     if (uiState is FeedUiState.Success) {
         val state = uiState as FeedUiState.Success
+
+        // Defer share navigation to next frame to avoid crash from
+        // simultaneous menu-dismiss recomposition + navigation
+        LaunchedEffect(state.pendingShareId) {
+            state.pendingShareId?.let { id ->
+                feedViewModel.onShareNavigated()
+                onShareVisualization(id)
+            }
+        }
 
         state.deleteDialogForId?.let { vizId ->
             DeleteForEveryoneDialog(
@@ -147,7 +157,7 @@ fun FeedPage(
                                     onMenuDismiss       = { feedViewModel.onMenuDismiss() },
                                     onDeleteForEveryone = { feedViewModel.onRequestDeleteForEveryone(item.id) },
                                     onHideForMe         = { feedViewModel.onRequestHideForMe(item.id) },
-                                    onShare             = { onShareVisualization(item.id) }
+                                    onShare             = { feedViewModel.onRequestShare(item.id) }
                                 )
                             }
                         }
