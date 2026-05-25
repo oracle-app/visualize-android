@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.snippingTool
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.view.WindowManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -68,14 +69,16 @@ fun SnippingToolView(
 
     val view = LocalView.current
     DisposableEffect(Unit) {
-        val controller = WindowInsetsControllerCompat(
-            (view.context as Activity).window,
-            view
-        )
-        controller.hide(WindowInsetsCompat.Type.systemBars())
-        onDispose {
-            controller.show(WindowInsetsCompat.Type.systemBars())
+        val window = (view.context as Activity).window
+        val controller = WindowInsetsControllerCompat(window, view)
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        controller.hide(WindowInsetsCompat.Type.systemBars())
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        onDispose {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+            controller.show(WindowInsetsCompat.Type.systemBars())
         }
     }
 

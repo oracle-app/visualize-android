@@ -39,6 +39,7 @@ fun ThreadsPage(
     modifier: Modifier = Modifier,
     viewModel: ThreadsViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
+    onCropClick: () -> Unit,
     image: Uri? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -55,13 +56,16 @@ fun ThreadsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp, vertical = 8.dp),
+                image = image,
                 onSendClick = { content ->
                     if (image != null) {
                         viewModel.createCommentWithSnip(visualizationId, content, image)
                     } else {
                         viewModel.createComment(visualizationId, content)
                     }
-                }
+                },
+                onCropClick = onCropClick
+
             )
         }
     ) { paddingValues ->

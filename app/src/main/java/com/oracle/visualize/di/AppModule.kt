@@ -5,6 +5,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
 import com.oracle.visualize.data.datasources.AuthFirebasesource
 import com.oracle.visualize.data.datasources.TeamDatasource
@@ -88,6 +89,14 @@ object FirebaseModule {
     ) : AnalyzeRepository {
         return AnalyzeRepositoryImpl(apiMicroService)
     }
+
+    /**
+     * Provides a singleton instance of [FirebaseStorage].
+     */
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 }
 
 /**

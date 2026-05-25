@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -97,12 +98,16 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             FullVisualizationPage(
                 visualizationId = route.visualizationId,
                 modifier = Modifier.fillMaxSize(),
+                startInSnippingMode = route.startInSnippingMode,
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onThreadsClick = {
+                onThreadsClick = { uri ->
                     navController.navigate(
-                        NavRoutes.Threads(route.visualizationId)
+                        NavRoutes.Threads(
+                            visualizationId = route.visualizationId,
+                            snipUri = uri?.toString()
+                        )
                     )
                 }
             )
@@ -114,7 +119,16 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier = Modifier.fillMaxSize(),
                 onBackClick = {
                     navController.popBackStack()
-                }
+                },
+                onCropClick = {
+                    navController.navigate(
+                        NavRoutes.FullScreen(
+                            visualizationId = route.visualizationId,
+                            startInSnippingMode = true
+                        )
+                    )
+                },
+                image = route.snipUri?.let { Uri.parse(it) }
             )
         }
         composable<NavRoutes.Splash> {
