@@ -1,6 +1,7 @@
 package com.oracle.visualize.data.repositories
 
 import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
+import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 import com.oracle.visualize.data.datasources.dtos.toDomain
 import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.domain.exceptions.AppError
@@ -55,6 +56,15 @@ class AnalyzeRepositoryImpl @Inject constructor(
         return try {
             val res = apiService.previewedResults(taskId, chart, preview)
             AppResult.Success(res.toDomain())
+        } catch (e: Exception) {
+            AppResult.Error(mapError(e))
+        }
+    }
+
+    override suspend fun getPagedResultsDto(taskId: String, chart: Int, page: Int): AppResult<com.oracle.visualize.data.datasources.dtos.ChartResponseDTO> {
+        return try {
+            val res = apiService.pagedResults(taskId, chart, page)
+            AppResult.Success(res)
         } catch (e: Exception) {
             AppResult.Error(mapError(e))
         }

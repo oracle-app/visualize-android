@@ -17,6 +17,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
+import com.oracle.visualize.domain.repositories.AnalyzeRepository
+import com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase
+import com.oracle.visualize.domain.exceptions.AppResult
+import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 
 /**
  * ViewModel for the Share and Post screen.
@@ -29,7 +35,10 @@ import kotlinx.coroutines.launch
 class ShareAndPostViewModel @Inject constructor(
     private val teamRepository: TeamRepository,
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: AnalyzeRepository,
+    private val publishVisualizationsInBulkUseCase: PublishVisualizationsInBulkUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareUiState>(ShareUiState.Loading)
@@ -172,8 +181,89 @@ class ShareAndPostViewModel @Inject constructor(
                 )
 
             is ShareUiEvent.ConfirmShare -> {
-                // TODO: call UseCase to persist share action
+                confirmShare(current)
                 current
+            }
+        }
+    }
+
+    private fun confirmShare(current: ShareUiState.Content) {
+        viewModelScope.launch {
+            _uiState.value = ShareUiState.Loading
+            try {
+                val shareArgs = savedStateHandle.toRoute<com.oracle.visualize.presentation.navigation.NavRoutes.ShareAndPost>()
+                val taskId = shareArgs.taskId
+                val selectedChartIndices = shareArgs.selectedChartIndices
+                val customTitles = shareArgs.customTitles
+
+                val sharedWithUsers = current.selectedUsers.map { it.id }
+                val sharedWithTeams = current.selectedTeamIds.toList()
+
+                val visualizations = mutableListOf<com.oracle.visualize.domain.models.Visualization>()
+
+                selectedChartIndices.forEachIndexed { i, chartIndex ->
+                    val customTitle = customTitles.getOrElse(i) { "Visualization ${chartIndex + 1}" }
+                    val pagesList = mutableListOf<ChartResponseDTO>()
+
+                    // 1. Fetch Page 1 DTO
+                    val firstPageRes = repository.getPagedResultsDto(taskId, chartIndex, 1)
+                    if (firstPageRes !is AppResult.Success) {
+                        throw Exception((firstPageRes as? AppResult.Error)?.error?.message ?: "Failed to fetch page 1")
+                    }
+
+                    val firstPageDto = firstPageRes.data
+                    pagesList.add(firstPageDto)
+
+                    // 2. Fetch pages 2 to totalPages
+                    val totalPages = firstPageDto.totalPages
+                    for (page in 2..totalPages) {
+                        val pageRes = repository.getPagedResultsDto(taskId, chartIndex, page)
+                        if (pageRes is AppResult.Success) {
+                            pagesList.add(pageRes.data)
+                        } else {
+                            throw Exception((pageRes as? AppResult.Error)?.error?.message ?: "Failed to fetch page $page")
+                        }
+                    }
+
+                    // 3. Merge data
+                    val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
+
+                    // 4. Construct JSON models
+                    val previewDto = firstPageDto.copy(chartName = customTitle)
+                    val combinedDto = firstPageDto.copy(
+                        chartName = customTitle,
+                        page = 0,
+                        preview = false,
+                        totalPages = 1,
+                        data = mergedData
+                    )
+
+                    visualizations.add(
+                        com.oracle.visualize.domain.models.Visualization(
+                            id = "",
+                            authorID = userID,
+                            title = customTitle,
+                            configJSON = com.google.gson.Gson().toJson(combinedDto),
+                            previewJSON = com.google.gson.Gson().toJson(previewDto),
+                            sharedWithUsers = sharedWithUsers,
+                            sharedWithTeams = sharedWithTeams,
+                            createdAt = java.util.Date()
+                        )
+                    )
+                }
+
+                publishVisualizationsInBulkUseCase(visualizations).fold(
+                    onSuccess = {
+                        _uiState.value = ShareUiState.Success
+                    },
+                    onFailure = {
+                        throw it
+                    }
+                )
+
+            } catch (e: Exception) {
+                Log.e("ShareAndPostViewModel", "Failed to share visualizations", e)
+                _uiState.value = ShareUiState.Error(R.string.error_network)
             }
         }
     }

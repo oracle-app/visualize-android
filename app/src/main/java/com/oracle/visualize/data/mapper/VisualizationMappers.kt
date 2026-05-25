@@ -20,6 +20,7 @@ fun VisualizationDTO.toDomain(): Visualization = Visualization(
     sharedWithUsers = sharedWithUsers,
     sharedWithTeams = sharedWithTeams,
     createdAt = createdAt.toDate(),
+    previewJSON = previewJSON
 )
 
 /**
@@ -35,6 +36,7 @@ fun Visualization.toVisualizationDTO(): VisualizationDTO = VisualizationDTO(
     sharedWithUsers = sharedWithUsers,
     sharedWithTeams = sharedWithTeams,
     createdAt = Timestamp(createdAt),
+    previewJSON = previewJSON
 )
 
 /**

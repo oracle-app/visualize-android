@@ -63,7 +63,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.components.Ch
 fun ChartSelectionPage(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
-    onNavigateToShare: () -> Unit,
+    onNavigateToShare: (taskId: String, selectedChartIndices: List<Int>, customTitles: List<String>) -> Unit,
     onNavigateToFeed: () -> Unit,
     viewModel: SelectChartViewModel = hiltViewModel()
 ) {
@@ -120,7 +120,8 @@ fun ChartSelectionPage(
             )
         },
         bottomBar = {
-            if (uiState is ChartSelectionUiState.Success) {
+            val state = uiState
+            if (state is ChartSelectionUiState.Success) {
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     tonalElevation = 0.dp,
@@ -133,8 +134,17 @@ fun ChartSelectionPage(
                             .padding(horizontal = 16.dp, vertical = 20.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        val context = androidx.compose.ui.platform.LocalContext.current
+
                         Button(
-                            onClick = onNavigateToFeed,
+                            onClick = {
+                                viewModel.postSelectedChartsToPersonalFeed(
+                                    onSuccess = onNavigateToFeed,
+                                    onError = { errorMsg ->
+                                        android.widget.Toast.makeText(context, errorMsg, android.widget.Toast.LENGTH_LONG).show()
+                                    }
+                                )
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),
@@ -155,7 +165,12 @@ fun ChartSelectionPage(
                         }
 
                         Button(
-                            onClick = onNavigateToShare,
+                            onClick = {
+                                val selected = state.charts.filter { it.isSelected }
+                                val indices = selected.map { it.chartIndex }
+                                val titles = selected.map { it.customTitle }
+                                onNavigateToShare(viewModel.taskId, indices, titles)
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),

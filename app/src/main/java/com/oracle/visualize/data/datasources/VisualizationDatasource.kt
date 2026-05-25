@@ -29,6 +29,7 @@ class VisualizationDatasource @Inject constructor(
             "authorID" to v.authorID,
             "title" to v.title,
             "configJSON" to v.configJSON,
+            "previewJSON" to v.previewJSON,
             "sharedWithUsers" to v.sharedWithUsers,
             "sharedWithTeams" to v.sharedWithTeams,
             "createdAt" to v.createdAt

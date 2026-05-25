@@ -58,8 +58,8 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             ChartSelectionPage(
                 modifier = Modifier.fillMaxSize(),
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToShare = {
-                    navController.navigate(NavRoutes.ShareAndPost)
+                onNavigateToShare = { taskId, indices, titles ->
+                    navController.navigate(NavRoutes.ShareAndPost(taskId, indices, titles))
                 },
                 onNavigateToFeed = {
                     navController.navigate(NavRoutes.Feed) {
@@ -72,7 +72,12 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable<NavRoutes.ShareAndPost> {
             ShareAndPostScreen(
                 modifier = Modifier.fillMaxSize(),
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToFeed = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.Feed) { inclusive = true }
+                    }
+                }
             )
         }
 

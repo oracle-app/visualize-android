@@ -22,6 +22,7 @@ sealed interface ChartSelectionUiState {
  */
 data class ChartSelection(
     val id: String = UUID.randomUUID().toString(),
+    val chartIndex: Int,
     val chart: Chart<*>,
     val customTitle: String,
     val isSelected: Boolean = false

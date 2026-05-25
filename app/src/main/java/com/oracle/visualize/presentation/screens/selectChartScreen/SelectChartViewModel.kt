@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 
 /**
  * ViewModel for the Select Chart screen.
@@ -23,9 +24,11 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class SelectChartViewModel @Inject constructor(
     private val repository: AnalyzeRepository,
+    private val authRepository: com.oracle.visualize.domain.repositories.AuthRepository,
+    private val publishVisualizationsInBulkUseCase: com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(){
-    private val taskId: String = savedStateHandle.toRoute<NavRoutes.ChartSelection>().taskId
+    val taskId: String = savedStateHandle.toRoute<NavRoutes.ChartSelection>().taskId
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()
 
@@ -48,6 +51,7 @@ class SelectChartViewModel @Inject constructor(
                         result.data?.let { chart ->
                             chartSelections.add(
                                 ChartSelection(
+                                    chartIndex = chartIndex,
                                     chart = chart,
                                     customTitle = chart.chartTitle,
                                     isSelected = true,
@@ -110,5 +114,78 @@ class SelectChartViewModel @Inject constructor(
         return if (state is ChartSelectionUiState.Success) {
             state.charts.any { it.isSelected }
         } else false
+    }
+    fun postSelectedChartsToPersonalFeed(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val state = _uiState.value
+        if (state !is ChartSelectionUiState.Success) {
+            onError("Invalid state")
+            return
+        }
+        val selectedCharts = state.charts.filter { it.isSelected }
+        if (selectedCharts.isEmpty()) {
+            onError("No charts selected")
+            return
+        }
+        viewModelScope.launch {
+            _uiState.value = ChartSelectionUiState.Loading
+            try {
+                val authorId = authRepository.getCurrentUserID()
+                val visualizationsToPublish = mutableListOf<com.oracle.visualize.domain.models.Visualization>()
+                for (selection in selectedCharts) {
+                    val pagesList = mutableListOf<ChartResponseDTO>()
+
+                    // 1. Fetch Page 1 DTO
+                    val firstPageRes = repository.getPagedResultsDto(taskId, selection.chartIndex, 1)
+                    if (firstPageRes !is AppResult.Success) {
+                        throw Exception((firstPageRes as? AppResult.Error)?.error?.message ?: "Failed to fetch page 1")
+                    }
+
+                    val firstPageDto = firstPageRes.data
+                    pagesList.add(firstPageDto)
+
+                    // 2. Fetch pages 2 to totalPages
+                    val totalPages = firstPageDto.totalPages
+                    for (page in 2..totalPages) {
+                        val pageRes = repository.getPagedResultsDto(taskId, selection.chartIndex, page)
+                        if (pageRes is AppResult.Success) {
+                            pagesList.add(pageRes.data)
+                        } else {
+                            throw Exception((pageRes as? AppResult.Error)?.error?.message ?: "Failed to fetch page $page")
+                        }
+                    }
+                    // 3. Merge paged data
+                    val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
+                    // 4. Construct preview and full JSON objects using custom title
+                    val previewDto = firstPageDto.copy(chartName = selection.customTitle)
+                    val combinedDto = firstPageDto.copy(
+                        chartName = selection.customTitle,
+                        page = 0,
+                        preview = false,
+                        totalPages = 1,
+                        data = mergedData
+                    )
+                    visualizationsToPublish.add(
+                        com.oracle.visualize.domain.models.Visualization(
+                            id = "",
+                            authorID = authorId,
+                            title = selection.customTitle,
+                            configJSON = com.google.gson.Gson().toJson(combinedDto),
+                            previewJSON = com.google.gson.Gson().toJson(previewDto),
+                            sharedWithUsers = emptyList(),
+                            sharedWithTeams = emptyList(),
+                            createdAt = java.util.Date()
+                        )
+                    )
+                }
+                publishVisualizationsInBulkUseCase(visualizationsToPublish).fold(
+                    onSuccess = { onSuccess() },
+                    onFailure = { throw it }
+                )
+            } catch (e: Exception) {
+                Log.e("SelectChartViewModel", "Failed to publish visualizations", e)
+                _uiState.value = state
+                onError(e.message ?: "An unexpected error occurred while posting.")
+            }
+        }
     }
 }
