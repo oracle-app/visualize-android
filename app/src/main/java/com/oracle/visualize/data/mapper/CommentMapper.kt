@@ -28,6 +28,8 @@ fun Comment.toDTO(): CommentDTO = CommentDTO(
 fun ThreadDTO.toDomain(): Thread = Thread(
     id = id,
     authorID = authorID,
+    authorName = authorName,
+    authorAvatarURL = authorAvatarURL,
     content = content,
     createdAt = createdAt.toDate()
 )
@@ -35,6 +37,8 @@ fun ThreadDTO.toDomain(): Thread = Thread(
 fun Thread.toDTO(): ThreadDTO = ThreadDTO(
     id = id,
     authorID = authorID,
+    authorName = authorName,
+    authorAvatarURL = authorAvatarURL,
     content = content,
     createdAt = Timestamp(createdAt)
 )

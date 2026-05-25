@@ -8,6 +8,8 @@ import java.util.Date
 data class Thread(
     val id: String = "",
     val authorID: String = "",
+    val authorName: String = "",
+    val authorAvatarURL: String? = null,
     val content: String = "",
     val createdAt: Date = Date()
 )

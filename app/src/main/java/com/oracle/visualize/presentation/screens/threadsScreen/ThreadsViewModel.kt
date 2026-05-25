@@ -106,8 +106,8 @@ class ThreadsViewModel @Inject constructor(
                             ThreadUiModel(
                                 id = thread.id,
                                 authorID = thread.authorID,
-                                authorName = threadAuthor.first,
-                                authorImageURL = threadAuthor.second,
+                                authorName = thread.authorName.ifBlank { threadAuthor.first },
+                                authorImageURL = thread.authorAvatarURL ?: threadAuthor.second,
                                 content = thread.content,
                                 createdAt = thread.createdAt
                             )
