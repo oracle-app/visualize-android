@@ -127,6 +127,7 @@
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
+    <string name="error_no_notifications">No Notifications Yet</string>
 
 
     //Icon Descriptions
@@ -204,5 +205,9 @@
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
+
+    //Notifications
+    <string name="no_more_notification">There\'s no more notifications.</string>
+    <string name="notify_you">We’ll notify you when there’s something new.</string>
 
 </resources>

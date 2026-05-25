@@ -21,6 +21,10 @@ import com.oracle.visualize.data.repositories.UserRepositoryImpl
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
 import com.oracle.visualize.domain.repositories.CommentRepository
 import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.domain.repositories.NotificationRepository
+import com.oracle.visualize.data.repositories.NotificationRepositoryImpl
+
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import dagger.Binds
@@ -165,4 +169,12 @@ abstract class RepositoryModule {
     abstract fun bindCommentRepository(
         impl: CommentRepositoryImpl
     ): CommentRepository
+
+    /**
+     * Binds [NotificationRepositoryImpl] to [NotificationRepository].
+     */
+    @Binds
+    abstract fun bindNotificationRepository(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
 }
