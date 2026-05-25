@@ -14,12 +14,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun ThreadCard(
     thread: ThreadUiModel,
     modifier: Modifier = Modifier
 ) {
+    val formattedDate = SimpleDateFormat(
+        "dd/MM/yy",
+        Locale.getDefault()
+    ).format(thread.createdAt)
 
     Row(
         modifier = modifier.fillMaxWidth()
@@ -79,7 +85,7 @@ fun ThreadCard(
                     )
 
                     Text(
-                        text = thread.createdAt.toString(),
+                        text = formattedDate,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onBackground
                     )

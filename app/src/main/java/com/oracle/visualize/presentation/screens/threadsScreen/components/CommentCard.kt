@@ -18,6 +18,8 @@ import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.CommentUiModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun CommentCard(
@@ -38,6 +40,11 @@ fun CommentCard(
     }
 
     val timelineColor = MaterialTheme.colorScheme.tertiaryFixed
+
+    val formattedDate = SimpleDateFormat(
+        "dd/MM/yy",
+        Locale.getDefault()
+    ).format(comment.createdAt)
 
     Column(
         modifier = modifier
@@ -71,7 +78,7 @@ fun CommentCard(
                 )
 
                 Text(
-                    text = comment.createdAt.toString(),
+                    text = formattedDate,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onBackground
                 )
