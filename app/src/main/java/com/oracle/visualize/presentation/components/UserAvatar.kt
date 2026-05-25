@@ -24,6 +24,7 @@ import com.oracle.visualize.domain.models.User
 fun UserAvatar(
     username: String,
     profilePictureURL: String?,
+    modifier: Modifier = Modifier,
     size: Int = 38
 ) {
     val initial = username.firstOrNull()?.uppercase() ?: "?"
@@ -31,7 +32,7 @@ fun UserAvatar(
     SubcomposeAsyncImage(
         model = profilePictureURL,
         contentDescription = stringResource(R.string.avatar_description, username),
-        modifier = Modifier
+        modifier = modifier
             .size(size.dp)
             .clip(CircleShape),
         contentScale = ContentScale.Crop,
