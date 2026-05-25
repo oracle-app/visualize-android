@@ -14,104 +14,131 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Date
-import java.util.concurrent.TimeUnit
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
+import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
-fun formatTime(date: Date, context: Context): String{
-    val now = Date()
-    val diff = now.time - date.time
-
-    val mins = TimeUnit.MILLISECONDS.toMinutes(diff)
+fun formatTime(date: Date, context: Context): String {
+    val now   = Date()
+    val diff  = now.time - date.time
+    val mins  = TimeUnit.MILLISECONDS.toMinutes(diff)
     val hours = TimeUnit.MILLISECONDS.toHours(diff)
-    val days = TimeUnit.MILLISECONDS.toDays(diff)
+    val days  = TimeUnit.MILLISECONDS.toDays(diff)
     val weeks = (days / 7).toInt()
-
     return when {
-        mins < 1 -> context.getString(R.string.time_just_now)
-        mins < 60 -> context.getString(R.string.time_mins_ago, mins)
+        mins  < 1  -> context.getString(R.string.time_just_now)
+        mins  < 60 -> context.getString(R.string.time_mins_ago, mins)
         hours < 24 -> context.getString(R.string.time_hours_ago, hours)
-        days < 7 -> context.getString(R.string.time_days_ago, days)
-        else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
+        days  < 7  -> context.getString(R.string.time_days_ago, days)
+        else       -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
-/**
- * A card component used in the feed to display a visualization's summary.
- *
- * @param item The [VisualizationCard] data to display.
- */
-@Composable
-fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
-    val context = LocalContext.current
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
+@Composable
+fun FeedCard(
+    item: VisualizationCard,
+    currentUserID: String,
+    isMenuOpen: Boolean,
+    onClick: () -> Unit = {},
+    onMenuOpen: () -> Unit = {},
+    onMenuDismiss: () -> Unit = {},
+    onDeleteForEveryone: () -> Unit = {},
+    onHideForMe: () -> Unit = {},
+    onShare: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val isOwner = item.authorID == currentUserID
+
+    Card(
+        onClick  = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape    = RoundedCornerShape(16.dp),
+        colors   = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 14.dp, top = 14.dp, end = 14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(start = 14.dp, top = 14.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment     = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = item.title,
+                        text       = item.title,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        fontSize   = 16.sp,
+                        color      = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-
                     Spacer(modifier = Modifier.height(6.dp))
-
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = stringResource(R.string.by_author, item.author),
-                            color = MaterialTheme.colorScheme.primary,
+                            text     = stringResource(R.string.by_author, item.author),
+                            color    = MaterialTheme.colorScheme.primary,
                             fontSize = 13.sp
                         )
                         Text(
-                            text = stringResource(R.string.bullet_separator,
-                                formatTime(item.createdAt, context)),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text     = stringResource(R.string.bullet_separator, formatTime(item.createdAt, context)),
+                            color    = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                     }
                 }
 
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = stringResource(R.string.icon_menu),
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
+                Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
+                    IconButton(onClick = onMenuOpen) {
+                        Icon(
+                            imageVector        = Icons.Filled.MoreVert,
+                            contentDescription = stringResource(R.string.icon_menu),
+                            tint               = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    if (isMenuOpen) {
+                        Popup(
+                            alignment        = Alignment.TopEnd,
+                            onDismissRequest = onMenuDismiss,
+                            properties       = PopupProperties(focusable = true)
+                        ) {
+                            FeedCardMenu(
+                                isOwner             = isOwner,
+                                onDismiss           = onMenuDismiss,
+                                onShare             = onShare,
+                                onDeleteForEveryone = onDeleteForEveryone,
+                                onHideForMe         = onHideForMe
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-
 
             Box(
                 modifier = Modifier
@@ -123,7 +150,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         .fillMaxWidth()
                         .height(200.dp)
                         .background(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.surface,
                             shape = RoundedCornerShape(12.dp)
                         )
                         .padding(all = 12.dp),
@@ -132,11 +159,13 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                     val chart = item.chart
                     if (chart != null) {
                         ChartRenderGeneral(
-                            chart = chart, showAxisLabels = false, enableTooltips = false
+                            chart          = chart,
+                            showAxisLabels = false,
+                            enableTooltips = false
                         )
                     } else {
                         Text(
-                            text = "Chart not found",
+                            text  = stringResource(R.string.error_chart_not_found),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -160,11 +189,75 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
 }
 
 @Composable
-private fun UserAvatar() {
+private fun FeedCardMenu(
+    isOwner: Boolean,
+    onDismiss: () -> Unit,
+    onShare: () -> Unit,
+    onDeleteForEveryone: () -> Unit,
+    onHideForMe: () -> Unit
+) {
+    val bgColor = MaterialTheme.colorScheme.secondaryContainer.let { c ->
+        if (c == Color.Transparent) MaterialTheme.colorScheme.surface else c
+    }
+
+    Card(
+        shape    = RoundedCornerShape(16.dp),
+        colors   = CardDefaults.cardColors(containerColor = bgColor),
+        modifier = Modifier
+            .shadow(
+                elevation    = 8.dp,
+                shape        = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black.copy(alpha = 0.15f),
+                spotColor    = Color.Black.copy(alpha = 0.15f)
+            )
+            .width(260.dp)
+    ) {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            if (isOwner) {
+                MenuTextItem(
+                    label   = stringResource(R.string.feed_menu_share),
+                    color   = MaterialTheme.colorScheme.onPrimaryContainer,
+                    onClick = onShare
+                )
+                HorizontalDivider(
+                    modifier  = Modifier.padding(horizontal = 16.dp),
+                    thickness = 0.5.dp,
+                    color     = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                )
+                MenuTextItem(
+                    label   = stringResource(R.string.feed_menu_delete_for_everyone),
+                    color   = MaterialTheme.colorScheme.error,
+                    onClick = onDeleteForEveryone
+                )
+            } else {
+                MenuTextItem(
+                    label   = stringResource(R.string.feed_menu_hide_for_me),
+                    color   = MaterialTheme.colorScheme.error,
+                    onClick = onHideForMe
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MenuTextItem(
+    label: String,
+    color: Color,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
-            .size(28.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-    )
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text       = label,
+            color      = color,
+            fontSize   = 20.sp,
+            fontWeight = FontWeight.Normal,
+            style      = MaterialTheme.typography.bodyLarge
+        )
+    }
 }
