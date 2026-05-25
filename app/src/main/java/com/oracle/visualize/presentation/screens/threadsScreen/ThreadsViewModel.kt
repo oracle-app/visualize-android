@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.threadsScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
@@ -42,17 +41,9 @@ class ThreadsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ThreadsUIState())
     val uiState: StateFlow<ThreadsUIState> = _uiState.asStateFlow()
     private var currentUserID: String = ""
-    private var currentUserName: String = ""
-    private var currentUserImageUrl: String? = null
 
     init {
-        try {
-            currentUserID = authRepository.getCurrentUserID()
-            val currentUser = authRepository.getCurrentUser()
-            currentUserName = currentUser?.email ?: "Current User"
-        } catch (e: Exception) {
-            Log.e("ThreadsViewModel", "Failed to retrieve current user", e)
-        }
+        currentUserID = authRepository.getCurrentUserID()
     }
 
     private suspend fun getUserDisplayData(
@@ -66,7 +57,6 @@ class ThreadsViewModel @Inject constructor(
                 user?.profilePictureURL
             )
         } catch (e: Exception) {
-            Log.e("ThreadsViewModel", "User not found for ID: $userID", e)
             Pair(userID, null)
         }
     }
@@ -141,8 +131,6 @@ class ThreadsViewModel @Inject constructor(
                         else -> R.string.error_unknown_retry
                     }
 
-                    Log.e("ThreadsViewModel", "Error fetching comments: ${error.message}", error)
-
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -170,7 +158,6 @@ class ThreadsViewModel @Inject constructor(
                     loadThreads(visualizationId)
                 },
                 onFailure = { error ->
-                    Log.e("ThreadsViewModel", "Error creating comment: ${error.message}", error)
 
                     _uiState.update {
                         it.copy(
