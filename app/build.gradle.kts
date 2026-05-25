@@ -118,6 +118,6 @@ dependencies {
     implementation(libs.retrofit2)
     implementation(libs.retrofit2.converter)
     implementation(libs.capturable)
-    implementation("com.github.yalantis:ucrop:2.2.9")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation(libs.ucrop)
+    implementation(libs.appcompat)
 }

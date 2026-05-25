@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -308,15 +309,24 @@ fun ProfilePage(
                 )
                 {
                     TopAppBar(
-                        title = { Text(stringResource(R.string.preview)) },
+                        title = {
+                            Text(
+                                text = stringResource(R.string.preview),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        },
                         navigationIcon = {
                             IconButton(onClick = { showUnsavedChangesDialog = true }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.back)
+                                    contentDescription = stringResource(R.string.back),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
-                        }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
                     )
                     AsyncImage(
                         model = state.pfp,
