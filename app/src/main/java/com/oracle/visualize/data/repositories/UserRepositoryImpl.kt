@@ -33,5 +33,10 @@ class UserRepositoryImpl @Inject constructor(
             throw AppError.NetworkError("Failed to fetch user suggestions: ${e.message}")
         }
     }
+    override suspend fun getUserByUserID(userID: String): User? {
+        return userDatasource
+            .getUserByID(userID)
+            .toDomain()
+    }
 }
 

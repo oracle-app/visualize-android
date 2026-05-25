@@ -32,4 +32,6 @@ sealed class AppError(message: String) : Exception(message) {
     class NetworkError(message: String = "Network connection failed") : AppError(message)
     class UnavailableMockData(message: String) : AppError(message)
     class InvalidCredentials(message: String = "The email or password is incorrect") : AppError(message)
+
+    class InvalidComment(message: String = "The comment is empty") : AppError(message)
 }
