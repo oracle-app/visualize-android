@@ -144,7 +144,7 @@ class VisualizationDatasource @Inject constructor(
     suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
         val visualization = visualizationsRef.document(visualizationID).get().await()
 
-        if(!visualization.exists()) return null
+        if (!visualization.exists()) return null
 
         return visualization.toObject(VisualizationDTO::class.java)
             ?: throw AppError.ParsingError("Error parsing VisualizationDTO.")

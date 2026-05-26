@@ -7,6 +7,7 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.GetIndividualVisualizationUseCase
+import com.oracle.visualize.domain.usecases.ParseFullScreenChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getIndividualVisualizationUseCase: GetIndividualVisualizationUseCase,
+    private val parseFullScreenChartUseCase: ParseFullScreenChartUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
@@ -51,7 +53,8 @@ class FullVisualizationViewModel @Inject constructor(
 
             getIndividualVisualizationUseCase(visualizationId).fold(
                 onSuccess = { visualization ->
-                    val chart = visualization?.chart
+                    val chart = visualization?.let { parseFullScreenChartUseCase(it) }
+
                     _uiState.update {
                         it.copy(
                             isLoading = false,

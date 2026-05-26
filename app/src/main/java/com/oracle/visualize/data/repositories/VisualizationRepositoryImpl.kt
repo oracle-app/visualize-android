@@ -7,12 +7,15 @@ import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
+import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
 import com.oracle.visualize.data.mapper.toVisualizationDTO
+import com.oracle.visualize.data.mapper.toVisualizationFullScreen
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -30,7 +33,8 @@ import kotlin.collections.flatMap
 class VisualizationRepositoryImpl @Inject constructor(
     private val visualizationDataSource: VisualizationDatasource,
     private val userDatasource: UserDatasource,
-    private val teamsDatasource: TeamDatasource
+    private val teamsDatasource: TeamDatasource,
+    private val feedCacheManager: FeedCacheManager
 ) : VisualizationRepository {
 
     override suspend fun createVisualization(
@@ -68,10 +72,13 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getSharedVisualizations(userID: String): List<VisualizationCard> {
+    override suspend fun getSharedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard> {
+        val cached = feedCacheManager.cachedFeed
+        if (!forceRefresh && cached != null) {
+            return cached.filter { it.authorID != userID }
+        }
         return try {
             val userVisualizations = visualizationDataSource.getVisualizationsSharedWithUser(userID)
-
             val userTeams = teamsDatasource.getTeamsUserIsIn(userID)
             val teamIDs = userTeams.mapNotNull { it.id }
 
@@ -90,7 +97,11 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPersonalVisualizations(userID: String): List<VisualizationCard> {
+    override suspend fun getPersonalVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard> {
+        val cached = feedCacheManager.cachedFeed
+        if (!forceRefresh && cached != null) {
+            return cached.filter { it.authorID == userID }
+        }
         return try {
             val dtos = visualizationDataSource.getPersonalVisualizations(userID)
             fetchDetailsAndMapBatch(dtos, userID)
@@ -99,6 +110,22 @@ class VisualizationRepositoryImpl @Inject constructor(
             throw AppError.NetworkError("Failed to fetch personal visualizations: ${e.message}")
         }
 
+    }
+
+    override suspend fun getUserFeedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard> = coroutineScope {
+        val cached = feedCacheManager.cachedFeed
+        if (!forceRefresh && cached != null) {
+            return@coroutineScope cached
+        }
+
+        val sharedDeferred = async { getSharedVisualizations(userID, forceRefresh = true) }
+        val personalDeferred = async { getPersonalVisualizations(userID, forceRefresh = true) }
+
+        val combinedFeed = sharedDeferred.await() + personalDeferred.await()
+
+        // Write to cache once, safely
+        feedCacheManager.cachedFeed = combinedFeed
+        return@coroutineScope combinedFeed
     }
 
     private suspend fun fetchDetailsAndMapBatch(
@@ -191,7 +218,7 @@ class VisualizationRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun getIndividualVisualization(visualizationID: String): VisualizationCard? = coroutineScope {
+    override suspend fun getIndividualVisualization(visualizationID: String): VisualizationFullScreen? = coroutineScope {
         try {
             val visualizationDTO = visualizationDataSource.getIndividualVisualization(visualizationID) ?: return@coroutineScope null
 
@@ -227,7 +254,7 @@ class VisualizationRepositoryImpl @Inject constructor(
                 teamDTO.toDomain(specificTeamMembers)
             }
 
-            visualizationDTO.toVisualizationCard(
+            visualizationDTO.toVisualizationFullScreen(
                 authorName = authorName,
                 teamsSharedWith = teamsSharedWith,
                 usersSharedWith = usersSharedWith

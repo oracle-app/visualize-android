@@ -2,11 +2,10 @@ package com.oracle.visualize.domain.models
 
 import java.util.Date
 
-
 /**
- * Domain model representing a summary card of a visualization.
+ * Domain model representing a visualization on a full screen view.
  */
-data class VisualizationCard(
+data class VisualizationFullScreen(
     val id: String,
     val title: String,
     val author: String,
@@ -15,5 +14,5 @@ data class VisualizationCard(
     val teamsSharedWith: List<Team>,
     val usersSharedWith: List<User>,
     val allUsersSharedWith: List<User>,
-    val previewJSON: String
+    val configJSON: String
 )
