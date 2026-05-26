@@ -126,15 +126,22 @@ private fun CreateEditTeamContent(
                 }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 120.dp)) {
+            LazyColumn(
+                modifier       = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface),
+                contentPadding = PaddingValues(bottom = 120.dp)
+            ) {
 
+                // ── Team name field — CREATE mode only ───────────────────────
                 if (!state.isEditMode) {
                     item {
+                        Spacer(modifier = Modifier.height(24.dp))
                         TextField(
                             value         = state.teamName,
                             onValueChange = { onEvent(CreateEditTeamUiEvent.NameChanged(it)) },
                             placeholder   = { Text(text = stringResource(R.string.create_team_name_placeholder), fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            modifier      = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp).clip(RoundedCornerShape(8.dp)),
+                            modifier      = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(8.dp)),
                             colors        = TextFieldDefaults.colors(
                                 focusedContainerColor   = MaterialTheme.colorScheme.surfaceVariant,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -158,24 +165,53 @@ private fun CreateEditTeamContent(
                             text       = stringResource(R.string.create_team_add_people_section),
                             fontSize   = 20.sp, fontWeight = FontWeight.SemiBold,
                             color      = MaterialTheme.colorScheme.onSurface,
-                            modifier   = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
+                            modifier   = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)
                         )
                     }
                 }
 
+                // ── Search bar ───────────────────────────────────────────────
                 item {
+                    if (state.isEditMode) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
                     TextField(
                         value         = state.searchQuery,
                         onValueChange = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged(it)) },
-                        placeholder   = { Text(text = stringResource(if (state.isEditMode) R.string.edit_team_search_placeholder else R.string.create_team_search_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                        modifier      = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).clip(RoundedCornerShape(32.dp)),
-                        leadingIcon   = if (state.isEditMode) ({ Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }) else null,
-                        trailingIcon  = if (state.isEditMode && state.searchQuery.isNotBlank()) ({
-                            IconButton(onClick = { onEvent(CreateEditTeamUiEvent.SearchQueryChanged("")) }) {
-                                Icon(Icons.Default.Close, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        placeholder   = {
+                            Text(
+                                text  = stringResource(
+                                    if (state.isEditMode) R.string.edit_team_search_placeholder
+                                    else R.string.create_team_search_placeholder
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 16.sp
+                            )
+                        },
+                        modifier     = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(56.dp)
+                            .clip(RoundedCornerShape(28.dp)),
+                        leadingIcon  = {
+                            Icon(
+                                imageVector        = Icons.Default.Search,
+                                contentDescription = null,
+                                tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        trailingIcon = if (state.searchQuery.isNotBlank()) ({
+                            IconButton(onClick = {
+                                onEvent(CreateEditTeamUiEvent.SearchQueryChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector        = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
-                        }) else if (!state.isEditMode) ({ Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }) else null,
-                        colors        = TextFieldDefaults.colors(
+                        }) else null,
+                        colors     = TextFieldDefaults.colors(
                             focusedContainerColor   = MaterialTheme.colorScheme.surfaceVariant,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             focusedIndicatorColor   = Color.Transparent,
@@ -185,13 +221,19 @@ private fun CreateEditTeamContent(
                             focusedTextColor        = MaterialTheme.colorScheme.onSurface,
                             unfocusedTextColor      = MaterialTheme.colorScheme.onSurface,
                         ),
-                        singleLine = true
+                        singleLine = true,
+                        textStyle  = LocalTextStyle.current.copy(fontSize = 16.sp)
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
+                // ── Search results ───────────────────────────────────────────
                 if (state.searchQuery.isNotBlank() && state.searchResults.isNotEmpty()) {
                     items(state.searchResults) { user ->
-                        SearchResultRow(user = user, onAdd = { onEvent(CreateEditTeamUiEvent.AddMember(user)) })
+                        SearchResultRow(
+                            user  = user,
+                            onAdd = { onEvent(CreateEditTeamUiEvent.AddMember(user)) }
+                        )
                     }
                 }
 
@@ -203,12 +245,14 @@ private fun CreateEditTeamContent(
                                 SuggestionItem(user = user, onClick = { onEvent(CreateEditTeamUiEvent.AddMember(user)) })
                             }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
 
-                item {
-                    Text(text = stringResource(R.string.create_team_member_list_section), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp))
+                if (!state.isEditMode) {
+                    item {
+                        Text(text = stringResource(R.string.create_team_member_list_section), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp))
+                    }
                 }
 
                 items(state.members) { member ->
@@ -258,18 +302,41 @@ private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
 
 @Composable
 private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier          = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 52)
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = user.username, fontWeight = FontWeight.Normal, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
-            Text(text = user.email, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text       = user.username,
+                fontWeight = FontWeight.SemiBold,
+                fontSize   = 18.sp,
+                color      = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text     = user.email,
+                fontSize = 14.sp,
+                color    = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         if (isOwner) {
-            Text(text = stringResource(R.string.teams_owner_label), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+            Text(
+                text     = stringResource(R.string.teams_owner_label),
+                color    = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(end = 8.dp)
+            )
         } else {
             IconButton(onClick = onRemove) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(R.string.create_team_remove_member_description), tint = MaterialTheme.colorScheme.error)
+                Icon(
+                    imageVector        = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.create_team_remove_member_description),
+                    tint               = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
