@@ -7,7 +7,9 @@ data class ThreadsUIState(
     val visualizationTitle: String = "",
     val currentUserId: String = "",
     val comments: List<CommentUiModel> = emptyList(),
-    val errorMessage: Int? = null
+    val errorMessage: Int? = null,
+    val replyingToCommentId: String? = null,
+    val replyingToAuthorName: String? = null
 )
 
 data class CommentUiModel(

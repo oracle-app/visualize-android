@@ -152,6 +152,7 @@ fun CreatePage(
 
 @Composable
 fun DashedSelector(onClick: () -> Unit) {
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,16 +161,20 @@ fun DashedSelector(onClick: () -> Unit) {
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        val stroke = Stroke(
-            width = 2f,
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-        )
-        val borderColor = MaterialTheme.colorScheme.outlineVariant
         Canvas(modifier = Modifier.fillMaxSize()) {
+            val strokeWidth = 1.5.dp.toPx()
+            val dashWidth = 5.dp.toPx()
+            val dashGap = 5.dp.toPx()
+            
             drawRoundRect(
                 color = borderColor,
-                style = stroke,
-                cornerRadius = CornerRadius(8.dp.toPx())
+                style = Stroke(
+                    width = strokeWidth,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashWidth, dashGap), 0f)
+                ),
+                cornerRadius = CornerRadius(8.dp.toPx()),
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(size.width - strokeWidth, size.height - strokeWidth)
             )
         }
         val teal = MaterialTheme.colorScheme.onSurfaceVariant

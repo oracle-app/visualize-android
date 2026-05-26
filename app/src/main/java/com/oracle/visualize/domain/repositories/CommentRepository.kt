@@ -9,7 +9,7 @@ interface CommentRepository {
         authorID: String,
         content: String,
         imageURL: String?
-    )
+    ): Comment
 
     suspend fun getComments(
         visualizationId: String
@@ -19,5 +19,14 @@ interface CommentRepository {
         visualizationId: String,
         commentId: String
     ): List<Thread>
+
+    suspend fun createThread(
+        visualizationId: String,
+        commentId: String,
+        authorID: String,
+        authorName: String,
+        authorAvatarURL: String?,
+        content: String
+    ): Thread
 }
 

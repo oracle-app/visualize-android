@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.User
 
 @Composable
 fun UserAvatar(

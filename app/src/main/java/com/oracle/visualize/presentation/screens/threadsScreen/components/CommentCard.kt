@@ -25,7 +25,8 @@ import java.util.Locale
 fun CommentCard(
     comment: CommentUiModel,
     isCurrentUser: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onReplyClick: () -> Unit
 ) {
     val containerColor = if (isCurrentUser) {
         MaterialTheme.colorScheme.onTertiaryContainer
@@ -83,12 +84,15 @@ fun CommentCard(
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Reply,
-                contentDescription = stringResource(R.string.reply),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            IconButton(
+                onClick = onReplyClick
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Reply,
+                    contentDescription = stringResource(R.string.reply),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
 
         Text(
