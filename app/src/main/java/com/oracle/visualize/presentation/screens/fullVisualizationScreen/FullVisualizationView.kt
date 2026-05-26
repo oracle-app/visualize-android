@@ -79,6 +79,19 @@ fun FullVisualizationPage(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0),
+        topBar = {
+            when {
+                uiState.visualization != null -> {
+                    val visualization = uiState.visualization!!
+                    FullVisualizationTopBar (
+                        teamName = visualization.author,
+                        visualizationTitle = visualization.title,
+                        members = visualization.allUsersSharedWith,
+                        onBackClick = onBackClick
+                    )
+                }
+            }
+        },
         floatingActionButton = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -132,19 +145,12 @@ fun FullVisualizationPage(
                     )
                 }
 
-                uiState.visualization != null -> {
-                    val visualization = uiState.visualization!!
+                uiState.chart != null -> {
                     val chart = uiState.chart!!
 
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        FullVisualizationTopBar (
-                            teamName = visualization.author,
-                            visualizationTitle = visualization.title,
-                            members = visualization.allUsersSharedWith,
-                            onBackClick = onBackClick
-                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
