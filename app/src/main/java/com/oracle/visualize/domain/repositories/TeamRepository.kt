@@ -1,6 +1,5 @@
 package com.oracle.visualize.domain.repositories
 import com.oracle.visualize.domain.models.ShareTeam
-import com.oracle.visualize.domain.models.Team
 
 /**
  * Interface defining the operations for team management.

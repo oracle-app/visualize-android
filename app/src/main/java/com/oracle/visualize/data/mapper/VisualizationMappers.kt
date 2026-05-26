@@ -72,6 +72,6 @@ fun VisualizationDTO.toVisualizationCard(
         teamsSharedWith = teamsSharedWith,
         usersSharedWith = usersSharedWith,
         allUsersSharedWith = allUsers,
-        chart = ChartMapper.fromPreviewJson(this.previewJSON)
+        previewJSON = this.previewJSON
     )
 }

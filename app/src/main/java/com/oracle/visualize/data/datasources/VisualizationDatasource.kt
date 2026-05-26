@@ -1,14 +1,10 @@
 package com.oracle.visualize.data.datasources
 
-import android.util.Log
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
-import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 /**
@@ -137,44 +133,5 @@ class VisualizationDatasource @Inject constructor(
             results.addAll(snapshot.toObjects(VisualizationDTO::class.java))
         }
         return results
-    }
-
-    /**
-     * Permanently deletes a visualization document from the database.
-     *
-     * @param visualizationId The unique ID of the visualization to delete.
-     */
-    suspend fun deleteVisualization(visualizationId: String) {
-        withTimeout(10_000) {
-            visualizationsRef.document(visualizationId).delete().await()
-        }
-    }
-
-    /**
-     * Overwrites the [sharedWithUsers] field of a visualization with the given list of user IDs.
-     * Uses [set] with merge to ensure the call succeeds even if the document
-     * doesn't exist yet, avoiding the silent hang that [update] causes on missing documents.
-     *
-     * @param visualizationId The unique ID of the visualization to update.
-     * @param userIds         The complete list of user IDs to share the visualization with.
-     */
-    suspend fun updateSharedUsers(
-        visualizationId: String,
-        userIds: List<String>,
-        teamIds: List<String>
-    ) {
-        Log.d("VizDatasource", "updateSharedUsers — doc='$visualizationId' users=$userIds teams=$teamIds")
-        withTimeout(10_000) {
-            visualizationsRef.document(visualizationId)
-                .set(
-                    mapOf(
-                        "sharedWithUsers" to userIds,
-                        "sharedWithTeams" to teamIds
-                    ),
-                    SetOptions.merge()
-                )
-                .await()
-            Log.d("VizDatasource", "updateSharedUsers — Firestore write completed")
-        }
     }
 }
