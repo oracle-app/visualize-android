@@ -3,11 +3,12 @@ package com.oracle.visualize.presentation.screens.shareWithTeammatesScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.models.ShareUser
+import androidx.navigation.toRoute
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.domain.usecases.UpdateSharedUsersUseCase
+import com.oracle.visualize.presentation.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,10 +35,8 @@ class ShareWithTeammatesViewModel @Inject constructor(
 
     private val currentUserID: String = authRepository.getCurrentUserID()
 
-    private val visualizationId: String = run {
-        val id = savedStateHandle.get<String>("visualizationId") ?: ""
-        id
-    }
+    private val visualizationId: String =
+        savedStateHandle.toRoute<NavRoutes.ShareWithTeammates>().visualizationId
 
     init {
         loadData()
@@ -50,9 +49,8 @@ class ShareWithTeammatesViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = ShareWithTeammatesUiState.Loading
             try {
-                // Load teams owned by user and teams the user is member of in parallel
-                val myTeamsDeferred    = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
-                val teamsImInDeferred  = async { teamRepository.getTeamsUserIsIn(currentUserID) }
+                val myTeamsDeferred   = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
+                val teamsImInDeferred = async { teamRepository.getTeamsUserIsIn(currentUserID) }
 
                 val myTeams   = myTeamsDeferred.await()
                 val teamsImIn = teamsImInDeferred.await()
