@@ -96,13 +96,13 @@ fun TeammateRow(
 
         IconButton(
             onClick  = onRemove,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(32.dp)
         ) {
             Icon(
                 imageVector        = Icons.Default.Close,
                 contentDescription = stringResource(R.string.icon_remove_user),
-                tint               = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                modifier           = Modifier.size(18.dp)
+                tint               = MaterialTheme.colorScheme.error,
+                modifier           = Modifier.size(24.dp)
             )
         }
     }
