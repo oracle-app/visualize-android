@@ -72,13 +72,13 @@ fun RenderAreaChart(
             xAxisModel = rememberFloatLinearAxisModel(
                 range = minX..maxOf(minX + 1f, maxX),
                 minViewExtent = 0.01f,
-                minimumMajorTickIncrement = 0.001f,
+                minimumMajorTickIncrement = 0.01f,
                 minimumMajorTickSpacing = 60.dp
             ),
             yAxisModel = rememberFloatLinearAxisModel(
                 range = 0f..maxOf(1f, maxY),
                 minViewExtent = 0.01f,
-                minimumMajorTickIncrement = 0.001f,
+                minimumMajorTickIncrement = 0.01f,
                 minimumMajorTickSpacing = 30.dp
             ),
             xAxisContent = AxisContent(

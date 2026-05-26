@@ -16,6 +16,7 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -63,7 +64,9 @@ fun RenderLineChart(
     modifier: Modifier = Modifier, chart: LineChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
-    val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
+    val processedData = remember (chart.data) {
+        listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
+    }
     val lineColor = generateChartColors(1, ChartPalette.THEME1).firstOrNull() ?: Color.Blue
     val dotColors = generateChartColors(2, ChartPalette.THEME1)
 
@@ -80,13 +83,13 @@ fun RenderLineChart(
             xAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleXRange(),
                 minViewExtent = 0.01f,
-                minimumMajorTickIncrement = 0.001f,
+                minimumMajorTickIncrement = 0.01f,
                 minimumMajorTickSpacing = 60.dp
             ),
             yAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleYRange(),
                 minViewExtent = 0.01f,
-                minimumMajorTickIncrement = 0.001f,
+                minimumMajorTickIncrement = 0.01f,
                 minimumMajorTickSpacing = 30.dp
             ),
             xAxisContent = AxisContent(
@@ -135,6 +138,7 @@ fun RenderLineChart(
                 data = processedData,
                 symbol = { plotPoint ->
                     val coroutineScope = rememberCoroutineScope()
+
                     val tooltipDisplayState = rememberTooltipState(
                         initialIsVisible = false, isPersistent = true
                     )
@@ -151,9 +155,7 @@ fun RenderLineChart(
                         state = tooltipDisplayState,
                     ) {
                         Symbol(
-                            modifier = Modifier
-                                .size(if (enableTooltips) 30.dp else 10.dp)
-                                .pointerInput(Unit) {
+                            modifier = Modifier.size(if (enableTooltips) 30.dp else 0.dp).pointerInput(Unit) {
                                     detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
                                 },
                             fillBrush = SolidColor(dotColors[0]),
@@ -165,6 +167,7 @@ fun RenderLineChart(
                 },
                 animationSpec = tween(0)
             )
+
         }
     }
 }

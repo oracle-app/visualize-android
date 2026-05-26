@@ -67,7 +67,7 @@ fun RenderVerticalBarChart(
                 yAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxValue,
                     minViewExtent = 0.01f,
-                    minimumMajorTickIncrement = 0.001f,
+                    minimumMajorTickIncrement = 0.01f,
                     minimumMajorTickSpacing = 30.dp
                 ),
                 xAxisContent = AxisContent(

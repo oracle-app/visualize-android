@@ -80,13 +80,13 @@ fun RenderScatterChart(
             xAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleXRange(),
                 minViewExtent = 0.01f,
-                minimumMajorTickIncrement = 0.001f,
+                minimumMajorTickIncrement = 0.01f,
                 minimumMajorTickSpacing = 60.dp
             ),
             yAxisModel = rememberFloatLinearAxisModel(
                 range = processedData.autoScaleYRange(),
                 minViewExtent = 0.01f,
-                minimumMajorTickIncrement = 0.001f,
+                minimumMajorTickIncrement = 0.01f,
                 minimumMajorTickSpacing = 30.dp
             ),
             xAxisContent = AxisContent(
@@ -126,6 +126,7 @@ fun RenderScatterChart(
                 data = processedData,
                 symbol = { plotPoint ->
                     val coroutineScope = rememberCoroutineScope()
+
                     val tooltipDisplayState = rememberTooltipState(
                         initialIsVisible = false, isPersistent = true
                     )
