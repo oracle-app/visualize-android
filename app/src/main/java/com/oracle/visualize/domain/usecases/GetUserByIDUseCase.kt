@@ -16,7 +16,6 @@ class GetUserByIDUseCase @Inject constructor(private val userRepository: UserRep
 
         return runCatching {
             userRepository.getUserByUserID(userID)
-                ?: throw AppError.AuthFailed("User with ID $userID was not found.")
         }
     }
 }

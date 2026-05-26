@@ -32,13 +32,18 @@ class UserDatasource @Inject constructor(
      * @throws AppError.NotFound If the user does not exist.
      * @throws AppError.NetworkError If a network error occurs.
      */
-    suspend fun getUserByID(userID: String): UserDTO? {
+    suspend fun getUserByID(userID: String): UserDTO {
         val snapshot = firestore.collection("users")
             .document(userID)
             .get()
             .await()
 
+        if(!snapshot.exists()) {
+            throw AppError.NotFound("User with ID $userID does not exist in the database.")
+        }
+
         return snapshot.toObject(UserDTO::class.java)
+            ?: throw AppError.ParsingError("Error when parsing UserDTO for ID: $userID")
     }
 
     /**

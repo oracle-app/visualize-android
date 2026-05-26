@@ -11,7 +11,7 @@ import com.oracle.visualize.domain.models.User
 interface UserRepository {
     suspend fun getUserSuggestionsByEmail(email: String): List<ShareUser>
 
-    suspend fun getUserByUserID(userId: String): User?
+    suspend fun getUserByUserID(userId: String): User
 
     suspend fun uploadProfilePicture(userID: String, uri: String): String
 

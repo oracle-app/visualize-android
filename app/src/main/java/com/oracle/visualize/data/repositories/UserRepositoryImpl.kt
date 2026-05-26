@@ -35,8 +35,10 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserByUserID(userId: String): User {
-        return userDatasource.getUserByID(userId).toDomain()
+    override suspend fun getUserByUserID(userID: String): User {
+        return userDatasource
+            .getUserByID(userID)
+            .toDomain()
     }
 
     override suspend fun uploadProfilePicture(userID: String, uri: String): String {

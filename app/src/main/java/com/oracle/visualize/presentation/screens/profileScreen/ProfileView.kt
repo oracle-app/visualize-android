@@ -90,7 +90,7 @@ fun ProfilePage(
     ) { success ->
         if (success) {
             profileViewModel.setPfpUploadUi()
-            imageUri?.let { profileViewModel.setPfpCapturedValue(it) }
+            imageUri?.let { profileViewModel.setPfpCapturedValue(it.toString()) }
         }
     }
 
@@ -99,7 +99,7 @@ fun ProfilePage(
     ) { uri ->
         uri?.let {
             profileViewModel.setPfpUploadUi()
-            profileViewModel.setPfpCapturedValue(it)
+            profileViewModel.setPfpCapturedValue(it.toString())
         }
     }
 
@@ -116,7 +116,7 @@ fun ProfilePage(
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             val resultUri = result.data?.let { UCrop.getOutput(it) }
-            resultUri?.let { profileViewModel.setPfpCapturedValue(it) }
+            resultUri?.let { profileViewModel.setPfpCapturedValue(it.toString()) }
         }
     }
 
@@ -349,7 +349,7 @@ fun ProfilePage(
                                     setShowCropFrame(false)
                                 }
 
-                                val cropIntent = UCrop.of(pfp, destUri)
+                                val cropIntent = UCrop.of(Uri.parse(pfp), destUri)
                                     .withAspectRatio(1f, 1f)
                                     .withMaxResultSize(512, 512)
                                     .withOptions(options)
@@ -393,9 +393,9 @@ fun ProfilePage(
 
                     Button(
                         onClick = {
-                            profileViewModel.updatePfp(state.pfp ?: Uri.EMPTY)
+                            profileViewModel.updatePfp(state.pfp ?: "")
                             profileViewModel.setUiState()
-                                  },
+                        },
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
