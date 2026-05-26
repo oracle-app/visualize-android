@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -131,25 +133,29 @@ private fun ShareWithTeammatesContent(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // ── User search ───────────────────────────────────────────────
-                TeammateSearchBar(
-                    query         = state.emailQuery,
-                    onQueryChange = { onEvent(ShareWithTeammatesUiEvent.EmailQueryChanged(it)) },
-                    onClear       = { onEvent(ShareWithTeammatesUiEvent.EmailQueryChanged("")) }
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(28.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    TeammateSearchBar(
+                        query         = state.emailQuery,
+                        onQueryChange = { onEvent(ShareWithTeammatesUiEvent.EmailQueryChanged(it)) },
+                        onClear       = { onEvent(ShareWithTeammatesUiEvent.EmailQueryChanged("")) }
+                    )
 
-                if (state.suggestedUsers.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                    ) {
-                        HorizontalDivider(
-                            color     = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                            thickness = 1.dp
-                        )
-                        state.suggestedUsers.forEach { user ->
-                            SuggestedUserRow(user = user) {
-                                onEvent(ShareWithTeammatesUiEvent.SelectSuggestion(user))
+                    if (state.suggestedUsers.isNotEmpty()) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            HorizontalDivider(
+                                color     = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                thickness = 1.dp,
+                                modifier  = Modifier.padding(horizontal = 4.dp)
+                            )
+                            state.suggestedUsers.forEach { user ->
+                                SuggestedUserRow(user = user) {
+                                    onEvent(ShareWithTeammatesUiEvent.SelectSuggestion(user))
+                                }
                             }
                         }
                     }
