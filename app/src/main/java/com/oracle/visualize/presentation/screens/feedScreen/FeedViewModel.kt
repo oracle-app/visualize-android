@@ -83,6 +83,12 @@ class FeedViewModel @Inject constructor(
         }
     }
 
+    fun refreshIfCacheInvalidated() {
+        if (feedCacheManager.cachedFeed == null) {
+            loadData(forceRefresh = true)
+        }
+    }
+
     fun loadChartForCard(card: VisualizationCard) {
         viewModelScope.launch {
             val chart = parseSingleChartUseCase(card)

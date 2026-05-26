@@ -32,6 +32,8 @@ import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.feedScreen.components.DeleteForEveryoneDialog
 import com.oracle.visualize.presentation.screens.feedScreen.components.DeleteForMeDialog
 import com.oracle.visualize.presentation.screens.feedScreen.components.SkeletonFeedCard
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +46,14 @@ fun FeedPage(
     val uiState       by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.currentStateFlow.collect { state ->
+            if (state == Lifecycle.State.RESUMED) {
+                feedViewModel.refreshIfCacheInvalidated()
+            }
+        }
+    }
     // ── Dialogs and deferred navigation ──────────────────────────────────────
 
     if (uiState is FeedUiState.Success) {
