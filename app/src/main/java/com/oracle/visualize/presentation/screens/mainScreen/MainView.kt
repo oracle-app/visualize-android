@@ -52,7 +52,9 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+            modifier = Modifier.padding(
+                bottom = innerPadding.calculateBottomPadding()
+            )
         )
     }
 }

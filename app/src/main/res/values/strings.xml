@@ -47,7 +47,8 @@
         <item quantity="other">%d weeks ago</item>
     </plurals>
     <string name="by_author">By %s</string>
-    <string name="bullet_separator">    •    %s</string>
+    <string name="by_me">By Me</string>
+    <string name="bullet_separator">•</string>
     <string name="failed_load_chart">Failed to load chart"</string>
 ß
     //Chart Component
@@ -232,5 +233,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
+    <string name="passremember">Use 8 or more letters, numbers and symbols</string>
+
 
 </resources>

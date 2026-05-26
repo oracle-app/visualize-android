@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.domain.repositories.CommentRepository
 import jakarta.inject.Inject
 
@@ -22,7 +23,7 @@ class CreateThreadUseCase @Inject constructor(
         authorName: String,
         authorAvatarURL: String?,
         content: String
-    ): Result<Unit> {
+    ): Result<Thread> {
         if (content.isBlank()) {
             return Result.failure(AppError.InvalidComment())
         }
