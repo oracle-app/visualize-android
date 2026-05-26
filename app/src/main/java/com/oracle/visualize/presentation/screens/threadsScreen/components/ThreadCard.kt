@@ -1,115 +1,157 @@
 package com.oracle.visualize.presentation.screens.threadsScreen.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Reply
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.Thread
+import com.oracle.visualize.presentation.components.UserAvatar
+import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ThreadCard(
-    thread: Thread,
+    thread: ThreadUiModel,
     isCurrentUser: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteClick: () -> Unit
 ) {
-    val containerColor = if (isCurrentUser) {
-        MaterialTheme.colorScheme.onTertiaryContainer
-    } else {
-        MaterialTheme.colorScheme.onTertiary
-    }
+    val formattedDate = SimpleDateFormat(
+        "dd/MM/yy",
+        Locale.getDefault()
+    ).format(thread.createdAt)
 
-    val headerColor = if (isCurrentUser) {
-        MaterialTheme.colorScheme.tertiaryContainer
-    } else {
-        MaterialTheme.colorScheme.tertiary
-    }
+    var expanded by remember { mutableStateOf(false) }
 
-    val timelineColor = MaterialTheme.colorScheme.tertiaryFixed
-
-    Column(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(containerColor)
+            .combinedClickable(
+                onClick = {},
+                onLongClick = {
+                    if (isCurrentUser) {
+                        expanded = true
+                    }
+                }
+            )
     ) {
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(headerColor)
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        Box(
+            modifier = Modifier.width(38.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
 
-            ThreadAvatar(
+            UserAvatar(
                 username = thread.authorName,
-                profilePictureUrl = thread.authorImageUrl,
-                size = 38.dp
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-
-                Text(
-                    text = thread.authorName,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                profilePictureURL = thread.authorImageURL,
+                size = 32,
+                modifier = Modifier.border(
+                    width = 3.dp,
+                    color = MaterialTheme.colorScheme.tertiaryFixed,
+                    shape = CircleShape
                 )
-
-                Text(
-                    text = thread.timestamp,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Reply,
-                contentDescription = stringResource(R.string.reply),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
 
-        Text(
-            text = thread.content,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
-        )
+        Spacer(modifier = Modifier.width(8.dp))
 
         Box(
-            modifier = Modifier
-                .padding(start = 24.dp, end = 14.dp, bottom = 14.dp)
-                .drawBehind {
-                    val avatarColumnWidth = 38.dp.toPx()
-                    val lineX = avatarColumnWidth / 2f
-
-                    drawLine(
-                        color = timelineColor,
-                        start = Offset(lineX, 0f),
-                        end = Offset(lineX, size.height),
-                        strokeWidth = 3.dp.toPx()
-                    )
-                }
+            modifier = Modifier.weight(1f)
         ) {
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(
+                    topStart = 2.dp,
+                    topEnd = 14.dp,
+                    bottomStart = 14.dp,
+                    bottomEnd = 14.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryFixed
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                )
             ) {
 
-                thread.comments.forEach { comment ->
-                    CommentCard(comment = comment)
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = 14.dp,
+                        vertical = 12.dp
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = thread.authorName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = formattedDate,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = thread.content,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.delete),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onDeleteClick()
+                    }
+                )
             }
         }
     }

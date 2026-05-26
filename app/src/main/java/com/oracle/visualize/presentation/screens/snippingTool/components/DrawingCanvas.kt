@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.snippingTool.components
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

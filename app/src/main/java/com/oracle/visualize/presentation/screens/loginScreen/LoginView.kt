@@ -90,7 +90,8 @@ fun LoginPage(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
                 placeholder = stringResource(R.string.email),
-                isError = uiState.emailError != null
+                isError = uiState.emailError != null,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -102,7 +103,8 @@ fun LoginPage(
                 isError = uiState.passwordError != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isPasswordVisible,
-                onVisibilityClick = viewModel::onPasswordVisibilityChange
+                onVisibilityClick = viewModel::onPasswordVisibilityChange,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
             )
 
             uiState.error?.let {
@@ -152,7 +154,7 @@ fun LoginPage(
 
             TextButton(
                 onClick = onSignUpClick,
-                contentPadding = PaddingValues(0.dp)
+                contentPadding = PaddingValues(0.dp),
             ) {
                 Text(
                     text = stringResource(R.string.signup),

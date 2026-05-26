@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.shareScreen.components
+package com.oracle.visualize.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,19 +18,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
-import com.oracle.visualize.domain.models.User
 
 @Composable
-fun UserAvatarCard(
-    user: User,
+fun UserAvatar(
+    username: String,
+    profilePictureURL: String?,
+    modifier: Modifier = Modifier,
     size: Int = 38
 ) {
-    val initial = user.username.firstOrNull()?.uppercase() ?: "?"
+    val initial = username.firstOrNull()?.uppercase() ?: "?"
 
     SubcomposeAsyncImage(
-        model = user.profilePictureURL,
-        contentDescription = stringResource(R.string.avatar_description, user.username),
-        modifier = Modifier
+        model = profilePictureURL,
+        contentDescription = stringResource(R.string.avatar_description, username),
+        modifier = modifier
             .size(size.dp)
             .clip(CircleShape),
         contentScale = ContentScale.Crop,

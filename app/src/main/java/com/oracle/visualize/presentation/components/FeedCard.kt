@@ -2,12 +2,12 @@ package com.oracle.visualize.presentation.components
 
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -24,6 +24,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,8 +40,10 @@ import androidx.compose.ui.unit.sp
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStackFeed
+import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
+import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 
 fun formatTime(date: Date, context: Context): String{
     val now = Date()
@@ -55,21 +62,45 @@ fun formatTime(date: Date, context: Context): String{
         else -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
     }
 }
+@Composable
+private fun UserAvatar() {
+    Box(
+        modifier = Modifier
+            .size(28.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.onPrimary)
+    )
+}
+
+
 /**
  * A card component used in the feed to display a visualization's summary.
  *
  * @param item The [VisualizationCard] data to display.
  */
 @Composable
-fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
+fun FeedCard(
+    item: VisualizationCard,
+    currentUserID: String = "",
+    onClick: () -> Unit = {},
+    chart: Chart<*>?,
+    isChartLoading: Boolean,
+    onLoadChartRequest: () -> Unit
+) {
     val context = LocalContext.current
+    val isShared = item.allUsersSharedWith.isNotEmpty()
+    var titleLineCount by remember { mutableStateOf(1) }
+    val amIAuthor = item.authorID == currentUserID
+    val _chartHeight = if (isShared) 200.dp else 248.dp
+    val chartHeight = maxOf(100.dp, _chartHeight - (22.dp * (titleLineCount - 1)))
+
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant)
-
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Column {
             Row(
@@ -83,23 +114,34 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         text = item.title,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        onTextLayout = { textLayoutResult ->
+                            titleLineCount = textLayoutResult.lineCount
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = stringResource(R.string.by_author, item.author),
+                            text = if (amIAuthor) {
+                                stringResource(R.string.by_me)
+                            } else {
+                                stringResource(R.string.by_author, item.author)
+                            },
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 13.sp
                         )
+                        //Space on the card chart
+                        Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
+                        Text(text = stringResource(R.string.bullet_separator))
+                        Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
                         Text(
-                            text = stringResource(R.string.bullet_separator,
-                                formatTime(item.createdAt, context)),
+                            text = formatTime(item.createdAt, context),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
+
                     }
                 }
 
@@ -121,7 +163,7 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(chartHeight)
                         .background(
                             color = MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(12.dp)
@@ -129,42 +171,50 @@ fun FeedCard(item: VisualizationCard, onClick: () -> Unit = {}) {
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val chart = item.chart
-                    if (chart != null) {
+                    LaunchedEffect(item.id) {
+                        if (isChartLoading && chart == null) {
+                            onLoadChartRequest()
+                        }
+                    }
+
+                    if (isChartLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp))
+                                .skeletonEffect()
+                        )
+                    } else if (chart != null) {
                         ChartRenderGeneral(
-                            chart = chart, showAxisLabels = false, enableTooltips = false
+                            chart = chart,
+                            showAxisLabels = false,
+                            enableTooltips = false
                         )
                     } else {
                         Text(
-                            text = "Chart not found",
+                            text = stringResource(R.string.failed_load_chart),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier
-                    .padding(start = 12.dp, bottom = 12.dp)
-                    .heightIn(min = 41.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                MemberAvatarStackFeed(item.allUsersSharedWith)
-                Spacer(modifier = Modifier.width(8.dp))
+            if (isShared) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 12.dp, bottom = 12.dp)
+                        .heightIn(min = 41.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    MemberAvatarStackFeed(item.allUsersSharedWith)
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+            }
+            else {
+                Spacer(Modifier.height(14.dp))
             }
         }
     }
-}
-
-@Composable
-private fun UserAvatar() {
-    Box(
-        modifier = Modifier
-            .size(28.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-    )
 }
