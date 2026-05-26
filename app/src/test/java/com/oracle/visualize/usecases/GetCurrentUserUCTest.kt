@@ -1,12 +1,5 @@
 package com.oracle.visualize.usecases
 
-import com.oracle.visualize.domain.models.AuthUser
-import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Test
-
 //class GetCurrentUserUCTest {
 //    private class FakeAuthRepository(
 //        private val currentUser: AuthUser?

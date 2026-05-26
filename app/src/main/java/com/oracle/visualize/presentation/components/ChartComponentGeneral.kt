@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.domain.models.Chart

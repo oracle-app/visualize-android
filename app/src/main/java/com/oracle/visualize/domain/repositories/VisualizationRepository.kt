@@ -15,7 +15,8 @@ interface VisualizationRepository {
         sharedWithTeams: List<String>
     )
     suspend fun getAllVisualizations(): List<Visualization>
-    suspend fun getSharedVisualizations(userID: String): List<VisualizationCard>
-    suspend fun getPersonalVisualizations(userID: String): List<VisualizationCard>
+    suspend fun getSharedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard>
+    suspend fun getPersonalVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard>
+    suspend fun getUserFeedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard>
     suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>)
 }
