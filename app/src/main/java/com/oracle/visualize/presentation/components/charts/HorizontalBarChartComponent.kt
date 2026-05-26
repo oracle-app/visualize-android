@@ -55,10 +55,14 @@ fun RenderHorizontalBarChart(
     modifier: Modifier = Modifier, chart: HorizontalBarChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
-    val categories = chart.data.keys.toList()
-    val values = chart.data.values.toList()
-    val maxValue = values.maxOrNull() ?: 0f
-    val barColors = generateChartColors(categories.size, ChartPalette.THEME1)
+    val data = chart.data
+
+    val categories = remember(data) { data.keys.toList() }
+    val values = remember(data) { data.values.toList() }
+    val maxValue = remember(values) { values.maxOrNull() ?: 0f }
+    val barColors = remember(categories) {
+        generateChartColors(categories.size, ChartPalette.THEME1)
+    }
 
     Box {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {

@@ -17,6 +17,7 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -60,12 +61,14 @@ fun RenderAreaChart(
     modifier: Modifier = Modifier, chart: AreaChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
-    val sortedKeys = chart.data.keys.sorted()
-    val minX = sortedKeys.firstOrNull() ?: 0f
-    val maxX = sortedKeys.lastOrNull() ?: 0f
-    val maxY = chart.data.values.maxOfOrNull { it.sum() } ?: 0f
+    val data = chart.data
     val seriesNames = chart.stackNames
-    val seriesColors = generateChartColors(seriesNames.size, ChartPalette.THEME1)
+
+    val sortedKeys = remember(data) { data.keys.sorted() }
+    val minX = remember(sortedKeys) { sortedKeys.firstOrNull() ?: 0f }
+    val maxX = remember(sortedKeys) { sortedKeys.lastOrNull() ?: 0f }
+    val maxY = remember(data) { data.values.maxOfOrNull { it.sum() } ?: 0f }
+    val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, ChartPalette.THEME1) }
 
     KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
         XYGraph(

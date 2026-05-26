@@ -78,7 +78,7 @@ fun ChartRenderFullScreen(
                     .fillMaxSize(),
                 title = {},
                 legend = {
-                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 2.dp)) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 4.dp)) {
                         FlowLegend(
                             modifier = Modifier
                                 .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp))

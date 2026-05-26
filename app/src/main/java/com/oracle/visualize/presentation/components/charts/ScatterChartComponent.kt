@@ -17,6 +17,7 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -64,7 +65,10 @@ fun RenderScatterChart(
     modifier: Modifier = Modifier, chart: ScatterChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
-    val processedData = listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
+    val processedData = remember(chart.data) {
+        listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
+    }
+
     val dotColors = generateChartColors(2, ChartPalette.THEME1)
 
     var xMetric = stringResource(R.string.line_scatter_x_metric)

@@ -59,8 +59,8 @@ fun RenderStackedBarChart(
     modifier: Modifier = Modifier, chart: StackedBarChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
-    val categories = remember(chart) { chart.data.keys.toList() }
-    val seriesCount = remember(chart) { chart.data.values.firstOrNull()?.size ?: 0 }
+    val categories = remember(chart.data) { chart.data.keys.toList() }
+    val seriesCount = remember(chart.data) { chart.data.values.firstOrNull()?.size ?: 0 }
     val seriesLabel = stringResource(R.string.stacked_bar_series)
 
     val seriesNames = remember(seriesCount) {
@@ -75,7 +75,7 @@ fun RenderStackedBarChart(
         generateChartColors(seriesNames.size, ChartPalette.THEME1)
     }
 
-    val maxY = remember(chart) { chart.data.values.maxOfOrNull { it.sum() } ?: 0f }
+    val maxY = remember(chart.data.values) { chart.data.values.maxOfOrNull { it.sum() } ?: 0f }
 
     Box {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
