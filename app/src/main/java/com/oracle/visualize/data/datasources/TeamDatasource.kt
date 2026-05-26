@@ -10,12 +10,14 @@ import javax.inject.Inject
 /**
  * Data source for team-related operations using Firestore.
  *
- * Design note — ownerID inside membersIDs:
- *   The owner is always written into membersIDs so that:
- *     1. whereArrayContains("membersIDs", ownerID) returns their own teams,
- *        which powers the suggestions carousel in Create mode.
- *     2. Member count and member list in the UI always include the owner
- *        without any special-casing in the mapper or repository.
+ * Design note — ownerID is NOT stored inside membersIDs:
+ *   The owner and members are kept as separate concepts so that:
+ *     1. "My Teams" (owned) and "Teams I'm In" (member-only) sections
+ *        remain meaningful and non-overlapping.
+ *     2. Visualizations shared with a team are not fetched twice
+ *        (once for personal, once for shared) causing duplicate feed items.
+ *   The UI layer is responsible for displaying the owner alongside members
+ *   when needed, using the ownerID field.
  *
  * @property db The [FirebaseFirestore] instance used for database operations.
  */
@@ -26,17 +28,17 @@ class TeamDatasource @Inject constructor(
 
     /**
      * Creates a new team.
-     * The [ownerID] is merged into [membersIDs] before writing so that
-     * the owner is always reflected in the full member list.
+     * The [ownerID] is stored separately and is NOT added to [membersIDs].
      */
     suspend fun createTeam(
         membersIDs: List<String>,
         name: String,
         ownerID: String
     ) {
-        val allMemberIDs = (membersIDs + ownerID).distinct()
+        // Ensure the owner is never duplicated inside membersIDs
+        val cleanMemberIDs = membersIDs.filter { it != ownerID }
         val teamData = hashMapOf(
-            "membersIDs" to allMemberIDs,
+            "membersIDs" to cleanMemberIDs,
             "name"       to name,
             "ownerID"    to ownerID
         )
@@ -45,8 +47,7 @@ class TeamDatasource @Inject constructor(
 
     /**
      * Updates an existing team's name and member list.
-     * The owner's ID must already be present in [membersIDs]; the caller
-     * (ViewModel / UseCase) is responsible for passing the complete list.
+     * The caller must ensure [membersIDs] does NOT include the ownerID.
      */
     suspend fun updateTeam(
         teamID: String,
@@ -78,7 +79,7 @@ class TeamDatasource @Inject constructor(
     }
 
     /**
-     * Fetches all teams owned by a specific user.
+     * Fetches all teams owned by a specific user (ownerID == userID).
      */
     suspend fun getTeamsUserOwns(userID: String): List<TeamDTO> {
         val snapshot = teamsRef.whereEqualTo("ownerID", userID).get().await()
@@ -86,8 +87,8 @@ class TeamDatasource @Inject constructor(
     }
 
     /**
-     * Fetches all teams that a specific user is a member of (including owned teams,
-     * since the owner is stored in membersIDs).
+     * Fetches all teams where the user is a member but NOT the owner.
+     * Since ownerID is not in membersIDs, this query returns only non-owned teams.
      */
     suspend fun getTeamsUserIsIn(userID: String): List<TeamDTO> {
         val snapshot = teamsRef.whereArrayContains("membersIDs", userID).get().await()
