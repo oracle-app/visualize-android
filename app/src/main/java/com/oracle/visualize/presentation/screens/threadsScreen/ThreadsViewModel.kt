@@ -175,8 +175,25 @@ class ThreadsViewModel @Inject constructor(
                 content = content,
                 imageURL = null
             ).fold(
-                onSuccess = {
-                    loadThreads(visualizationId)
+                onSuccess = { newComment ->
+                    val currentUserData = getUserDisplayData(currentUserID)
+
+                    val newCommentUi = CommentUiModel(
+                        id = newComment.id,
+                        authorID = newComment.authorID,
+                        authorName = currentUserData.first,
+                        authorImageURL = currentUserData.second,
+                        content = newComment.content,
+                        imageURL = newComment.imageURL,
+                        createdAt = newComment.createdAt,
+                        threads = emptyList()
+                    )
+
+                    _uiState.update {
+                        it.copy(
+                            comments = it.comments + newCommentUi
+                        )
+                    }
                 },
                 onFailure = { error ->
 
@@ -204,14 +221,30 @@ class ThreadsViewModel @Inject constructor(
                 authorAvatarURL = currentUserImageUrl,
                 content = content
             ).fold(
-                onSuccess = {
-                    _uiState.update {
-                        it.copy(
+                onSuccess = { newThread ->
+                    val newThreadUi = ThreadUiModel(
+                        id = newThread.id,
+                        authorID = newThread.authorID,
+                        authorName = newThread.authorName,
+                        authorImageURL = newThread.authorAvatarURL,
+                        content = newThread.content,
+                        createdAt = newThread.createdAt
+                    )
+                    _uiState.update { state ->
+                        state.copy(
                             replyingToCommentId = null,
-                            replyingToAuthorName = null
+                            replyingToAuthorName = null,
+                            comments = state.comments.map { comment ->
+                                if (comment.id == commentId) {
+                                    comment.copy(
+                                        threads = comment.threads + newThreadUi
+                                    )
+                                } else {
+                                    comment
+                                }
+                            }
                         )
                     }
-                    loadThreads(visualizationId)
                 },
                 onFailure = { error ->
                     _uiState.update {
