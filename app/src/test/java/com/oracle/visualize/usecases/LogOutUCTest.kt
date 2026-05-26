@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.verify
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 

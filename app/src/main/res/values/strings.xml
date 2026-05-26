@@ -48,7 +48,8 @@
     </plurals>
     <string name="by_author">By %s</string>
     <string name="bullet_separator">    •    %s</string>
-
+    <string name="failed_load_chart">Failed to load chart"</string>
+ß
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
 
