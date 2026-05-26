@@ -2,6 +2,7 @@ package com.oracle.visualize.fixtures
 
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 import java.util.Date
 
 object VisualizationFixtures {
@@ -17,7 +18,20 @@ object VisualizationFixtures {
         createdAt = Date(),
         teamsSharedWith = emptyList(),
         usersSharedWith = emptyList(),
-        allUsersSharedWith = emptyList()
+        allUsersSharedWith = emptyList(),
+        previewJSON = "{}"
+    )
+
+    val fakeValidVisualizationFullScreen = VisualizationFullScreen(
+        id = VALID_VISUALIZATION_ID,
+        title = "Chart A",
+        author = "John",
+        authorID = "2",
+        createdAt = Date(),
+        teamsSharedWith = emptyList(),
+        usersSharedWith = emptyList(),
+        allUsersSharedWith = emptyList(),
+        configJSON = "{}"
     )
 
     val fakeValidVisualization = Visualization(

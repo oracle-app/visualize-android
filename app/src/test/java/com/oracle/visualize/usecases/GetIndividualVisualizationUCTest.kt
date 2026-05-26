@@ -1,7 +1,6 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.domain.usecases.GetIndividualVisualizationUseCase
 import com.oracle.visualize.fixtures.VisualizationFixtures
@@ -51,8 +50,7 @@ class GetIndividualVisualizationUCTest {
         assertTrue(result.isFailure)
         assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) {
-            visualizationRepository.getSharedVisualizations(any())
-            visualizationRepository.getPersonalVisualizations(any())
+            visualizationRepository.getIndividualVisualization(any())
         }
     }
 
@@ -61,10 +59,10 @@ class GetIndividualVisualizationUCTest {
     fun `returns success when visualizationID is valid, calling the Repository once`() = runTest {
         // Given
         val validVisualizationID = VisualizationFixtures.VALID_VISUALIZATION_ID
-        val fakeVisCard = VisualizationFixtures.fakeVisualizationCard
+        val fakeVisualization = VisualizationFixtures.fakeValidVisualizationFullScreen
 
         // When
-        coEvery { visualizationRepository.getIndividualVisualization(validVisualizationID) } returns fakeVisCard
+        coEvery { visualizationRepository.getIndividualVisualization(validVisualizationID) } returns fakeVisualization
         val result = getIndividualVisualization(validVisualizationID)
 
         // Then
