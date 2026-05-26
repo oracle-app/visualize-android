@@ -80,4 +80,26 @@ class CommentRepositoryImpl @Inject constructor(
             .copy(id = id)
             .toDomain()
     }
+
+    override suspend fun deleteComment(
+        visualizationId: String,
+        commentId: String
+    ) {
+        commentDatasource.deleteComment(
+            visualizationId = visualizationId,
+            commentId = commentId
+        )
+    }
+
+    override suspend fun deleteThread(
+        visualizationId: String,
+        commentId: String,
+        threadId: String
+    ){
+        commentDatasource.deleteThread(
+            visualizationId = visualizationId,
+            commentId = commentId,
+            threadId = threadId
+        )
+    }
 }
