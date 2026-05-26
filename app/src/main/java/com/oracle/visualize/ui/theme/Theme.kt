@@ -36,10 +36,10 @@ private val DarkColorScheme = darkColorScheme(
     background = DarkMode_Background,
     onBackground = DarkMode_NotAsLightGray,
     surface = DarkMode_Background,
-    onSurface = DarkMode_DarkGray,
+    onSurface = DarkMode_NotAsLightGray,
 
     surfaceVariant = DarkMode_LighterBlue,
-    onSurfaceVariant = DarkMode_NotAsLightGray,
+    onSurfaceVariant = DarkMode_StrongBlue,
 
     outline = DarkMode_GrayishBlue,
     outlineVariant = DarkMode_NotAsDarkGray,
@@ -70,11 +70,11 @@ private val LightColorScheme = lightColorScheme(
 
     background = VeryLightGray,
     onBackground = NotAsLightGray,
-    surface = White,
-    onSurface = DarkGray,
+    surface = VeryLightGray,
+    onSurface = NotAsLightGray,
 
     surfaceVariant = LighterBlue,
-    onSurfaceVariant = NotAsLightGray,
+    onSurfaceVariant = StrongBlue,
 
     outline = GrayishBlue,
     outlineVariant = NotAsDarkGray,

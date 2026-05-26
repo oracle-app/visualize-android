@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.selectChartScreen
 import com.oracle.visualize.domain.models.Chart
-import com.oracle.visualize.domain.models.Visualization
 import java.util.UUID
 /**
  * Represents the UI state for the Chart Selection screen.

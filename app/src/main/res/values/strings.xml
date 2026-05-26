@@ -47,8 +47,10 @@
         <item quantity="other">%d weeks ago</item>
     </plurals>
     <string name="by_author">By %s</string>
-    <string name="bullet_separator">    •    %s</string>
-
+    <string name="by_me">By Me</string>
+    <string name="bullet_separator">•</string>
+    <string name="failed_load_chart">Failed to load chart"</string>
+ß
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
 
@@ -99,7 +101,20 @@
     <string name="dialog_unsaved_title">Unsaved Changes</string>
     <string name="dialog_unsaved_message">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="dialog_leave">Leave</string>
-    //Share and Post
+    // Feed — Delete / Hide dialogs
+
+    <string name="feed_delete_title">Delete visualization?</string>
+    <string name="feed_delete_for_everyone_message">This visualization will be permanently deleted for you and everyone it was shared with.</string>
+    <string name="feed_hide_title">Hide visualization?</string>
+    <string name="feed_delete_for_me_message">This visualization will be hidden from your feed. Other users who have access will still be able to see it.</string>
+
+    // Feed — Card three-dot menu
+
+    <string name="feed_menu_share">Share</string>
+    <string name="feed_menu_delete_for_everyone">Delete for everyone</string>
+    <string name="feed_menu_hide_for_me">Hide for me</string>
+
+    // Share and Post
 
     <string name="team_member_count">%d members</string>
     <string name="unsaved_changes">Unsaved Changes</string>
@@ -111,6 +126,18 @@
     <string name="share_empty_teams">You\'re not part of any teams yet.</string>
     <string name="share_and_post">Share and Post</string>
     <string name="input_email">Enter email</string>
+
+    // Share With Teammates Screen
+
+    <string name="share_with_teammates_title">Share to More Teammates</string>
+    <string name="share_with_teammates_empty">Search for teammates you\´d like to share with.</string>
+    <string name="share_no_results">No users found for that email.</string>
+    <string name="share_clear_search">Clear search</string>
+    <string name="share_send">Send</string>
+    <string name="share_remove_title">Remove %s?</string>
+    <string name="share_remove_confirm">Remove</string>
+    <string name="share_section_my_teams">My teams</string>
+    <string name="share_section_teams_im_in">Teams I\'m in</string>
 
 
     // Errors
@@ -158,6 +185,8 @@
     <string name="send">Send message</string>
     <string name="no_threads">There\'s no more threads.</string>
     <string name="no_threads_yet">There\'s no comments yet.</string>
+    <string name="reply_to">Replying to %s</string>
+    <string name="cancel_reply">Cancel reply</string>
 
 
     // Snipping Tool
@@ -204,6 +233,8 @@
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
+    <string name="passremember">Use 8 or more letters, numbers and symbols</string>
+
 
     // Teams Screen
 

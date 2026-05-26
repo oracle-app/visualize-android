@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,7 +28,7 @@ import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
 import com.oracle.visualize.R
-import androidx.compose.runtime.collectAsState
+import com.oracle.visualize.presentation.screens.feedScreen.components.SkeletonFeedCard
 
 /**
  * Composable representing the Feed screen.
@@ -72,7 +71,17 @@ fun FeedPage(
             when (val state = uiState) {
 
                 is FeedUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 22.dp)
+                    ) {
+                        items(3) {
+                            SkeletonFeedCard()
+                        }
+                    }
                 }
 
                 is FeedUiState.Error -> {
@@ -85,10 +94,10 @@ fun FeedPage(
                 is FeedUiState.Success -> {
 
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = 20.dp)
                     ) {
 
                         item {
@@ -117,11 +126,15 @@ fun FeedPage(
                         } else {
                             items(
                                 items = state.items,
-                                key = { it.id }
-                            ) { item ->
+                                key = { it.card.id }
+                            ) { feedItem ->
                                 FeedCard(
-                                    item = item,
-                                    onClick = { onVisualizationClick(item.id) }
+                                    item = feedItem.card,
+                                    chart = feedItem.chart,
+                                    currentUserID = state.currentUserID,
+                                    isChartLoading = feedItem.isChartLoading,
+                                    onLoadChartRequest = { feedViewModel.loadChartForCard(feedItem.card) },
+                                    onClick = { onVisualizationClick(feedItem.card.id) }
                                 )
                             }
                         }

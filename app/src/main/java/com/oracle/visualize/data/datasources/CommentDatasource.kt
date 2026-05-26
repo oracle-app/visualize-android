@@ -27,17 +27,18 @@ class CommentDatasource @Inject constructor(
     suspend fun createComment(
         visualizationId: String,
         commentDTO: CommentDTO
-    ) {
+    ): String {
+        val docRef = commentsRef(visualizationId).document()
+
         val formattedComment = hashMapOf(
             "authorID" to commentDTO.authorID,
             "content" to commentDTO.content,
             "createdAt" to Timestamp.now(),
             "imageURL" to commentDTO.imageURL
         )
-        commentsRef(visualizationId)
-            .document()
-            .set(formattedComment)
-            .await()
+        docRef.set(formattedComment).await()
+
+        return docRef.id
     }
 
     suspend fun getComments(visualizationId: String): List<CommentDTO> {
@@ -78,6 +79,28 @@ class CommentDatasource @Inject constructor(
                 ?.copy(id = doc.id)
                 ?: throw AppError.ParsingError("Failed to parse threads")
         }
+    }
+
+    suspend fun createThread(
+        visualizationId: String,
+        commentId: String,
+        threadDTO: ThreadDTO
+    ): String {
+        val docRef = threadsRef(
+            visualizationId = visualizationId,
+            commentId = commentId
+        ).document()
+
+        val formattedThread = hashMapOf(
+            "authorID" to threadDTO.authorID,
+            "authorName" to threadDTO.authorName,
+            "authorAvatarURL" to threadDTO.authorAvatarURL,
+            "content" to threadDTO.content,
+            "createdAt" to Timestamp.now()
+        )
+        docRef.set(formattedThread).await()
+
+        return docRef.id
     }
 
 }

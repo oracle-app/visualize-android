@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.repositories.CommentRepository
 import javax.inject.Inject
 
@@ -19,11 +20,12 @@ class CreateCommentUseCase @Inject constructor(
         authorID: String,
         content: String,
         imageURL: String? = null
-    ): Result<Unit> {
+    ): Result<Comment> {
 
         if (content.isBlank()) {
             return Result.failure(AppError.InvalidComment())
         }
+
         return runCatching {
             commentsRepository.createComment(
                 visualizationId = visualizationId,
