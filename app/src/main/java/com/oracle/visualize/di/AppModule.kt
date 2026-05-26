@@ -7,8 +7,9 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
 import com.oracle.visualize.data.datasources.AuthFirebasesource
-import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
+import com.oracle.visualize.data.datasources.local.ChartCacheManager
+import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.data.repositories.AnalyzeRepositoryImpl
 import com.oracle.visualize.data.repositories.AuthRepositoryImpl
 import com.oracle.visualize.data.repositories.CommentRepositoryImpl
@@ -87,6 +88,25 @@ object FirebaseModule {
         apiMicroService: AnalyzeApiMicroService
     ) : AnalyzeRepository {
         return AnalyzeRepositoryImpl(apiMicroService)
+    }
+}
+
+/**
+ * Hilt module that provides Cache dependencies.
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+object CacheModule {
+    @Provides
+    @Singleton
+    fun provideChartCacheManager(): ChartCacheManager {
+        return ChartCacheManager()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFeedCacheManager(): FeedCacheManager {
+        return FeedCacheManager()
     }
 }
 

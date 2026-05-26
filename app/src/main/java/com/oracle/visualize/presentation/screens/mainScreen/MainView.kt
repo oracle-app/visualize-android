@@ -1,3 +1,5 @@
+package com.oracle.visualize.presentation.screens.mainScreen
+
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -9,13 +11,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.oracle.visualize.presentation.components.BottomNavBar
 import com.oracle.visualize.presentation.navigation.AppNavHost
-import com.oracle.visualize.presentation.screens.mainScreen.MainViewModel
 
 /**
  * Main container screen that sets up the navigation host and bottom bar.
- * All navigation logic is delegated to [AppNavHost].
  *
  * @param viewModel The [MainViewModel] providing navigation items.
+ * Uses [AppNavHost] to manage navigation.
  */
 @Composable
 fun MainScreen(
@@ -51,7 +52,7 @@ fun MainScreen(
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         )
     }
 }
