@@ -68,8 +68,7 @@ fun NotificationPage(modifier: Modifier = Modifier,
             else -> {
                 LazyColumn(
                     modifier = modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                        .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(16.dp)
                 ) {
