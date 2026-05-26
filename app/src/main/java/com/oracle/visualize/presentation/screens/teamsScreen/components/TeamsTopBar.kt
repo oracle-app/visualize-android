@@ -40,8 +40,8 @@ fun TeamsTopBar() {
             Text(
                 text       = stringResource(R.string.teams_title),
                 fontSize   = 28.sp,
-                fontWeight = FontWeight.Medium,
-                color      = MaterialTheme.colorScheme.onPrimaryContainer
+                fontWeight = FontWeight.Normal,
+                color      = MaterialTheme.colorScheme.onSurface
             )
         }
     }

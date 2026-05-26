@@ -35,8 +35,6 @@ import com.oracle.visualize.presentation.screens.teamsScreen.TeamsUiEvent
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsUiState
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsViewModel
 import com.oracle.visualize.presentation.screens.teamsScreen.components.DeleteTeamDialog
-import com.oracle.visualize.presentation.screens.teamsScreen.components.MyTeamRow
-import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamPosition
 import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamsImInRow
 import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamsTopBar
 
@@ -109,8 +107,8 @@ private fun TeamsContent(
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
                         text       = stringResource(R.string.teams_my_teams_section),
-                        fontSize   = 20.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontSize   = 24.sp,
+                        fontWeight = FontWeight.Normal,
                         color      = MaterialTheme.colorScheme.onSurface,
                         modifier   = Modifier.padding(bottom = 12.dp)
                     )
@@ -138,8 +136,8 @@ private fun TeamsContent(
                     Spacer(modifier = Modifier.height(32.dp))
                     Text(
                         text       = stringResource(R.string.teams_im_in_section),
-                        fontSize   = 20.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontSize   = 24.sp,
+                        fontWeight = FontWeight.Normal,
                         color      = MaterialTheme.colorScheme.onSurface,
                         modifier   = Modifier.padding(bottom = 12.dp)
                     )
@@ -166,13 +164,13 @@ private fun TeamsContent(
             onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
             modifier       = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 24.dp, end = 24.dp)
-                .size(72.dp),
+                .padding(bottom = 32.dp, end = 24.dp)
+                .size(80.dp),
             containerColor = MaterialTheme.colorScheme.secondary,
             contentColor   = MaterialTheme.colorScheme.onSecondary,
-            shape          = RoundedCornerShape(20.dp)
+            shape          = RoundedCornerShape(24.dp)
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.teams_create_fab_description), modifier = Modifier.size(36.dp))
+            Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.teams_create_fab_description), modifier = Modifier.size(40.dp))
         }
 
         if (state.teamPendingDeleteId != null) {

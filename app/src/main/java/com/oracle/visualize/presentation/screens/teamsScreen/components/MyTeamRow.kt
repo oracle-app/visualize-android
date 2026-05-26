@@ -1,5 +1,3 @@
-package com.oracle.visualize.presentation.screens.teamsScreen.components
-
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +35,10 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStack
 
+// Each row is fully rounded — matches Figma where every card is independent
+private val ROW_SHAPE = RoundedCornerShape(16.dp)
+
+// Keep TeamPosition and teamShape for TeamsImInRow which still uses grouped style
 enum class TeamPosition { SINGLE, TOP, MIDDLE, BOTTOM }
 
 fun teamShape(position: TeamPosition) = when (position) {
@@ -62,9 +64,10 @@ fun MyTeamRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .clip(teamShape(position))
+            .clip(ROW_SHAPE)
             .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
+        // Swipe action buttons (revealed on swipe)
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -103,6 +106,7 @@ fun MyTeamRow(
             }
         }
 
+        // Main row content
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier          = Modifier
@@ -115,12 +119,21 @@ fun MyTeamRow(
                         if (dragAmount > 15f) onDismissSwipe()
                     }
                 }
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = team.name, fontSize = 18.sp, fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.onSurface)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = stringResource(R.string.teams_member_count, team.memberCount), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text       = team.name,
+                    fontSize   = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color      = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text     = stringResource(R.string.teams_member_count, team.memberCount),
+                    fontSize = 14.sp,
+                    color    = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             MemberAvatarStack(members = team.members, isSelected = false)
         }
