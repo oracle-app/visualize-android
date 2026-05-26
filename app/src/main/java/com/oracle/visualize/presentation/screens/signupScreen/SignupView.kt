@@ -91,6 +91,7 @@ fun SignUpPage(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
                 placeholder = stringResource(R.string.name),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
                 isError = uiState.nameError != null
             )
 
@@ -100,6 +101,7 @@ fun SignUpPage(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
                 placeholder = stringResource(R.string.email),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
                 isError = uiState.emailError != null
             )
 
@@ -109,6 +111,7 @@ fun SignUpPage(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
                 placeholder = stringResource(R.string.password),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
                 isError = uiState.passwordError != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isPasswordVisible,
@@ -121,10 +124,18 @@ fun SignUpPage(
                 value = uiState.confirmPassword,
                 onValueChange = viewModel::onConfirmPasswordChange,
                 placeholder = stringResource(R.string.confirm_password),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
                 isError = uiState.confirmPasswordError != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isConfirmPasswordVisible,
                 onVisibilityClick = viewModel::onConfirmPasswordVisibilityChange
+            )
+            Text(
+                text = stringResource(R.string.passremember),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
+                fontSize = 11.sp,
+                modifier = Modifier.padding(top = 5.dp).align(Alignment.Start)
+
             )
 
             uiState.error?.let {
