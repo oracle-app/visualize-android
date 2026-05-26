@@ -111,9 +111,9 @@ fun FeedCard(item: VisualizationCard, currentUserID: String = "", onClick: () ->
                             fontSize = 13.sp
                         )
                         //Space on the card chart
-                        Text(text = "-----", color = MaterialTheme.colorScheme.surfaceVariant)
+                        Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
                         Text(text = stringResource(R.string.bullet_separator))
-                        Text(text = "-----", color = MaterialTheme.colorScheme.surfaceVariant)
+                        Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
                         Text(
                             text = formatTime(item.createdAt, context),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

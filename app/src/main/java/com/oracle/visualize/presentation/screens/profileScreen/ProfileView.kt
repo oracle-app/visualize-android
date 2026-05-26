@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.profileScreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +13,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -113,11 +121,14 @@ fun ProfilePage(
 
                     // Spacer between profile header and cards.
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(if (isSystemInDarkTheme()) 16.dp else 32.dp))
 
                     // Chart theme selector.
 
-                    SettingsCard(title = stringResource(R.string.chart_theme_title)) {
+                    SettingsCard(
+                        title = stringResource(R.string.chart_theme_title),
+                        icon = Icons.Default.Palette
+                    ) {
 
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
@@ -153,11 +164,14 @@ fun ProfilePage(
 
                     // 4 dp spacer.
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(if (isSystemInDarkTheme()) 24.dp else 4.dp))
 
                     // "About app" card.
 
-                    SettingsCard(title = stringResource(R.string.about_title)) {
+                    SettingsCard(
+                        title = stringResource(R.string.about_title),
+                        icon = Icons.Default.Info
+                    ) {
                         Text(
                             text = "${stringResource(R.string.version_declaration)} $appVersion\n${stringResource(R.string.developer)}",
                             style = MaterialTheme.typography.labelSmall,
@@ -206,25 +220,56 @@ fun ProfilePage(
 fun SettingsCard(
     title: String,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+    if (isSystemInDarkTheme()) {
+        Column(modifier = modifier.fillMaxWidth()) {
+            HorizontalDivider(
+                modifier = Modifier.padding(bottom = 16.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
             )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(bottom = 12.dp)
+            ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
             content()
+        }
+    } else {
+        Card(
+            modifier = modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                content()
+            }
         }
     }
 }

@@ -200,5 +200,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
+    <string name="passremember">Use 8 or more letters, numbers and symbols</string>
+
 
 </resources>

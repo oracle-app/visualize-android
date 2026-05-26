@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.splashScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
+import com.oracle.visualize.ui.theme.DarkMode_StrongBlue
 
 @Composable
 fun SplashPage(
@@ -153,7 +156,11 @@ fun SplashPage(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text(text = stringResource(R.string.login))
+                    Text(
+                        text = stringResource(R.string.login),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(26.dp))
@@ -165,11 +172,16 @@ fun SplashPage(
                         .height(50.dp),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.primary
-                    )
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isSystemInDarkTheme()) 0.26f else 1f),
+                        contentColor = if (isSystemInDarkTheme()) DarkMode_StrongBlue else MaterialTheme.colorScheme.primary
+                    ),
+
                 ) {
-                    Text(text = stringResource(R.string.signup))
+                    Text(
+                        text = stringResource(R.string.signup),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
