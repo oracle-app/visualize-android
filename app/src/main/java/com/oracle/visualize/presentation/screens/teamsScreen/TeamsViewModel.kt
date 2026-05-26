@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.teamsScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.DeleteTeamUseCase
 import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,20 +12,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for the Teams screen.
- */
 @HiltViewModel
 class TeamsViewModel @Inject constructor(
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
-    private val deleteTeamUseCase: DeleteTeamUseCase
+    private val deleteTeamUseCase: DeleteTeamUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
     val uiState: StateFlow<TeamsUiState> = _uiState.asStateFlow()
 
-    // TODO: Replace with actual session user ID from AuthRepository
-    private val userID = "e9Nk8XrxHJAtwN3Hf2FL"
+    private val userID: String = authRepository.getCurrentUserID()
 
     init { loadTeams() }
 
@@ -69,14 +67,12 @@ class TeamsViewModel @Inject constructor(
             is TeamsUiEvent.SwipeTeam ->
                 _uiState.value = current.copy(swipedTeamId = event.teamId)
 
-            // Step 1 — show the confirmation dialog
             is TeamsUiEvent.RequestDeleteTeam ->
                 _uiState.value = current.copy(
-                    swipedTeamId       = null,
+                    swipedTeamId        = null,
                     teamPendingDeleteId = event.teamId
                 )
 
-            // Step 2 — user confirmed, perform the delete
             is TeamsUiEvent.ConfirmDeleteTeam -> {
                 _uiState.value = current.copy(teamPendingDeleteId = null)
                 viewModelScope.launch {
@@ -91,13 +87,11 @@ class TeamsViewModel @Inject constructor(
                 }
             }
 
-            // User cancelled — just close the dialog
             is TeamsUiEvent.DismissDeleteDialog ->
                 _uiState.value = current.copy(teamPendingDeleteId = null)
 
             is TeamsUiEvent.Refresh -> loadTeams()
 
-            // Navigation events are handled in the View layer
             else -> Unit
         }
     }
