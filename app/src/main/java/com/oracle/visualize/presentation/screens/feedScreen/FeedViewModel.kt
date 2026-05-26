@@ -121,6 +121,7 @@ class FeedViewModel @Inject constructor(
         val currentState = _uiState.value
         val filter = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
         val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
+        val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
 
         var filteredItems = when (filter) {
             VisualizationFilter.ALL -> allFeedItems
@@ -137,9 +138,11 @@ class FeedViewModel @Inject constructor(
         _uiState.update { state ->
             FeedUiState.Success(
                 items = filteredItems,
+                currentUserID = currentUserID,
                 searchText = search,
                 selectedFilter = filter,
-                isRefreshing = false
+                isRefreshing = false,
+                isSearching = isSearching
             )
         }
     }
