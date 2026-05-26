@@ -15,6 +15,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
+import com.oracle.visualize.domain.usecases.LoginUseCase
+import com.oracle.visualize.domain.usecases.LogoutUseCase
+import com.oracle.visualize.domain.usecases.SetChartThemeUseCase
+import com.oracle.visualize.domain.usecases.UpdatePfpUseCase
 import com.oracle.visualize.presentation.screens.createChartScreen.CreateChartUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -27,29 +32,24 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val userRepository: UserRepository
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val setChartThemeUseCase: SetChartThemeUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val updatePfpUseCase: UpdatePfpUseCase
 ) : ViewModel() {
 
-    private val uid = auth.currentUser?.uid ?: ""
-
-
+    private val currentUser = getCurrentUserUseCase()
 
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
-    private suspend fun fetchUserData(): Result<Unit> {
 
-        if (uid == null) {
-            return Result.failure(AppError.AuthFailed())
-        }
+    private suspend fun fetchUserData(): Result<Unit> {
+        val uid = currentUser?.uid
+            ?: return Result.failure(AppError.AuthFailed())
 
         return try {
-
-
             val user = userRepository.getUserByUserID(uid)
                 ?: return Result.failure(AppError.NotFound("User not found for id: $uid"))
-
-            // If the uid is successful, then take those values and bring them to the uiState
 
             _uiState.value = ProfileUiState.Ready(user.username, user.email, user.profilePictureURL, user.chartTheme)
             Result.success(Unit)
@@ -82,7 +82,9 @@ class ProfileViewModel @Inject constructor(
         chartThemeJob?.cancel()
         chartThemeJob = viewModelScope.launch {
             delay(500)
-            userRepository.setChartTheme(uid, selectedPalette)
+            setChartThemeUseCase(selectedPalette).onFailure { exception ->
+                Log.e("ProfileViewModel", "Failed to set chart theme: ${exception.message}")
+            }
         }
     }
 
@@ -109,15 +111,22 @@ class ProfileViewModel @Inject constructor(
 
     fun updatePfp(uri: Uri) {
         viewModelScope.launch {
-            val url = userRepository.uploadProfilePicture(uid, uri)
-            userRepository.setProfilePicture(uid, url)
-            fetchUserData()
+            updatePfpUseCase(uri.toString()).fold(
+                onSuccess = {
+                    fetchUserData()
+                },
+                onFailure = { exception ->
+                    Log.e("ProfileViewModel", "Failed to update profile picture: ${exception.message}")
+                }
+            )
         }
     }
 
 
     fun logout() {
-        auth.signOut()
+        viewModelScope.launch {
+            logoutUseCase()
+        }
     }
 
     fun deleteProfilePicture() {

@@ -1,6 +1,7 @@
 package com.oracle.visualize.data.datasources
 
-import android.net.Uri
+
+import androidx.core.net.toUri
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -82,9 +83,10 @@ class UserDatasource @Inject constructor(
 
     // This function uploads an image in Uri format and returns the upload URL.
 
-    suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
+    suspend fun uploadProfilePicture(userID: String, uri: String): String {
+        val processedUri = uri.toUri()
         val storageRef = storage.reference.child("users/$userID/profilePicture")
-        storageRef.putFile(uri).await()
+        storageRef.putFile(processedUri).await()
 
         return storageRef.downloadUrl.await().toString()
     }
@@ -98,12 +100,18 @@ class UserDatasource @Inject constructor(
             .await()
     }
 
+    suspend fun updatePfp(userID: String, uri: String) {
+        val url = uploadProfilePicture(userID, uri)
+        setProfilePicture(userID, url)
+    }
+
     suspend fun setChartTheme(userID: String, selectedPalette: String) {
         firestore.collection("users")
             .document(userID)
             .update("chartTheme", selectedPalette)
             .await()
     }
+
 
     // DELETE
 

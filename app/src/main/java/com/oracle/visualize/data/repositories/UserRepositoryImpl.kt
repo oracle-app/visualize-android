@@ -39,7 +39,7 @@ class UserRepositoryImpl @Inject constructor(
         return userDatasource.getUserByID(userId).toDomain()
     }
 
-    override suspend fun uploadProfilePicture(userID: String, uri: Uri): String {
+    override suspend fun uploadProfilePicture(userID: String, uri: String): String {
         return userDatasource.uploadProfilePicture(userID, uri)
     }
 
@@ -53,6 +53,10 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun deleteProfilePicture(userId: String): Unit {
         return userDatasource.deleteProfilePicture(userId)
+    }
+
+    override suspend fun updatePfp(userId: String, uri: String): Unit {
+        return userDatasource.updatePfp(userId, uri)
     }
 
 }
