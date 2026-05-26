@@ -4,9 +4,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
+import kotlin.coroutines.resumeWithException
 
 /**
  * Data source for visualization-related operations using Firestore.
@@ -97,9 +99,19 @@ class VisualizationDatasource @Inject constructor(
      */
     suspend fun deleteVisualization(visualizationId: String) {
         withTimeout(10_000) {
-            visualizationsRef.document(visualizationId).delete().await()
+            suspendCancellableCoroutine { cont ->
+                val task = visualizationsRef.document(visualizationId).delete()
+                task.addOnSuccessListener {
+                    if (cont.isActive) cont.resume(Unit) {}
+                }
+                task.addOnFailureListener { e ->
+                    if (cont.isActive) cont.resumeWithException(e)
+                }
+                cont.invokeOnCancellation { }
+            }
         }
     }
+
 
     /**
      * Overwrites [sharedWithUsers] and [sharedWithTeams] on a visualization using
@@ -113,14 +125,23 @@ class VisualizationDatasource @Inject constructor(
         teamIds: List<String>
     ) {
         withTimeout(10_000) {
-            visualizationsRef.document(visualizationId)
-                .set(
-                    mapOf(
-                        "sharedWithUsers" to userIds,
-                        "sharedWithTeams" to teamIds
-                    ),
-                    SetOptions.merge()
-                ).await()
+            suspendCancellableCoroutine { cont ->
+                val task = visualizationsRef.document(visualizationId)
+                    .set(
+                        mapOf(
+                            "sharedWithUsers" to userIds,
+                            "sharedWithTeams" to teamIds
+                        ),
+                        SetOptions.merge()
+                    )
+                task.addOnSuccessListener {
+                    if (cont.isActive) cont.resume(Unit) {}
+                }
+                task.addOnFailureListener { e ->
+                    if (cont.isActive) cont.resumeWithException(e)
+                }
+                cont.invokeOnCancellation { }
+            }
         }
     }
 }
