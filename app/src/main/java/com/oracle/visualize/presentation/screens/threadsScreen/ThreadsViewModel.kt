@@ -7,6 +7,7 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.CreateCommentUseCase
+import com.oracle.visualize.domain.usecases.CreateThreadUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
 import com.oracle.visualize.domain.usecases.GetThreadsUseCase
@@ -34,6 +35,7 @@ class ThreadsViewModel @Inject constructor(
     private val createCommentUseCase: CreateCommentUseCase,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getThreadsUseCase: GetThreadsUseCase,
+    private val createThreadUseCase: CreateThreadUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
@@ -41,9 +43,28 @@ class ThreadsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ThreadsUIState())
     val uiState: StateFlow<ThreadsUIState> = _uiState.asStateFlow()
     private var currentUserID: String = ""
+    private var currentUserName: String = ""
+    private var currentUserImageUrl: String? = null
 
     init {
         currentUserID = authRepository.getCurrentUserID()
+
+        viewModelScope.launch {
+            try {
+                val currentUser = userRepository
+                    .getUserByUserID(currentUserID)
+
+                currentUserName =
+                    currentUser?.username ?: currentUserID
+
+                currentUserImageUrl =
+                    currentUser?.profilePictureURL
+
+            } catch (e: Exception) {
+                currentUserName = currentUserID
+                currentUserImageUrl = null
+            }
+        }
     }
 
     private suspend fun getUserDisplayData(
@@ -165,6 +186,59 @@ class ThreadsViewModel @Inject constructor(
                         )
                     }
                 }
+            )
+        }
+    }
+
+    fun createThread(
+        visualizationId: String,
+        commentId: String,
+        content: String
+    ) {
+        viewModelScope.launch {
+            createThreadUseCase(
+                visualizationId = visualizationId,
+                commentId = commentId,
+                authorID = currentUserID,
+                authorName = currentUserName,
+                authorAvatarURL = currentUserImageUrl,
+                content = content
+            ).fold(
+                onSuccess = {
+                    _uiState.update {
+                        it.copy(
+                            replyingToCommentId = null,
+                            replyingToAuthorName = null
+                        )
+                    }
+                    loadThreads(visualizationId)
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = R.string.error_create_comment
+                        )
+                    }
+                }
+            )
+        }
+    }
+    fun startReply(
+        commentId: String,
+        authorName: String
+    ) {
+        _uiState.update {
+            it.copy(
+                replyingToCommentId = commentId,
+                replyingToAuthorName = authorName
+            )
+        }
+    }
+    fun cancelReply() {
+        _uiState.update {
+            it.copy(
+                replyingToCommentId = null,
+                replyingToAuthorName = null
             )
         }
     }

@@ -2,6 +2,7 @@ package com.oracle.visualize.data.repositories
 
 import com.oracle.visualize.data.datasources.CommentDatasource
 import com.oracle.visualize.data.datasources.dtos.CommentDTO
+import com.oracle.visualize.data.datasources.dtos.ThreadDTO
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.models.Thread
@@ -46,5 +47,25 @@ class CommentRepositoryImpl @Inject constructor(
                 commentId = commentId
             )
             .map { it.toDomain() }
+    }
+
+    override suspend fun createThread(
+        visualizationId: String,
+        commentId: String,
+        authorID: String,
+        authorName: String,
+        authorAvatarURL: String?,
+        content: String
+    ) {
+        commentDatasource.createThread(
+            visualizationId = visualizationId,
+            commentId = commentId,
+            threadDTO = ThreadDTO(
+                authorID = authorID,
+                authorName = authorName,
+                authorAvatarURL = authorAvatarURL,
+                content = content
+            )
+        )
     }
 }
