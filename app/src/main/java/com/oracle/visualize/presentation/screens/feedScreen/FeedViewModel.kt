@@ -8,8 +8,6 @@ import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.DeleteVisualizationForEveryoneUseCase
-import com.oracle.visualize.domain.usecases.HideVisualizationForMeUseCase
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
 import com.oracle.visualize.domain.usecases.ParseSingleChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,8 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val observeUserFeedUseCase: ObserveUserFeedUseCase,
-    private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
-    private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
     private val authRepository: AuthRepository,
     private val parseSingleChartUseCase: ParseSingleChartUseCase
 ) : ViewModel() {
@@ -46,7 +42,27 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    // ─── Data loading ──────────────────────────────────────────────────────────
+    fun toggleSearch() {
+        _uiState.update { currentState ->
+            if (currentState is FeedUiState.Success) {
+                currentState.copy(isSearching = !currentState.isSearching)
+            } else currentState
+        }
+    }
+
+    fun loadChartForCard(card: VisualizationCard) {
+        viewModelScope.launch {
+            val chart = parseSingleChartUseCase(card)
+            allFeedItems = allFeedItems.map { item ->
+                if (item.card.id == card.id) {
+                    item.copy(chart = chart, isChartLoading = false)
+                } else {
+                    item
+                }
+            }
+            applyLocalFilterAndSearch()
+        }
+    }
 
     fun loadData(forceRefresh: Boolean = false) {
         val current = _uiState.value
@@ -81,33 +97,15 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun loadChartForCard(card: VisualizationCard) {
-        viewModelScope.launch {
-            val chart = parseSingleChartUseCase(card)
-            allFeedItems = allFeedItems.map { item ->
-                if (item.card.id == card.id) item.copy(chart = chart, isChartLoading = false)
-                else item
-            }
-            applyLocalFilterAndSearch()
-        }
-    }
-
-    // ─── Search & filter ───────────────────────────────────────────────────────
-
-    fun toggleSearch() {
-        _uiState.update { state ->
-            if (state is FeedUiState.Success) state.copy(isSearching = !state.isSearching)
-            else state
-        }
-    }
-
     fun onFilterChange(filter: VisualizationFilter) {
         val currentState = _uiState.value
         if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
+
         _uiState.value = when (currentState) {
             is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
             else -> currentState
         }
+
         if (allFeedItems.isNotEmpty()) applyLocalFilterAndSearch() else loadData()
     }
 
@@ -119,113 +117,33 @@ class FeedViewModel @Inject constructor(
         applyLocalFilterAndSearch()
     }
 
-    // ─── Card menu ─────────────────────────────────────────────────────────────
-
-    /** Opens the three-dot dropdown for the given card. */
-    fun onMenuOpen(visualizationId: String) = updateSuccess {
-        it.copy(menuOpenForId = visualizationId)
-    }
-
-    /** Closes the dropdown without any action. */
-    fun onMenuDismiss() = updateSuccess {
-        it.copy(menuOpenForId = null)
-    }
-
-    /** Sets pendingShareId so the View can navigate safely on next frame. */
-    fun onRequestShare(visualizationId: String) = updateSuccess {
-        it.copy(menuOpenForId = null, pendingShareId = visualizationId)
-    }
-
-    /** Clears pendingShareId after navigation has been handled. */
-    fun onShareNavigated() = updateSuccess {
-        it.copy(pendingShareId = null)
-    }
-
-    /** Shows the "Delete for everyone" confirmation dialog. */
-    fun onRequestDeleteForEveryone(visualizationId: String) = updateSuccess {
-        it.copy(menuOpenForId = null, deleteDialogForId = visualizationId)
-    }
-
-    /** Shows the "Hide for me" confirmation dialog. */
-    fun onRequestHideForMe(visualizationId: String) = updateSuccess {
-        it.copy(menuOpenForId = null, hideDialogForId = visualizationId)
-    }
-
-    /** Dismisses any open confirmation dialog. */
-    fun onDismissDialog() = updateSuccess {
-        it.copy(deleteDialogForId = null, hideDialogForId = null)
-    }
-
-    /** Permanently deletes the visualization for every user. */
-    fun onConfirmDeleteForEveryone(visualizationId: String) {
-        updateSuccess { it.copy(deleteDialogForId = null) }
-        viewModelScope.launch {
-            deleteVisualizationForEveryoneUseCase(visualizationId).fold(
-                onSuccess = {
-                    allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
-                    applyLocalFilterAndSearch()
-                },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
-            )
-        }
-    }
-
-    /** Hides the visualization from the current user's feed only. */
-    fun onConfirmHideForMe(visualizationId: String) {
-        updateSuccess { it.copy(hideDialogForId = null) }
-        viewModelScope.launch {
-            hideVisualizationForMeUseCase(currentUserID, visualizationId).fold(
-                onSuccess = {
-                    allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
-                    applyLocalFilterAndSearch()
-                },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
-            )
-        }
-    }
-
-    // ─── Helpers ───────────────────────────────────────────────────────────────
-
     private fun applyLocalFilterAndSearch() {
         val currentState = _uiState.value
         val filter = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
         val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
+        val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
 
-        var filtered = when (filter) {
-            VisualizationFilter.ALL      -> allFeedItems
+        var filteredItems = when (filter) {
+            VisualizationFilter.ALL -> allFeedItems
             VisualizationFilter.PERSONAL -> allFeedItems.filter { it.card.authorID == currentUserID }
-            VisualizationFilter.SHARED   -> allFeedItems.filter { it.card.authorID != currentUserID }
+            VisualizationFilter.SHARED -> allFeedItems.filter { it.card.authorID != currentUserID }
         }
 
         if (search.isNotBlank()) {
-            filtered = filtered.filter { it.card.title.contains(search, ignoreCase = true) }
-        }
-
-        val isDeletableMap = filtered.associate { it.card.id to (it.card.authorID == currentUserID) }
-
-        _uiState.update { state ->
-            if (state is FeedUiState.Success) {
-                state.copy(
-                    items          = filtered,
-                    searchText     = search,
-                    selectedFilter = filter,
-                    isRefreshing   = false,
-                    isDeletableMap = isDeletableMap
-                )
-            } else {
-                FeedUiState.Success(
-                    items          = filtered,
-                    searchText     = search,
-                    selectedFilter = filter,
-                    isRefreshing   = false,
-                    isDeletableMap = isDeletableMap
-                )
+            filteredItems = filteredItems.filter { item ->
+                item.card.title.contains(search, ignoreCase = true)
             }
         }
-    }
 
-    private fun updateSuccess(block: (FeedUiState.Success) -> FeedUiState.Success) {
-        val current = _uiState.value as? FeedUiState.Success ?: return
-        _uiState.value = block(current)
+        _uiState.update { state ->
+            FeedUiState.Success(
+                items = filteredItems,
+                currentUserID = currentUserID,
+                searchText = search,
+                selectedFilter = filter,
+                isRefreshing = false,
+                isSearching = isSearching
+            )
+        }
     }
 }
