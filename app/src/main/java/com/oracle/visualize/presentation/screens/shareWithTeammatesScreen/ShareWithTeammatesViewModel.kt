@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.shareWithTeammatesScreen
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,13 +36,10 @@ class ShareWithTeammatesViewModel @Inject constructor(
 
     private val visualizationId: String = run {
         val id = savedStateHandle.get<String>("visualizationId") ?: ""
-        if (id.isBlank()) Log.e("ShareVM", "visualizationId is NULL or blank from SavedStateHandle")
-        else Log.d("ShareVM", "visualizationId='$id'")
         id
     }
 
     init {
-        Log.d("ShareVM", "ViewModel init — visualizationId='$visualizationId' currentUserID='$currentUserID'")
         loadData()
         setupSearchDebounce()
     }
@@ -69,7 +65,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
                     teamsImIn       = teamsImIn
                 )
             } catch (e: Exception) {
-                Log.e("ShareVM", "loadData error: ${e.message}")
                 _uiState.value = ShareWithTeammatesUiState.Error(
                     "Failed to load sharing info. Please try again."
                 )
@@ -156,18 +151,14 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 val userIds = current.sharedUsers.map { it.id }
                 val teamIds = current.selectedTeamIds.toList()
 
-                Log.d("ShareVM", "ConfirmShare — vizId='$visualizationId' users=$userIds teams=$teamIds")
                 _uiState.value = current.copy(isSubmitting = true, errorMessage = null)
 
                 viewModelScope.launch {
-                    Log.d("ShareVM", "Calling updateSharedUsersUseCase...")
                     updateSharedUsersUseCase(visualizationId, userIds, teamIds).fold(
                         onSuccess = {
-                            Log.d("ShareVM", "updateSharedUsersUseCase SUCCESS")
                             updateContent { it.copy(isSubmitting = false, shareSuccess = true) }
                         },
                         onFailure = { error ->
-                            Log.e("ShareVM", "updateSharedUsersUseCase FAILURE: ${error::class.simpleName} — ${error.message}")
                             updateContent {
                                 it.copy(
                                     isSubmitting = false,
