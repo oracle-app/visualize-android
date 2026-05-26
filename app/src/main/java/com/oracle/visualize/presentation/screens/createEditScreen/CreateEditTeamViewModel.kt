@@ -3,6 +3,7 @@ package com.oracle.visualize.presentation.screens.createEditScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.CreateTeamUseCase
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
@@ -22,21 +23,19 @@ class CreateEditTeamViewModel @Inject constructor(
     private val updateTeamUseCase: UpdateTeamUseCase,
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
+    private val authRepository: AuthRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CreateEditTeamUiState>(CreateEditTeamUiState.Loading)
     val uiState: StateFlow<CreateEditTeamUiState> = _uiState.asStateFlow()
 
-    // Emits Unit once to signal the View to call onNavigateBack()
     private val _navigateBack = MutableStateFlow(false)
     val navigateBack: StateFlow<Boolean> = _navigateBack.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
-    private val teamIdArg: String? = savedStateHandle["teamId"]
-
-    // TODO: Replace with actual session user ID from AuthRepository
-    private val userID = "e9Nk8XrxHJAtwN3Hf2FL"
+    private val teamIdArg: String? = savedStateHandle.get<String>("teamId")
+    private val userID: String = authRepository.getCurrentUserID()
 
     init {
         loadInitialData()
@@ -139,7 +138,6 @@ class CreateEditTeamViewModel @Inject constructor(
                     _uiState.value = current.copy(members = current.members - event.user)
             }
 
-            // Back tapped: show dialog if there are unsaved changes, otherwise leave
             is CreateEditTeamUiEvent.RequestBack -> {
                 if (current.hasUnsavedChanges) {
                     _uiState.value = current.copy(showUnsavedChangesDialog = true)
@@ -148,13 +146,11 @@ class CreateEditTeamViewModel @Inject constructor(
                 }
             }
 
-            // User confirmed leaving — discard everything and go back
             is CreateEditTeamUiEvent.ConfirmDiscard -> {
                 _uiState.value = current.copy(showUnsavedChangesDialog = false)
                 _navigateBack.value = true
             }
 
-            // User chose to stay
             is CreateEditTeamUiEvent.DismissUnsavedChangesDialog ->
                 _uiState.value = current.copy(showUnsavedChangesDialog = false)
 
@@ -169,7 +165,8 @@ class CreateEditTeamViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _uiState.value = state.copy(isSubmitting = true)
-            val memberIDs = state.members.map { it.id }
+            // ownerID must not be in membersIDs — exclude it explicitly
+            val memberIDs = state.members.map { it.id }.filter { it != state.ownerID }
             val result = if (state.isEditMode)
                 updateTeamUseCase(state.teamId!!, memberIDs, state.teamName.trim())
             else
