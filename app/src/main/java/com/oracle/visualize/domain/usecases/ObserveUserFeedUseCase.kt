@@ -1,13 +1,10 @@
 package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.data.datasources.local.ChartCacheManager
-import com.oracle.visualize.data.mapper.ChartMapper
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 

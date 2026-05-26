@@ -176,7 +176,7 @@ fun FeedCard(
                         )
                     } else {
                         Text(
-                            text = "Failed to load chart",
+                            text = stringResource(R.string.failed_load_chart),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error
                         )

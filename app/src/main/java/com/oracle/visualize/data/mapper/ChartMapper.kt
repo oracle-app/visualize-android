@@ -2,8 +2,6 @@ package com.oracle.visualize.data.mapper
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
-import org.json.JSONArray
-import kotlinx.serialization.json.JsonObject
 import org.json.JSONException
 
 /**

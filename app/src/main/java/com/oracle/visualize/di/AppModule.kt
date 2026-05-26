@@ -7,7 +7,6 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.data.datasources.AnalyzeApiMicroService
 import com.oracle.visualize.data.datasources.AuthFirebasesource
-import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.VisualizationDatasource
 import com.oracle.visualize.data.datasources.local.ChartCacheManager
 import com.oracle.visualize.data.datasources.local.FeedCacheManager

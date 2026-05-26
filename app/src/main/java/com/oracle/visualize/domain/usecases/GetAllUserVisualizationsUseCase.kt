@@ -2,9 +2,7 @@ package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.VisualizationCard
-import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 import javax.inject.Singleton

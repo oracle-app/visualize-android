@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import com.oracle.visualize.domain.models.FeedItem
-import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 
 sealed interface FeedUiState {

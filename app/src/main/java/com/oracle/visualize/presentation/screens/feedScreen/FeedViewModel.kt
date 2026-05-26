@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
