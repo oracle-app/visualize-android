@@ -18,63 +18,54 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import com.oracle.visualize.R
-import com.oracle.visualize.ui.theme.ChartPalette
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeItem
+import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
+import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeItem
+import com.oracle.visualize.ui.theme.ChartPalette
 
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
-
-    // This is where the UI state is fetched.
-
     val context = LocalContext.current
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
-
-    // This is where the page fetches the current app version.
 
     val unknown = stringResource(R.string.error_unknown)
     val appVersion = remember {
         context.packageManager
             .getPackageInfo(context.packageName, 0)
             .versionName ?: unknown
-        }
+    }
 
     val selectedPalette = profileViewModel.selectedPalette
     val userName = profileViewModel.userName
     val email = profileViewModel.email
     val profileImage = profileViewModel.profileImage
 
-    // Background Image Setup
-
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.profilebgtransparent),
             contentDescription = null,
@@ -85,16 +76,11 @@ fun ProfilePage(
             contentScale = ContentScale.FillBounds
         )
 
-        // Page content starts here.
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-
-            // Check view model, decide if to draw or not.
-
             when (uiState) {
                 is ProfileUiState.Idle -> {
                     Box(
@@ -105,12 +91,7 @@ fun ProfilePage(
                     }
                 }
                 is ProfileUiState.Ready -> {
-
-                    //Spacer at top of the page.
-
                     Spacer(modifier = Modifier.height(98.dp))
-
-                    // Profile picture, username and email.
 
                     ProfileHeader(
                         userName = userName,
@@ -119,17 +100,12 @@ fun ProfilePage(
                         onEditClick = { /* implement select image later*/ }
                     )
 
-                    // Spacer between profile header and cards.
-
                     Spacer(modifier = Modifier.height(if (isSystemInDarkTheme()) 16.dp else 32.dp))
-
-                    // Chart theme selector.
 
                     SettingsCard(
                         title = stringResource(R.string.chart_theme_title),
                         icon = Icons.Default.Palette
                     ) {
-
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
                                 ThemeItem(
@@ -162,11 +138,7 @@ fun ProfilePage(
                         }
                     }
 
-                    // 4 dp spacer.
-
                     Spacer(modifier = Modifier.height(if (isSystemInDarkTheme()) 24.dp else 4.dp))
-
-                    // "About app" card.
 
                     SettingsCard(
                         title = stringResource(R.string.about_title),
@@ -184,11 +156,7 @@ fun ProfilePage(
                         )
                     }
 
-                    //Spacer between about and logout button.
-
                     Spacer(modifier = Modifier.height(64.dp))
-
-                    // Logout button, logic not yet implemented
 
                     OutlinedButton(
                         onClick = { },
@@ -208,10 +176,8 @@ fun ProfilePage(
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
-
                 }
             }
-
         }
     }
 }
@@ -259,8 +225,7 @@ fun SettingsCard(
             )
         ) {
             Column(
-                modifier = Modifier
-                    .padding(12.dp),
+                modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
