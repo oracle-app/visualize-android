@@ -98,52 +98,43 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
-        val currentState = _uiState.value
-        if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
-
-        _uiState.value = when (currentState) {
-            is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
-            else -> currentState
+        _uiState.update { state ->
+            if (state is FeedUiState.Success && state.selectedFilter != filter) {
+                applyFiltersToState(state.copy(selectedFilter = filter))
+            } else state
         }
-
-        if (allFeedItems.isNotEmpty()) applyLocalFilterAndSearch() else loadData()
     }
 
     fun onSearchTextChange(newText: String) {
-        val currentState = _uiState.value
-        if (currentState is FeedUiState.Success) {
-            _uiState.value = currentState.copy(searchText = newText)
+        _uiState.update { state ->
+            if (state is FeedUiState.Success) {
+                applyFiltersToState(state.copy(searchText = newText))
+            } else state
         }
-        applyLocalFilterAndSearch()
     }
 
     private fun applyLocalFilterAndSearch() {
-        val currentState = _uiState.value
-        val filter = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
-        val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
-        val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
+        _uiState.update { state ->
+            val successState = state as? FeedUiState.Success ?: FeedUiState.Success(
+                items = allFeedItems,
+                currentUserID = currentUserID
+            )
+            applyFiltersToState(successState)
+        }
+    }
 
-        var filteredItems = when (filter) {
+    private fun applyFiltersToState(currentState: FeedUiState.Success): FeedUiState.Success {
+        var filteredItems = when (currentState.selectedFilter) {
             VisualizationFilter.ALL -> allFeedItems
             VisualizationFilter.PERSONAL -> allFeedItems.filter { it.card.authorID == currentUserID }
             VisualizationFilter.SHARED -> allFeedItems.filter { it.card.authorID != currentUserID }
         }
 
-        if (search.isNotBlank()) {
+        if (currentState.searchText.isNotBlank()) {
             filteredItems = filteredItems.filter { item ->
-                item.card.title.contains(search, ignoreCase = true)
+                item.card.title.contains(currentState.searchText, ignoreCase = true)
             }
         }
-
-        _uiState.update { state ->
-            FeedUiState.Success(
-                items = filteredItems,
-                currentUserID = currentUserID,
-                searchText = search,
-                selectedFilter = filter,
-                isRefreshing = false,
-                isSearching = isSearching
-            )
-        }
+        return currentState.copy(items = filteredItems)
     }
 }
