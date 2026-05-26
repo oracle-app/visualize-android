@@ -32,18 +32,13 @@ class UserDatasource @Inject constructor(
      * @throws AppError.NotFound If the user does not exist.
      * @throws AppError.NetworkError If a network error occurs.
      */
-    suspend fun getUserByID(userID: String): UserDTO {
+    suspend fun getUserByID(userID: String): UserDTO? {
         val snapshot = firestore.collection("users")
             .document(userID)
             .get()
             .await()
 
-        if(!snapshot.exists()) {
-            throw AppError.NotFound("User with ID $userID does not exist in the database.")
-        }
-
         return snapshot.toObject(UserDTO::class.java)
-            ?: throw AppError.ParsingError("Error when parsing UserDTO for ID: $userID")
     }
 
     /**
@@ -115,16 +110,14 @@ class UserDatasource @Inject constructor(
 
     // DELETE
 
-    //This function deletes the files at user/userID/profilePicture
+    //This function deletes the files at user/userID/profilePicture and reassigns the user's pfp URL to ""
 
     suspend fun deleteProfilePicture(userID: String) {
-        try {
-            storage.reference.child("users/$userID/profilePicture").delete().await()
-        } catch (e: StorageException) {
-            if (e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
-                throw AppError.NotFound("Image located at users/$userID/profilePicture could not be found.")
-            } else throw e
-        }
+        storage.reference.child("users/$userID/profilePicture").delete().await()
+        firestore.collection("users")
+            .document(userID)
+            .update("profilePictureURL", "")
+            .await()
     }
 
 }

@@ -15,6 +15,6 @@ sealed interface ProfileUiState {
     ) : ProfileUiState
 
     data class PfpUpload(
-        val pfp: Uri? = null
+        val pfp: String? = null
     ) : ProfileUiState
 }

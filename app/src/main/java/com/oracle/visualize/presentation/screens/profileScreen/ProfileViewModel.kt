@@ -15,7 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.domain.usecases.DeleteProfilePictureUseCase
 import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
+import com.oracle.visualize.domain.usecases.GetUserByIDUseCase
 import com.oracle.visualize.domain.usecases.LoginUseCase
 import com.oracle.visualize.domain.usecases.LogoutUseCase
 import com.oracle.visualize.domain.usecases.SetChartThemeUseCase
@@ -35,11 +37,12 @@ class ProfileViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val setChartThemeUseCase: SetChartThemeUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val updatePfpUseCase: UpdatePfpUseCase
+    private val updatePfpUseCase: UpdatePfpUseCase,
+    private val getUserByIDUseCase: GetUserByIDUseCase,
+    private val deleteProfilePictureUseCase: DeleteProfilePictureUseCase
 ) : ViewModel() {
 
     private val currentUser = getCurrentUserUseCase()
-
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
@@ -47,29 +50,16 @@ class ProfileViewModel @Inject constructor(
         val uid = currentUser?.uid
             ?: return Result.failure(AppError.AuthFailed())
 
-        return try {
-            val user = userRepository.getUserByUserID(uid)
-                ?: return Result.failure(AppError.NotFound("User not found for id: $uid"))
-
-            _uiState.value = ProfileUiState.Ready(user.username, user.email, user.profilePictureURL, user.chartTheme)
-            Result.success(Unit)
-
-        } catch (e: AppError.NotFound) {
-            Log.e("ProfileViewModel", "User not found: ${e.message}")
-            Result.failure(e)
-        } catch (e: AppError.NetworkError) {
-            Log.e("ProfileViewModel", "Network error: ${e.message}")
-            Result.failure(e)
-        } catch (e: AppError.ParsingError) {
-            Log.e("ProfileViewModel", "Failed to parse user data: ${e.message}")
-            Result.failure(e)
-        } catch (e: AppError.AuthFailed) {
-            Log.e("ProfileViewModel", "Auth error: ${e.message}")
-            Result.failure(e)
-        } catch (e: Exception) {
-            Log.e("ProfileViewModel", "Unexpected error: ${e.message}")
-            Result.failure(e)
-        }
+        return getUserByIDUseCase(uid).fold(
+            onSuccess = { user ->
+                _uiState.value = ProfileUiState.Ready(user.username, user.email, user.profilePictureURL, user.chartTheme)
+                Result.success(Unit)
+            },
+            onFailure = { e ->
+                Log.e("ProfileViewModel", "Failed to fetch user: ${e.message}")
+                Result.failure(e)
+            }
+        )
     }
 
     private var chartThemeJob: Job? = null
@@ -82,7 +72,7 @@ class ProfileViewModel @Inject constructor(
         chartThemeJob?.cancel()
         chartThemeJob = viewModelScope.launch {
             delay(500)
-            setChartThemeUseCase(selectedPalette).onFailure { exception ->
+            setChartThemeUseCase(currentUser?.uid?: "", selectedPalette).onFailure { exception ->
                 Log.e("ProfileViewModel", "Failed to set chart theme: ${exception.message}")
             }
         }
@@ -103,15 +93,15 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun setPfpCapturedValue(uri: Uri) {
+    fun setPfpCapturedValue(uri: String) {
         _uiState.value = ProfileUiState.PfpUpload(pfp = uri)
     }
 
 
 
-    fun updatePfp(uri: Uri) {
+    fun updatePfp(uri: String) {
         viewModelScope.launch {
-            updatePfpUseCase(uri.toString()).fold(
+            updatePfpUseCase(currentUser?.uid ?: "", uri).fold(
                 onSuccess = {
                     fetchUserData()
                 },
@@ -131,12 +121,9 @@ class ProfileViewModel @Inject constructor(
 
     fun deleteProfilePicture() {
         viewModelScope.launch {
-            try {
-                userRepository.deleteProfilePicture(uid)
-            } catch (e: AppError.NotFound) {
-                Log.e("ProfileViewModel", "Unexpected error: ${e.message}")
+            deleteProfilePictureUseCase(currentUser?.uid ?: "").onFailure { e ->
+                Log.e("ProfileViewModel", "Failed to delete profile picture: ${e.message}")
             }
-            userRepository.setProfilePicture(uid, "")
         }
     }
 

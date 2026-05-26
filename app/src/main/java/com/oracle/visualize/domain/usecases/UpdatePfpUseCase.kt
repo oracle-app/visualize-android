@@ -9,21 +9,18 @@ import javax.inject.Singleton
 @Singleton
 class UpdatePfpUseCase @Inject constructor(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository
 ){
-    val uid = authRepository.getCurrentUser()?.uid ?: ""
-
-    suspend operator fun invoke(uri: String): Result<Unit> {
+    suspend operator fun invoke(userID: String, uri: String): Result<Unit> {
         if (uri.isEmpty()) {
             return Result.failure(AppError.GeneralValidationError("Argument cannot be empty."))
         }
 
-        if (uid == "") {
+        if (userID == "") {
             return Result.failure(AppError.AuthFailed("User could not be validated."))
         }
 
         return runCatching {
-            userRepository.updatePfp(uid, uri)
+            userRepository.updatePfp(userID, uri)
         }
     }
 }
