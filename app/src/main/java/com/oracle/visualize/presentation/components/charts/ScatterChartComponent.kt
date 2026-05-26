@@ -129,29 +129,33 @@ fun RenderScatterChart(
             LinePlot2(
                 data = processedData,
                 symbol = { plotPoint ->
-                    val coroutineScope = rememberCoroutineScope()
+                    if (enableTooltips) {
+                        val coroutineScope = rememberCoroutineScope()
 
-                    val tooltipDisplayState = rememberTooltipState(
-                        initialIsVisible = false, isPersistent = true
-                    )
+                        val tooltipDisplayState = rememberTooltipState(
+                            initialIsVisible = false, isPersistent = true
+                        )
 
-                    if (!enableTooltips && tooltipDisplayState.isVisible) {
-                        tooltipDisplayState.dismiss()
-                    }
-
-                    TooltipBox(
-                        tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },
-                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                            positioning = TooltipAnchorPosition.Above
-                        ),
-                        state = tooltipDisplayState,
-                    ) {
+                        TooltipBox(
+                            tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                positioning = TooltipAnchorPosition.Above
+                            ),
+                            state = tooltipDisplayState,
+                        ) {
+                            Symbol(
+                                modifier = Modifier.size(30.dp).pointerInput(Unit) {
+                                        detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                    },
+                                fillBrush = SolidColor(dotColors[0]),
+                                outlineBrush = SolidColor(dotColors[1]),
+                                outlineStroke = Stroke(width = 4f),
+                                shape = CircleShape
+                            )
+                        }
+                    } else {
                         Symbol(
-                            modifier = Modifier
-                                .size(if (enableTooltips) 30.dp else 10.dp)
-                                .pointerInput(Unit) {
-                                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
-                                },
+                            modifier = Modifier.size(10.dp),
                             fillBrush = SolidColor(dotColors[0]),
                             outlineBrush = SolidColor(dotColors[1]),
                             outlineStroke = Stroke(width = 4f),

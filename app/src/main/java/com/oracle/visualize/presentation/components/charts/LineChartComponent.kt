@@ -134,40 +134,37 @@ fun RenderLineChart(
                 animationSpec = tween(0)
             )
 
-            LinePlot2(
-                data = processedData,
-                symbol = { plotPoint ->
-                    val coroutineScope = rememberCoroutineScope()
+            if (enableTooltips) {
+                LinePlot2(
+                    data = processedData,
+                    symbol = { plotPoint ->
+                        val coroutineScope = rememberCoroutineScope()
 
-                    val tooltipDisplayState = rememberTooltipState(
-                        initialIsVisible = false, isPersistent = true
-                    )
-
-                    if (!enableTooltips && tooltipDisplayState.isVisible) {
-                        tooltipDisplayState.dismiss()
-                    }
-
-                    TooltipBox(
-                        tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },
-                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                            positioning = TooltipAnchorPosition.Above
-                        ),
-                        state = tooltipDisplayState,
-                    ) {
-                        Symbol(
-                            modifier = Modifier.size(if (enableTooltips) 30.dp else 0.dp).pointerInput(Unit) {
-                                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
-                                },
-                            fillBrush = SolidColor(dotColors[0]),
-                            outlineBrush = SolidColor(dotColors[1]),
-                            outlineStroke = Stroke(width = 4f),
-                            shape = CircleShape
+                        val tooltipDisplayState = rememberTooltipState(
+                            initialIsVisible = false, isPersistent = true
                         )
-                    }
-                },
-                animationSpec = tween(0)
-            )
 
+                        TooltipBox(
+                            tooltip = { PlainTooltip { Text(text = "$xMetric: ${plotPoint.x}\n$yMetric: ${plotPoint.y}") } },
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                positioning = TooltipAnchorPosition.Above
+                            ),
+                            state = tooltipDisplayState,
+                        ) {
+                            Symbol(
+                                modifier = Modifier.size(30.dp).pointerInput(Unit) {
+                                        detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                    },
+                                fillBrush = SolidColor(dotColors[0]),
+                                outlineBrush = SolidColor(dotColors[1]),
+                                outlineStroke = Stroke(width = 4f),
+                                shape = CircleShape
+                            )
+                        }
+                    },
+                    animationSpec = tween(0)
+                )
+            }
         }
     }
 }
