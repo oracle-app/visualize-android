@@ -62,7 +62,12 @@ class VisualizationRepositoryImpl @Inject constructor(
             val teamIDs = teamsDatasource.getTeamsUserIsIn(userID).mapNotNull { it.id }
             val teamVisualizations = if (teamIDs.isNotEmpty())
                 visualizationDataSource.getVisualizationsSharedWithTeams(teamIDs) else emptyList()
-            fetchDetailsAndMapBatch((userVisualizations + teamVisualizations).distinctBy { it.id }, userID)
+            // Filter out visualizations authored by the current user to avoid showing
+            // their own visualizations in the Shared section of the feed
+            val sharedDTOs = (userVisualizations + teamVisualizations)
+                .distinctBy { it.id }
+                .filter { it.authorID != userID }
+            fetchDetailsAndMapBatch(sharedDTOs, userID)
         } catch (e: Exception) {
             if (e is AppError) throw e
             throw AppError.NetworkError("Failed to fetch shared visualizations: ${e.message}")
@@ -98,13 +103,13 @@ class VisualizationRepositoryImpl @Inject constructor(
         val visibleDTOs = dtos.filter { !hiddenIDs.contains(it.id) }
         if (visibleDTOs.isEmpty()) return@coroutineScope emptyList()
 
-        val allUserIDs  = (visibleDTOs.map { it.authorID } + visibleDTOs.flatMap { it.sharedWithUsers }).toSet().toList()
+        val allUserIDs    = (visibleDTOs.map { it.authorID } + visibleDTOs.flatMap { it.sharedWithUsers }).toSet().toList()
         val sharedTeamIDs = visibleDTOs.flatMap { it.sharedWithTeams }.toSet().toList()
 
         val usersDeferred = async { fetchUsersInChunks(allUserIDs) }
         val teamsDeferred = async { fetchTeamsInChunks(sharedTeamIDs) }
-        val usersDTOs = usersDeferred.await()
-        val teamsDTOs = teamsDeferred.await()
+        val usersDTOs     = usersDeferred.await()
+        val teamsDTOs     = teamsDeferred.await()
 
         val usersDict = usersDTOs.associateBy { it.id }.toMutableMap()
         val teamsDict = teamsDTOs.associateBy { it.id }
