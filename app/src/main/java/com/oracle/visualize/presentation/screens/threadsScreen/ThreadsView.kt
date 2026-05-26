@@ -4,6 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -16,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.presentation.screens.threadsScreen.components.AddNoteBar
 import com.oracle.visualize.presentation.screens.threadsScreen.components.ThreadsTopBar
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.oracle.visualize.R
@@ -49,17 +54,63 @@ fun ThreadsPage(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0),
         bottomBar = {
-            AddNoteBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                onSendClick = { content ->
-                    viewModel.createComment(
-                        visualizationId = visualizationId,
-                        content = content
-                    )
+            Column {
+                if (uiState.replyingToCommentId != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 20.dp,
+                                end = 12.dp,
+                                top = 8.dp,
+                                bottom = 4.dp
+                            ),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.reply_to,
+                                uiState.replyingToAuthorName ?: ""
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        IconButton(
+                            onClick = {
+                                viewModel.cancelReply()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Cancel,
+                                contentDescription = stringResource(R.string.cancel_reply),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
                 }
-            )
+                AddNoteBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                    onSendClick = { content ->
+                        val replyingToCommentId = uiState.replyingToCommentId
+
+                        if (replyingToCommentId != null) {
+                            viewModel.createThread(
+                                visualizationId = visualizationId,
+                                commentId = replyingToCommentId,
+                                content = content
+                            )
+                        } else {
+                            viewModel.createComment(
+                                visualizationId = visualizationId,
+                                content = content
+                            )
+                        }
+                    }
+                )
+            }
         }
     ) { paddingValues ->
         Column(
@@ -133,7 +184,13 @@ fun ThreadsPage(
                         items(uiState.comments) { comment ->
                             CommentCard(
                                 comment = comment,
-                                isCurrentUser = comment.authorID == uiState.currentUserId
+                                isCurrentUser = comment.authorID == uiState.currentUserId,
+                                onReplyClick = {
+                                    viewModel.startReply(
+                                        commentId = comment.id,
+                                        authorName = comment.authorName
+                                    )
+                                }
                             )
                         }
                         item {

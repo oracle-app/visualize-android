@@ -80,4 +80,22 @@ class CommentDatasource @Inject constructor(
         }
     }
 
+    suspend fun createThread(
+        visualizationId: String,
+        commentId: String,
+        threadDTO: ThreadDTO
+    ) {
+        val formattedThread = hashMapOf(
+            "authorID" to threadDTO.authorID,
+            "authorName" to threadDTO.authorName,
+            "authorAvatarURL" to threadDTO.authorAvatarURL,
+            "content" to threadDTO.content,
+            "createdAt" to Timestamp.now()
+        )
+        threadsRef(visualizationId = visualizationId, commentId = commentId)
+            .document()
+            .set(formattedThread)
+            .await()
+    }
+
 }
