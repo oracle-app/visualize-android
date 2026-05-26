@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -127,9 +129,11 @@ fun FeedCard(
                         )
                     }
                     if (isMenuOpen) {
+                        val density = LocalDensity.current
                         Popup(
                             alignment        = Alignment.TopEnd,
                             onDismissRequest = onMenuDismiss,
+                            offset           = with(density) { IntOffset(0, 44.dp.roundToPx()) },
                             properties       = PopupProperties(focusable = true)
                         ) {
                             FeedCardMenu(

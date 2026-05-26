@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,20 +23,7 @@ import com.oracle.visualize.R
 
 /**
  * Floating card menu displayed when the three-dot icon on a [FeedCard] is tapped.
- * Matches the Figma design: white card, large text, no icons, rounded corners.
- *
- * The menu is ownership-aware via [isDeletable]:
- * - `true`  (owner)     → **Share** + **Delete for everyone** (red)
- * - `false` (non-owner) → **Hide for me** (red)
- *
- * Ownership logic is computed in [FeedViewModel] and passed down as a plain Boolean
- * to keep this composable free of business logic.
- *
- * @param isDeletable Whether the current user owns the visualization.
- * @param onDismiss   Called when an action is selected or the menu is dismissed.
- * @param onShare     Navigates to the Share with Teammates screen.
- * @param onDeleteForEveryone Requests permanent deletion confirmation.
- * @param onHideForMe Requests hide-for-me confirmation.
+ * Matches the Figma design: white card, medium text, no icons, rounded corners.
  */
 @Composable
 fun FeedCardMenu(
@@ -47,40 +33,34 @@ fun FeedCardMenu(
     onDeleteForEveryone: () -> Unit,
     onHideForMe: () -> Unit
 ) {
-    val bgColor = MaterialTheme.colorScheme.secondaryContainer.let { c ->
-        if (c == Color.Transparent) MaterialTheme.colorScheme.surface else c
-    }
-
     Card(
-        shape    = RoundedCornerShape(16.dp),
-        colors   = CardDefaults.cardColors(containerColor = bgColor),
+        shape    = RoundedCornerShape(12.dp),
+        colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
             .shadow(
-                elevation    = 8.dp,
-                shape        = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black.copy(alpha = 0.15f),
-                spotColor    = Color.Black.copy(alpha = 0.15f)
+                elevation    = 6.dp,
+                shape        = RoundedCornerShape(12.dp),
+                ambientColor = Color.Black.copy(alpha = 0.12f),
+                spotColor    = Color.Black.copy(alpha = 0.12f)
             )
-            .width(260.dp)
+            .width(200.dp)
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             if (isDeletable) {
+                // Share
                 FeedCardMenuItem(
                     label   = stringResource(R.string.feed_menu_share),
-                    color   = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color   = MaterialTheme.colorScheme.onSurface,
                     onClick = { onDismiss(); onShare() }
                 )
-                HorizontalDivider(
-                    modifier  = Modifier.padding(horizontal = 16.dp),
-                    thickness = 0.5.dp,
-                    color     = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                )
+                // Delete for everyone
                 FeedCardMenuItem(
                     label   = stringResource(R.string.feed_menu_delete_for_everyone),
                     color   = MaterialTheme.colorScheme.error,
                     onClick = { onDismiss(); onDeleteForEveryone() }
                 )
             } else {
+                // Delete for me
                 FeedCardMenuItem(
                     label   = stringResource(R.string.feed_menu_hide_for_me),
                     color   = MaterialTheme.colorScheme.error,
@@ -101,12 +81,12 @@ private fun FeedCardMenuItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Text(
             text       = label,
             color      = color,
-            fontSize   = 20.sp,
+            fontSize   = 16.sp,
             fontWeight = FontWeight.Normal,
             style      = MaterialTheme.typography.bodyLarge
         )
