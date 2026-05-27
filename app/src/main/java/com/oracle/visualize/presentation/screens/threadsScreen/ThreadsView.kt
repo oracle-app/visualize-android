@@ -5,11 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -52,21 +57,68 @@ fun ThreadsPage(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0),
         bottomBar = {
-            AddNoteBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                image = image,
-                onSendClick = { content ->
-                    if (image != null) {
-                        viewModel.createCommentWithSnip(visualizationId, content, image)
-                    } else {
-                        viewModel.createComment(visualizationId, content)
+            Column {
+                if (uiState.replyingToCommentId != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 20.dp,
+                                end = 12.dp,
+                                top = 8.dp,
+                                bottom = 4.dp
+                            ),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.reply_to,
+                                uiState.replyingToAuthorName ?: ""
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        IconButton(
+                            onClick = { viewModel.cancelReply() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Cancel,
+                                contentDescription = stringResource(R.string.cancel_reply),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
                     }
-                },
-                onCropClick = onCropClick
-
-            )
+                }
+                AddNoteBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                    image = image,
+                    onSendClick = { content ->
+                        val replyingToCommentId = uiState.replyingToCommentId
+                        when {
+                            replyingToCommentId != null -> {
+                                viewModel.createThread(
+                                    visualizationId = visualizationId,
+                                    commentId = replyingToCommentId,
+                                    content = content
+                                )
+                            }
+                            image != null -> {
+                                viewModel.createCommentWithSnip(visualizationId, content, image)
+                            }
+                            else -> {
+                                viewModel.createComment(
+                                    visualizationId = visualizationId,
+                                    content = content
+                                )
+                            }
+                        }
+                    },
+                    onCropClick = onCropClick
+                )
+            }
         }
     ) { paddingValues ->
         Column(
@@ -82,12 +134,10 @@ fun ThreadsPage(
 
             when {
                 uiState.isLoading -> {
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
-
                         androidx.compose.material3.CircularProgressIndicator()
                     }
                 }
@@ -97,9 +147,8 @@ fun ThreadsPage(
 
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
-
                         Text(
                             text = stringResource(errorMessage),
                             style = MaterialTheme.typography.bodyMedium,
@@ -110,12 +159,10 @@ fun ThreadsPage(
                 }
 
                 uiState.comments.isEmpty() -> {
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
-
                         Text(
                             text = stringResource(R.string.no_threads_yet),
                             style = MaterialTheme.typography.bodyMedium,
@@ -126,7 +173,6 @@ fun ThreadsPage(
                 }
 
                 else -> {
-
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
@@ -140,7 +186,27 @@ fun ThreadsPage(
                         items(uiState.comments) { comment ->
                             CommentCard(
                                 comment = comment,
-                                isCurrentUser = comment.authorID == uiState.currentUserId
+                                currentUserId = uiState.currentUserId,
+                                isCurrentUser = comment.authorID == uiState.currentUserId,
+                                onReplyClick = {
+                                    viewModel.startReply(
+                                        commentId = comment.id,
+                                        authorName = comment.authorName
+                                    )
+                                },
+                                onDeleteClick = {
+                                    viewModel.deleteComment(
+                                        visualizationId = visualizationId,
+                                        commentId = comment.id
+                                    )
+                                },
+                                onDeleteThreadClick = { threadId ->
+                                    viewModel.deleteThread(
+                                        visualizationId = visualizationId,
+                                        commentId = comment.id,
+                                        threadId = threadId
+                                    )
+                                }
                             )
                         }
                         item {

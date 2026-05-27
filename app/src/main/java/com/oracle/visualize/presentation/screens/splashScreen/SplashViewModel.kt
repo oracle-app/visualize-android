@@ -1,11 +1,14 @@
 package com.oracle.visualize.presentation.screens.splashScreen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,11 +20,16 @@ class SplashViewModel @Inject constructor(
     val uiState: StateFlow<SplashUIState> = _uiState.asStateFlow()
 
     fun checkSession() {
-        val currentUser = getCurrentUserUseCase()
+        viewModelScope.launch {
+            val currentUser = getCurrentUserUseCase()
 
-        _uiState.value = SplashUIState(
-            isCheckingSession = false,
-            hasActiveSession = currentUser != null
-        )
+            // Elegant delay to show the clean branding splash screen
+            delay(800)
+
+            _uiState.value = SplashUIState(
+                isCheckingSession = false,
+                hasActiveSession = currentUser != null
+            )
+        }
     }
 }

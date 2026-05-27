@@ -8,6 +8,9 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.CreateCommentUseCase
+import com.oracle.visualize.domain.usecases.CreateThreadUseCase
+import com.oracle.visualize.domain.usecases.DeleteCommentUseCase
+import com.oracle.visualize.domain.usecases.DeleteThreadUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
 import com.oracle.visualize.domain.usecases.GetThreadsUseCase
@@ -36,6 +39,9 @@ class ThreadsViewModel @Inject constructor(
     private val createCommentUseCase: CreateCommentUseCase,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getThreadsUseCase: GetThreadsUseCase,
+    private val createThreadUseCase: CreateThreadUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
+    private val deleteThreadUseCase: DeleteThreadUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
     private val uploadSnipUseCase: UploadSnipUseCase,
     private val authRepository: AuthRepository,
@@ -44,9 +50,22 @@ class ThreadsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ThreadsUIState())
     val uiState: StateFlow<ThreadsUIState> = _uiState.asStateFlow()
     private var currentUserID: String = ""
+    private var currentUserName: String = ""
+    private var currentUserImageUrl: String? = null
 
     init {
         currentUserID = authRepository.getCurrentUserID()
+
+        viewModelScope.launch {
+            try {
+                val currentUser = userRepository.getUserByUserID(currentUserID)
+                currentUserName = currentUser?.username ?: currentUserID
+                currentUserImageUrl = currentUser?.profilePictureURL
+            } catch (e: Exception) {
+                currentUserName = currentUserID
+                currentUserImageUrl = null
+            }
+        }
     }
 
     private suspend fun getUserDisplayData(
@@ -54,7 +73,6 @@ class ThreadsViewModel @Inject constructor(
     ): Pair<String, String?> {
         return try {
             val user = userRepository.getUserByUserID(userID)
-
             Pair(
                 user?.username ?: userID,
                 user?.profilePictureURL
@@ -171,10 +189,27 @@ class ThreadsViewModel @Inject constructor(
                 content = content,
                 imageURL = imageURL
             ).fold(
-                onSuccess = {
-                    loadThreads(visualizationId)
+                onSuccess = { newComment ->
+                    val currentUserData = getUserDisplayData(currentUserID)
+
+                    val newCommentUi = CommentUiModel(
+                        id = newComment.id,
+                        authorID = newComment.authorID,
+                        authorName = currentUserData.first,
+                        authorImageURL = currentUserData.second,
+                        content = newComment.content,
+                        imageURL = newComment.imageURL,
+                        createdAt = newComment.createdAt,
+                        threads = emptyList()
+                    )
+
+                    _uiState.update {
+                        it.copy(
+                            comments = it.comments + newCommentUi
+                        )
+                    }
                 },
-                onFailure = { error ->
+                onFailure = {
                     _uiState.update {
                         it.copy(
                             errorMessage = R.string.error_create_comment
@@ -193,6 +228,133 @@ class ThreadsViewModel @Inject constructor(
         viewModelScope.launch {
             val imageURL = uploadSnip(uri)
             createComment(visualizationId, content, imageURL)
+        }
+    }
+
+    fun createThread(
+        visualizationId: String,
+        commentId: String,
+        content: String
+    ) {
+        viewModelScope.launch {
+            createThreadUseCase(
+                visualizationId = visualizationId,
+                commentId = commentId,
+                authorID = currentUserID,
+                authorName = currentUserName,
+                authorAvatarURL = currentUserImageUrl,
+                content = content
+            ).fold(
+                onSuccess = { newThread ->
+                    val newThreadUi = ThreadUiModel(
+                        id = newThread.id,
+                        authorID = newThread.authorID,
+                        authorName = newThread.authorName,
+                        authorImageURL = newThread.authorAvatarURL,
+                        content = newThread.content,
+                        createdAt = newThread.createdAt
+                    )
+                    _uiState.update { state ->
+                        state.copy(
+                            replyingToCommentId = null,
+                            replyingToAuthorName = null,
+                            comments = state.comments.map { comment ->
+                                if (comment.id == commentId) {
+                                    comment.copy(threads = comment.threads + newThreadUi)
+                                } else {
+                                    comment
+                                }
+                            }
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update {
+                        it.copy(errorMessage = R.string.error_create_comment)
+                    }
+                }
+            )
+        }
+    }
+
+    fun startReply(
+        commentId: String,
+        authorName: String
+    ) {
+        _uiState.update {
+            it.copy(
+                replyingToCommentId = commentId,
+                replyingToAuthorName = authorName
+            )
+        }
+    }
+
+    fun cancelReply() {
+        _uiState.update {
+            it.copy(
+                replyingToCommentId = null,
+                replyingToAuthorName = null
+            )
+        }
+    }
+
+    fun deleteComment(
+        visualizationId: String,
+        commentId: String
+    ) {
+        viewModelScope.launch {
+            deleteCommentUseCase(
+                visualizationId = visualizationId,
+                commentId = commentId
+            ).fold(
+                onSuccess = {
+                    _uiState.update { state ->
+                        state.copy(
+                            comments = state.comments.filterNot { it.id == commentId }
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { state ->
+                        state.copy(errorMessage = R.string.error_unknown_retry)
+                    }
+                }
+            )
+        }
+    }
+
+    fun deleteThread(
+        visualizationId: String,
+        commentId: String,
+        threadId: String
+    ) {
+        viewModelScope.launch {
+            deleteThreadUseCase(
+                visualizationId = visualizationId,
+                commentId = commentId,
+                threadId = threadId
+            ).fold(
+                onSuccess = {
+                    _uiState.update { state ->
+                        state.copy(
+                            comments = state.comments.map { comment ->
+                                if (comment.id == commentId) {
+                                    comment.copy(
+                                        threads = comment.threads.filterNot { it.id == threadId }
+                                    )
+                                } else {
+                                    comment
+                                }
+                            }
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { state ->
+                        state.copy(errorMessage = R.string.error_unknown_retry)
+                    }
+                }
+            )
         }
     }
 }
