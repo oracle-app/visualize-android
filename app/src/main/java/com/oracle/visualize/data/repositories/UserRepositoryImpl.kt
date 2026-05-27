@@ -31,7 +31,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserByUserID(userID: String): User? {
+    override suspend fun getUserByUserID(userID: String): User {
         return userDatasource
             .getUserByID(userID)
             .toDomain()
