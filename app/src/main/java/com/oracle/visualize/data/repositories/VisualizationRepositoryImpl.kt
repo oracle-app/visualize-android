@@ -14,6 +14,7 @@ import com.oracle.visualize.data.mapper.toVisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationSharedData
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
@@ -62,12 +63,7 @@ class VisualizationRepositoryImpl @Inject constructor(
             val teamIDs = teamsDatasource.getTeamsUserIsIn(userID).mapNotNull { it.id }
             val teamVisualizations = if (teamIDs.isNotEmpty())
                 visualizationDataSource.getVisualizationsSharedWithTeams(teamIDs) else emptyList()
-            // Filter out visualizations authored by the current user to avoid showing
-            // their own visualizations in the Shared section of the feed
-            val sharedDTOs = (userVisualizations + teamVisualizations)
-                .distinctBy { it.id }
-                .filter { it.authorID != userID }
-            fetchDetailsAndMapBatch(sharedDTOs, userID)
+            fetchDetailsAndMapBatch((userVisualizations + teamVisualizations).distinctBy { it.id }, userID)
         } catch (e: Exception) {
             if (e is AppError) throw e
             throw AppError.NetworkError("Failed to fetch shared visualizations: ${e.message}")
@@ -147,6 +143,19 @@ class VisualizationRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             if (e is AppError) throw e
             throw AppError.NetworkError("Failed to publish visualizations: ${e.message}")
+        }
+    }
+
+    override suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData? {
+        return try {
+            val dto = visualizationDataSource.getVisualizationById(visualizationId) ?: return null
+            VisualizationSharedData(
+                sharedWithUsers = dto.sharedWithUsers,
+                sharedWithTeams = dto.sharedWithTeams
+            )
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to fetch visualization: ${e.message}")
         }
     }
 
