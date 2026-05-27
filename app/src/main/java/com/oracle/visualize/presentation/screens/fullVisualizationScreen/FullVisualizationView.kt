@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -87,8 +88,13 @@ fun FullVisualizationPage(
                 FloatingActionButton(
                     onClick = {
                         scope.launch{
-                            val bitmap = captureController.captureAsync().await()
-                            snippingBitmap = bitmap.asAndroidBitmap()
+                            try {
+                                val bitmap = captureController.captureAsync().await()
+                                snippingBitmap = bitmap.asAndroidBitmap()
+                                Log.d("Snipping Tool", "Bitmap")
+                            } catch (e: Exception) {
+                                Log.e("Snipping Tool", "Error capturando: ${e.message}")
+                            }
                         }
                     },
                     containerColor = MaterialTheme.colorScheme.secondary
@@ -145,13 +151,13 @@ fun FullVisualizationPage(
                             members = visualization.allUsersSharedWith,
                             onBackClick = onBackClick
                         )
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
                                 .background(MaterialTheme.colorScheme.background)
-                                .clipToBounds(),
+                                .clipToBounds()
+                                .capturable(captureController),
                             contentAlignment = Alignment.Center
                         ) {
                             AndroidView(
@@ -165,7 +171,6 @@ fun FullVisualizationPage(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .fillMaxHeight()
-                                    .capturable(captureController)
                             ) {
                                 ChartRenderFullScreen(chart = chart, showAxisLabels = true)
                             }

@@ -62,7 +62,8 @@ import kotlin.collections.component2
  * modify its appearance.
  * @param showAxisLabels Enables or disables the property of axis labels to be shown.
  * @param enableTooltips Enables or disables the property of tooltips to be shown.
- * @param enableZoomAndPan Enables or disables the property of zooming and panning a chart.
+ * @param enableZoomAndPan Enables or disables the property of zooming and panning the chart.
+ * @param feedCardLabels Changes the x-axis labels' sizes on a feed card.
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable

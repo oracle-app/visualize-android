@@ -1,9 +1,9 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -29,6 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.presentation.components.generateChartColors
@@ -39,6 +40,7 @@ import io.github.koalaplot.core.line.LinePlot2
 import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.util.toString
 import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.DefaultPoint
 import io.github.koalaplot.core.xygraph.XYGraph
@@ -59,6 +61,8 @@ import kotlin.collections.component2
  * modify its appearance.
  * @param showAxisLabels Enables or disables the property of axis labels to be shown.
  * @param enableTooltips Enables or disables the property of tooltips to be shown.
+ * @param enableZoomAndPan Enables or disables the property of zooming and panning the chart.
+ * @param feedCardLabels Changes the x-axis labels' sizes on a feed card.
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +100,17 @@ fun RenderLineChart(
             ),
             xAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                labels = {
+                    Text(
+                        text = it.toString(2),
+                        modifier = Modifier.rotate(45f).padding(top = 8.dp),
+                        fontSize = if (feedCardLabels) 8.sp else 10.sp,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.DarkGray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 title = {
                     if (showAxisLabels) {
                         Text(xMetric, style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)

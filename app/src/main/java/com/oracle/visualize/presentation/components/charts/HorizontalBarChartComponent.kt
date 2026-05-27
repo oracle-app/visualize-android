@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,6 +51,8 @@ import kotlinx.coroutines.launch
  * modify its appearance.
  * @param showAxisLabels Enables or disables the property of axis labels to be shown.
  * @param enableTooltips Enables or disables the property of tooltips to be shown.
+ * @param enableZoomAndPan Enables or disables the property of zooming and panning the chart.
+ * @param feedCardLabels Changes the y-axis labels' sizes on a feed card.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +87,7 @@ fun RenderHorizontalBarChart(
                             Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
                         }
                     }
-                ) ,
+                ),
                 yAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = {

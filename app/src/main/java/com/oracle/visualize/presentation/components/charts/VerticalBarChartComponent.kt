@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +22,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,6 +52,7 @@ import kotlinx.coroutines.launch
  * @param showAxisLabels Enables or disables the property of axis labels to be shown.
  * @param enableTooltips Enables or disables the property of tooltips to be shown.
  * @param enableZoomAndPan Enables or disables the property of zooming and panning the chart.
+ * @param feedCardLabels Changes the x-axis labels' sizes on a feed card.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -4,13 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -56,9 +53,8 @@ fun ChartRenderGeneral(
 ) {
     val scrollState = rememberScrollState()
     var chartWidth: Dp
-    var chartHeight: Dp
-    var barCount: Int = 0
-    var scrollable: Boolean = false
+    var barCount: Int
+    var scrollable: Boolean
     var boxModifier: Modifier
     var chartModifier: Modifier
 
@@ -83,18 +79,8 @@ fun ChartRenderGeneral(
             }
 
             is HorizontalBarChart -> {
-                barCount = chart.fieldNames.size
-                scrollable = barCount > 10 && !feedCardLabels
-                chartHeight = if (scrollable) (barCount * 100).dp else 0.dp
-                boxModifier = if (scrollable) Modifier.fillMaxHeight().verticalScroll(scrollState) else Modifier.fillMaxHeight()
-                chartModifier = if (!scrollable) Modifier.fillMaxHeight() else Modifier.height(chartHeight)
-
-                Box(modifier = boxModifier) {
-                    RenderHorizontalBarChart(
-                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                        enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
-                    )
-                }
+                RenderHorizontalBarChart(chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
+                        enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels)
             }
 
             is StackedBarChart -> {

@@ -28,8 +28,8 @@ fun FullVisualizationTopBar(
     members: List<User>,
     onBackClick: () -> Unit
 ) {
-    val formattedTitle = if (visualizationTitle.length > 30) {
-        visualizationTitle.subSequence(0, 29).toString() + "..."
+    val formattedTitle = if (visualizationTitle.length > 35) {
+        visualizationTitle.subSequence(0, 34).toString() + "..."
     } else visualizationTitle
 
     Column(
