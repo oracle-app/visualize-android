@@ -10,13 +10,6 @@ import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 import kotlin.coroutines.resumeWithException
 
-/**
- * Data source for visualization-related operations using Firestore.
- * This class does not perform error handling — all exceptions propagate
- * to [VisualizationRepositoryImpl] where they are caught and mapped to [AppError].
- *
- * @property db The [FirebaseFirestore] instance used for database operations.
- */
 class VisualizationDatasource @Inject constructor(
     private val db: FirebaseFirestore,
 ) {
@@ -94,8 +87,7 @@ class VisualizationDatasource @Inject constructor(
 
     /**
      * Fetches a single visualization document by its ID.
-     * Used by [updateSharedUsers] to read the current sharedWithUsers list
-     * before merging with the new selection.
+     * Used to read current sharedWithUsers and sharedWithTeams before the share screen opens.
      */
     suspend fun getVisualizationById(visualizationId: String): VisualizationDTO? {
         val doc = visualizationsRef.document(visualizationId).get().await()
@@ -125,9 +117,8 @@ class VisualizationDatasource @Inject constructor(
     }
 
     /**
-     * Merges [userIds] and [teamIds] with the existing sharedWithUsers and sharedWithTeams
-     * lists on the visualization document. Uses union so previously shared recipients
-     * are never removed — only new ones are added.
+     * Replaces [sharedWithUsers] and [sharedWithTeams] on a visualization.
+     * The caller passes the complete desired lists including existing and new recipients.
      * Uses [withTimeout] to prevent indefinite hanging.
      * [kotlinx.coroutines.TimeoutCancellationException] propagates to the repository.
      */
@@ -136,18 +127,13 @@ class VisualizationDatasource @Inject constructor(
         userIds: List<String>,
         teamIds: List<String>
     ) {
-        // Read current lists before writing so we never remove existing recipients
-        val current       = getVisualizationById(visualizationId)
-        val mergedUserIds = ((current?.sharedWithUsers ?: emptyList()) + userIds).distinct()
-        val mergedTeamIds = ((current?.sharedWithTeams ?: emptyList()) + teamIds).distinct()
-
         withTimeout(10_000) {
             suspendCancellableCoroutine { cont ->
                 val task = visualizationsRef.document(visualizationId)
                     .set(
                         mapOf(
-                            "sharedWithUsers" to mergedUserIds,
-                            "sharedWithTeams" to mergedTeamIds
+                            "sharedWithUsers" to userIds,
+                            "sharedWithTeams" to teamIds
                         ),
                         SetOptions.merge()
                     )
