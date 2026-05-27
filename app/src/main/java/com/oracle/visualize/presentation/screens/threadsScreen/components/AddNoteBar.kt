@@ -31,7 +31,7 @@ fun AddNoteBar(
     modifier: Modifier = Modifier,
     onSendClick: (String) -> Unit,
     onCropClick: () -> Unit,
-    image: Uri? = null
+    image: String? = null
 ) {
     val context = LocalContext.current
     var noteText by remember { mutableStateOf("") }

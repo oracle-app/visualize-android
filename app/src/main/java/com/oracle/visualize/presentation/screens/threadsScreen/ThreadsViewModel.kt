@@ -164,7 +164,7 @@ class ThreadsViewModel @Inject constructor(
         }
     }
 
-    suspend fun uploadSnip(uri: Uri): String? {
+    suspend fun uploadSnip(uri: String): String? {
         return uploadSnipUseCase(
             userID = currentUserID,
             uri = uri
@@ -223,7 +223,7 @@ class ThreadsViewModel @Inject constructor(
     fun createCommentWithSnip(
         visualizationId: String,
         content: String,
-        uri: Uri
+        uri: String
     ) {
         viewModelScope.launch {
             val imageURL = uploadSnip(uri)

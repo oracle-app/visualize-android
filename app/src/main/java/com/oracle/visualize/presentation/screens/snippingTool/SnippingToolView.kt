@@ -1,8 +1,6 @@
 package com.oracle.visualize.presentation.screens.snippingTool
 
-import android.app.Activity
 import android.graphics.Bitmap
-import android.view.WindowManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -22,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,11 +35,8 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.presentation.screens.snippingTool.components.CropOverlay
@@ -65,20 +59,24 @@ fun SnippingToolView(
     viewModel: SnippingToolViewModel = hiltViewModel()
 ) {
 
-    val view = LocalView.current
-    DisposableEffect(Unit) {
-        val window = (view.context as Activity).window
-        val controller = WindowInsetsControllerCompat(window, view)
 
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        controller.hide(WindowInsetsCompat.Type.systemBars())
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
-        onDispose {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-            controller.show(WindowInsetsCompat.Type.systemBars())
-        }
-    }
+    // TODO: Right now, the navigation bar appearing and reappearing crooks the crop. Fix this later.
+
+// DisposableEffect(Unit) {
+//     val window = (view.context as Activity).window
+//     val controller = WindowInsetsControllerCompat(window, view)
+//
+//     window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+//     controller.hide(WindowInsetsCompat.Type.systemBars())
+//     controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+//
+//     onDispose {
+//         window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+//         controller.show(WindowInsetsCompat.Type.systemBars())
+//     }
+// }
+
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val graphicsLayer = rememberGraphicsLayer()
@@ -159,7 +157,14 @@ fun SnippingToolView(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .onSizeChanged { size ->
-                    viewModel.setCropRect(IntRect((size.width * 0.1f).toInt(), (size.height * 0.1f).toInt(), (size.width * 0.9f).toInt(), (size.height * 0.9f).toInt()))
+                    if (uiState.cropRect == IntRect.Zero) {
+                        viewModel.setCropRect(IntRect(
+                            (size.width * 0.1f).toInt(),
+                            (size.height * 0.1f).toInt(),
+                            (size.width * 0.9f).toInt(),
+                            (size.height * 0.9f).toInt()
+                        ))
+                    }
                 }
                 .then(
                     if (uiState.isTransformable) Modifier.transformable(state = transformState)

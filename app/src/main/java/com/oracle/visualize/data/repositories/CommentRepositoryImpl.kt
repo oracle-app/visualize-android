@@ -1,6 +1,5 @@
 package com.oracle.visualize.data.repositories
 
-import android.net.Uri
 import com.oracle.visualize.data.datasources.CommentDatasource
 import com.oracle.visualize.data.datasources.dtos.CommentDTO
 import com.oracle.visualize.data.datasources.dtos.ThreadDTO
@@ -57,7 +56,7 @@ class CommentRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun uploadSnip(userID: String, uri: Uri): String {
+    override suspend fun uploadSnip(userID: String, uri: String): String {
         return commentDatasource.uploadSnip(userID, uri)
     }
 

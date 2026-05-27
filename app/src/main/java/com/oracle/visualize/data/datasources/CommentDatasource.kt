@@ -85,9 +85,9 @@ class CommentDatasource @Inject constructor(
         }
     }
 
-    suspend fun uploadSnip(userID: String, uri: Uri): String {
+    suspend fun uploadSnip(userID: String, uri: String): String {
         val storageRef = storage.reference.child("snips/$userID/${UUID.randomUUID()}")
-        storageRef.putFile(uri).await()
+        storageRef.putFile(Uri.parse(uri)).await()
         return storageRef.downloadUrl.await().toString()
     }
 

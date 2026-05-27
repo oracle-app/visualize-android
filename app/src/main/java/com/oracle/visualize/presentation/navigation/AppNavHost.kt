@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.navigation
 
-import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -106,7 +105,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                     navController.navigate(
                         NavRoutes.Threads(
                             visualizationId = route.visualizationId,
-                            snipUri = uri?.toString()
+                            snipUri = uri
                         )
                     )
                 }
@@ -128,7 +127,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                         )
                     )
                 },
-                image = route.snipUri?.let { Uri.parse(it) }
+                image = route.snipUri?.let { it }
             )
         }
         composable<NavRoutes.Splash> {

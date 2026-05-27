@@ -1,13 +1,11 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
 import android.graphics.Bitmap
-import android.net.Uri
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CropFree
+import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.ModeComment
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -57,7 +55,7 @@ fun FullVisualizationPage(
     modifier: Modifier = Modifier,
     viewModel: FullVisualizationViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onThreadsClick: (Uri?) -> Unit = {},
+    onThreadsClick: (String?) -> Unit = {},
     startInSnippingMode: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -89,17 +87,16 @@ fun FullVisualizationPage(
             bitmap = bitmap,
             onDone = { result ->
                 viewModel.onSnipCompleted(result)
-                val uri = Uri.fromFile(
-                    File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
-                        file.outputStream().use { result.compress(Bitmap.CompressFormat.PNG, 100, it) }
-                    }
-                )
+                val uri = File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                    file.outputStream().use { result.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                }.toURI().toString()
                 onThreadsClick(uri)
             },
             onCancel = { snippingBitmap = null }
         )
         return
     }
+
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -119,7 +116,7 @@ fun FullVisualizationPage(
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.CropFree,
+                        imageVector = Icons.Filled.Crop,
                         contentDescription = stringResource(R.string.snipping_tool)
                     )
                 }
