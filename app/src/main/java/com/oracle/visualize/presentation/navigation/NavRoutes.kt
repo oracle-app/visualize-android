@@ -37,4 +37,6 @@ sealed interface NavRoutes {
     data class ChartSelection(val taskId: String) : NavRoutes
     @Serializable
     object ShareAndPost : NavRoutes
+    @Serializable
+    object ResetPassword : NavRoutes
 }

@@ -13,6 +13,7 @@ import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVis
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.resetPasswordScreen.ResetPasswordPage
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
@@ -148,6 +149,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 },
                 onSignUpClick = {
                     navController.navigate(NavRoutes.Signup)
+                },
+                onForgotPasswordClick = {
+                    navController.navigate(NavRoutes.ResetPassword)
                 }
             )
         }
@@ -168,6 +172,18 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                             inclusive = true
                         }
                     }
+                }
+            )
+        }
+
+        composable<NavRoutes.ResetPassword> {
+            ResetPasswordPage(
+                modifier = Modifier.fillMaxSize(),
+                onResetSuccess = {
+                    navController.popBackStack()
+                },
+                onBackToLoginClick = {
+                    navController.popBackStack()
                 }
             )
         }

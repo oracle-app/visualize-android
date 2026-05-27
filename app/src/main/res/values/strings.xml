@@ -203,6 +203,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="no_account">Don\'t have an account?</string>
+    <string name="forgot_your_password">Forgot your password?</string>
     
     //Signup Page
     <string name="already_have_account">Already have an account</string>
@@ -210,6 +211,16 @@
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
     <string name="passremember">Use 8 or more letters, numbers and symbols</string>
+
+    //Reset Password Page
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_description">Enter your email address and we will send you instructions to reset your password.</string>
+    <string name="send_link">Send</string>
+    <string name="back_to_login">Back to log in</string>
+    <string name="check_your_email">Check your email</string>
+    <string name="check_your_email_description">Please click on the link sent to your email address to reset your password.</string>
+    <string name="did_not_get_email">Didn’t get the email?</string>
+    <string name="resend_email">Resend email</string>
 
 
 </resources>
