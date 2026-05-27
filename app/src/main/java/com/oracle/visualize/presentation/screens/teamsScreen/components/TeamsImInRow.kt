@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.teamsScreen.components
 
 
-import TeamPosition
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically

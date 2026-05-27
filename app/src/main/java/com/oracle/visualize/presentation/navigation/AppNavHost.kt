@@ -1,6 +1,6 @@
 package com.oracle.visualize.presentation.navigation
 
-import TeamsPage
+import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
