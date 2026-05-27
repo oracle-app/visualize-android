@@ -57,8 +57,10 @@
     <string name="line_scatter_y_metric">y</string>
     <string name="stacked_bar_series">Series</string>
 
-    // Chart legends full screen
+    // Chart full screen
     <string name="chart_legend_cat_label">Category</string>
+    <string name="fullscreen_sharing_label_1">Sharing with</string>
+    <string name="fullscreen_sharing_label_2">members</string>
 
     // Create View
 

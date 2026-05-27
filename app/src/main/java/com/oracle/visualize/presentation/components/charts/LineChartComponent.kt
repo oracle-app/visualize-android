@@ -23,6 +23,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,7 +64,7 @@ import kotlin.collections.component2
 @Composable
 fun RenderLineChart(
     modifier: Modifier = Modifier, chart: LineChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean, enableZoomAndPan: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val processedData = remember (chart.data) {
         listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
@@ -153,8 +155,20 @@ fun RenderLineChart(
                         ) {
                             Symbol(
                                 modifier = Modifier.size(30.dp).pointerInput(Unit) {
-                                        detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
-                                    },
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            val fingerEvent = awaitPointerEvent()
+
+                                            if (fingerEvent.changes.size > 1) continue
+
+                                            if (fingerEvent.type == PointerEventType.Release) {
+                                                val change = fingerEvent.changes[0]
+
+                                                if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                            }
+                                        }
+                                    }
+                                },
                                 fillBrush = SolidColor(dotColors[0]),
                                 outlineBrush = SolidColor(dotColors[1]),
                                 outlineStroke = Stroke(width = 4f),

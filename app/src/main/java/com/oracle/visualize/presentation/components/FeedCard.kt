@@ -189,7 +189,8 @@ fun FeedCard(
                             chart = chart,
                             showAxisLabels = false,
                             enableTooltips = false,
-                            enableZoomAndPan = false
+                            enableZoomAndPan = false,
+                            feedCardLabels = true
                         )
                     } else {
                         Text(

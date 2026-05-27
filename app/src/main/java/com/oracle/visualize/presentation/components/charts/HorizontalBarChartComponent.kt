@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,9 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -53,7 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RenderHorizontalBarChart(
     modifier: Modifier = Modifier, chart: HorizontalBarChart, showAxisLabels: Boolean,
-    enableTooltips: Boolean, enableZoomAndPan: Boolean
+    enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val data = chart.data
 
@@ -85,7 +89,17 @@ fun RenderHorizontalBarChart(
                 ) ,
                 yAxisContent = AxisContent(
                     style = rememberAxisStyle(),
-                    labels = { Text(it, style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                    labels = {
+                        Text(
+                            text = it,
+                            modifier = Modifier.rotate(-45f).padding(top = 8.dp),
+                            fontSize = if (feedCardLabels) 8.sp else 10.sp,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.DarkGray,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     title = {
                         if (showAxisLabels && !chart.metrics.isEmpty()) {
                             Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
@@ -130,7 +144,19 @@ fun RenderHorizontalBarChart(
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
                                 modifier = modifier.fillMaxWidth().pointerInput(Unit) {
-                                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            val fingerEvent = awaitPointerEvent()
+
+                                            if (fingerEvent.changes.size > 1) continue
+
+                                            if (fingerEvent.type == PointerEventType.Release) {
+                                                val change = fingerEvent.changes[0]
+
+                                                if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                            }
+                                        }
+                                    }
                                 }
                             )
                         }

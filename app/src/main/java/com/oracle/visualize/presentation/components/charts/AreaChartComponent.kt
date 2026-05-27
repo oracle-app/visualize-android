@@ -23,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -54,6 +57,7 @@ import kotlinx.coroutines.launch
  * modify its appearance.
  * @param showAxisLabels Enables or disables the property of axis labels to be shown.
  * @param enableTooltips Enables or disables the property of tooltips to be shown.
+ * @param enableZoomAndPan Enables or disables the property of zooming and panning the chart.
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +90,9 @@ fun RenderAreaChart(
             ),
             xAxisContent = AxisContent(
                 style = rememberAxisStyle(),
-                labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
+                labels = {
+                    Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray)
+                },
                 title = {
                     if (showAxisLabels && !chart.metrics.isEmpty()) {
                         Text(chart.metrics[0], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray)
@@ -169,10 +175,22 @@ fun RenderAreaChart(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .background(color = Color.DarkGray.copy(alpha = 0.3f), shape = CircleShape)
-                                        .size(44.dp)
+                                        .background(color = Color.DarkGray.copy(alpha = 0.2f), shape = CircleShape)
+                                        .size(26.dp)
                                         .pointerInput(Unit) {
-                                            detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                                            awaitPointerEventScope {
+                                                while (true) {
+                                                    val fingerEvent = awaitPointerEvent()
+
+                                                    if (fingerEvent.changes.size > 1) continue
+
+                                                    if (fingerEvent.type == PointerEventType.Release) {
+                                                        val change = fingerEvent.changes[0]
+
+                                                        if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                    }
+                                                }
+                                            }
                                         }
                                 )
                             }
