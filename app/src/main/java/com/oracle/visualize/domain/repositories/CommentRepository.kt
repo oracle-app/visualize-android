@@ -28,5 +28,16 @@ interface CommentRepository {
         authorAvatarURL: String?,
         content: String
     ): Thread
+
+    suspend fun deleteComment(
+        visualizationId: String,
+        commentId: String
+    )
+
+    suspend fun deleteThread(
+        visualizationId: String,
+        commentId: String,
+        threadId: String
+    )
 }
 

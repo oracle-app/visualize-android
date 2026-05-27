@@ -65,7 +65,7 @@ class FeedViewModel @Inject constructor(
             observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
                 result.fold(
                     onSuccess = { items ->
-                        allFeedItems = items
+                        allFeedItems = items.distinctBy { it.card.id }
                         applyLocalFilterAndSearch()
                     },
                     onFailure = { error ->
