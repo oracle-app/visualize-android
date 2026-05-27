@@ -7,6 +7,8 @@ import androidx.navigation.toRoute
 import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
+import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.domain.usecases.UpdateSharedUsersUseCase
 import com.oracle.visualize.presentation.navigation.NavRoutes
@@ -26,6 +28,8 @@ class ShareWithTeammatesViewModel @Inject constructor(
     private val updateSharedUsersUseCase: UpdateSharedUsersUseCase,
     private val authRepository: AuthRepository,
     private val teamRepository: TeamRepository,
+    private val visualizationRepository: VisualizationRepository,
+    private val userRepository: UserRepository,
     private val feedCacheManager: FeedCacheManager,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -49,16 +53,27 @@ class ShareWithTeammatesViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = ShareWithTeammatesUiState.Loading
             try {
-                val myTeamsDeferred   = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
-                val teamsImInDeferred = async { teamRepository.getTeamsUserIsIn(currentUserID) }
+                val myTeamsDeferred    = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
+                val teamsImInDeferred  = async { teamRepository.getTeamsUserIsIn(currentUserID) }
+                val currentVizDeferred = async { visualizationRepository.getVisualizationById(visualizationId) }
 
-                val myTeams   = myTeamsDeferred.await()
-                val teamsImIn = teamsImInDeferred.await()
+                val myTeams    = myTeamsDeferred.await()
+                val teamsImIn  = teamsImInDeferred.await()
                     .filter { team -> myTeams.none { it.id == team.id } }
+                val currentViz = currentVizDeferred.await()
+
+                val existingUserIds = currentViz?.sharedWithUsers ?: emptyList()
+                val existingTeamIds = (currentViz?.sharedWithTeams ?: emptyList()).toSet()
+                val existingUsers   = if (existingUserIds.isNotEmpty()) {
+                    userRepository.getUsersByIDs(existingUserIds)
+                } else {
+                    emptyList()
+                }
 
                 _uiState.value = ShareWithTeammatesUiState.Content(
                     visualizationId = visualizationId,
-                    sharedUsers     = emptyList(),
+                    sharedUsers     = existingUsers,
+                    selectedTeamIds = existingTeamIds,
                     myTeams         = myTeams,
                     teamsImIn       = teamsImIn
                 )
@@ -146,7 +161,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 viewModelScope.launch {
                     updateSharedUsersUseCase(visualizationId, userIds, teamIds).fold(
                         onSuccess = {
-                            // Invalidate cache so the feed reloads with updated sharedWith lists
                             feedCacheManager.clearCache()
                             updateContent { it.copy(isSubmitting = false, shareSuccess = true) }
                         },
