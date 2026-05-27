@@ -47,8 +47,10 @@
         <item quantity="other">%d weeks ago</item>
     </plurals>
     <string name="by_author">By %s</string>
-    <string name="bullet_separator">    •    %s</string>
-
+    <string name="by_me">By Me</string>
+    <string name="bullet_separator">•</string>
+    <string name="failed_load_chart">Failed to load chart"</string>
+ß
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
 
@@ -158,6 +160,9 @@
     <string name="send">Send message</string>
     <string name="no_threads">There\'s no more threads.</string>
     <string name="no_threads_yet">There\'s no comments yet.</string>
+    <string name="reply_to">Replying to %s</string>
+    <string name="cancel_reply">Cancel reply</string>
+    <string name="more">More</string>
 
 
     // Snipping Tool
@@ -204,5 +209,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
+    <string name="passremember">Use 8 or more letters, numbers and symbols</string>
+
 
 </resources>
