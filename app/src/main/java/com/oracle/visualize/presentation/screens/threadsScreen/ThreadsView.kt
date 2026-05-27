@@ -93,6 +93,11 @@ fun ThreadsPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 14.dp, vertical = 8.dp),
+                    hint = if (uiState.replyingToCommentId != null) {
+                        stringResource(R.string.write_reply)
+                    } else {
+                        stringResource(R.string.start_thread)
+                    },
                     onSendClick = { content ->
                         val replyingToCommentId = uiState.replyingToCommentId
 

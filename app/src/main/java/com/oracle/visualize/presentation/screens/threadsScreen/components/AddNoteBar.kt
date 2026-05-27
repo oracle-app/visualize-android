@@ -24,6 +24,7 @@ import com.oracle.visualize.R
 @Composable
 fun AddNoteBar(
     modifier: Modifier = Modifier,
+    hint: String = stringResource(R.string.add_note),
     onSendClick: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -47,7 +48,7 @@ fun AddNoteBar(
             onValueChange = { noteText = it },
             placeholder = {
                 Text(
-                    text = stringResource(R.string.add_note),
+                    text = hint,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },

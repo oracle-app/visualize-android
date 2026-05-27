@@ -129,12 +129,15 @@ fun FeedCard(
                             } else {
                                 stringResource(R.string.by_author, item.author)
                             },
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                         //Space on the card chart
                         Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
-                        Text(text = stringResource(R.string.bullet_separator))
+                        Text(
+                            text = stringResource(R.string.bullet_separator),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
                         Text(
                             text = formatTime(item.createdAt, context),
