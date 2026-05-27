@@ -11,9 +11,11 @@ import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
 import com.oracle.visualize.data.mapper.toVisualizationDTO
+import com.oracle.visualize.data.mapper.toVisualizationFullScreen
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 import com.oracle.visualize.domain.models.VisualizationSharedData
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.TimeoutCancellationException
@@ -146,9 +148,55 @@ class VisualizationRepositoryImpl @Inject constructor(
         }
     }
 
+    // ─── develop methods ───────────────────────────────────────────────────────
+
+    override suspend fun getIndividualVisualization(visualizationID: String): VisualizationFullScreen? = coroutineScope {
+        try {
+            val visualizationDTO = visualizationDataSource.getIndividualVisualization(visualizationID)
+                ?: return@coroutineScope null
+
+            val authorID        = visualizationDTO.authorID
+            val sharedWithTeams = visualizationDTO.sharedWithTeams
+            val sharedWithUsers = visualizationDTO.sharedWithUsers
+
+            val allUserIDsToFetch = listOf(authorID) + sharedWithUsers
+            val sharedTeamIDs    = sharedWithTeams.toSet().toList()
+
+            val usersDeferred = async { fetchUsersInChunks(allUserIDsToFetch) }
+            val teamsDeferred = async { fetchTeamsInChunks(sharedTeamIDs) }
+
+            val usersDTOs = usersDeferred.await()
+            val teamsDTOs = teamsDeferred.await()
+
+            val usersDict = usersDTOs.associateBy { it.id }.toMutableMap()
+            val teamsDict = teamsDTOs.associateBy { it.id }
+
+            val missingUserIDs = teamsDTOs.flatMap { it.membersIDs }.toSet()
+                .filter { !usersDict.containsKey(it) }
+            if (missingUserIDs.isNotEmpty()) {
+                usersDict.putAll(fetchUsersInChunks(missingUserIDs).associateBy { it.id })
+            }
+
+            visualizationDTO.toVisualizationFullScreen(
+                authorName      = usersDict[authorID]?.username ?: "Unknown",
+                usersSharedWith = sharedWithUsers.mapNotNull { usersDict[it]?.toDomain() },
+                teamsSharedWith = sharedWithTeams.mapNotNull { teamID ->
+                    val t = teamsDict[teamID] ?: return@mapNotNull null
+                    t.toDomain(t.membersIDs.mapNotNull { usersDict[it]?.toDomain() })
+                }
+            )
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to get visualization: ${e.message}")
+        }
+    }
+
+    // ─── feature/feed-share-and-delete methods ─────────────────────────────────
+
     override suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData? {
         return try {
-            val dto = visualizationDataSource.getVisualizationById(visualizationId) ?: return null
+            // Reuses getIndividualVisualization datasource method — same Firestore document
+            val dto = visualizationDataSource.getIndividualVisualization(visualizationId) ?: return null
             VisualizationSharedData(
                 sharedWithUsers = dto.sharedWithUsers,
                 sharedWithTeams = dto.sharedWithTeams

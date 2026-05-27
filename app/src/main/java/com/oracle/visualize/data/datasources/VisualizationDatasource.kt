@@ -4,12 +4,20 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.models.Visualization
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 import kotlin.coroutines.resumeWithException
 
+/**
+ * Data source for visualization-related operations using Firestore.
+ * This class does not perform error handling — all exceptions propagate
+ * to [VisualizationRepositoryImpl] where they are caught and mapped to [AppError].
+ *
+ * @property db The [FirebaseFirestore] instance used for database operations.
+ */
 class VisualizationDatasource @Inject constructor(
     private val db: FirebaseFirestore,
 ) {
@@ -86,14 +94,15 @@ class VisualizationDatasource @Inject constructor(
     }
 
     /**
-     * Fetches a single visualization document by its ID.
-     * Used to read current sharedWithUsers and sharedWithTeams before the share screen opens.
+     * Searches a visualization from the database by its ID.
+     * Used by both [VisualizationRepositoryImpl.getIndividualVisualization]
+     * and [VisualizationRepositoryImpl.getVisualizationById].
      */
-    suspend fun getVisualizationById(visualizationId: String): VisualizationDTO? {
-        val doc = visualizationsRef.document(visualizationId).get().await()
-        if (!doc.exists()) return null
-        return doc.toObject(VisualizationDTO::class.java)
-            ?: throw AppError.ParsingError("Failed to parse VisualizationDTO: $visualizationId")
+    suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
+        val visualization = visualizationsRef.document(visualizationID).get().await()
+        if (!visualization.exists()) return null
+        return visualization.toObject(VisualizationDTO::class.java)
+            ?: throw AppError.ParsingError("Error parsing VisualizationDTO.")
     }
 
     /**
