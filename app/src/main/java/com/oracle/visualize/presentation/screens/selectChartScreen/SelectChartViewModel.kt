@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 
 /**
@@ -35,7 +40,7 @@ class SelectChartViewModel @Inject constructor(
     init {
         fetchOverview()
     }
-    private fun fetchOverview(){
+    fun fetchOverview(){
         viewModelScope.launch {
             _uiState.value = ChartSelectionUiState.Loading
             
@@ -130,41 +135,73 @@ class SelectChartViewModel @Inject constructor(
             _uiState.value = ChartSelectionUiState.Loading
             try {
                 val authorId = authRepository.getCurrentUserID()
-                val visualizationsToPublish = mutableListOf<com.oracle.visualize.domain.models.Visualization>()
-                for (selection in selectedCharts) {
-                    val pagesList = mutableListOf<ChartResponseDTO>()
 
-                    // 1. Fetch Page 1 DTO
-                    val firstPageRes = repository.getPagedResultsDto(taskId, selection.chartIndex, 1)
-                    if (firstPageRes !is AppResult.Success) {
-                        throw Exception((firstPageRes as? AppResult.Error)?.error?.message ?: "Failed to fetch page 1")
+                // Step 1: Fetch Page 1 for all charts concurrently
+                val firstPageDeferreds = selectedCharts.map { selection ->
+                    async {
+                        repository.getPagedResultsDto(taskId, selection.chartIndex, 1) to selection.chartIndex
                     }
+                }
+                val firstPageResults = firstPageDeferreds.awaitAll()
 
-                    val firstPageDto = firstPageRes.data
-                    pagesList.add(firstPageDto)
+                val chartPageJobs = mutableListOf<Deferred<Pair<Int, AppResult<ChartResponseDTO>>>>()
+                val firstPagesMap = mutableMapOf<Int, ChartResponseDTO>()
 
-                    // 2. Fetch pages 2 to totalPages
+                for ((res, chartIndex) in firstPageResults) {
+                    if (res !is AppResult.Success) {
+                        throw Exception((res as? AppResult.Error)?.error?.message ?: "Failed to fetch page 1 for chart $chartIndex")
+                    }
+                    val firstPageDto = res.data
+                    firstPagesMap[chartIndex] = firstPageDto
+
+                    // Step 2: Fetch remaining pages concurrently
                     val totalPages = firstPageDto.totalPages
                     for (page in 2..totalPages) {
-                        val pageRes = repository.getPagedResultsDto(taskId, selection.chartIndex, page)
-                        if (pageRes is AppResult.Success) {
-                            pagesList.add(pageRes.data)
-                        } else {
-                            throw Exception((pageRes as? AppResult.Error)?.error?.message ?: "Failed to fetch page $page")
-                        }
+                        chartPageJobs.add(
+                            async {
+                                chartIndex to repository.getPagedResultsDto(taskId, chartIndex, page)
+                            }
+                        )
                     }
-                    // 3. Merge paged data
-                    val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
-                    // 4. Construct preview and full JSON objects using custom title
-                    val previewDto = firstPageDto.copy(chartName = selection.customTitle)
-                    val combinedDto = firstPageDto.copy(
-                        chartName = selection.customTitle,
-                        page = 0,
-                        preview = false,
-                        totalPages = 1,
-                        data = mergedData
-                    )
-                    visualizationsToPublish.add(
+                }
+
+                // Await all additional pages in parallel
+                val additionalPagesResults = chartPageJobs.awaitAll()
+
+                // Group pages by chartIndex
+                val pagesByChart = mutableMapOf<Int, MutableList<ChartResponseDTO>>()
+                firstPagesMap.forEach { (chartIndex, firstPageDto) ->
+                    pagesByChart.getOrPut(chartIndex) { mutableListOf() }.add(firstPageDto)
+                }
+
+                for ((chartIndex, res) in additionalPagesResults) {
+                    if (res is AppResult.Success) {
+                        pagesByChart.getOrPut(chartIndex) { mutableListOf() }.add(res.data)
+                    } else {
+                        throw Exception((res as? AppResult.Error)?.error?.message ?: "Failed to fetch page for chart $chartIndex")
+                    }
+                }
+
+                // Step 3: Run CPU-intensive merging and JSON serialization on Dispatchers.Default
+                val visualizationsToPublish = withContext(Dispatchers.Default) {
+                    selectedCharts.map { selection ->
+                        val pagesList = pagesByChart[selection.chartIndex] ?: throw Exception("Missing pages for chart ${selection.chartIndex}")
+                        
+                        // Sort pages to ensure they are merged in correct chronological order
+                        pagesList.sortBy { it.page }
+
+                        val firstPageDto = pagesList.first()
+                        val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
+
+                        val previewDto = firstPageDto.copy(chartName = selection.customTitle)
+                        val combinedDto = firstPageDto.copy(
+                            chartName = selection.customTitle,
+                            page = 0,
+                            preview = false,
+                            totalPages = 1,
+                            data = mergedData
+                        )
+
                         com.oracle.visualize.domain.models.Visualization(
                             id = "",
                             authorID = authorId,
@@ -175,8 +212,10 @@ class SelectChartViewModel @Inject constructor(
                             sharedWithTeams = emptyList(),
                             createdAt = java.util.Date()
                         )
-                    )
+                    }
                 }
+
+                // Step 4: Publish visualizations in bulk to Firebase
                 publishVisualizationsInBulkUseCase(visualizationsToPublish).fold(
                     onSuccess = { onSuccess() },
                     onFailure = { throw it }

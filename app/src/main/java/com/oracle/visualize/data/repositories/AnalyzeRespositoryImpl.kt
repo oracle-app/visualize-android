@@ -72,6 +72,7 @@ class AnalyzeRepositoryImpl @Inject constructor(
 
     private fun mapError(e: Exception): AppError {
         return when (e) {
+            is AppError -> e
             is IOException -> AppError.NetworkError("Network connection failed. Please check your internet.")
             is HttpException -> {
                 when (e.code()) {
