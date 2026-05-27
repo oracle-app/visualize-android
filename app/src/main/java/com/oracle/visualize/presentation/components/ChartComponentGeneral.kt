@@ -40,7 +40,7 @@ fun ChartRenderGeneral(
     modifier: Modifier = Modifier, chart: Chart<*>, showAxisLabels: Boolean = true,
     enableTooltips: Boolean = true
 ) {
-    Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+    Column(modifier = modifier.background(color = MaterialTheme.colorScheme.surface)
         .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)) {
         when (chart) {
             is VerticalBarChart -> {
