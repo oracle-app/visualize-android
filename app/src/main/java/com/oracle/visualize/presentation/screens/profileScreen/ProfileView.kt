@@ -73,6 +73,7 @@ import java.io.File
 fun ProfilePage(
     modifier: Modifier = Modifier,
     navController: NavController,
+    onLogout: () -> Unit,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
 
@@ -162,7 +163,7 @@ fun ProfilePage(
             cancel = stringResource(R.string.cancel),
             onConfirm = {
                 profileViewModel.logout()
-                navController.navigate(NavRoutes.Login)
+                onLogout()
                 showLogoutDialog = false
             },
             onDismiss = { showLogoutDialog = false }

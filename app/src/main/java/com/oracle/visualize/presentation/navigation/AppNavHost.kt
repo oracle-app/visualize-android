@@ -87,7 +87,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable<NavRoutes.Profile> {
             ProfilePage(
                 modifier = Modifier.fillMaxSize(),
-                navController = navController
+                navController = navController,
+                onLogout = {
+                    navController.navigate(NavRoutes.Splash)
+                }
             )
             // TODO: Pass profile.userId to ProfilePage
         }
