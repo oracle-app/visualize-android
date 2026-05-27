@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
@@ -25,6 +26,7 @@ class ShareWithTeammatesViewModel @Inject constructor(
     private val updateSharedUsersUseCase: UpdateSharedUsersUseCase,
     private val authRepository: AuthRepository,
     private val teamRepository: TeamRepository,
+    private val feedCacheManager: FeedCacheManager,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -42,8 +44,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
         loadData()
         setupSearchDebounce()
     }
-
-    // ─── Data loading ──────────────────────────────────────────────────────────
 
     private fun loadData() {
         viewModelScope.launch {
@@ -70,8 +70,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
         }
     }
 
-    // ─── Search debounce ───────────────────────────────────────────────────────
-
     private fun setupSearchDebounce() {
         viewModelScope.launch {
             _searchQuery
@@ -96,8 +94,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
         }
     }
 
-    // ─── Events ────────────────────────────────────────────────────────────────
-
     fun onEvent(event: ShareWithTeammatesUiEvent) {
         val current = _uiState.value as? ShareWithTeammatesUiState.Content ?: return
         when (event) {
@@ -121,27 +117,23 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 }
             }
 
-            is ShareWithTeammatesUiEvent.RequestRemoveUser -> {
+            is ShareWithTeammatesUiEvent.RequestRemoveUser ->
                 _uiState.value = current.copy(removeDialogForUser = event.user)
-            }
 
-            is ShareWithTeammatesUiEvent.DismissRemoveDialog -> {
+            is ShareWithTeammatesUiEvent.DismissRemoveDialog ->
                 _uiState.value = current.copy(removeDialogForUser = null)
-            }
 
-            is ShareWithTeammatesUiEvent.ConfirmRemoveUser -> {
+            is ShareWithTeammatesUiEvent.ConfirmRemoveUser ->
                 _uiState.value = current.copy(
                     sharedUsers         = current.sharedUsers.filter { it.id != event.user.id },
                     removeDialogForUser = null
                 )
-            }
 
             is ShareWithTeammatesUiEvent.ToggleTeam -> {
-                val newSelected = if (event.teamId in current.selectedTeamIds) {
+                val newSelected = if (event.teamId in current.selectedTeamIds)
                     current.selectedTeamIds - event.teamId
-                } else {
+                else
                     current.selectedTeamIds + event.teamId
-                }
                 _uiState.value = current.copy(selectedTeamIds = newSelected)
             }
 
@@ -154,6 +146,8 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 viewModelScope.launch {
                     updateSharedUsersUseCase(visualizationId, userIds, teamIds).fold(
                         onSuccess = {
+                            // Invalidate cache so the feed reloads with updated sharedWith lists
+                            feedCacheManager.clearCache()
                             updateContent { it.copy(isSubmitting = false, shareSuccess = true) }
                         },
                         onFailure = { error ->
@@ -171,8 +165,6 @@ class ShareWithTeammatesViewModel @Inject constructor(
             is ShareWithTeammatesUiEvent.BackPressed -> { /* handled in View */ }
         }
     }
-
-    // ─── Helpers ───────────────────────────────────────────────────────────────
 
     private fun updateContent(
         block: (ShareWithTeammatesUiState.Content) -> ShareWithTeammatesUiState.Content
