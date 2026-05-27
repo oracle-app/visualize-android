@@ -187,6 +187,7 @@
     <string name="no_threads_yet">There\'s no comments yet.</string>
     <string name="reply_to">Replying to %s</string>
     <string name="cancel_reply">Cancel reply</string>
+    <string name="more">More</string>
 
 
     // Snipping Tool

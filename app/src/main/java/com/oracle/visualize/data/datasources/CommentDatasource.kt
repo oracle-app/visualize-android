@@ -103,4 +103,27 @@ class CommentDatasource @Inject constructor(
         return docRef.id
     }
 
+    suspend fun deleteComment(
+        visualizationId: String,
+        commentId: String
+    ){
+        commentsRef(visualizationId)
+            .document(commentId)
+            .delete()
+            .await()
+    }
+
+    suspend fun deleteThread(
+        visualizationId: String,
+        commentId: String,
+        threadId: String
+    ){
+        threadsRef(
+            visualizationId = visualizationId,
+            commentId = commentId
+        )
+            .document(threadId)
+            .delete()
+            .await()
+    }
 }

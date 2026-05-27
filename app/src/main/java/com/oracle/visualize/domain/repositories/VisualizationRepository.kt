@@ -2,6 +2,7 @@ package com.oracle.visualize.domain.repositories
 
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 
 /**
  * Interface defining the operations for visualization management.
@@ -35,4 +36,5 @@ interface VisualizationRepository {
         userIds: List<String>,
         teamIds: List<String>
     )
+    suspend fun getIndividualVisualization(visualizationID: String): VisualizationFullScreen?
 }

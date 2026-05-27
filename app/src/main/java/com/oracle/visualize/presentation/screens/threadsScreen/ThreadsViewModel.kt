@@ -8,6 +8,8 @@ import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.CreateCommentUseCase
 import com.oracle.visualize.domain.usecases.CreateThreadUseCase
+import com.oracle.visualize.domain.usecases.DeleteCommentUseCase
+import com.oracle.visualize.domain.usecases.DeleteThreadUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
 import com.oracle.visualize.domain.usecases.GetThreadsUseCase
@@ -36,6 +38,8 @@ class ThreadsViewModel @Inject constructor(
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getThreadsUseCase: GetThreadsUseCase,
     private val createThreadUseCase: CreateThreadUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
+    private val deleteThreadUseCase: DeleteThreadUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
@@ -272,6 +276,70 @@ class ThreadsViewModel @Inject constructor(
             it.copy(
                 replyingToCommentId = null,
                 replyingToAuthorName = null
+            )
+        }
+    }
+
+    fun deleteComment(
+        visualizationId: String,
+        commentId: String
+    ) {
+        viewModelScope.launch {
+            deleteCommentUseCase(
+                visualizationId = visualizationId,
+                commentId = commentId
+            ).fold(
+                onSuccess = {
+                    _uiState.update { state ->
+                        state.copy(
+                            comments = state.comments.filterNot { it.id == commentId }
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { state ->
+                        state.copy(
+                            errorMessage = R.string.error_unknown_retry
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    fun deleteThread(
+        visualizationId: String,
+        commentId: String,
+        threadId: String
+    ) {
+        viewModelScope.launch {
+            deleteThreadUseCase(
+                visualizationId = visualizationId,
+                commentId = commentId,
+                threadId = threadId
+            ).fold(
+                onSuccess = {
+                    _uiState.update { state ->
+                        state.copy(
+                            comments = state.comments.map { comment ->
+                                if (comment.id == commentId) {
+                                    comment.copy(
+                                        threads = comment.threads.filterNot { it.id == threadId }
+                                    )
+                                } else {
+                                    comment
+                                }
+                            }
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { state ->
+                        state.copy(
+                            errorMessage = R.string.error_unknown_retry
+                        )
+                    }
+                }
             )
         }
     }

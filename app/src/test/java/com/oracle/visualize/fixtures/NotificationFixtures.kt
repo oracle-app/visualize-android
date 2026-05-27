@@ -12,7 +12,8 @@ object NotificationFixtures {
         id = VALID_NOTIFICATION_ID,
         isRead = false,
         body = "Someone shared a visualization with you",
-        createdAt = Date()
+        createdAt = Date(),
+        senderProfilePictureURL = ""
     )
 
     val fakeNotifications = listOf(
@@ -20,13 +21,15 @@ object NotificationFixtures {
             id = "notif1",
             isRead = false,
             body = "Someone shared a visualization with you",
-            createdAt = Date()
+            createdAt = Date(),
+            senderProfilePictureURL = ""
         ),
         Notification(
             id = "notif2",
             isRead = true,
             body = "Someone replied to your comment",
-            createdAt = Date()
+            createdAt = Date(),
+            senderProfilePictureURL = ""
         )
     )
 }

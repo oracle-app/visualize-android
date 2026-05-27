@@ -11,9 +11,11 @@ import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.data.mapper.toVisualizationCard
 import com.oracle.visualize.data.mapper.toVisualizationDTO
+import com.oracle.visualize.data.mapper.toVisualizationFullScreen
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
@@ -175,6 +177,53 @@ class VisualizationRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             if (e is AppError) throw e
             throw AppError.NetworkError("Failed to update shared users: ${e.message}")
+        }
+    }
+
+    override suspend fun getIndividualVisualization(visualizationID: String): VisualizationFullScreen? = coroutineScope {
+        try {
+            val visualizationDTO = visualizationDataSource.getIndividualVisualization(visualizationID) ?: return@coroutineScope null
+
+            val authorID = visualizationDTO.authorID
+            val sharedWithTeams = visualizationDTO.sharedWithTeams
+            val sharedWithUsers = visualizationDTO.sharedWithUsers
+
+            val allUserIDsToFetch = listOf(authorID) + sharedWithUsers
+            val sharedTeamIDs = sharedWithTeams.toSet().toList()
+
+            val usersDeferred = async { fetchUsersInChunks(allUserIDsToFetch) }
+            val teamsDeferred = async { fetchTeamsInChunks(sharedTeamIDs) }
+
+            val usersDTOs = usersDeferred.await()
+            val teamsDTOs = teamsDeferred.await()
+
+            val usersDict = usersDTOs.associateBy { it.id }.toMutableMap()
+            val teamsDict = teamsDTOs.associateBy { it.id }
+
+            val teamMemberIDs = teamsDTOs.flatMap { it.membersIDs }.toSet()
+            val missingUserIDs = teamMemberIDs.filter { !usersDict.containsKey(it) }
+
+            if (missingUserIDs.isNotEmpty()) {
+                val missingUsers = fetchUsersInChunks(missingUserIDs)
+                usersDict.putAll(missingUsers.associateBy { it.id })
+            }
+
+            val authorName = usersDict[authorID]?.username ?: "Unknown"
+            val usersSharedWith = sharedWithUsers.mapNotNull { usersDict[it]?.toDomain() }
+            val teamsSharedWith = sharedWithTeams.mapNotNull { teamID ->
+                val teamDTO = teamsDict[teamID] ?: return@mapNotNull null
+                val specificTeamMembers = teamDTO.membersIDs.mapNotNull { usersDict[it]?.toDomain() }
+                teamDTO.toDomain(specificTeamMembers)
+            }
+
+            visualizationDTO.toVisualizationFullScreen(
+                authorName = authorName,
+                teamsSharedWith = teamsSharedWith,
+                usersSharedWith = usersSharedWith
+            )
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to get visualization: ${e.message}")
         }
     }
 }

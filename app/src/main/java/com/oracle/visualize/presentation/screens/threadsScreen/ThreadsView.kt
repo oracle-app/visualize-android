@@ -129,7 +129,7 @@ fun ThreadsPage(
 
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
 
                         androidx.compose.material3.CircularProgressIndicator()
@@ -141,7 +141,7 @@ fun ThreadsPage(
 
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
 
                         Text(
@@ -157,7 +157,7 @@ fun ThreadsPage(
 
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
 
                         Text(
@@ -184,11 +184,25 @@ fun ThreadsPage(
                         items(uiState.comments) { comment ->
                             CommentCard(
                                 comment = comment,
+                                currentUserId = uiState.currentUserId,
                                 isCurrentUser = comment.authorID == uiState.currentUserId,
                                 onReplyClick = {
                                     viewModel.startReply(
                                         commentId = comment.id,
                                         authorName = comment.authorName
+                                    )
+                                },
+                                onDeleteClick = {
+                                    viewModel.deleteComment(
+                                        visualizationId = visualizationId,
+                                        commentId = comment.id
+                                    )
+                                },
+                                onDeleteThreadClick = { threadId ->
+                                    viewModel.deleteThread(
+                                        visualizationId = visualizationId,
+                                        commentId = comment.id,
+                                        threadId = threadId
                                     )
                                 }
                             )
