@@ -55,6 +55,11 @@ class CommentRepositoryImpl @Inject constructor(
             .map { it.toDomain() }
     }
 
+
+    override suspend fun uploadSnip(userID: String, uri: String): String {
+        return commentDatasource.uploadSnip(userID, uri)
+    }
+
     override suspend fun createThread(
         visualizationId: String,
         commentId: String,
@@ -101,5 +106,6 @@ class CommentRepositoryImpl @Inject constructor(
             commentId = commentId,
             threadId = threadId
         )
+
     }
 }

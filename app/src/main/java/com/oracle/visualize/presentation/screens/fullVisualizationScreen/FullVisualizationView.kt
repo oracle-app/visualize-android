@@ -5,7 +5,7 @@ import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CropFree
+import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.ModeComment
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -29,11 +29,14 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 /**
  * Screen that displays a selected visualization in FullScreen mode.
@@ -52,16 +55,31 @@ fun FullVisualizationPage(
     modifier: Modifier = Modifier,
     viewModel: FullVisualizationViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onThreadsClick: () -> Unit = {}
+    onThreadsClick: (String?) -> Unit = {},
+    startInSnippingMode: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var snippingBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var chartViewRef by remember { mutableStateOf<View?>(null) }
     val scope = rememberCoroutineScope()
     val captureController = rememberCaptureController()
+    val context = LocalContext.current
 
     LaunchedEffect(visualizationId) {
         viewModel.loadVisualization(visualizationId)
+    }
+
+    LaunchedEffect(startInSnippingMode, uiState.isLoading) {
+        if (startInSnippingMode && !uiState.isLoading) {
+
+            // Small delay to allow the graph startup animation to play before cropping.
+
+            delay(500)
+
+
+            val bitmap = captureController.captureAsync().await()
+            snippingBitmap = bitmap.asAndroidBitmap()
+        }
     }
 
     snippingBitmap?.let { bitmap ->
@@ -69,12 +87,16 @@ fun FullVisualizationPage(
             bitmap = bitmap,
             onDone = { result ->
                 viewModel.onSnipCompleted(result)
-                snippingBitmap = null
+                val uri = File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                    file.outputStream().use { result.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                }.toURI().toString()
+                onThreadsClick(uri)
             },
             onCancel = { snippingBitmap = null }
         )
         return
     }
+
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -94,13 +116,13 @@ fun FullVisualizationPage(
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.CropFree,
+                        imageVector = Icons.Filled.Crop,
                         contentDescription = stringResource(R.string.snipping_tool)
                     )
                 }
 
                 FloatingActionButton(
-                    onClick = onThreadsClick,
+                    onClick = {onThreadsClick(null)},
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(

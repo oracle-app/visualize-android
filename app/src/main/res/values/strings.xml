@@ -154,6 +154,7 @@
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
+    <string name="error_upload_snip">Error. Image could not be uploaded.</string>
 
 
     //Icon Descriptions
