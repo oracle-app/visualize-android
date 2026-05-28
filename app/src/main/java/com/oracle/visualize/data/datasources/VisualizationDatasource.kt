@@ -22,12 +22,12 @@ class VisualizationDatasource @Inject constructor(
 
     private fun formatVisualization(v: VisualizationDTO): HashMap<String, Any> {
         return hashMapOf(
-            "authorID"        to v.authorID,
-            "title"           to v.title,
-            "configJSON"      to v.configJSON,
+            "authorID" to v.authorID,
+            "title" to v.title,
+            "configJSON" to v.configJSON,
             "sharedWithUsers" to v.sharedWithUsers,
             "sharedWithTeams" to v.sharedWithTeams,
-            "createdAt"       to v.createdAt
+            "createdAt" to v.createdAt
         )
     }
 
@@ -127,11 +127,12 @@ class VisualizationDatasource @Inject constructor(
                     SetOptions.merge()
                 ).await()
         }
-     * Searches a visualization from the database by its ID.
-     *
-     * @param visualizationID The unique ID of the visualization.
-     * @return [VisualizationDTO] object.
-     */
+    }
+        /** Searches a visualization from the database by its ID.
+         *
+         * @param visualizationID The unique ID of the visualization.
+         * @return [VisualizationDTO] object.
+         */
     suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
         val visualization = visualizationsRef.document(visualizationID).get().await()
 
