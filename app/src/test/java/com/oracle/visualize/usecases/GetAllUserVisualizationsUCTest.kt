@@ -10,7 +10,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertSame
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -54,8 +53,8 @@ class GetAllUserVisualizationsUCTest {
         assertTrue(result.isFailure)
         assertTrue(result.exceptionOrNull() is AppError.GeneralValidationError)
         coVerify(exactly = 0) {
-            visualizationRepository.getSharedVisualizations(any())
-            visualizationRepository.getPersonalVisualizations(any())
+            visualizationRepository.getSharedVisualizations(any(), false)
+            visualizationRepository.getPersonalVisualizations(any(), false)
         }
     }
 
@@ -66,11 +65,11 @@ class GetAllUserVisualizationsUCTest {
         // given
         coEvery {
             visualizationRepository.getSharedVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns VisualizationFixtures.fakeSharedVisualizations
         coEvery {
             visualizationRepository.getPersonalVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns VisualizationFixtures.fakePersonalVisualizations
 
         // when
@@ -86,9 +85,9 @@ class GetAllUserVisualizationsUCTest {
         )
         coVerify(exactly = 1) {
             visualizationRepository.getSharedVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
             visualizationRepository.getPersonalVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         }
     }
 
@@ -97,11 +96,11 @@ class GetAllUserVisualizationsUCTest {
         // given
         coEvery {
             visualizationRepository.getSharedVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns emptyList()
         coEvery {
             visualizationRepository.getPersonalVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns emptyList()
 
         // when
@@ -118,11 +117,11 @@ class GetAllUserVisualizationsUCTest {
         // given
         coEvery {
             visualizationRepository.getSharedVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns VisualizationFixtures.fakeSharedVisualizations
         coEvery {
             visualizationRepository.getPersonalVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns emptyList()
 
         // when
@@ -139,11 +138,11 @@ class GetAllUserVisualizationsUCTest {
         // given
         coEvery {
             visualizationRepository.getSharedVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns emptyList()
         coEvery {
             visualizationRepository.getPersonalVisualizations(
-                VisualizationFixtures.VALID_USER_ID)
+                VisualizationFixtures.VALID_USER_ID, false)
         } returns VisualizationFixtures.fakePersonalVisualizations
 
         // when
@@ -162,10 +161,10 @@ class GetAllUserVisualizationsUCTest {
         // given
         val exception = Exception("Firestore unavailable")
         coEvery {
-            visualizationRepository.getSharedVisualizations(any())
+            visualizationRepository.getSharedVisualizations(any(), false)
         } throws exception
         coEvery {
-            visualizationRepository.getPersonalVisualizations(any())
+            visualizationRepository.getPersonalVisualizations(any(), false)
         } returns emptyList()
 
         // when
@@ -181,10 +180,10 @@ class GetAllUserVisualizationsUCTest {
         // given
         val exception = Exception("Firestore unavailable")
         coEvery {
-            visualizationRepository.getSharedVisualizations(any())
+            visualizationRepository.getSharedVisualizations(any(), false)
         } returns emptyList()
         coEvery {
-            visualizationRepository.getPersonalVisualizations(any())
+            visualizationRepository.getPersonalVisualizations(any(), false)
         } throws exception
 
         // when
@@ -200,10 +199,10 @@ class GetAllUserVisualizationsUCTest {
         // given
         val exception = Exception("Firestore unavailable")
         coEvery {
-            visualizationRepository.getSharedVisualizations(any())
+            visualizationRepository.getSharedVisualizations(any(), false)
         } throws exception
         coEvery {
-            visualizationRepository.getPersonalVisualizations(any())
+            visualizationRepository.getPersonalVisualizations(any(), false)
         } throws exception
 
         // when

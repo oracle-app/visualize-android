@@ -14,6 +14,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -28,7 +29,8 @@ fun AuthTextField(
     isPassword: Boolean = false,
     isPasswordVisible: Boolean = false,
     onVisibilityClick: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onPrimaryContainer
 ) {
     TextField(
         value = value,
@@ -40,7 +42,7 @@ fun AuthTextField(
             Text(
                 text = placeholder,
                 fontSize = 17.sp,
-                color = MaterialTheme.colorScheme.outline
+                color = color
             )
         },
         singleLine = true,
@@ -64,7 +66,7 @@ fun AuthTextField(
                             Icons.Filled.Visibility
                         },
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = color
                     )
                 }
             }
@@ -79,8 +81,8 @@ fun AuthTextField(
             focusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
             unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
             errorIndicatorColor = MaterialTheme.colorScheme.error,
-            focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            focusedTextColor = color,
+            unfocusedTextColor = color,
             cursorColor = MaterialTheme.colorScheme.primary
         )
     )

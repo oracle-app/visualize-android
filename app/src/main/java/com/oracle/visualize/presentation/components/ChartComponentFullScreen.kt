@@ -4,10 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +24,7 @@ import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.VerticalBarChart
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
 import io.github.koalaplot.core.legend.FlowLegend
@@ -59,53 +58,47 @@ fun ChartRenderFullScreen(
         List(dSize) { "${stringResource(R.string.chart_legend_cat_label)} ${it + 1}" }
     }
 
-    val colors = generateChartColors(cleanLabels.size)
+    val colors = generateChartColors(cleanLabels.size, ChartPalette.THEME1)
 
     when (chart) {
         is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {
             Column(modifier = modifier.fillMaxSize()) {
-                Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-                    .padding(horizontal = 10.dp).fillMaxSize()) {
+                Column(
+                    modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                        .padding(horizontal = 10.dp).fillMaxSize()
+                ) {
                     ChartRenderGeneral(modifier, chart)
                 }
             }
         }
         else -> {
             ChartLayout(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                    .fillMaxSize(),
                 title = {},
                 legend = {
-                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 2.dp)) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 4.dp)) {
                         FlowLegend(
                             modifier = Modifier
-                                .border(1.dp,
-                                    MaterialTheme.colorScheme.onPrimaryContainer,
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimary,
-                                    RoundedCornerShape(12.dp)
-                                )
+                                .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp))
+                                .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(12.dp))
                                 .padding(16.dp).align(Alignment.Center),
                             itemCount = cleanLabels.size,
-                            symbol = { Symbol(
-                                shape = CircleShape,
-                                fillBrush = SolidColor(colors[it])
-                            ) },
+                            symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
                             label = {
-                                Text(
-                                    cleanLabels[it],
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = Color.DarkGray
-                                ) }
+                                Text(text = cleanLabels[it], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray) }
                         )
                     }
                 },
                 legendLocation = LegendLocation.TOP
             ) {
                 Column(modifier = modifier.fillMaxSize()) {
-                    Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-                        .padding(horizontal = 10.dp).fillMaxSize()) {
+                    Column(
+                        modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                            .padding(horizontal = 10.dp)
+                            .fillMaxSize()
+                    ) {
                         ChartRenderGeneral(modifier, chart, showAxisLabels)
                     }
                 }

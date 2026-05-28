@@ -2,8 +2,10 @@ package com.oracle.visualize.data.mapper
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
+import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
+import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 import org.json.JSONArray
-import kotlinx.serialization.json.JsonObject
 import org.json.JSONException
 
 /**
@@ -247,7 +249,7 @@ object ChartMapper {
             val processedYValues = mutableListOf<Float>()
 
             if (currentValArray != null) {
-                for (i in 0..currentValArray.length()) {
+                for (i in 0 until currentValArray.length()) {
                     processedYValues.add(currentValArray.optString(i).toFloatOrNull() ?: 0f)
                 }
             }
@@ -279,5 +281,115 @@ object ChartMapper {
         }
         return list
     }
+    fun chartToJson(chart: Chart<*>): String{
+        val json = JSONObject()
+        json.put("chartName", chart.chartTitle)
+        json.put("chartType", chart.chartType)
+        json.put("metrics", chart.metrics)
+        json.put("data", chart.data)
+        return json.toString()
+    }
+
+    fun mergePagedData(chartType: String, pages: List<ChartResponseDTO>): JsonObject {
+        val mergedData = JsonObject()
+        if (pages.isEmpty()) return mergedData
+
+        when (chartType) {
+            "Vertical Bar Chart", "Horizontal Bar Chart", "Line Chart", "Line", "Scatter Chart", "Scatter" -> {
+                val field1Array = JsonArray()
+                val field2Array = JsonArray()
+
+                for (page in pages) {
+                    val dataObj = page.data ?: continue
+
+                    val f1 = dataObj.getAsJsonArray("field1")
+                    if (f1 != null) {
+                        for (element in f1) {
+                            field1Array.add(element)
+                        }
+                    }
+                    val f2 = dataObj.getAsJsonArray("field2")
+                    if (f2 != null) {
+                        for (element in f2) {
+                            field2Array.add(element)
+                        }
+                    }
+                }
+                mergedData.add("field1", field1Array)
+                mergedData.add("field2", field2Array)
+            }
+            "Stacked Bar Chart" -> {
+                val field1Array = JsonArray()
+                val seriesMap = mutableMapOf<String, JsonArray>()
+                for (page in pages) {
+                    val dataObj = page.data ?: continue
+                    val f1 = dataObj.getAsJsonArray("field1")
+                    if (f1 != null) {
+                        for (element in f1) {
+                            field1Array.add(element)
+                        }
+                    }
+                    val f2 = dataObj.getAsJsonObject("field2")
+                    if (f2 != null) {
+                        for (key in f2.keySet()) {
+                            val arr = f2.getAsJsonArray(key) ?: continue
+                            val mergedArr = seriesMap.getOrPut(key) { JsonArray() }
+                            for (element in arr) {
+                                mergedArr.add(element)
+                            }
+                        }
+                    }
+                }
+                val field2Obj = JsonObject()
+                for ((key, arr) in seriesMap) {
+                    field2Obj.add(key, arr)
+                }
+                mergedData.add("field1", field1Array)
+                mergedData.add("field2", field2Obj)
+            }
+            "Pie Chart", "Pie", "Donut Chart", "Donut" -> {
+                val field1Array = JsonArray()
+                val field2Array = JsonArray()
+                for (page in pages) {
+                    val dataObj = page.data ?: continue
+                    val f1 = dataObj.getAsJsonArray("field1")
+                    if (f1 != null) {
+                        for (element in f1) {
+                            field1Array.add(element)
+                        }
+                    }
+                    val f2 = dataObj.getAsJsonArray("field2") ?: dataObj.getAsJsonArray("field1")
+                    if (f2 != null) {
+                        for (element in f2) {
+                            field2Array.add(element)
+                        }
+                    }
+                }
+                if (field1Array.size() > 0) {
+                    mergedData.add("field1", field1Array)
+                }
+                mergedData.add("field2", field2Array)
+            }
+            "Area Chart", "Area" -> {
+                val field2Obj = JsonObject()
+                for (page in pages) {
+                    val dataObj = page.data ?: continue
+                    val f2 = dataObj.getAsJsonObject("field2") ?: continue
+                    for (key in f2.keySet()) {
+                        field2Obj.add(key, f2.get(key))
+                    }
+                }
+                mergedData.add("field2", field2Obj)
+            }
+            else -> {
+                pages.firstOrNull()?.data?.let {
+                    return it.deepCopy()
+                }
+            }
+        }
+        return mergedData
+    }
+
+
 }
 

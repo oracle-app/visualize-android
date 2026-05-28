@@ -42,7 +42,8 @@ import androidx.compose.ui.res.stringResource
 fun ShareAndPostScreen(
     modifier: Modifier = Modifier,
     viewModel: ShareAndPostViewModel = hiltViewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToFeed: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -53,6 +54,11 @@ fun ShareAndPostScreen(
             Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            }
+        }
+        is ShareUiState.Success -> {
+            LaunchedEffect(Unit) {
+                onNavigateToFeed()
             }
         }
         is ShareUiState.Content -> {

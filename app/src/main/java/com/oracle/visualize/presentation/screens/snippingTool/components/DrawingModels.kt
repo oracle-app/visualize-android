@@ -10,7 +10,7 @@ enum class DrawingTool {
 }
 
 enum class ShapeType {
-    CIRCLE, RECTANGLE, LINE, TRIANGLE
+    CIRCLE, RECTANGLE, LINE, TRIANGLE, ARROW
 }
 
 sealed class DrawElement {

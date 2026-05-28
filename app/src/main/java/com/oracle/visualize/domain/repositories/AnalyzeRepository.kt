@@ -9,4 +9,6 @@ interface AnalyzeRepository {
     suspend fun overviewResults(taskId: String): AppResult<List<Chart<*>>>
     suspend fun pagedResults(taskId: String, chart: Int, page: Int): AppResult<Chart<*>?>
     suspend fun previewedResults(taskId: String, chart: Int, preview: Boolean): AppResult<Chart<*>?>
+    suspend fun getPagedResultsDto(taskId: String, chart: Int, page: Int): AppResult<com.oracle.visualize.data.datasources.dtos.ChartResponseDTO>
+
 }
