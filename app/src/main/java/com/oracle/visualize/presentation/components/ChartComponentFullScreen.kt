@@ -5,11 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -90,31 +92,6 @@ fun ChartRenderFullScreen(
         }
 
         else -> {
-            val flowLegendContent = @Composable {
-                FlowLegend2(
-                    itemCount = cleanLabels.size,
-                    modifier = when (localConfig.orientation) {
-                        Configuration.ORIENTATION_LANDSCAPE -> {
-                            Modifier.fillMaxWidth().padding(start = 24.dp)
-                        }
-                        else -> Modifier.wrapContentSize().padding(16.dp)
-                    },
-                    symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
-                    label = {
-                        Text(
-                            text = cleanLabels[it],
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.DarkGray,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    symbolGap = KoalaPlotTheme.sizes.gap,
-                    columnGap = KoalaPlotTheme.sizes.gap,
-                    rowGap = KoalaPlotTheme.sizes.gap
-                )
-            }
-
             ChartLayout(
                 modifier = Modifier
                     .background(color = MaterialTheme.colorScheme.onPrimary)
@@ -124,15 +101,32 @@ fun ChartRenderFullScreen(
                     when (localConfig.orientation) {
                         Configuration.ORIENTATION_LANDSCAPE -> {
                             Column(
-                                modifier = Modifier.fillMaxHeight()
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(IntrinsicSize.Max)
                                     .background(color = MaterialTheme.colorScheme.onPrimary)
                                     .verticalScroll(rememberScrollState())
-                                    .widthIn(min = 0.dp, max = 140.dp)
                                     .padding(8.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Top
                             ) {
-                                flowLegendContent()
+                                cleanLabels.forEachIndexed { index, label ->
+                                    Row(
+                                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 24.dp, end = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ){
+                                        Symbol(shape = CircleShape, fillBrush = SolidColor(colors[index]))
+                                        Text(
+                                            modifier = Modifier.padding(start = 4.dp),
+                                            text = cleanLabels[index],
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = Color.DarkGray,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
                             }
                         }
                         else -> {
@@ -142,7 +136,23 @@ fun ChartRenderFullScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                flowLegendContent()
+                                FlowLegend2(
+                                    itemCount = cleanLabels.size,
+                                    modifier = Modifier.wrapContentSize().padding(16.dp),
+                                    symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
+                                    label = {
+                                        Text(
+                                            text = cleanLabels[it],
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = Color.DarkGray,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    },
+                                    symbolGap = KoalaPlotTheme.sizes.gap,
+                                    columnGap = KoalaPlotTheme.sizes.gap,
+                                    rowGap = KoalaPlotTheme.sizes.gap
+                                )
                             }
                         }
                     }
