@@ -187,6 +187,8 @@
 
     //Threads Page
     <string name="reply">Reply</string>
+    <string name="write_reply">Write your reply</string>
+    <string name="start_thread">Start a new thread</string>
     <string name="add_note">Add note</string>
     <string name="send">Send message</string>
     <string name="no_threads">There\'s no more threads.</string>
