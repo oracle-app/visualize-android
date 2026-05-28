@@ -15,12 +15,21 @@ import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVis
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.resetPasswordScreen.ResetPasswordPage
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
+
+/**
+ * The main navigation host for the application.
+ * Defines all the routes and their corresponding composable screens.
+ *
+ * @param navController The [NavHostController] that manages the navigation within this host.
+ * @param modifier The modifier to be applied to the NavHost.
+ */
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -134,7 +143,10 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                         popUpTo(NavRoutes.Login) { inclusive = true }
                     }
                 },
-                onSignUpClick  = { navController.navigate(NavRoutes.Signup) }
+                onSignUpClick  = { navController.navigate(NavRoutes.Signup) },
+                onForgotPasswordClick = {
+                    navController.navigate(NavRoutes.ResetPassword)
+                }
             )
         }
 
@@ -153,5 +165,15 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 }
             )
         }
+
+        composable<NavRoutes.ResetPassword> {
+            ResetPasswordPage(
+                modifier = Modifier.fillMaxSize(),
+                onBackToLoginClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
     }
 }

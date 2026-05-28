@@ -51,4 +51,8 @@ class AuthFirebasesource @Inject constructor(private val auth: FirebaseAuth) {
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }
+
+    suspend fun resetPassword(email: String) {
+        auth.sendPasswordResetEmail(email).await()
+    }
 }
