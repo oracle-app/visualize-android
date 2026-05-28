@@ -76,6 +76,7 @@ class SnippingToolViewModel @Inject constructor(
                 )
             }
         }
+        setIsTransformable()
     }
 
     fun toggleCrop() {
@@ -83,6 +84,7 @@ class SnippingToolViewModel @Inject constructor(
             isCroppingMode = !it.isCroppingMode,
             isDrawingMode = false
         )}
+        setIsTransformable()
     }
 
     fun toggleConfirmDialog() {
