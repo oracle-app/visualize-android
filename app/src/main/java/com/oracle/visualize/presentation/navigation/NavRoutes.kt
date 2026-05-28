@@ -2,10 +2,6 @@ package com.oracle.visualize.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-/**
- * Defines the navigation graph destinations using type-safe objects.
- * This replaces string-based route matching with class-based matching.
- */
 @Serializable
 sealed interface NavRoutes {
 
@@ -37,4 +33,11 @@ sealed interface NavRoutes {
     data class ChartSelection(val taskId: String) : NavRoutes
     @Serializable
     object ShareAndPost : NavRoutes
+
+    /**
+     * Route for creating or editing a team.
+     * @property teamId Null when creating a new team; non-null when editing an existing one.
+     */
+    @Serializable
+    data class CreateEditTeam(val teamId: String? = null) : NavRoutes
 }
