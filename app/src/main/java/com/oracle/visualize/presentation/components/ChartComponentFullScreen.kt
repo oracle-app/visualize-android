@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.VerticalBarChart
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
 import io.github.koalaplot.core.legend.FlowLegend2
@@ -69,14 +69,16 @@ fun ChartRenderFullScreen(
     }
 
     val colors = remember(cleanLabels.size) {
-        generateChartColors(cleanLabels.size)
+        generateChartColors(cleanLabels.size, ChartPalette.THEME1)
     }
 
     when (chart) {
         is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {
             Column(modifier = modifier.fillMaxSize()) {
-                Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-                    .padding(horizontal = 10.dp).fillMaxSize()) {
+                Column(
+                    modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                        .padding(horizontal = 10.dp).fillMaxSize()
+                ) {
                     ChartRenderGeneral(modifier, chart)
                 }
             }
@@ -102,7 +104,9 @@ fun ChartRenderFullScreen(
             }
 
             ChartLayout(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                    .fillMaxSize(),
                 title = {},
                 legend = {
                     when (localConfig.orientation) {

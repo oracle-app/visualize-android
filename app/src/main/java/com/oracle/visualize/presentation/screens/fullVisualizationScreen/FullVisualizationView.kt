@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.screens.fullVisualizationScreen
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -109,8 +110,13 @@ fun FullVisualizationPage(
                 FloatingActionButton(
                     onClick = {
                         scope.launch{
-                            val bitmap = captureController.captureAsync().await()
-                            snippingBitmap = bitmap.asAndroidBitmap()
+                            try {
+                                val bitmap = captureController.captureAsync().await()
+                                snippingBitmap = bitmap.asAndroidBitmap()
+                                Log.d("Snipping Tool", "Bitmap")
+                            } catch (e: Exception) {
+                                Log.e("Snipping Tool", "Error capturando: ${e.message}")
+                            }
                         }
                     },
                     containerColor = MaterialTheme.colorScheme.secondary
@@ -162,7 +168,7 @@ fun FullVisualizationPage(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         FullVisualizationTopBar (
-                            teamName = visualization.author,
+                            modifier = Modifier.statusBarsPadding(),
                             visualizationTitle = visualization.title,
                             members = visualization.allUsersSharedWith,
                             onBackClick = onBackClick
@@ -172,7 +178,8 @@ fun FullVisualizationPage(
                                 .fillMaxWidth()
                                 .weight(1f)
                                 .background(MaterialTheme.colorScheme.background)
-                                .clipToBounds(),
+                                .clipToBounds()
+                                .capturable(captureController),
                             contentAlignment = Alignment.Center
                         ) {
                             AndroidView(
@@ -182,11 +189,10 @@ fun FullVisualizationPage(
                                 modifier = Modifier.matchParentSize()
                             )
                             ZoomableChart(
+                                chart = chart,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    //.heightIn(min = 260.dp, max = 420.dp)
                                     .fillMaxHeight()
-                                    .capturable(captureController)
                             ) {
                                 ChartRenderFullScreen(chart = chart, showAxisLabels = true)
                             }
