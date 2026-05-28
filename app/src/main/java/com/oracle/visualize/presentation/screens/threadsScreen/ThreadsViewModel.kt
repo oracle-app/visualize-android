@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.threadsScreen
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
@@ -13,6 +14,7 @@ import com.oracle.visualize.domain.usecases.DeleteThreadUseCase
 import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
 import com.oracle.visualize.domain.usecases.GetCommentsUseCase
 import com.oracle.visualize.domain.usecases.GetThreadsUseCase
+import com.oracle.visualize.domain.usecases.UploadSnipUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +43,7 @@ class ThreadsViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCase,
     private val deleteThreadUseCase: DeleteThreadUseCase,
     private val getAllUserVisualizationsUseCase: GetAllUserVisualizationsUseCase,
+    private val uploadSnipUseCase: UploadSnipUseCase,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
@@ -55,15 +58,9 @@ class ThreadsViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val currentUser = userRepository
-                    .getUserByUserID(currentUserID)
-
-                currentUserName =
-                    currentUser?.username ?: currentUserID
-
-                currentUserImageUrl =
-                    currentUser?.profilePictureURL
-
+                val currentUser = userRepository.getUserByUserID(currentUserID)
+                currentUserName = currentUser?.username ?: currentUserID
+                currentUserImageUrl = currentUser?.profilePictureURL
             } catch (e: Exception) {
                 currentUserName = currentUserID
                 currentUserImageUrl = null
@@ -76,7 +73,6 @@ class ThreadsViewModel @Inject constructor(
     ): Pair<String, String?> {
         return try {
             val user = userRepository.getUserByUserID(userID)
-
             Pair(
                 user?.username ?: userID,
                 user?.profilePictureURL
@@ -168,16 +164,30 @@ class ThreadsViewModel @Inject constructor(
         }
     }
 
+    suspend fun uploadSnip(uri: String): String? {
+        return uploadSnipUseCase(
+            userID = currentUserID,
+            uri = uri
+        ).fold(
+            onSuccess = { url -> url },
+            onFailure = {
+                _uiState.update { it.copy(errorMessage = R.string.error_upload_snip) }
+                null
+            }
+        )
+    }
+
     fun createComment(
         visualizationId: String,
-        content: String
+        content: String,
+        imageURL: String? = null
     ) {
         viewModelScope.launch {
             createCommentUseCase(
                 visualizationId = visualizationId,
                 authorID = currentUserID,
                 content = content,
-                imageURL = null
+                imageURL = imageURL
             ).fold(
                 onSuccess = { newComment ->
                     val currentUserData = getUserDisplayData(currentUserID)
@@ -199,8 +209,7 @@ class ThreadsViewModel @Inject constructor(
                         )
                     }
                 },
-                onFailure = { error ->
-
+                onFailure = {
                     _uiState.update {
                         it.copy(
                             errorMessage = R.string.error_create_comment
@@ -208,6 +217,17 @@ class ThreadsViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    fun createCommentWithSnip(
+        visualizationId: String,
+        content: String,
+        uri: String
+    ) {
+        viewModelScope.launch {
+            val imageURL = uploadSnip(uri)
+            createComment(visualizationId, content, imageURL)
         }
     }
 
@@ -240,9 +260,7 @@ class ThreadsViewModel @Inject constructor(
                             replyingToAuthorName = null,
                             comments = state.comments.map { comment ->
                                 if (comment.id == commentId) {
-                                    comment.copy(
-                                        threads = comment.threads + newThreadUi
-                                    )
+                                    comment.copy(threads = comment.threads + newThreadUi)
                                 } else {
                                     comment
                                 }
@@ -250,16 +268,15 @@ class ThreadsViewModel @Inject constructor(
                         )
                     }
                 },
-                onFailure = { error ->
+                onFailure = {
                     _uiState.update {
-                        it.copy(
-                            errorMessage = R.string.error_create_comment
-                        )
+                        it.copy(errorMessage = R.string.error_create_comment)
                     }
                 }
             )
         }
     }
+
     fun startReply(
         commentId: String,
         authorName: String
@@ -271,6 +288,7 @@ class ThreadsViewModel @Inject constructor(
             )
         }
     }
+
     fun cancelReply() {
         _uiState.update {
             it.copy(
@@ -298,9 +316,7 @@ class ThreadsViewModel @Inject constructor(
                 },
                 onFailure = {
                     _uiState.update { state ->
-                        state.copy(
-                            errorMessage = R.string.error_unknown_retry
-                        )
+                        state.copy(errorMessage = R.string.error_unknown_retry)
                     }
                 }
             )
@@ -335,9 +351,7 @@ class ThreadsViewModel @Inject constructor(
                 },
                 onFailure = {
                     _uiState.update { state ->
-                        state.copy(
-                            errorMessage = R.string.error_unknown_retry
-                        )
+                        state.copy(errorMessage = R.string.error_unknown_retry)
                     }
                 }
             )

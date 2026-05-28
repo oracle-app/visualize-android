@@ -11,6 +11,7 @@ import com.oracle.visualize.domain.models.ShareUser
 sealed interface ShareUiState {
 
     object Loading : ShareUiState
+    object Success : ShareUiState
 
     data class Content(
         val emailQuery: String = "",

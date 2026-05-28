@@ -1,11 +1,14 @@
 package com.oracle.visualize.data.datasources
 
+import android.net.Uri
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.oracle.visualize.data.datasources.dtos.CommentDTO
 import com.oracle.visualize.data.datasources.dtos.ThreadDTO
 import com.oracle.visualize.domain.exceptions.AppError
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -16,7 +19,8 @@ import javax.inject.Inject
  */
 
 class CommentDatasource @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val storage: FirebaseStorage
 ) {
 
     private fun commentsRef(visualizationId: String) =
@@ -79,6 +83,12 @@ class CommentDatasource @Inject constructor(
                 ?.copy(id = doc.id)
                 ?: throw AppError.ParsingError("Failed to parse threads")
         }
+    }
+
+    suspend fun uploadSnip(userID: String, uri: String): String {
+        val storageRef = storage.reference.child("snips/$userID/${UUID.randomUUID()}")
+        storageRef.putFile(Uri.parse(uri)).await()
+        return storageRef.downloadUrl.await().toString()
     }
 
     suspend fun createThread(

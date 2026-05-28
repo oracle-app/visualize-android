@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -22,19 +23,23 @@ import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAva
 
 @Composable
 fun FullVisualizationTopBar(
-    teamName: String,
+    modifier: Modifier = Modifier,
     visualizationTitle: String,
     members: List<User>,
     onBackClick: () -> Unit
 ) {
+    val formattedTitle = if (visualizationTitle.length > 35) {
+        visualizationTitle.subSequence(0, 34).toString() + "..."
+    } else visualizationTitle
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(bottom = 12.dp)
+            .padding(vertical = 12.dp)
     ) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 0.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -47,23 +52,21 @@ fun FullVisualizationTopBar(
                 )
             }
 
-            Text(
-                text = teamName,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.weight(1f)
-            )
+            Column {
+                Text(
+                    text = formattedTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
 
-            MemberAvatarStackFeed(
-                members = members
-            )
+                Text(
+                    text = stringResource(R.string.fullscreen_sharing_label_1)
+                        + " ${members.size} "
+                        + stringResource(R.string.fullscreen_sharing_label_2),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
-
-        Text(
-            text = visualizationTitle,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
     }
 }

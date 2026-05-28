@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.loginScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,7 +30,8 @@ fun LoginPage(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -105,6 +108,19 @@ fun LoginPage(
                 isPasswordVisible = uiState.isPasswordVisible,
                 onVisibilityClick = viewModel::onPasswordVisibilityChange,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(R.string.forgot_your_password),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { onForgotPasswordClick() }
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
             )
 
             uiState.error?.let {

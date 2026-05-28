@@ -9,6 +9,7 @@ import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
 import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +34,8 @@ class CreateChartViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CreateChartUiState>(CreateChartUiState.Idle)
     val uiState: StateFlow<CreateChartUiState> = _uiState.asStateFlow()
 
+    private var uploadJob: Job? = null
+
     fun onFileSelected(dataset: SelectedDataset, file: File) {
         val fileSizeFormatted = formatFileSize(dataset.sizeBytes)
 
@@ -49,7 +52,8 @@ class CreateChartViewModel @Inject constructor(
     }
 
     private fun startUpload(fileName: String, fileSize: String, file: File) {
-        viewModelScope.launch {
+        uploadJob?.cancel()
+        uploadJob = viewModelScope.launch {
             _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, 0f)
             
             val result = repository.analyzeData(file)
@@ -78,6 +82,8 @@ class CreateChartViewModel @Inject constructor(
     }
 
     fun resetState() {
+        uploadJob?.cancel()
+        uploadJob = null
         _uiState.value = CreateChartUiState.Idle
     }
 
