@@ -86,7 +86,13 @@ fun ChartRenderFullScreen(
             val flowLegendContent = @Composable {
                 FlowLegend2(
                     itemCount = cleanLabels.size,
-                    modifier = Modifier.wrapContentSize().padding(14.dp),
+                    modifier = Modifier.wrapContentSize().padding(
+                        if (localConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            8.dp
+                        } else {
+                            16.dp
+                        }
+                    ),
                     symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
                     label = { Text(cleanLabels[it], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray) },
                     symbolGap = KoalaPlotTheme.sizes.gap,
