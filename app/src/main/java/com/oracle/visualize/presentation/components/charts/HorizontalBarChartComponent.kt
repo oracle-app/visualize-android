@@ -20,7 +20,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
@@ -70,7 +72,7 @@ fun RenderHorizontalBarChart(
         generateChartColors(categories.size, ChartPalette.THEME1)
     }
 
-    Box {
+    Box(modifier = Modifier.graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true)) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

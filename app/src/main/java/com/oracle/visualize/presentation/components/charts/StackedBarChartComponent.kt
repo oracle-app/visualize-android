@@ -21,7 +21,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
@@ -82,7 +84,7 @@ fun RenderStackedBarChart(
 
     val maxY = remember(chart.data.values) { chart.data.values.maxOfOrNull { it.sum() } ?: 0f }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true)) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = remember(categories) { CategoryAxisModel(categories) },

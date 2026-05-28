@@ -14,6 +14,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import com.oracle.visualize.domain.models.DonutChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -42,7 +44,10 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, enableToo
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
     val colors = generateChartColors(categories.size, ChartPalette.THEME1)
 
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier.fillMaxSize().graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true),
+        contentAlignment = Alignment.Center
+    ) {
         PieChart(
             values = values,
             label = { index ->
