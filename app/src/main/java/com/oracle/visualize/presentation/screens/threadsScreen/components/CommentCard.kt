@@ -178,7 +178,7 @@ fun CommentCard(
                 model = comment.imageURL,
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(start = 14.dp, bottom = 12.dp)
+                    .padding(start = 14.dp, bottom = 20.dp)
                     .width(155.dp)
                     .height(200.dp)
                     .clip(RoundedCornerShape(6.dp)),
@@ -189,15 +189,17 @@ fun CommentCard(
             modifier = Modifier
                 .padding(start = 24.dp, end = 14.dp, bottom = 14.dp)
                 .drawBehind {
-                    val avatarColumnWidth = 38.dp.toPx()
-                    val lineX = avatarColumnWidth / 2f
+                    if (comment.threads.size > 1) {
+                        val avatarColumnWidth = 38.dp.toPx()
+                        val lineX = avatarColumnWidth / 2f
 
-                    drawLine(
-                        color = timelineColor,
-                        start = Offset(lineX, 0f),
-                        end = Offset(lineX, size.height),
-                        strokeWidth = 3.dp.toPx()
-                    )
+                        drawLine(
+                            color = timelineColor,
+                            start = Offset(lineX, 0f),
+                            end = Offset(lineX, size.height),
+                            strokeWidth = 3.dp.toPx()
+                        )
+                    }
                 }
         ) {
 

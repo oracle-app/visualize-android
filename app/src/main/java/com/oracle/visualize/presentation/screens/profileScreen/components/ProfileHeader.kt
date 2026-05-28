@@ -1,8 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
@@ -21,19 +18,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.components.Avatar
 
 @Composable
 fun ProfileHeader(
     modifier: Modifier = Modifier,
     userName: String,
     email: String,
-    profileImage: Painter,
+    profileImageUrl: String,
     onEditClick: () -> Unit
 ) {
     Column(
@@ -43,13 +38,10 @@ fun ProfileHeader(
         Box(
             contentAlignment = Alignment.BottomEnd
         ) {
-            Image(
-                painter = profileImage,
-                contentDescription = stringResource(R.string.profile_img_description),
-                modifier = Modifier
-                    .size(180.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
+            Avatar(
+                modifier = Modifier.size(180.dp),
+                userName = userName,
+                profileImageUrl = profileImageUrl
             )
 
             OutlinedIconButton(

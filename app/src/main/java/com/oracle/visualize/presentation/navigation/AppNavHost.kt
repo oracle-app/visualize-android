@@ -20,7 +20,6 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectio
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
-import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
 
@@ -49,19 +48,21 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.Create> {
             CreatePage(
-                modifier              = Modifier.fillMaxSize(),
-                onNavigateToSelection = {
-                    navController.navigate(NavRoutes.ChartSelection)
+                modifier = Modifier.fillMaxSize(),
+                onNavigateToSelection = { taskId ->
+                    navController.navigate(NavRoutes.ChartSelection(taskId))
                 }
             )
         }
 
         composable<NavRoutes.ChartSelection> {
             ChartSelectionPage(
-                modifier          = Modifier.fillMaxSize(),
-                onNavigateBack    = { navController.popBackStack() },
-                onNavigateToShare = { navController.navigate(NavRoutes.ShareAndPost) },
-                onNavigateToFeed  = {
+                modifier = Modifier.fillMaxSize(),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToShare = { taskId, indices, titles ->
+                    navController.navigate(NavRoutes.ShareAndPost(taskId, indices, titles))
+                },
+                onNavigateToFeed = {
                     navController.navigate(NavRoutes.Feed) {
                         popUpTo(NavRoutes.ChartSelection) { inclusive = true }
                     }
@@ -71,8 +72,13 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.ShareAndPost> {
             ShareAndPostScreen(
-                modifier       = Modifier.fillMaxSize(),
-                onNavigateBack = { navController.popBackStack() }
+                modifier = Modifier.fillMaxSize(),
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToFeed = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.Feed) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -80,8 +86,18 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
 
+        composable<NavRoutes.Teams> {
+            // TODO: Implement TeamsPage
+        }
+
         composable<NavRoutes.Profile> {
-            ProfilePage(modifier = Modifier.fillMaxSize())
+            ProfilePage(
+                modifier = Modifier.fillMaxSize(),
+                navController = navController,
+                onLogout = {
+                    navController.navigate(NavRoutes.Splash)
+                }
+            )
         }
 
         composable<NavRoutes.FullScreen> { backStackEntry ->
@@ -120,7 +136,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                         )
                     )
                 },
-                image = route.snipUri?.let { it }
+                image = route.snipUri
             )
         }
 

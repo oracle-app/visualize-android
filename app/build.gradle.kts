@@ -77,6 +77,7 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -89,6 +90,7 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -98,7 +100,6 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
@@ -117,5 +118,6 @@ dependencies {
     implementation(libs.retrofit2)
     implementation(libs.retrofit2.converter)
     implementation(libs.capturable)
-    implementation(libs.firebase.storage)
+    implementation(libs.ucrop)
+    implementation(libs.appcompat)
 }

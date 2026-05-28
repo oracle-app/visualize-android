@@ -13,4 +13,5 @@ data class Visualization (
     val sharedWithUsers: List<String>,
     val sharedWithTeams: List<String>,
     val createdAt: Date,
+    val previewJSON: String = "{}"
 )
