@@ -79,7 +79,7 @@ class FeedViewModel @Inject constructor(
             observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
                 result.fold(
                     onSuccess = { items ->
-                        allFeedItems = items
+                        allFeedItems = items.distinctBy { it.card.id }
                         applyLocalFilterAndSearch()
                     },
                     onFailure = { error ->
@@ -100,12 +100,10 @@ class FeedViewModel @Inject constructor(
     fun onFilterChange(filter: VisualizationFilter) {
         val currentState = _uiState.value
         if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
-
         _uiState.value = when (currentState) {
             is FeedUiState.Success -> currentState.copy(selectedFilter = filter)
             else -> currentState
         }
-
         if (allFeedItems.isNotEmpty()) applyLocalFilterAndSearch() else loadData()
     }
 
@@ -119,13 +117,14 @@ class FeedViewModel @Inject constructor(
 
     private fun applyLocalFilterAndSearch() {
         val currentState = _uiState.value
-        val filter = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
-        val search = if (currentState is FeedUiState.Success) currentState.searchText else ""
+        val filter      = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
+        val search      = if (currentState is FeedUiState.Success) currentState.searchText else ""
+        val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
 
         var filteredItems = when (filter) {
-            VisualizationFilter.ALL -> allFeedItems
+            VisualizationFilter.ALL      -> allFeedItems
             VisualizationFilter.PERSONAL -> allFeedItems.filter { it.card.authorID == currentUserID }
-            VisualizationFilter.SHARED -> allFeedItems.filter { it.card.authorID != currentUserID }
+            VisualizationFilter.SHARED   -> allFeedItems.filter { it.card.authorID != currentUserID }
         }
 
         if (search.isNotBlank()) {
@@ -136,10 +135,12 @@ class FeedViewModel @Inject constructor(
 
         _uiState.update { state ->
             FeedUiState.Success(
-                items = filteredItems,
-                searchText = search,
+                items          = filteredItems,
+                currentUserID  = currentUserID,
+                searchText     = search,
                 selectedFilter = filter,
-                isRefreshing = false
+                isRefreshing   = false,
+                isSearching    = isSearching
             )
         }
     }

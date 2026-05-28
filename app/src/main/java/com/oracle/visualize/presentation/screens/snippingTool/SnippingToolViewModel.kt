@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.snippingTool
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
@@ -8,6 +9,7 @@ import com.oracle.visualize.presentation.screens.snippingTool.components.DrawEle
 import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
 import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,8 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class SnippingToolViewModel @Inject constructor() : ViewModel() {
+class SnippingToolViewModel @Inject constructor(
+    @ApplicationContext private val context: Context ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SnippingToolUiState())
     val uiState: StateFlow<SnippingToolUiState> = _uiState.asStateFlow()
@@ -73,6 +76,7 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
                 )
             }
         }
+        setIsTransformable()
     }
 
     fun toggleCrop() {
@@ -80,6 +84,7 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
             isCroppingMode = !it.isCroppingMode,
             isDrawingMode = false
         )}
+        setIsTransformable()
     }
 
     fun toggleConfirmDialog() {
@@ -97,7 +102,15 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
     }
 
     fun setCropRect(rect: IntRect) {
-        _uiState.update { it.copy(cropRect = rect) }
+        val screenWidth = context.resources.displayMetrics.widthPixels
+        val screenHeight = context.resources.displayMetrics.heightPixels
+
+        _uiState.update { it.copy(cropRect = IntRect(
+            left = rect.left.coerceIn(0, screenWidth),
+            top = rect.top.coerceIn(0, screenHeight),
+            right = rect.right.coerceIn(0, screenWidth),
+            bottom = rect.bottom.coerceIn(0, screenHeight)
+        ))}
     }
 
     fun confirmCrop(bitmap: Bitmap): Bitmap {
@@ -110,6 +123,18 @@ class SnippingToolViewModel @Inject constructor() : ViewModel() {
 
     fun setIsTransformable() {
         _uiState.update { it.copy(isTransformable = !_uiState.value.isDrawingMode && !_uiState.value.isCroppingMode) }
+    }
+
+    fun reset() {
+        _uiState.update { current ->
+            current.copy(
+                elements = emptyList(),
+                redoStack = emptyList(),
+                isDrawingMode = false,
+                isCroppingMode = false,
+                selectedTool = null
+            )
+        }
     }
 
 }
