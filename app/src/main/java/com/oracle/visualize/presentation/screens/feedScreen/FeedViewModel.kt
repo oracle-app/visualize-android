@@ -53,6 +53,7 @@ class FeedViewModel @Inject constructor(
     fun loadChartForCard(card: VisualizationCard) {
         viewModelScope.launch {
             val chart = parseSingleChartUseCase(card)
+
             allFeedItems = allFeedItems.map { item ->
                 if (item.card.id == card.id) {
                     item.copy(chart = chart, isChartLoading = false)

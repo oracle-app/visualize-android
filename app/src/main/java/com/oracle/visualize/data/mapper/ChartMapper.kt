@@ -245,7 +245,7 @@ object ChartMapper {
             val processedYValues = mutableListOf<Float>()
 
             if (currentValArray != null) {
-                for (i in 0..currentValArray.length()) {
+                for (i in 0 until currentValArray.length()) {
                     processedYValues.add(currentValArray.optString(i).toFloatOrNull() ?: 0f)
                 }
             }
