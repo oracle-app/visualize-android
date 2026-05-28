@@ -15,12 +15,6 @@ sealed interface FeedUiState {
         val searchText: String = "",
         val selectedFilter: VisualizationFilter = VisualizationFilter.ALL,
         val isRefreshing: Boolean = false,
-        val isSearching: Boolean = false,
-        // Menu & dialog state — null means nothing is open
-        val menuOpenForId: String? = null,
-        val deleteDialogForId: String? = null,
-        val hideDialogForId: String? = null,
-        val isDeletableMap: Map<String, Boolean> = emptyMap(),
-        val pendingShareId: String? = null
+        val isSearching: Boolean = false
     ) : FeedUiState
 }

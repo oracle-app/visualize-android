@@ -11,6 +11,7 @@ import com.oracle.visualize.data.mapper.toDomain
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 /**
@@ -79,6 +80,17 @@ class AuthRepositoryImpl @Inject constructor(
         val currentUser = authDatasource.getCurrentUser()
 
         return currentUser?.uid ?: throw AppError.AuthFailed("No user logged in")
+    }
+
+    override suspend fun resetPassword(email: String): Result<Unit> {
+        return try {
+            authDatasource.resetPassword(email)
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.AuthFailed(e.message ?: "Reset password error")
+        }
     }
 
 }

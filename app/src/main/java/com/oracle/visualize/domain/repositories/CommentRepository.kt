@@ -2,6 +2,8 @@ package com.oracle.visualize.domain.repositories
 
 import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.models.Thread
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 interface CommentRepository {
     suspend fun createComment(
@@ -19,6 +21,12 @@ interface CommentRepository {
         visualizationId: String,
         commentId: String
     ): List<Thread>
+
+
+    suspend fun uploadSnip(
+        userID: String,
+        uri: String
+    ): String
 
     suspend fun createThread(
         visualizationId: String,
@@ -39,5 +47,6 @@ interface CommentRepository {
         commentId: String,
         threadId: String
     )
+
 }
 

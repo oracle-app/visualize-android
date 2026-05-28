@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -63,9 +65,15 @@ fun ThicknessPicker(
                         onValueChange = onThicknessChange,
                         valueRange = 2f..50f,
                         modifier = Modifier
-                            .width(100.dp)
-                            .graphicsLayer {
-                                rotationZ = -90f
+                            .width(200.dp)
+                            .graphicsLayer { rotationZ = -90f }
+                            .layout { measurable, constraints ->
+                                val placeable = measurable.measure(
+                                    Constraints.fixed(constraints.maxHeight, constraints.maxWidth)
+                                )
+                                layout(placeable.height, placeable.width) {
+                                    placeable.place(-placeable.width / 2 + placeable.height / 2, -placeable.height / 2 + placeable.width / 2)
+                                }
                             }
                     )
                 }

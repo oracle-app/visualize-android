@@ -41,7 +41,8 @@ fun BottomNavBar(
                         )
                     }
                 },
-                label = { Text(text = stringResource(item.label)) },
+                label = null,
+                alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
                     indicatorColor = MaterialTheme.colorScheme.primary,

@@ -8,6 +8,8 @@
     <string name="share">Share</string>
     <string name="back">Back</string>
     <string name="log_out">Log Out</string>
+    <string name="edit">Edit</string>
+    <string name="save_changes">Save Changes</string>
 
 
     // Navigation Bar
@@ -53,9 +55,14 @@
 ß
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
+    <string name="line_scatter_x_metric">x</string>
+    <string name="line_scatter_y_metric">y</string>
+    <string name="stacked_bar_series">Series</string>
 
-    // Chart legends full screen
+    // Chart full screen
     <string name="chart_legend_cat_label">Category</string>
+    <string name="fullscreen_sharing_label_1">Sharing with</string>
+    <string name="fullscreen_sharing_label_2">members</string>
 
     // Create View
 
@@ -154,6 +161,7 @@
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
+    <string name="error_upload_snip">Error. Image could not be uploaded.</string>
 
 
     //Icon Descriptions
@@ -169,6 +177,13 @@
     <string name="developer">Developed by ----</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="licenses">Licenses and open source libraries</string>
+    <string name="preview">Preview</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_photo">Choose photo</string>
+    <string name="delete_photo">Delete photo</string>
+    <string name="delete_photo_message">Delete profile picture?</string>
+    <string name="log_out_title">Log Out?</string>
+    <string name="updating_pfp">Updating profile picture…</string>
 
     // Descriptions
 
@@ -181,6 +196,8 @@
 
     //Threads Page
     <string name="reply">Reply</string>
+    <string name="write_reply">Write your reply</string>
+    <string name="start_thread">Start a new thread</string>
     <string name="add_note">Add note</string>
     <string name="send">Send message</string>
     <string name="no_threads">There\'s no more threads.</string>
@@ -228,6 +245,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="no_account">Don\'t have an account?</string>
+    <string name="forgot_your_password">Forgot your password?</string>
 
     //Signup Page
     <string name="already_have_account">Already have an account</string>
@@ -236,5 +254,53 @@
     <string name="create_account">Create your account</string>
     <string name="passremember">Use 8 or more letters, numbers and symbols</string>
 
+    //Reset Password Page
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_description">Enter your email address and we will send you instructions to reset your password.</string>
+    <string name="send_link">Send</string>
+    <string name="back_to_login">Back to log in</string>
+    <string name="check_your_email">Check your email</string>
+    <string name="check_your_email_description">Please click on the link sent to your email address to reset your password.</string>
+    <string name="did_not_get_email">Didn’t get the email?</string>
+    <string name="resend_email">Resend email</string>
+
+
+    // Teams Screen
+
+    <string name="teams_title">Teams</string>
+    <string name="teams_retry">Retry</string>
+    <string name="teams_my_teams_section">My Teams</string>
+    <string name="teams_im_in_section">Teams I\'m In</string>
+    <string name="teams_create_fab_description">Create team</string>
+    <string name="teams_edit_description">Edit team</string>
+    <string name="teams_delete_description">Delete team</string>
+    <string name="teams_member_count">%d members</string>
+    <string name="teams_owner_label">Owner</string>
+
+    // Create / Edit Team Screen
+
+    <string name="create_team_title">Create New Team</string>
+    <string name="edit_team_title">Edit Your Team</string>
+    <string name="create_team_name_placeholder">Team\'s Name</string>
+    <string name="create_team_add_people_section">Add people to your team</string>
+    <string name="create_team_search_placeholder">Search by email</string>
+    <string name="edit_team_search_placeholder">Add more people</string>
+    <string name="create_team_suggestions_section">People in the same teams as you</string>
+    <string name="create_team_member_list_section">Member List</string>
+    <string name="create_team_save_description">Save team</string>
+    <string name="create_team_remove_member_description">Remove member</string>
+    <string name="create_team_empty_hint">Search for teammates and add them to the list.</string>
+
+    <!-- Unsaved Changes Dialog (Create/Edit Team) -->
+    <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
+    <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="dialog_unsaved_changes_cancel">Cancel</string>
+    <string name="dialog_unsaved_changes_confirm">Leave</string>
+
+    <!-- Delete Team Dialog (Teams Screen) -->
+    <string name="dialog_delete_team_title">Delete Team?</string>
+    <string name="dialog_delete_team_message">This team and its members will be removed. This action cannot be undone.</string>
+    <string name="dialog_delete_team_cancel">Cancel</string>
+    <string name="dialog_delete_team_confirm">Delete</string>
 
 </resources>

@@ -45,7 +45,7 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = DarkMode_NotAsDarkGray,
     error = ErrorRed,
     onError = White,
-    scrim = ScrimColor,
+    scrim = ScrimColor
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -69,7 +69,7 @@ private val LightColorScheme = lightColorScheme(
     tertiaryFixed = GreyContent,
 
     background = VeryLightGray,
-    onBackground = NotAsLightGray,
+    onBackground = DarkGray,
     surface = White,
     onSurface = Color.Black,
 
