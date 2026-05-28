@@ -169,9 +169,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         composable<NavRoutes.ResetPassword> {
             ResetPasswordPage(
                 modifier = Modifier.fillMaxSize(),
-                onResetSuccess = {
-                    navController.popBackStack()
-                },
                 onBackToLoginClick = {
                     navController.popBackStack()
                 }

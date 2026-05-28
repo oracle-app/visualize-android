@@ -30,16 +30,9 @@ import com.oracle.visualize.presentation.components.AuthTextField
 fun ResetPasswordPage(
     modifier: Modifier = Modifier,
     viewModel: ResetPasswordViewModel = hiltViewModel(),
-    onResetSuccess: () -> Unit,
     onBackToLoginClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(uiState.success) {
-        if (uiState.success) {
-            onResetSuccess()
-        }
-    }
 
     Box(
         modifier = modifier
