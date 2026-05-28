@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.usecases.ClearChartCacheUseCase
+import com.oracle.visualize.domain.usecases.ClearFeedCacheUseCase
 import com.oracle.visualize.domain.usecases.DeleteProfilePictureUseCase
 import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
 import com.oracle.visualize.domain.usecases.GetUserByIDUseCase
@@ -28,7 +30,9 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val updatePfpUseCase: UpdatePfpUseCase,
     private val getUserByIDUseCase: GetUserByIDUseCase,
-    private val deleteProfilePictureUseCase: DeleteProfilePictureUseCase
+    private val deleteProfilePictureUseCase: DeleteProfilePictureUseCase,
+    private val clearChartCacheUseCase: ClearChartCacheUseCase,
+    private val clearFeedCacheUseCase: ClearFeedCacheUseCase
 ) : ViewModel() {
 
     private val currentUser = getCurrentUserUseCase()
@@ -105,6 +109,8 @@ class ProfileViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             logoutUseCase()
+            clearFeedCacheUseCase()
+            clearChartCacheUseCase()
         }
     }
 
