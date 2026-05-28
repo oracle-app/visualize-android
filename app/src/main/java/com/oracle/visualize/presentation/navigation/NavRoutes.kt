@@ -37,6 +37,13 @@ sealed interface NavRoutes {
     data class ChartSelection(val taskId: String) : NavRoutes
     @Serializable
     object ShareAndPost : NavRoutes
+
+    /**
+     * Route for creating or editing a team.
+     * @property teamId Null when creating a new team; non-null when editing an existing one.
+     */
+    @Serializable
+    data class CreateEditTeam(val teamId: String? = null) : NavRoutes
     @Serializable
     object ResetPassword : NavRoutes
 }

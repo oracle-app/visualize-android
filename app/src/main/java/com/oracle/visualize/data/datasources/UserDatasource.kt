@@ -1,6 +1,7 @@
 package com.oracle.visualize.data.datasources
 
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
@@ -73,4 +74,19 @@ class UserDatasource @Inject constructor(
     suspend fun saveUserProfile(uid: String, user: UserDTO){
         firestore.collection("users").document(uid).set(user).await()
     }
+
+    /**
+     * Adds a visualization ID to the user's list of hidden visualizations.
+     *
+     * @param userID The unique ID of the user.
+     * @param visualizationId The unique ID of the visualization to hide.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
+    suspend fun hideVisualizationForUser(userID: String, visualizationId: String) {
+        firestore.collection("users")
+            .document(userID)
+            .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
+            .await()
+    }
+
 }
