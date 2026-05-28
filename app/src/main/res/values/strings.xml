@@ -8,6 +8,8 @@
     <string name="share">Share</string>
     <string name="back">Back</string>
     <string name="log_out">Log Out</string>
+    <string name="edit">Edit</string>
+    <string name="save_changes">Save Changes</string>
 
 
     // Navigation Bar
@@ -175,6 +177,13 @@
     <string name="developer">Developed by ----</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="licenses">Licenses and open source libraries</string>
+    <string name="preview">Preview</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_photo">Choose photo</string>
+    <string name="delete_photo">Delete photo</string>
+    <string name="delete_photo_message">Delete profile picture?</string>
+    <string name="log_out_title">Log Out?</string>
+    <string name="updating_pfp">Updating profile picture…</string>
 
     // Descriptions
 

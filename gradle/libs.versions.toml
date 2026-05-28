@@ -27,6 +27,8 @@ material3 = "1.4.0"
 capturable = "3.0.1"
 foundationLayoutVersion = "1.11.1"
 retrofit = "2.9.0"
+ucrop = "2.2.9"
+appcompat = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +71,8 @@ retrofit2 = { group = "com.squareup.retrofit2" , name = "retrofit", version.ref 
 retrofit2-converter = { group = "com.squareup.retrofit2" , name = "converter-gson", version.ref = "retrofit" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+ucrop = { group = "com.github.yalantis", name = "ucrop", version.ref = "ucrop" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 
 

@@ -1,58 +1,178 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.components.AppDropdownMenu
+import com.oracle.visualize.presentation.components.BasicDialog
+import com.oracle.visualize.presentation.navigation.NavRoutes
+import com.oracle.visualize.presentation.screens.profileScreen.components.ChartThemePicker
 import com.oracle.visualize.presentation.screens.profileScreen.components.ProfileHeader
-import com.oracle.visualize.presentation.screens.profileScreen.components.ThemeItem
-import com.oracle.visualize.ui.theme.ChartPalette
+import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
+import com.oracle.visualize.presentation.screens.profileScreen.views.EditPfp
+import com.oracle.visualize.presentation.screens.profileScreen.views.EditProfile
+import com.yalantis.ucrop.UCrop
+import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
+    navController: NavController,
+    onLogout: () -> Unit,
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+
+    // This is where the UI state is fetched.
+    val updatingText = stringResource(R.string.updating_pfp) // Toasts don't take stringResource, so I make a variable to feed to it.
     val context = LocalContext.current
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Launchers
+
+    var showDeletePhotoDialog by remember { mutableStateOf(false) }
+    var showUnsavedChangesDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            profileViewModel.setPfpUploadUi()
+            imageUri?.let { profileViewModel.setPfpCapturedValue(it.toString()) }
+        }
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            profileViewModel.setPfpUploadUi()
+            profileViewModel.setPfpCapturedValue(it.toString())
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            imageUri?.let { cameraLauncher.launch(it) }
+        }
+    }
+
+    val uCropLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val resultUri = result.data?.let { UCrop.getOutput(it) }
+            resultUri?.let { profileViewModel.setPfpCapturedValue(it.toString()) }
+        }
+    }
+
+
+    //Dialogs
+
+    if (showDeletePhotoDialog) {
+        BasicDialog(
+            title = stringResource(R.string.delete_photo),
+            message = stringResource(R.string.delete_photo_message),
+            confirm = stringResource(R.string.delete),
+            cancel = stringResource(R.string.cancel),
+            onConfirm = {
+                profileViewModel.deleteProfilePicture()
+                showDeletePhotoDialog = false
+            },
+            onDismiss = { showDeletePhotoDialog = false }
+        )
+    }
+
+    if (showUnsavedChangesDialog) {
+        BasicDialog(
+            title = stringResource(R.string.dialog_unsaved_title),
+            message = stringResource(R.string.dialog_unsaved_message),
+            confirm = stringResource(R.string.dialog_leave),
+            cancel = stringResource(R.string.cancel),
+            onConfirm = {
+                profileViewModel.setUiState()
+                showUnsavedChangesDialog = false
+            },
+            onDismiss = { showUnsavedChangesDialog = false }
+        )
+    }
+
+    if (showLogoutDialog) {
+        BasicDialog(
+            title = stringResource(R.string.log_out_title),
+            message = "",
+            confirm = stringResource(R.string.log_out),
+            cancel = stringResource(R.string.cancel),
+            onConfirm = {
+                profileViewModel.logout()
+                onLogout()
+                showLogoutDialog = false
+            },
+            onDismiss = { showLogoutDialog = false }
+        )
+    }
+
+    // This is where the page fetches the current app version.
 
     val unknown = stringResource(R.string.error_unknown)
     val appVersion = remember {
@@ -61,185 +181,89 @@ fun ProfilePage(
             .versionName ?: unknown
     }
 
-    val selectedPalette = profileViewModel.selectedPalette
-    val userName = profileViewModel.userName
-    val email = profileViewModel.email
-    val profileImage = profileViewModel.profileImage
+    // Page layout start
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.profilebgtransparent),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            alignment = Alignment.TopCenter,
-            contentScale = ContentScale.FillBounds
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            when (uiState) {
-                is ProfileUiState.Idle -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is ProfileUiState.Ready -> {
-                    Spacer(modifier = Modifier.height(98.dp))
-
-                    ProfileHeader(
-                        userName = userName,
-                        email = email,
-                        profileImage = painterResource(id = profileImage),
-                        onEditClick = { /* implement select image later*/ }
-                    )
-
-                    Spacer(modifier = Modifier.height(if (isSystemInDarkTheme()) 16.dp else 32.dp))
-
-                    SettingsCard(
-                        title = stringResource(R.string.chart_theme_title),
-                        icon = Icons.Default.Palette
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                                ThemeItem(
-                                    palette = ChartPalette.THEME1,
-                                    isSelected = selectedPalette == ChartPalette.THEME1,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME1) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                ThemeItem(
-                                    palette = ChartPalette.THEME2,
-                                    isSelected = selectedPalette == ChartPalette.THEME2,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME2) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                                ThemeItem(
-                                    palette = ChartPalette.THEME3,
-                                    isSelected = selectedPalette == ChartPalette.THEME3,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME3) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                ThemeItem(
-                                    palette = ChartPalette.THEME4,
-                                    isSelected = selectedPalette == ChartPalette.THEME4,
-                                    onClick = { profileViewModel.onPaletteChange(ChartPalette.THEME4) },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(if (isSystemInDarkTheme()) 24.dp else 4.dp))
-
-                    SettingsCard(
-                        title = stringResource(R.string.about_title),
-                        icon = Icons.Default.Info
-                    ) {
-                        Text(
-                            text = "${stringResource(R.string.version_declaration)} $appVersion\n${stringResource(R.string.developer)}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = stringResource(R.string.terms_of_service),
-                            style = MaterialTheme.typography.labelSmall.copy(textDecoration = TextDecoration.Underline),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Text(
-                            text = stringResource(R.string.licenses),
-                            style = MaterialTheme.typography.labelSmall.copy(textDecoration = TextDecoration.Underline),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(64.dp))
-
-                    OutlinedButton(
-                        onClick = { },
-                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.error
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 48.dp)
-                            .height(64.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.log_out),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                }
+    when (val state = uiState) {
+        is ProfileUiState.Idle -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
-    }
-}
 
-@Composable
-fun SettingsCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    if (isSystemInDarkTheme()) {
-        Column(modifier = modifier.fillMaxWidth()) {
-            HorizontalDivider(
-                modifier = Modifier.padding(bottom = 16.dp),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(bottom = 12.dp)
+        else -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                if (icon != null) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(20.dp)
-                    )
+                when (state) {
+                    is ProfileUiState.Ready -> {
+                        EditProfile(
+                            appversion = appVersion,
+                            username = state.username,
+                            email = state.eMail,
+                            image = state.image,
+                            chartTheme = state.chartTheme,
+                            onTakePhoto = {
+                                val uri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.provider",
+                                    File.createTempFile("photo_", ".jpg", context.cacheDir)
+                                )
+                                imageUri = uri
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                                    == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    cameraLauncher.launch(uri)
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            },
+                            onChoosePhoto = {
+                                galleryLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            onDeletePhoto = { showDeletePhotoDialog = true },
+                            onPaletteChange = { profileViewModel.setChartTheme(it) },
+                            onLogoutClick = { showLogoutDialog = true }
+                        )
+                    }
+
+                    is ProfileUiState.PfpUpload -> {
+                        EditPfp(
+                            pfp = state.pfp,
+                            onBack = { showUnsavedChangesDialog = true },
+                            onEditClick = {
+                                state.pfp?.let { pfp ->
+                                    val destUri = Uri.fromFile(File(context.cacheDir, "cropped_pfp.jpg"))
+                                    val options = UCrop.Options().apply {
+                                        setCircleDimmedLayer(true)
+                                        setShowCropGrid(false)
+                                        setShowCropFrame(false)
+                                    }
+                                    val cropIntent = UCrop.of(Uri.parse(pfp), destUri)
+                                        .withAspectRatio(1f, 1f)
+                                        .withMaxResultSize(512, 512)
+                                        .withOptions(options)
+                                        .getIntent(context)
+                                    uCropLauncher.launch(cropIntent)
+                                }
+                            },
+                            onDeleteClick = { showDeletePhotoDialog = true },
+                            onSaveChanges = {
+                                profileViewModel.updatePfp(state.pfp ?: "")
+                                profileViewModel.setUiState()
+                                Toast.makeText(context, updatingText, Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+
+                    else -> {}
                 }
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            content()
-        }
-    } else {
-        Card(
-            modifier = modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                content()
             }
         }
     }

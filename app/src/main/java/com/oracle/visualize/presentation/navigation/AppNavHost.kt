@@ -86,8 +86,18 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
 
+        composable<NavRoutes.Teams> {
+            // TODO: Implement TeamsPage
+        }
+
         composable<NavRoutes.Profile> {
-            ProfilePage(modifier = Modifier.fillMaxSize())
+            ProfilePage(
+                modifier = Modifier.fillMaxSize(),
+                navController = navController,
+                onLogout = {
+                    navController.navigate(NavRoutes.Splash)
+                }
+            )
         }
 
         composable<NavRoutes.FullScreen> { backStackEntry ->
