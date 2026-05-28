@@ -83,16 +83,6 @@ object FirebaseModule {
     fun providesFirestore(): FirebaseFirestore {
         return Firebase.firestore
     }
-
-    /**
-     * Provides a singleton instance of [FirebaseStorage].
-     */
-
-    @Provides
-    @Singleton
-    fun provideFirebaseStorage(): FirebaseStorage =
-        FirebaseStorage.getInstance()
-
     @Provides
     @Singleton
     fun provideAnalyzeRepository(
@@ -101,7 +91,13 @@ object FirebaseModule {
         return AnalyzeRepositoryImpl(apiMicroService)
     }
 
+    /**
+     * Provides a singleton instance of [FirebaseStorage].
+     */
 
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 }
 
 /**

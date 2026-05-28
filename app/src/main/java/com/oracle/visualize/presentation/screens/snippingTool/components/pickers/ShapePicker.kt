@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.ArrowRightAlt
 import androidx.compose.material.icons.outlined.ChangeHistory
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.outlined.Rectangle
@@ -54,6 +55,7 @@ fun ShapePicker(
                                 ShapeType.RECTANGLE -> Icons.Outlined.Rectangle
                                 ShapeType.LINE -> Icons.Default.Remove
                                 ShapeType.TRIANGLE -> Icons.Outlined.ChangeHistory
+                                ShapeType.ARROW -> Icons.Outlined.ArrowRightAlt
                             },
                             contentDescription = shape.name,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,

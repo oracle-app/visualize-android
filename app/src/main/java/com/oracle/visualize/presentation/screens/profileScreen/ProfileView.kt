@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -78,7 +79,7 @@ fun ProfilePage(
 ) {
 
     // This is where the UI state is fetched.
-
+    val updatingText = stringResource(R.string.updating_pfp) // Toasts don't take stringResource, so I make a variable to feed to it.
     val context = LocalContext.current
     val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -181,82 +182,88 @@ fun ProfilePage(
 
     // Page layout start
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        when (val state = uiState) {
+    when (val state = uiState) {
+        is ProfileUiState.Idle -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
-            is ProfileUiState.Idle -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        else -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                when (state) {
+                    is ProfileUiState.Ready -> {
+                        EditProfile(
+                            appversion = appVersion,
+                            username = state.username,
+                            email = state.eMail,
+                            image = state.image,
+                            chartTheme = state.chartTheme,
+                            onTakePhoto = {
+                                val uri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.provider",
+                                    File.createTempFile("photo_", ".jpg", context.cacheDir)
+                                )
+                                imageUri = uri
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                                    == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    cameraLauncher.launch(uri)
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            },
+                            onChoosePhoto = {
+                                galleryLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            onDeletePhoto = { showDeletePhotoDialog = true },
+                            onPaletteChange = { profileViewModel.setChartTheme(it) },
+                            onLogoutClick = { showLogoutDialog = true }
+                        )
+                    }
+
+                    is ProfileUiState.PfpUpload -> {
+                        EditPfp(
+                            pfp = state.pfp,
+                            onBack = { showUnsavedChangesDialog = true },
+                            onEditClick = {
+                                state.pfp?.let { pfp ->
+                                    val destUri = Uri.fromFile(File(context.cacheDir, "cropped_pfp.jpg"))
+                                    val options = UCrop.Options().apply {
+                                        setCircleDimmedLayer(true)
+                                        setShowCropGrid(false)
+                                        setShowCropFrame(false)
+                                    }
+                                    val cropIntent = UCrop.of(Uri.parse(pfp), destUri)
+                                        .withAspectRatio(1f, 1f)
+                                        .withMaxResultSize(512, 512)
+                                        .withOptions(options)
+                                        .getIntent(context)
+                                    uCropLauncher.launch(cropIntent)
+                                }
+                            },
+                            onDeleteClick = { showDeletePhotoDialog = true },
+                            onSaveChanges = {
+                                profileViewModel.updatePfp(state.pfp ?: "")
+                                profileViewModel.setUiState()
+                                Toast.makeText(context, updatingText, Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+
+                    else -> {}
                 }
             }
-            is ProfileUiState.Ready -> {
-                EditProfile(
-                    appversion = appVersion,
-                    username = state.username,
-                    email = state.eMail,
-                    image = state.image,
-                    chartTheme = state.chartTheme,
-                    onTakePhoto = {
-                        val uri = FileProvider.getUriForFile(
-                            context,
-                            "${context.packageName}.provider",
-                            File.createTempFile("photo_", ".jpg", context.cacheDir)
-                        )
-                        imageUri = uri
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED) {
-                            cameraLauncher.launch(uri)
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
-                    },
-                    onChoosePhoto = {
-                        galleryLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                    onDeletePhoto = { showDeletePhotoDialog = true },
-                    onPaletteChange = { profileViewModel.setChartTheme(it) },
-                    onLogoutClick = { showLogoutDialog = true }
-                )
-            }
-            is ProfileUiState.PfpUpload -> {
-                EditPfp(
-                    pfp = state.pfp,
-                    onBack = { showUnsavedChangesDialog = true },
-                    onEditClick = {
-                        state.pfp?.let { pfp ->
-                            val destUri = Uri.fromFile(File(context.cacheDir, "cropped_pfp.jpg"))
-                            val options = UCrop.Options().apply {
-                                setCircleDimmedLayer(true)
-                                setShowCropGrid(false)
-                                setShowCropFrame(false)
-                            }
-                            val cropIntent = UCrop.of(Uri.parse(pfp), destUri)
-                                .withAspectRatio(1f, 1f)
-                                .withMaxResultSize(512, 512)
-                                .withOptions(options)
-                                .getIntent(context)
-                            uCropLauncher.launch(cropIntent)
-                        }
-                    },
-                    onDeleteClick = { showDeletePhotoDialog = true },
-                    onSaveChanges = {
-                        profileViewModel.updatePfp(state.pfp ?: "")
-                        profileViewModel.setUiState()
-                    }
-                )
-            }
-
-            else -> {}
         }
     }
 }
-

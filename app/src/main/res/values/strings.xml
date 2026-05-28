@@ -55,9 +55,14 @@
 ß
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
+    <string name="line_scatter_x_metric">x</string>
+    <string name="line_scatter_y_metric">y</string>
+    <string name="stacked_bar_series">Series</string>
 
-    // Chart legends full screen
+    // Chart full screen
     <string name="chart_legend_cat_label">Category</string>
+    <string name="fullscreen_sharing_label_1">Sharing with</string>
+    <string name="fullscreen_sharing_label_2">members</string>
 
     // Create View
 
@@ -156,6 +161,7 @@
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
+    <string name="error_upload_snip">Error. Image could not be uploaded.</string>
 
 
     //Icon Descriptions
@@ -177,6 +183,7 @@
     <string name="delete_photo">Delete photo</string>
     <string name="delete_photo_message">Delete profile picture?</string>
     <string name="log_out_title">Log Out?</string>
+    <string name="updating_pfp">Updating profile picture…</string>
 
     // Descriptions
 
@@ -236,6 +243,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="no_account">Don\'t have an account?</string>
+    <string name="forgot_your_password">Forgot your password?</string>
 
     //Signup Page
     <string name="already_have_account">Already have an account</string>
@@ -243,6 +251,16 @@
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
     <string name="passremember">Use 8 or more letters, numbers and symbols</string>
+
+    //Reset Password Page
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_description">Enter your email address and we will send you instructions to reset your password.</string>
+    <string name="send_link">Send</string>
+    <string name="back_to_login">Back to log in</string>
+    <string name="check_your_email">Check your email</string>
+    <string name="check_your_email_description">Please click on the link sent to your email address to reset your password.</string>
+    <string name="did_not_get_email">Didn’t get the email?</string>
+    <string name="resend_email">Resend email</string>
 
 
     // Teams Screen
