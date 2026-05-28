@@ -29,6 +29,7 @@ import com.oracle.visualize.R
 @Composable
 fun AddNoteBar(
     modifier: Modifier = Modifier,
+    hint: String = stringResource(R.string.add_note),
     onSendClick: (String) -> Unit,
     onCropClick: () -> Unit,
     image: String? = null
@@ -70,7 +71,7 @@ fun AddNoteBar(
             onValueChange = { noteText = it },
             placeholder = {
                 Text(
-                    text = stringResource(R.string.add_note),
+                    text = hint,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             },
