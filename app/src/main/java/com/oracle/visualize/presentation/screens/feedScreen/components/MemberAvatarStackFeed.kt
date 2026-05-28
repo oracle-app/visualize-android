@@ -50,14 +50,14 @@ fun MemberAvatarStackFeed(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
-                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.primary), CircleShape)
+                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant), CircleShape)
                             .background(MaterialTheme.colorScheme.onPrimary),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "+$extraCount",
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -68,7 +68,7 @@ fun MemberAvatarStackFeed(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
-                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.primary), CircleShape)
+                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant), CircleShape)
                     ) {
                         members.getOrNull(memberIndex)?.let { user ->
                             UserAvatar(

@@ -127,7 +127,8 @@ class VisualizationDatasource @Inject constructor(
                     SetOptions.merge()
                 ).await()
         }
-     * Searches a visualization from the database by its ID.
+        /**
+         * * Searches a visualization from the database by its ID.
      *
      * @param visualizationID The unique ID of the visualization.
      * @return [VisualizationDTO] object.
