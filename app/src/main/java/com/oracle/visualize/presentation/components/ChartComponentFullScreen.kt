@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.HorizontalBarChart
@@ -88,15 +93,22 @@ fun ChartRenderFullScreen(
             val flowLegendContent = @Composable {
                 FlowLegend2(
                     itemCount = cleanLabels.size,
-                    modifier = Modifier.wrapContentSize().padding(
-                        if (localConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                            8.dp
-                        } else {
-                            16.dp
+                    modifier = when (localConfig.orientation) {
+                        Configuration.ORIENTATION_LANDSCAPE -> {
+                            Modifier.fillMaxWidth().padding(start = 24.dp)
                         }
-                    ),
+                        else -> Modifier.wrapContentSize().padding(16.dp)
+                    },
                     symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
-                    label = { Text(cleanLabels[it], style = MaterialTheme.typography.bodyLarge, color = Color.DarkGray) },
+                    label = {
+                        Text(
+                            text = cleanLabels[it],
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.DarkGray,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     symbolGap = KoalaPlotTheme.sizes.gap,
                     columnGap = KoalaPlotTheme.sizes.gap,
                     rowGap = KoalaPlotTheme.sizes.gap
@@ -113,7 +125,10 @@ fun ChartRenderFullScreen(
                         Configuration.ORIENTATION_LANDSCAPE -> {
                             Column(
                                 modifier = Modifier.fillMaxHeight()
-                                    .background(color = MaterialTheme.colorScheme.onPrimary),
+                                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                                    .verticalScroll(rememberScrollState())
+                                    .widthIn(min = 0.dp, max = 140.dp)
+                                    .padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center
                             ) {
