@@ -60,6 +60,7 @@ fun RenderVerticalBarChart(
     chart: VerticalBarChart, modifier: Modifier = Modifier, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val data = chart.data
 
     val categories = remember(data) { data.keys.toList() }
@@ -126,41 +127,43 @@ fun RenderVerticalBarChart(
                     xData = categories,
                     yData = values,
                     bar = { index, _, _ ->
-                        val coroutineScope = rememberCoroutineScope()
-                        val tooltipDisplayState = rememberTooltipState(
-                            initialIsVisible = false, isPersistent = true
-                        )
-
-                        if (!enableTooltips && tooltipDisplayState.isVisible) {
-                            tooltipDisplayState.dismiss()
-                        }
-
-                        TooltipBox(
-                            tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },
-                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                positioning = TooltipAnchorPosition.Above,
-                            ),
-                            state = tooltipDisplayState
-                        ) {
+                        if (!enableTooltips) {
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
                                 modifier = Modifier.fillMaxWidth()
-                                    .pointerInput(Unit) {
-                                        awaitPointerEventScope {
-                                            while (true) {
-                                                val fingerEvent = awaitPointerEvent()
+                            )
+                        } else {
+                            val tooltipDisplayState = rememberTooltipState(
+                                initialIsVisible = false, isPersistent = true
+                            )
 
-                                                if (fingerEvent.changes.size > 1) continue
+                            TooltipBox(
+                                tooltip = { PlainTooltip { Text(text = "${categories[index]}: ${values[index]}") } },
+                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                    positioning = TooltipAnchorPosition.Above,
+                                ),
+                                state = tooltipDisplayState
+                            ) {
+                                DefaultBar(
+                                    brush = SolidColor(barColors[index]),
+                                    modifier = Modifier.fillMaxWidth()
+                                        .pointerInput(Unit) {
+                                            awaitPointerEventScope {
+                                                while (true) {
+                                                    val fingerEvent = awaitPointerEvent()
 
-                                                if (fingerEvent.type == PointerEventType.Release) {
-                                                    val change = fingerEvent.changes[0]
+                                                    if (fingerEvent.changes.size > 1) continue
 
-                                                    if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                    if (fingerEvent.type == PointerEventType.Release) {
+                                                        val change = fingerEvent.changes[0]
+
+                                                        if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                            )
+                                )
+                            }
                         }
                     },
                     startAnimationUseCase = StartAnimationUseCase(

@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +35,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, enableTooltips: Boolean) {
+    val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
@@ -46,7 +48,7 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, enableToo
             label = { index ->
                 PieDonutToolTipLabelBox(
                     percentageValue = percentageValues[index], categoryName = categories[index],
-                    categoryValue = values[index], enableTooltip = enableTooltips
+                    categoryValue = values[index], enableTooltip = enableTooltips, coroutineScope = coroutineScope
                 )
              },
             slice = { index -> DefaultSlice(color = colors[index]) },

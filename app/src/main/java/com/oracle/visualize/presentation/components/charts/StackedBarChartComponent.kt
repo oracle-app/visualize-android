@@ -63,6 +63,7 @@ fun RenderStackedBarChart(
     modifier: Modifier = Modifier, chart: StackedBarChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val categories = remember(chart.data) { chart.data.keys.toList() }
     val seriesCount = remember(chart.data) { chart.data.values.firstOrNull()?.size ?: 0 }
     val seriesLabel = stringResource(R.string.stacked_bar_series)
@@ -149,42 +150,44 @@ fun RenderStackedBarChart(
                                             x = category,
                                             y = values[seriesIndex],
                                             bar = { _, itemIndex, plotEntry ->
-                                                val coroutineScope = rememberCoroutineScope()
-                                                val tooltipDisplayState = rememberTooltipState(
-                                                    initialIsVisible = false, isPersistent = true
-                                                )
-
-                                                if (!enableTooltips && tooltipDisplayState.isVisible) {
-                                                    tooltipDisplayState.dismiss()
-                                                }
-
-                                                val currentYValue = plotEntry.y.end - plotEntry.y.start
-
-                                                TooltipBox(
-                                                    tooltip = { PlainTooltip { Text(text = "${seriesNames[itemIndex]}: $currentYValue") } },
-                                                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                                        positioning = TooltipAnchorPosition.Above,
-                                                    ),
-                                                    state = tooltipDisplayState
-                                                ) {
+                                                if (!enableTooltips) {
                                                     DefaultBar(
                                                         brush = SolidColor(seriesColors[itemIndex]),
-                                                        modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
-                                                            awaitPointerEventScope {
-                                                                while (true) {
-                                                                    val fingerEvent = awaitPointerEvent()
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    )
+                                                } else {
+                                                    val tooltipDisplayState = rememberTooltipState(
+                                                        initialIsVisible = false, isPersistent = true
+                                                    )
 
-                                                                    if (fingerEvent.changes.size > 1) continue
+                                                    val currentYValue = plotEntry.y.end - plotEntry.y.start
 
-                                                                    if (fingerEvent.type == PointerEventType.Release) {
-                                                                        val change = fingerEvent.changes[0]
+                                                    TooltipBox(
+                                                        tooltip = { PlainTooltip { Text(text = "${seriesNames[itemIndex]}: $currentYValue") } },
+                                                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                                            positioning = TooltipAnchorPosition.Above,
+                                                        ),
+                                                        state = tooltipDisplayState
+                                                    ) {
+                                                        DefaultBar(
+                                                            brush = SolidColor(seriesColors[itemIndex]),
+                                                            modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
+                                                                awaitPointerEventScope {
+                                                                    while (true) {
+                                                                        val fingerEvent = awaitPointerEvent()
 
-                                                                        if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                                        if (fingerEvent.changes.size > 1) continue
+
+                                                                        if (fingerEvent.type == PointerEventType.Release) {
+                                                                            val change = fingerEvent.changes[0]
+
+                                                                            if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                                        }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                    )
+                                                        )
+                                                    }
                                                 }
                                             }
                                         )

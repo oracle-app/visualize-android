@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.oracle.visualize.domain.models.PieChartModel
@@ -28,6 +29,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel, enableTooltips: Boolean) {
+    val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
@@ -40,7 +42,7 @@ fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel, enableTo
             label = { index ->
                 PieDonutToolTipLabelBox(
                     percentageValue = percentageValues[index], categoryName = categories[index],
-                    categoryValue = values[index], enableTooltip = enableTooltips
+                    categoryValue = values[index], enableTooltip = enableTooltips, coroutineScope = coroutineScope
                 )
             },
             slice = { index -> DefaultSlice(color = colors[index]) },

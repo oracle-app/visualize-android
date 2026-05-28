@@ -65,6 +65,7 @@ fun RenderAreaChart(
     modifier: Modifier = Modifier, chart: AreaChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val data = chart.data
     val seriesNames = chart.stackNames
 
@@ -153,8 +154,6 @@ fun RenderAreaChart(
             }
 
             if (enableTooltips) {
-                val coroutineScope = rememberCoroutineScope()
-
                 linePoints.forEachIndexed { index, points ->
                     LinePlot2(
                         data = points,

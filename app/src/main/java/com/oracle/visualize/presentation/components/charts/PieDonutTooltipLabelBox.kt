@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.DonutChart
 import io.github.koalaplot.core.util.toString
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -33,41 +34,50 @@ import kotlinx.coroutines.launch
  * @param categoryName The category name to be displayed.
  * @param categoryValue The category value to be displayed.
  * @param enableTooltip Enables or disables the property of tooltips to be shown.
+ * @param coroutineScope Coroutine that lets tap detection show a tooltip.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PieDonutToolTipLabelBox(
     modifier: Modifier = Modifier, percentageValue: Float, categoryName: String,
-    categoryValue: Float, enableTooltip: Boolean
+    categoryValue: Float, enableTooltip: Boolean, coroutineScope: CoroutineScope
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val tooltipDisplayState = rememberTooltipState(
-        initialIsVisible = false, isPersistent = true
-    )
-
-    if (!enableTooltip && tooltipDisplayState.isVisible) {
-        tooltipDisplayState.dismiss()
-    }
-
-    TooltipBox(
-        tooltip = { PlainTooltip { Text(text = "$categoryName: $categoryValue") } },
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            positioning = TooltipAnchorPosition.Above
-        ),
-        state = tooltipDisplayState,
-    ) {
+    if (!enableTooltip) {
         Box(
             modifier = modifier
                 .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(12.dp))
                 .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp))
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
-                }
         ) {
             Text(
                 modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp),
                 text = "${percentageValue.toString(2)} %", color = Color.DarkGray
             )
+        }
+    } else {
+        val tooltipDisplayState = rememberTooltipState(
+            initialIsVisible = false, isPersistent = true
+        )
+
+        TooltipBox(
+            tooltip = { PlainTooltip { Text(text = "$categoryName: $categoryValue") } },
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                positioning = TooltipAnchorPosition.Above
+            ),
+            state = tooltipDisplayState,
+        ) {
+            Box(
+                modifier = modifier
+                    .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(12.dp))
+                    .border(width = 1.dp, color = Color.DarkGray, shape = RoundedCornerShape(12.dp))
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = { coroutineScope.launch { tooltipDisplayState.show() } })
+                    }
+            ) {
+                Text(
+                    modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp),
+                    text = "${percentageValue.toString(2)} %", color = Color.DarkGray
+                )
+            }
         }
     }
 }

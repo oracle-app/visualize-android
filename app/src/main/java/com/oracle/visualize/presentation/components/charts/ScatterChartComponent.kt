@@ -71,6 +71,7 @@ fun RenderScatterChart(
     modifier: Modifier = Modifier, chart: ScatterChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val processedData = remember(chart.data) {
         listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     }
@@ -146,8 +147,6 @@ fun RenderScatterChart(
                 data = processedData,
                 symbol = { plotPoint ->
                     if (enableTooltips) {
-                        val coroutineScope = rememberCoroutineScope()
-
                         val tooltipDisplayState = rememberTooltipState(
                             initialIsVisible = false, isPersistent = true
                         )

@@ -70,6 +70,7 @@ fun RenderLineChart(
     modifier: Modifier = Modifier, chart: LineChart, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val processedData = remember (chart.data) {
         listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     }
@@ -154,8 +155,6 @@ fun RenderLineChart(
                 LinePlot2(
                     data = processedData,
                     symbol = { plotPoint ->
-                        val coroutineScope = rememberCoroutineScope()
-
                         val tooltipDisplayState = rememberTooltipState(
                             initialIsVisible = false, isPersistent = true
                         )
