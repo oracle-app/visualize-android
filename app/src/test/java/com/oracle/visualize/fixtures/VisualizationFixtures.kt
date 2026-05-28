@@ -2,14 +2,28 @@ package com.oracle.visualize.fixtures
 
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 import java.util.Date
 
 object VisualizationFixtures {
 
     const val VALID_USER_ID = "user123"
+    const val VALID_VISUALIZATION_ID = "1"
 
     val fakeVisualizationCard = VisualizationCard(
-        id = "1",
+        id = VALID_VISUALIZATION_ID,
+        title = "Chart A",
+        author = "John",
+        authorID = "2",
+        createdAt = Date(),
+        teamsSharedWith = emptyList(),
+        usersSharedWith = emptyList(),
+        allUsersSharedWith = emptyList(),
+        previewJSON = "{}"
+    )
+
+    val fakeValidVisualizationFullScreen = VisualizationFullScreen(
+        id = VALID_VISUALIZATION_ID,
         title = "Chart A",
         author = "John",
         authorID = "2",

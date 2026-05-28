@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.shareScreen.components
+package com.oracle.visualize.presentation.screens.feedScreen.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.User
+import com.oracle.visualize.presentation.components.UserAvatar
 
 private val AVATAR_SIZE    = 33.dp
 private val AVATAR_OFFSET  = 16.dp
@@ -49,15 +50,14 @@ fun MemberAvatarStackFeed(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
-                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape)
-                            .background(MaterialTheme.colorScheme.onPrimary)
-                            .padding(start = 14.dp),
+                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant), CircleShape)
+                            .background(MaterialTheme.colorScheme.onPrimary),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "+$extraCount",
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -68,10 +68,14 @@ fun MemberAvatarStackFeed(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
-                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary), CircleShape)
+                            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant), CircleShape)
                     ) {
                         members.getOrNull(memberIndex)?.let { user ->
-                            UserAvatarCard(user = user, size = AVATAR_SIZE.value.toInt())
+                            UserAvatar(
+                                username = user.username,
+                                size = AVATAR_SIZE.value.toInt(),
+                                profilePictureURL = user.profilePictureURL
+                            )
                         }
                     }
                 }
@@ -80,15 +84,16 @@ fun MemberAvatarStackFeed(
             val placeables = measurables.map { it.measure(constraints) }
             val avatarSize = placeables.firstOrNull()?.width ?: 0
             val offset = (AVATAR_SIZE - AVATAR_OFFSET).roundToPx()
-            val totalWidth = if (displayCount > 0)
-                avatarSize + (offset * (displayCount - 1))
+            val itemCount = placeables.size
+            val totalWidth = if (itemCount > 0)
+                avatarSize + (offset * (itemCount - 1))
             else 0
             val height = placeables.firstOrNull()?.height ?: 0
 
             layout(totalWidth, height) {
                 placeables.forEachIndexed { index, placeable ->
-                    // index 0 = último member (atrás), index displayCount-1 = primero (adelante)
-                    val x = (displayCount - 1 - index) * offset
+                    // index 0 = extra bubble or last member, last index = first member (on top)
+                    val x = (itemCount - 1 - index) * offset
                     placeable.placeWithLayer(x, 0, zIndex = index.toFloat())
                 }
             }

@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.screens.snippingTool.components
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +35,11 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 @Composable
@@ -52,9 +54,9 @@ fun DrawingCanvas(
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
     modifier: Modifier = Modifier
 ) {
-    // Single reusable Path object — mutated in place, never replaced
     val currentPath = remember { Path() }
-    // Incremented on every drag event to trigger Canvas recomposition
+
+    // Incremented on every drag event to help redo/undo
     var pathVersion by remember { mutableStateOf(0) }
 
     var shapeStart by remember { mutableStateOf<Offset?>(null) }
@@ -287,6 +289,31 @@ private fun DrawScope.drawShapePreview(
                 close()
             }
             drawPath(path = path, color = color, style = stroke)
+        }
+        ShapeType.ARROW -> {
+            drawLine(
+                color = color,
+                start = start,
+                end = end,
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+
+            val angle = atan2(end.y - start.y, end.x - start.x)
+            val arrowLength = 30f
+            val arrowAngle = Math.toRadians(30.0).toFloat()
+
+            val arrowPoint1 = Offset(
+                end.x - arrowLength * cos(angle - arrowAngle),
+                end.y - arrowLength * sin(angle - arrowAngle)
+            )
+            val arrowPoint2 = Offset(
+                end.x - arrowLength * cos(angle + arrowAngle),
+                end.y - arrowLength * sin(angle + arrowAngle)
+            )
+
+            drawLine(color = color, start = end, end = arrowPoint1, strokeWidth = strokeWidth, cap = StrokeCap.Round)
+            drawLine(color = color, start = end, end = arrowPoint2, strokeWidth = strokeWidth, cap = StrokeCap.Round)
         }
     }
 }

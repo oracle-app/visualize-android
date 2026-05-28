@@ -18,17 +18,34 @@ class LoginUseCase @Inject constructor(private val authRepository: AuthRepositor
     // Returns Result<AuthUser>
     suspend operator fun invoke(email: String, password: String): Result<AuthUser> {
         // 1. Validations using Return
-        if (email.isBlank()) return Result.failure(AppError.ValidationError("Email is required"))
-        if (!email.matches(emailRegex)) return Result.failure(AppError.ValidationError("Valid Email required"))
-        if (password.isBlank()) return Result.failure(AppError.ValidationError("Password is required"))
-
-        // 2. Catches DataSource/Repository errors
-        return try {
-            val user = authRepository.login(email, password)
-            Result.success(user)
-        } catch (e: Exception) {
-            // The error uploads type to the DataSource
-            Result.failure(e)
+        if (email.isBlank()) {
+            return Result.failure(
+                AppError.AuthValidationError(
+                    AppError.AuthField.EMAIL,
+                    "Email is required"
+                )
+            )
         }
+
+        if (!email.matches(emailRegex)) {
+            return Result.failure(
+                AppError.AuthValidationError(
+                    AppError.AuthField.EMAIL,
+                    "Valid Email required"))
+        }
+
+        if (password.isBlank()) {
+            return Result.failure(
+                AppError.AuthValidationError(
+                    AppError.AuthField.PASSWORD,
+                    "Password is required"
+                )
+            )
+        }
+
+        return runCatching {
+            authRepository.login(email, password)
+        }
+
     }
 }

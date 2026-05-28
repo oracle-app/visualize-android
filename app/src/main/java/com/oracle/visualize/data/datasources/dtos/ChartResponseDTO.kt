@@ -20,6 +20,14 @@ data class ChartResponseDTO(
 )
 
 fun ChartResponseDTO.toDomain(): Chart<*>? {
+    if (status.isNotEmpty() && status != "COMPLETED") {
+        val msg = if (status == "FAILED") {
+            "Analysis failed. Please upload a valid dataset."
+        } else {
+            "Analysis is still in progress (status: $status). Please try again in a moment."
+        }
+        throw com.oracle.visualize.domain.exceptions.AppError.NotFound(msg)
+    }
     val jsonString = Gson().toJson(this)
     return ChartMapper.fromPreviewJson(jsonString)
 }

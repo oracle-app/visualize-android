@@ -18,7 +18,7 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
 ){
     suspend operator fun invoke(visualizations: List<Visualization>): Result<Unit> {
         if (visualizations.isEmpty()) {
-            return Result.failure(AppError.ValidationError("Visualizations list is empty"))
+            return Result.failure(AppError.GeneralValidationError("Visualizations list is empty"))
         }
 
         val validVisualizations = visualizations.filter {
@@ -26,14 +26,11 @@ class PublishVisualizationsInBulkUseCase @Inject constructor(
         }
 
         if (validVisualizations.isEmpty()) {
-            return Result.failure(AppError.ValidationError("No valid visualizations to publish"))
+            return Result.failure(AppError.GeneralValidationError("No valid visualizations to publish"))
         }
 
-        return try {
+        return runCatching {
             visualizationRepository.publishVisualizationsInBulk(validVisualizations)
-            Result.success(Unit)
-        } catch (ex: Exception) {
-            Result.failure(AppError.NetworkError("Failed to publish visualizations"))
         }
     }
 }

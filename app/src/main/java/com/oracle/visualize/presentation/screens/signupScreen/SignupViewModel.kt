@@ -95,45 +95,56 @@ class SignUpViewModel @Inject constructor(
                 onFailure = { exception ->
                     val message = exception.message ?: "Unable to create account. Please try again."
 
-                    if (exception is AppError.ValidationError) {
-                        when {
-                            message.contains("Name", ignoreCase = true) -> {
-                                _uiState.update {
+                    when (exception) {
+
+                        is AppError.AuthValidationError -> {
+
+                            //
+                            when (exception.field) {
+                                AppError.AuthField.NAME -> _uiState.update {
                                     it.copy(isLoading = false, nameError = message)
                                 }
-                            }
 
-                            message.contains("Email", ignoreCase = true) -> {
-                                _uiState.update {
+                                AppError.AuthField.EMAIL -> _uiState.update {
                                     it.copy(isLoading = false, emailError = message)
                                 }
-                            }
 
-                            message.contains("Confirm", ignoreCase = true) ||
-                                message.contains("mismatch", ignoreCase = true) -> {
-                                _uiState.update {
-                                    it.copy(isLoading = false, confirmPasswordError = message)
-                                }
-                            }
-
-                            message.contains("Password", ignoreCase = true) -> {
-                                _uiState.update {
+                                AppError.AuthField.PASSWORD -> _uiState.update {
                                     it.copy(isLoading = false, passwordError = message)
                                 }
-                            }
 
-                            else -> {
-                                _uiState.update {
-                                    it.copy(isLoading = false, error = message)
+                                AppError.AuthField.CONFIRM_PASSWORD -> _uiState.update {
+                                    it.copy(isLoading = false, confirmPasswordError = message)
                                 }
+
                             }
                         }
-                    } else {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = message
-                            )
+
+                        is AppError.EmailAlreadyExists -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, emailError = message)
+                            }
+                        }
+
+                        is AppError.NetworkError -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, error = message)
+                            }
+                        }
+
+                        is AppError.AuthFailed,
+                        is AppError.NotFound,
+                        is AppError.ParsingError
+                            -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, error = message)
+                            }
+                        }
+
+                        else -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, error = "An unexpected error occurred")
+                            }
                         }
                     }
                 }

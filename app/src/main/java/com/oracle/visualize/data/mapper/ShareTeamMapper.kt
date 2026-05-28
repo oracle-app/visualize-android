@@ -3,21 +3,22 @@ package com.oracle.visualize.data.mapper
 import com.oracle.visualize.data.datasources.dtos.TeamDTO
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.models.ShareUser
-import com.oracle.visualize.domain.models.User
 
 /**
  * Extension function to map [TeamDTO] to [ShareTeam] domain model.
  *
- * @param users List of [ShareUser] who are members of the team.
- * @return A [ShareTeam] object containing team details and its members.
+ * Member count uses the resolved [users] list (not membersIDs.size) so that
+ * the owner is always counted regardless of whether old Firestore documents
+ * stored them in membersIDs or only in ownerID.
+ *
+ * @param users Fully-resolved list of [ShareUser] members, including the owner.
  */
 fun TeamDTO.toShareTeam(users: List<ShareUser>): ShareTeam {
-    val memberCount = this.membersIDs.size
     return ShareTeam(
-        id = this.id,
-        name = this.name,
-        memberCount = memberCount,
-        members = users
+        id          = this.id,
+        name        = this.name,
+        ownerID     = this.ownerID,
+        memberCount = users.size,   // count from resolved users, not raw IDs
+        members     = users
     )
 }
-

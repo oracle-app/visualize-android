@@ -48,7 +48,7 @@ class LoginUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.login(any(), any()) }
     }
 
@@ -62,7 +62,7 @@ class LoginUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.login(any(), any()) }
     }
 
@@ -76,7 +76,7 @@ class LoginUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.login(any(), any()) }
     }
 
@@ -93,7 +93,7 @@ class LoginUCTest {
 
         // then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AppError.ValidationError)
+        assertTrue(result.exceptionOrNull() is AppError.AuthValidationError)
         coVerify(exactly = 0) { authRepository.login(any(), any()) }
     }
 
