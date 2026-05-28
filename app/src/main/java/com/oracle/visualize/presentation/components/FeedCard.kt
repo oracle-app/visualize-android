@@ -131,7 +131,13 @@ fun FeedCard(
                     if (isChartLoading) {
                         Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)).skeletonEffect())
                     } else if (chart != null) {
-                        ChartRenderGeneral(chart = chart, showAxisLabels = false, enableTooltips = false)
+                        ChartRenderGeneral(
+                            chart = chart,
+                            showAxisLabels = false,
+                            enableTooltips = false,
+                            enableZoomAndPan = false,
+                            feedCardLabels = true
+                        )
                     } else {
                         Text(
                             text  = stringResource(R.string.error_chart_not_found),

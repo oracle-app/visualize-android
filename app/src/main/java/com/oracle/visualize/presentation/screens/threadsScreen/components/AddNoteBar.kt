@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.threadsScreen.components
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,18 +15,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.oracle.visualize.R
 
 @Composable
 fun AddNoteBar(
     modifier: Modifier = Modifier,
     hint: String = stringResource(R.string.add_note),
-    onSendClick: (String) -> Unit
+    onSendClick: (String) -> Unit,
+    onCropClick: () -> Unit,
+    image: String? = null
 ) {
     val context = LocalContext.current
     var noteText by remember { mutableStateOf("") }
@@ -35,14 +42,30 @@ fun AddNoteBar(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant),
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Filled.Crop,
-            contentDescription = stringResource(R.string.snipping_tool),
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(start = 14.dp)
-        )
+        if (image == null) {
+            IconButton(
+                onClick = { onCropClick() }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Crop,
+                    contentDescription = stringResource(R.string.snipping_tool),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 14.dp)
+                )
+            }
+        } else {
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .size(36.dp).clip(RoundedCornerShape(4.dp))
+                        .padding(start = 14.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
         TextField(
             value = noteText,
             onValueChange = { noteText = it },
@@ -57,8 +80,8 @@ fun AddNoteBar(
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
             )
         )
         IconButton(

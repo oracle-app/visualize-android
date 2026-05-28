@@ -15,12 +15,22 @@ import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVis
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
 import com.oracle.visualize.presentation.screens.profileScreen.ProfilePage
+import com.oracle.visualize.presentation.screens.resetPasswordScreen.ResetPasswordPage
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
+import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
+
+/**
+ * The main navigation host for the application.
+ * Defines all the routes and their corresponding composable screens.
+ *
+ * @param navController The [NavHostController] that manages the navigation within this host.
+ * @param modifier The modifier to be applied to the NavHost.
+ */
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -78,10 +88,18 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
             FullVisualizationPage(
                 visualizationId = route.visualizationId,
-                modifier        = Modifier.fillMaxSize(),
-                onBackClick     = { navController.popBackStack() },
-                onThreadsClick  = {
-                    navController.navigate(NavRoutes.Threads(route.visualizationId))
+                modifier = Modifier.fillMaxSize(),
+                startInSnippingMode = route.startInSnippingMode,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onThreadsClick = { uri ->
+                    navController.navigate(
+                        NavRoutes.Threads(
+                            visualizationId = route.visualizationId,
+                            snipUri = uri
+                        )
+                    )
                 }
             )
         }
@@ -90,8 +108,19 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             val route = backStackEntry.toRoute<NavRoutes.Threads>()
             ThreadsPage(
                 visualizationId = route.visualizationId,
-                modifier        = Modifier.fillMaxSize(),
-                onBackClick     = { navController.popBackStack() }
+                modifier = Modifier.fillMaxSize(),
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCropClick = {
+                    navController.navigate(
+                        NavRoutes.FullScreen(
+                            visualizationId = route.visualizationId,
+                            startInSnippingMode = true
+                        )
+                    )
+                },
+                image = route.snipUri?.let { it }
             )
         }
 
@@ -115,41 +144,65 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.Splash> {
             SplashPage(
-                modifier        = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 onSessionActive = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Splash) { inclusive = true }
+                        popUpTo(NavRoutes.Splash) {
+                            inclusive = true
+                        }
                     }
                 },
-                onLoginClick  = { navController.navigate(NavRoutes.Login) },
-                onSignUpClick = { navController.navigate(NavRoutes.Signup) }
+                onLoginClick = {
+                    navController.navigate(NavRoutes.Login)
+                },
+                onSignUpClick = {
+                    navController.navigate(NavRoutes.Signup)
+                }
             )
         }
 
         composable<NavRoutes.Login> {
             LoginPage(
-                modifier       = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 onLoginSuccess = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Login) { inclusive = true }
+                        popUpTo(NavRoutes.Login) {
+                            inclusive = true
+                        }
                     }
                 },
-                onSignUpClick  = { navController.navigate(NavRoutes.Signup) }
+                onSignUpClick  = { navController.navigate(NavRoutes.Signup) },
+                onForgotPasswordClick = {
+                    navController.navigate(NavRoutes.ResetPassword)
+                }
             )
         }
 
         composable<NavRoutes.Signup> {
             SignUpPage(
-                modifier        = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 onSignUpSuccess = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Splash) { inclusive = true }
+                        popUpTo(NavRoutes.Splash) {
+                            inclusive = true
+                        }
                     }
                 },
-                onLoginClick    = {
+                onLoginClick = {
                     navController.navigate(NavRoutes.Login) {
-                        popUpTo(NavRoutes.Signup) { inclusive = true }
+                        popUpTo(NavRoutes.Signup) {
+                            inclusive = true
+                        }
                     }
+                }
+            )
+        }
+
+        composable<NavRoutes.ResetPassword> {
+            ResetPasswordPage(
+                modifier = Modifier.fillMaxSize(),
+                onBackToLoginClick = {
+                    navController.popBackStack()
                 }
             )
         }
