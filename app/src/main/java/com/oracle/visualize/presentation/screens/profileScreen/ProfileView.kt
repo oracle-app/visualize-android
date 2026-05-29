@@ -150,20 +150,13 @@ fun ProfilePage(
 
     when (val state = uiState) {
         is ProfileUiState.Idle -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
 
         else -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
+            Box(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                 when (state) {
                     is ProfileUiState.Ready -> {
                         EditProfile(
