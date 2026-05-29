@@ -80,7 +80,7 @@ fun NotificationPage(modifier: Modifier = Modifier,
                     }
                     item {
                         Text(
-                            text = stringResource(R.string.no_more_notification),
+                            text = stringResource(R.string.no_notifications_yet),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier

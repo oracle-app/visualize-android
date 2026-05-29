@@ -58,7 +58,7 @@ class NotificationViewModel @Inject constructor(
                     val uiErrorMessage = when (error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.NotFound -> R.string.error_com_not_found
-                        else -> R.string.error_no_notifications
+                        else -> R.string.no_notifications_yet
                     }
 
                     _uiState.update { it.copy(error = uiErrorMessage, isLoading = false) }
