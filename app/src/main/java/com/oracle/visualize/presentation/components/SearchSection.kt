@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,10 @@ fun SearchSection(
     text: String,
     onTextChange: (String) -> Unit
 ) {
+    val queryTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
     OutlinedTextField(
         value = text,
         onValueChange = onTextChange,
@@ -41,8 +46,10 @@ fun SearchSection(
         singleLine = true,
         shape = RoundedCornerShape(24.dp),
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = queryTextColor,
+            unfocusedTextColor = queryTextColor,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = MaterialTheme.colorScheme.outline,
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.oracle.visualize.presentation.components.ChartFullScreen.ChartRenderFullScreen
+import com.oracle.visualize.presentation.components.ChartRenderFullScreen
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.FullVisualizationTopBar
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
