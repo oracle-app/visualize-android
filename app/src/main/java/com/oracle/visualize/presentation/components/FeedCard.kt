@@ -166,7 +166,7 @@ fun FeedCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(chartHeight)
-                        .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
+                        .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(12.dp))
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {

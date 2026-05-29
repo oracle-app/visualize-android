@@ -59,7 +59,7 @@ fun ChartRenderGeneral(
     var chartModifier: Modifier
 
     Column(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.surface)
+        modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
             .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)
     ) {
         when (chart) {
