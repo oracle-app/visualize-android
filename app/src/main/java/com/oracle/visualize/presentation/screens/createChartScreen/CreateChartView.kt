@@ -295,10 +295,10 @@ fun TableExampleComponent() {
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = White)
-            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = White)
-            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = White)
-            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = White)
+            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
         }
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.onPrimary)
 
