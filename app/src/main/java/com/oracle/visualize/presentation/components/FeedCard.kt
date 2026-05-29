@@ -111,7 +111,7 @@ fun FeedCard(
                         Text(text = formatTime(item.createdAt, context), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
                     }
                 }
-                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = stringResource(R.string.icon_menu), tint = MaterialTheme.colorScheme.onSurface)
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = stringResource(R.string.icon_menu), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -121,7 +121,7 @@ fun FeedCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(chartHeight)
-                        .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
+                        .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(12.dp))
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {

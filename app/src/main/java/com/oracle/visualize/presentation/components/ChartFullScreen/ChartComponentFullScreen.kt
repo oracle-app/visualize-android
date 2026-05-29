@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.components
+package com.oracle.visualize.presentation.components.ChartFullScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +24,8 @@ import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.VerticalBarChart
+import com.oracle.visualize.presentation.components.ChartRenderGeneral
+import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol

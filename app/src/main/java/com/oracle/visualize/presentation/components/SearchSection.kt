@@ -31,7 +31,7 @@ fun SearchSection(
         value = text,
         onValueChange = onTextChange,
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+        placeholder = { Text(stringResource(R.string.search_placeholder), color = MaterialTheme.colorScheme.onPrimaryContainer) },
         trailingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
