@@ -193,7 +193,7 @@ class SelectChartViewModel @Inject constructor(
                         val firstPageDto = pagesList.first()
                         val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
 
-                        val previewDto = firstPageDto.copy(chartName = selection.customTitle)
+                        val previewDto = firstPageDto.copy(chartName = selection.customTitle, preview = true)
                         val combinedDto = firstPageDto.copy(
                             chartName = selection.customTitle,
                             page = 0,
