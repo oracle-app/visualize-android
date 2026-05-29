@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -20,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.presentation.screens.threadsScreen.components.AddNoteBar
 import com.oracle.visualize.presentation.screens.threadsScreen.components.ThreadsTopBar
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.oracle.visualize.R
@@ -42,7 +42,9 @@ fun ThreadsPage(
     visualizationId: String,
     modifier: Modifier = Modifier,
     viewModel: ThreadsViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onCropClick: () -> Unit,
+    image: String? = ""
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -77,9 +79,7 @@ fun ThreadsPage(
                             color = MaterialTheme.colorScheme.primary
                         )
                         IconButton(
-                            onClick = {
-                                viewModel.cancelReply()
-                            }
+                            onClick = { viewModel.cancelReply() }
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Cancel,
@@ -93,22 +93,34 @@ fun ThreadsPage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 14.dp, vertical = 8.dp),
+                    hint = if (uiState.replyingToCommentId != null) {
+                        stringResource(R.string.write_reply)
+                    } else {
+                        stringResource(R.string.start_thread)
+                    },
+                    image = image,
                     onSendClick = { content ->
                         val replyingToCommentId = uiState.replyingToCommentId
-
-                        if (replyingToCommentId != null) {
-                            viewModel.createThread(
-                                visualizationId = visualizationId,
-                                commentId = replyingToCommentId,
-                                content = content
-                            )
-                        } else {
-                            viewModel.createComment(
-                                visualizationId = visualizationId,
-                                content = content
-                            )
+                        when {
+                            replyingToCommentId != null -> {
+                                viewModel.createThread(
+                                    visualizationId = visualizationId,
+                                    commentId = replyingToCommentId,
+                                    content = content
+                                )
+                            }
+                            image != null -> {
+                                viewModel.createCommentWithSnip(visualizationId, content, image)
+                            }
+                            else -> {
+                                viewModel.createComment(
+                                    visualizationId = visualizationId,
+                                    content = content
+                                )
+                            }
                         }
-                    }
+                    },
+                    onCropClick = onCropClick
                 )
             }
         }
@@ -126,12 +138,10 @@ fun ThreadsPage(
 
             when {
                 uiState.isLoading -> {
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-
                         androidx.compose.material3.CircularProgressIndicator()
                     }
                 }
@@ -143,7 +153,6 @@ fun ThreadsPage(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-
                         Text(
                             text = stringResource(errorMessage),
                             style = MaterialTheme.typography.bodyMedium,
@@ -154,12 +163,10 @@ fun ThreadsPage(
                 }
 
                 uiState.comments.isEmpty() -> {
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-
                         Text(
                             text = stringResource(R.string.no_threads_yet),
                             style = MaterialTheme.typography.bodyMedium,
@@ -170,7 +177,6 @@ fun ThreadsPage(
                 }
 
                 else -> {
-
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(

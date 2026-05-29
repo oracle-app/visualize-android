@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.splashScreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -40,6 +41,7 @@ fun SplashPage(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit
 ) {
+    BackHandler(enabled = true) {}
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
