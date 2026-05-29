@@ -77,7 +77,7 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
-            observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
+            observeUserFeedUseCase(currentUserID, forceRefresh = true).collect { result ->
                 result.fold(
                     onSuccess = { items ->
                         allFeedItems = items.distinctBy { it.card.id }
