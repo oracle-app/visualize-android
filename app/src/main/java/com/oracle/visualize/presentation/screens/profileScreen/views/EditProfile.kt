@@ -127,7 +127,7 @@ fun EditProfile(
         OutlinedButton(
             onClick = { onLogoutClick() },
             border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(50),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.error
