@@ -262,7 +262,7 @@ class ShareAndPostViewModel @Inject constructor(
                         val firstPageDto = pagesList.first()
                         val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
 
-                        val previewDto = firstPageDto.copy(chartName = customTitle)
+                        val previewDto = firstPageDto.copy(chartName = customTitle, preview = true)
                         val combinedDto = firstPageDto.copy(
                             chartName = customTitle,
                             page = 0,

@@ -64,7 +64,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 },
                 onNavigateToFeed = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.ChartSelection) { inclusive = true }
+                        popUpTo(NavRoutes.Feed) { inclusive = true }
                     }
                 }
             )
