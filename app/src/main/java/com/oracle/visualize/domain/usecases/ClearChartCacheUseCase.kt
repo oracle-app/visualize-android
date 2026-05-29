@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases
 
+import android.util.Log
 import com.oracle.visualize.data.datasources.local.ChartCacheManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -8,5 +9,7 @@ import javax.inject.Singleton
 class ClearChartCacheUseCase @Inject constructor(
     private val chartCacheManager: ChartCacheManager
 ) {
-    operator fun invoke() = chartCacheManager.clearCache()
+    operator fun invoke() {
+        chartCacheManager.clearCache()
+    }
 }

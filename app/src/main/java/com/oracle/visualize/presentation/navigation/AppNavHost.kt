@@ -86,16 +86,14 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             NotificationPage(modifier = Modifier.fillMaxSize())
         }
 
-        composable<NavRoutes.Teams> {
-            // TODO: Implement TeamsPage
-        }
-
         composable<NavRoutes.Profile> {
             ProfilePage(
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,
                 onLogout = {
-                    navController.navigate(NavRoutes.Splash)
+                    navController.navigate(NavRoutes.Splash) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

@@ -80,6 +80,7 @@ class AuthRepositoryImpl @Inject constructor(
         val currentUser = authDatasource.getCurrentUser()
 
         return currentUser?.uid ?: throw AppError.AuthFailed("No user logged in")
+
     }
 
     override suspend fun resetPassword(email: String): Result<Unit> {

@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.teamsScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.repositories.AuthRepository
@@ -22,11 +23,13 @@ class TeamsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
     val uiState: StateFlow<TeamsUiState> = _uiState.asStateFlow()
 
-    private val userID: String = authRepository.getCurrentUserID()
 
     init { loadTeams() }
 
     private fun loadTeams() {
+
+        val userID = authRepository.getCurrentUserID()
+
         viewModelScope.launch {
             _uiState.value = TeamsUiState.Loading
 
@@ -54,6 +57,11 @@ class TeamsViewModel @Inject constructor(
     }
 
     fun onEvent(event: TeamsUiEvent) {
+        if (event is TeamsUiEvent.Refresh) {
+            loadTeams()
+            return
+        }
+
         val current = _uiState.value as? TeamsUiState.Content ?: return
         when (event) {
             is TeamsUiEvent.ToggleExpand -> {
@@ -89,8 +97,6 @@ class TeamsViewModel @Inject constructor(
 
             is TeamsUiEvent.DismissDeleteDialog ->
                 _uiState.value = current.copy(teamPendingDeleteId = null)
-
-            is TeamsUiEvent.Refresh -> loadTeams()
 
             else -> Unit
         }

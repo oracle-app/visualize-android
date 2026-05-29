@@ -1,5 +1,6 @@
 package com.oracle.visualize.data.repositories
 
+import android.util.Log
 import com.google.firebase.Timestamp
 import com.oracle.visualize.data.datasources.TeamDatasource
 import com.oracle.visualize.data.datasources.UserDatasource

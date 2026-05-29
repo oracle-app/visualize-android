@@ -36,7 +36,6 @@ class FeedViewModel @Inject constructor(
     init {
         try {
             currentUserID = authRepository.getCurrentUserID()
-            loadData(forceRefresh = false)
         } catch (e: Exception) {
             _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
         }
