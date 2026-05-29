@@ -1,5 +1,6 @@
 package com.oracle.visualize.data.repositories
 
+import android.net.Uri
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.data.mapper.toDomain
@@ -10,6 +11,11 @@ import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
 import javax.inject.Inject
 
+/**
+ * Implementation of [UserRepository] to manage user-specific data.
+ *
+ * @property userDatasource Data source for user operations in Firestore.
+ */
 class UserRepositoryImpl @Inject constructor(
     private val userDatasource: UserDatasource
 ) : UserRepository {
@@ -34,7 +40,29 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserByUserID(userID: String): User? {
-        return userDatasource.getUserByID(userID).toDomain()
+    override suspend fun getUserByUserID(userID: String): User {
+        return userDatasource
+            .getUserByID(userID)
+            .toDomain()
+    }
+
+    override suspend fun uploadProfilePicture(userID: String, uri: String): String {
+        return userDatasource.uploadProfilePicture(userID, uri)
+    }
+
+    override suspend fun setProfilePicture(userId: String, url: String): Unit {
+        return userDatasource.setProfilePicture(userId, url)
+    }
+
+    override suspend fun setChartTheme(userId: String, selectedPalette: String): Unit {
+        return userDatasource.setChartTheme(userId, selectedPalette)
+    }
+
+    override suspend fun deleteProfilePicture(userId: String): Unit {
+        return userDatasource.deleteProfilePicture(userId)
+    }
+
+    override suspend fun updatePfp(userId: String, uri: String): Unit {
+        return userDatasource.updatePfp(userId, uri)
     }
 }

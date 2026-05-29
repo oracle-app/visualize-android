@@ -4,7 +4,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.models.Visualization
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
@@ -28,6 +27,7 @@ class VisualizationDatasource @Inject constructor(
             "authorID"        to v.authorID,
             "title"           to v.title,
             "configJSON"      to v.configJSON,
+            "previewJSON"     to v.previewJSON,
             "sharedWithUsers" to v.sharedWithUsers,
             "sharedWithTeams" to v.sharedWithTeams,
             "createdAt"       to v.createdAt
@@ -70,12 +70,18 @@ class VisualizationDatasource @Inject constructor(
         }
     }
 
+    /**
+     * Publishes all user's visualizations to the database in bulk.
+     *
+     * @param visualizations The list of visualizations [List<VisualizationDTO>].
+     */
     suspend fun publishVisualizationsInBulk(visualizations: List<VisualizationDTO>) {
         visualizations.chunked(500).forEach { chunk ->
             val batch = db.batch()
             for (v in chunk) {
                 val doc = visualizationsRef.document()
-                batch.set(doc, formatVisualization(v))
+                val formattedVisualization = formatVisualization(v)
+                batch.set(doc, formattedVisualization)
             }
             batch.commit().await()
         }
@@ -97,6 +103,9 @@ class VisualizationDatasource @Inject constructor(
      * Searches a visualization from the database by its ID.
      * Used by both [VisualizationRepositoryImpl.getIndividualVisualization]
      * and [VisualizationRepositoryImpl.getVisualizationById].
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @return [VisualizationDTO] object.
      */
     suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
         val visualization = visualizationsRef.document(visualizationID).get().await()
@@ -107,7 +116,8 @@ class VisualizationDatasource @Inject constructor(
 
     /**
      * Permanently deletes a visualization document from the database.
-     * Uses [withTimeout] to prevent indefinite hanging on slow or offline connections.
+     * Uses [withTimeout] + [suspendCancellableCoroutine] to ensure the timeout
+     * can actually cancel a hanging Firestore task.
      * [kotlinx.coroutines.TimeoutCancellationException] propagates to the repository.
      */
     suspend fun deleteVisualization(visualizationId: String) {
@@ -128,7 +138,8 @@ class VisualizationDatasource @Inject constructor(
     /**
      * Replaces [sharedWithUsers] and [sharedWithTeams] on a visualization.
      * The caller passes the complete desired lists including existing and new recipients.
-     * Uses [withTimeout] to prevent indefinite hanging.
+     * Uses [withTimeout] + [suspendCancellableCoroutine] to ensure the timeout
+     * can actually cancel a hanging Firestore task.
      * [kotlinx.coroutines.TimeoutCancellationException] propagates to the repository.
      */
     suspend fun updateSharedUsers(

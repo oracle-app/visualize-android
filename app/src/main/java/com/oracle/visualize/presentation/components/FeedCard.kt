@@ -69,12 +69,13 @@ fun formatTime(date: Date, context: Context): String {
 @Composable
 fun FeedCard(
     item: VisualizationCard,
+    currentUserID: String = "",
+    onClick: () -> Unit = {},
     chart: Chart<*>?,
     isChartLoading: Boolean,
     onLoadChartRequest: () -> Unit,
     isDeletable: Boolean = false,
     isMenuOpen: Boolean = false,
-    onClick: () -> Unit = {},
     onMenuOpen: () -> Unit = {},
     onMenuDismiss: () -> Unit = {},
     onDeleteForEveryone: () -> Unit = {},
@@ -84,6 +85,7 @@ fun FeedCard(
     val context        = LocalContext.current
     val isShared       = item.allUsersSharedWith.isNotEmpty()
     var titleLineCount by remember { mutableStateOf(1) }
+    val amIAuthor      = item.authorID == currentUserID
     val _chartHeight   = if (isShared) 200.dp else 248.dp
     val chartHeight    = maxOf(100.dp, _chartHeight - (22.dp * (titleLineCount - 1)))
 
@@ -91,15 +93,11 @@ fun FeedCard(
         onClick  = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape    = RoundedCornerShape(16.dp),
-        colors   = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+        colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 14.dp, top = 14.dp, end = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 14.dp, top = 14.dp, end = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment     = Alignment.Top
             ) {
@@ -114,16 +112,16 @@ fun FeedCard(
                     Spacer(modifier = Modifier.height(6.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = if (isDeletable) {
-                                stringResource(R.string.by_me)
-                            } else {
-                                stringResource(R.string.by_author, item.author)
-                            },
-                            color    = MaterialTheme.colorScheme.primary,
+                            text = if (amIAuthor) stringResource(R.string.by_me)
+                            else stringResource(R.string.by_author, item.author),
+                            color    = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )
                         Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
-                        Text(text = stringResource(R.string.bullet_separator))
+                        Text(
+                            text  = stringResource(R.string.bullet_separator),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
                         Text(
                             text     = formatTime(item.createdAt, context),
@@ -163,38 +161,27 @@ fun FeedCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-            ) {
+            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(chartHeight)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(12.dp)
-                        )
+                        .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
                         .padding(all = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     LaunchedEffect(item.id) {
                         if (isChartLoading && chart == null) onLoadChartRequest()
                     }
-
                     if (isChartLoading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(8.dp))
-                                .skeletonEffect()
-                        )
+                        Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)).skeletonEffect())
                     } else if (chart != null) {
                         ChartRenderGeneral(
-                            chart          = chart,
-                            showAxisLabels = false,
-                            enableTooltips = false
+                            chart            = chart,
+                            showAxisLabels   = false,
+                            enableTooltips   = false,
+                            enableZoomAndPan = false,
+                            feedCardLabels   = true
                         )
                     } else {
                         Text(
@@ -207,12 +194,9 @@ fun FeedCard(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
             if (isShared) {
                 Row(
-                    modifier = Modifier
-                        .padding(start = 12.dp, bottom = 12.dp)
-                        .heightIn(min = 41.dp),
+                    modifier          = Modifier.padding(start = 12.dp, bottom = 12.dp).heightIn(min = 41.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     MemberAvatarStackFeed(item.allUsersSharedWith)

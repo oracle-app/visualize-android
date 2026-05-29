@@ -25,10 +25,10 @@ import javax.inject.Inject
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val observeUserFeedUseCase: ObserveUserFeedUseCase,
-    private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
-    private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
     private val authRepository: AuthRepository,
     private val parseSingleChartUseCase: ParseSingleChartUseCase,
+    private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
+    private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
     private val feedCacheManager: FeedCacheManager
 ) : ViewModel() {
 
@@ -49,6 +49,28 @@ class FeedViewModel @Inject constructor(
     }
 
     // ─── Data loading ──────────────────────────────────────────────────────────
+
+    fun toggleSearch() {
+        _uiState.update { currentState ->
+            if (currentState is FeedUiState.Success) {
+                currentState.copy(isSearching = !currentState.isSearching)
+            } else currentState
+        }
+    }
+
+    fun loadChartForCard(card: VisualizationCard) {
+        viewModelScope.launch {
+            val chart = parseSingleChartUseCase(card)
+            allFeedItems = allFeedItems.map { item ->
+                if (item.card.id == card.id) {
+                    item.copy(chart = chart, isChartLoading = false)
+                } else {
+                    item
+                }
+            }
+            applyLocalFilterAndSearch()
+        }
+    }
 
     fun loadData(forceRefresh: Boolean = false) {
         val current = _uiState.value
@@ -83,32 +105,6 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun refreshIfCacheInvalidated() {
-        if (feedCacheManager.cachedFeed == null) {
-            loadData(forceRefresh = true)
-        }
-    }
-
-    fun loadChartForCard(card: VisualizationCard) {
-        viewModelScope.launch {
-            val chart = parseSingleChartUseCase(card)
-            allFeedItems = allFeedItems.map { item ->
-                if (item.card.id == card.id) item.copy(chart = chart, isChartLoading = false)
-                else item
-            }
-            applyLocalFilterAndSearch()
-        }
-    }
-
-    // ─── Search & filter ───────────────────────────────────────────────────────
-
-    fun toggleSearch() {
-        _uiState.update { state ->
-            if (state is FeedUiState.Success) state.copy(isSearching = !state.isSearching)
-            else state
-        }
-    }
-
     fun onFilterChange(filter: VisualizationFilter) {
         val currentState = _uiState.value
         if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
@@ -125,6 +121,19 @@ class FeedViewModel @Inject constructor(
             _uiState.value = currentState.copy(searchText = newText)
         }
         applyLocalFilterAndSearch()
+    }
+
+    // ─── Cache ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Called when the Feed screen resumes (e.g. after navigating back from ShareWithTeammates).
+     * If [FeedCacheManager] was cleared by another screen (like after a successful share),
+     * forces a full reload so the feed reflects the latest shared users immediately.
+     */
+    fun refreshIfCacheInvalidated() {
+        if (feedCacheManager.cachedFeed == null) {
+            loadData(forceRefresh = true)
+        }
     }
 
     // ─── Card menu ─────────────────────────────────────────────────────────────
@@ -193,38 +202,30 @@ class FeedViewModel @Inject constructor(
         val search      = if (currentState is FeedUiState.Success) currentState.searchText else ""
         val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
 
-        var filtered = when (filter) {
+        var filteredItems = when (filter) {
             VisualizationFilter.ALL      -> allFeedItems
             VisualizationFilter.PERSONAL -> allFeedItems.filter { it.card.authorID == currentUserID }
             VisualizationFilter.SHARED   -> allFeedItems.filter { it.card.authorID != currentUserID }
         }
 
         if (search.isNotBlank()) {
-            filtered = filtered.filter { it.card.title.contains(search, ignoreCase = true) }
+            filteredItems = filteredItems.filter { item ->
+                item.card.title.contains(search, ignoreCase = true)
+            }
         }
 
-        val isDeletableMap = filtered.associate { it.card.id to (it.card.authorID == currentUserID) }
+        val isDeletableMap = filteredItems.associate { it.card.id to (it.card.authorID == currentUserID) }
 
-        _uiState.update { state ->
-            if (state is FeedUiState.Success) {
-                state.copy(
-                    items          = filtered,
-                    searchText     = search,
-                    selectedFilter = filter,
-                    isRefreshing   = false,
-                    isSearching    = isSearching,
-                    isDeletableMap = isDeletableMap
-                )
-            } else {
-                FeedUiState.Success(
-                    items          = filtered,
-                    searchText     = search,
-                    selectedFilter = filter,
-                    isRefreshing   = false,
-                    isSearching    = isSearching,
-                    isDeletableMap = isDeletableMap
-                )
-            }
+        _uiState.update {
+            FeedUiState.Success(
+                items          = filteredItems,
+                currentUserID  = currentUserID,
+                searchText     = search,
+                selectedFilter = filter,
+                isRefreshing   = false,
+                isSearching    = isSearching,
+                isDeletableMap = isDeletableMap
+            )
         }
     }
 

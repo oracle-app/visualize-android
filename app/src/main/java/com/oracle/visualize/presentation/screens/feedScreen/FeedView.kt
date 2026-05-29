@@ -23,17 +23,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
-import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.feedScreen.components.DeleteForEveryoneDialog
 import com.oracle.visualize.presentation.screens.feedScreen.components.DeleteForMeDialog
 import com.oracle.visualize.presentation.screens.feedScreen.components.SkeletonFeedCard
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,9 +43,10 @@ fun FeedPage(
     onVisualizationClick: (String) -> Unit = {},
     onShareVisualization: (String) -> Unit = {}
 ) {
-    val uiState       by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val uiState        by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
+    val scrollBehavior  = TopAppBarDefaults.pinnedScrollBehavior()
 
+    // Auto-reload when resuming from ShareWithTeammates
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.currentStateFlow.collect { state ->
@@ -54,8 +55,8 @@ fun FeedPage(
             }
         }
     }
-    // ── Dialogs and deferred navigation ──────────────────────────────────────
 
+    // Dialogs and deferred navigation — outside LazyColumn so they float above the list
     if (uiState is FeedUiState.Success) {
         val state = uiState as FeedUiState.Success
 
@@ -83,11 +84,10 @@ fun FeedPage(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
+        topBar   = {
             FeedTopBar(
                 scrollBehavior   = scrollBehavior,
-                selectedFilter   = (uiState as? FeedUiState.Success)?.selectedFilter
-                    ?: VisualizationFilter.ALL,
+                selectedFilter   = (uiState as? FeedUiState.Success)?.selectedFilter ?: VisualizationFilter.ALL,
                 onFilterSelected = { feedViewModel.onFilterChange(it) },
                 onSearchClick    = { feedViewModel.toggleSearch() }
             )
@@ -96,37 +96,27 @@ fun FeedPage(
         PullToRefreshBox(
             isRefreshing = (uiState as? FeedUiState.Success)?.isRefreshing == true,
             onRefresh    = { feedViewModel.loadData(forceRefresh = true) },
-            modifier     = Modifier
-                .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding())
+            modifier     = Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding())
         ) {
             when (val state = uiState) {
 
                 is FeedUiState.Loading -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 22.dp)
+                        modifier            = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(top = 22.dp)
                     ) {
                         items(3) { SkeletonFeedCard() }
                     }
                 }
 
                 is FeedUiState.Error -> {
-                    Text(
-                        text     = stringResource(state.message),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    Text(text = stringResource(state.message), modifier = Modifier.align(Alignment.Center))
                 }
 
                 is FeedUiState.Success -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 20.dp)
+                        modifier            = Modifier.fillMaxSize().padding(horizontal = 20.dp)
                     ) {
                         item {
                             Spacer(modifier = Modifier.height(22.dp))
@@ -143,20 +133,16 @@ fun FeedPage(
                             item {
                                 Text(
                                     text      = stringResource(R.string.error_viz_not_found),
-                                    modifier  = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 32.dp),
+                                    modifier  = Modifier.fillMaxWidth().padding(top = 32.dp),
                                     textAlign = TextAlign.Center
                                 )
                             }
                         } else {
-                            items(
-                                items = state.items,
-                                key   = { it.card.id }
-                            ) { feedItem ->
+                            items(items = state.items, key = { it.card.id }) { feedItem ->
                                 FeedCard(
                                     item                = feedItem.card,
                                     chart               = feedItem.chart,
+                                    currentUserID       = state.currentUserID,
                                     isChartLoading      = feedItem.isChartLoading,
                                     onLoadChartRequest  = { feedViewModel.loadChartForCard(feedItem.card) },
                                     isDeletable         = state.isDeletableMap[feedItem.card.id] ?: false,
@@ -180,4 +166,3 @@ fun FeedPage(
         }
     }
 }
-
