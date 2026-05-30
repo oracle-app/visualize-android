@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
 import androidx.lifecycle.ViewModel
+import com.oracle.visualize.domain.usecases.GetIndividualVisualizationUseCase
 import com.oracle.visualize.presentation.screens.snippingTool.components.DrawElement
 import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
 import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeType
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SnippingToolViewModel @Inject constructor(
-    @ApplicationContext private val context: Context ) : ViewModel() {
+    @ApplicationContext private val context: Context,
+    getIndividualVisualizationUseCase: GetIndividualVisualizationUseCase ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SnippingToolUiState())
     val uiState: StateFlow<SnippingToolUiState> = _uiState.asStateFlow()

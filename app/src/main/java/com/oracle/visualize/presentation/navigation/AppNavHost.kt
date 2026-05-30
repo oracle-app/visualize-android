@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
  * @param navController The [NavHostController] that manages the navigation within this host.
  * @param modifier The modifier to be applied to the NavHost.
  */
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(

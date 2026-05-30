@@ -71,7 +71,7 @@ fun FullVisualizationPage(
     startInSnippingMode: Boolean = false
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var snippingBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var isSnipping by remember { mutableStateOf(false) }
     var chartViewRef by remember { mutableStateOf<View?>(null) }
     val scope = rememberCoroutineScope()
     val captureController = rememberCaptureController()
@@ -105,14 +105,13 @@ fun FullVisualizationPage(
             delay(500)
 
 
-            val bitmap = captureController.captureAsync().await()
-            snippingBitmap = bitmap.asAndroidBitmap()
+            isSnipping = true
         }
     }
 
-    snippingBitmap?.let { bitmap ->
+    if (isSnipping && uiState.chart != null) {
         SnippingToolView(
-            bitmap = bitmap,
+            chart = uiState.chart!!,
             onDone = { result ->
                 viewModel.onSnipCompleted(result)
                 val uri = File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
@@ -120,7 +119,7 @@ fun FullVisualizationPage(
                 }.toURI().toString()
                 onThreadsClick(uri)
             },
-            onCancel = { snippingBitmap = null }
+            onCancel = { isSnipping = false }
         )
         return
     }
@@ -135,17 +134,7 @@ fun FullVisualizationPage(
                 horizontalAlignment = Alignment.End,
             ) {
                 FloatingActionButton(
-                    onClick = {
-                        scope.launch{
-                            try {
-                                val bitmap = captureController.captureAsync().await()
-                                snippingBitmap = bitmap.asAndroidBitmap()
-                                Log.d("Snipping Tool", "Bitmap")
-                            } catch (e: Exception) {
-                                Log.e("Snipping Tool", "Error capturando: ${e.message}")
-                            }
-                        }
-                    },
+                    onClick = { isSnipping = true },
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {
                     Icon(

@@ -8,7 +8,9 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -49,10 +51,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.Chart
+import com.oracle.visualize.presentation.components.ChartRenderFullScreen
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
 
 @Composable
 fun SnippingToolView(
-    bitmap: Bitmap,
+    chart: Chart<*>,
     onDone: (Bitmap) -> Unit,
     onCancel: () ->  Unit,
     modifier: Modifier = Modifier,
@@ -175,19 +180,14 @@ fun SnippingToolView(
                     drawLayer(graphicsLayer)
                 }
         ) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
+            ZoomableChart(
+                chart = chart,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                    }
-            )
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.8f)
+            ) {
+                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
+            }
 
             DrawingCanvas(
                 elements = uiState.elements,
@@ -197,14 +197,7 @@ fun SnippingToolView(
                 strokeWidth = uiState.strokeWidth,
                 onAddElement = { viewModel.addElement(it) },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                        compositingStrategy = CompositingStrategy.Offscreen
-                    },
+                    .fillMaxSize(),
                 isDrawingMode = uiState.isDrawingMode
             )
         }
