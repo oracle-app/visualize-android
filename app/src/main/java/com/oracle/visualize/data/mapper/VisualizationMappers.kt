@@ -105,7 +105,7 @@ fun VisualizationDTO.toVisualizationFullScreen(
         }
     }
 
-    val allUsers = allUsersDict.values.toList()
+    val allUsers = allUsersDict.values.toList().sortedBy { it.username }
 
     return VisualizationFullScreen(
         id = this.id,
