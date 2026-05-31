@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
-import com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase
+import com.oracle.visualize.domain.usecases.visualization.PublishVisualizationsInBulkUseCase
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 

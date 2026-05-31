@@ -9,7 +9,7 @@ import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
-import com.oracle.visualize.domain.usecases.ParseSingleChartUseCase
+import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

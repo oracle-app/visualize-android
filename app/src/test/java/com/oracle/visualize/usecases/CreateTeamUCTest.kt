@@ -2,7 +2,7 @@ package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.TeamRepository
-import com.oracle.visualize.domain.usecases.CreateTeamUseCase
+import com.oracle.visualize.domain.usecases.team.CreateTeamUseCase
 import com.oracle.visualize.fixtures.TeamFixtures
 import io.mockk.MockKAnnotations
 import io.mockk.Runs

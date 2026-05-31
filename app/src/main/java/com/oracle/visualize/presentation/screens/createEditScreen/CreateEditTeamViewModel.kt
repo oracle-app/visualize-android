@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.CreateTeamUseCase
+import com.oracle.visualize.domain.usecases.team.CreateTeamUseCase
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
-import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
-import com.oracle.visualize.domain.usecases.UpdateTeamUseCase
+import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
+import com.oracle.visualize.domain.usecases.team.UpdateTeamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
