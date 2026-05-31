@@ -38,7 +38,9 @@ class VisualizationDatasource @Inject constructor(
     }
 
     suspend fun getAllVisualizations(): List<VisualizationDTO> {
-        val visualizations = visualizationsRef.get().await()
+        val visualizations = visualizationsRef
+            .get()
+            .await()
         if (visualizations.isEmpty) return emptyList()
         return visualizations.documents.map { doc ->
             doc.toObject(VisualizationDTO::class.java)
@@ -49,7 +51,8 @@ class VisualizationDatasource @Inject constructor(
     suspend fun getVisualizationsSharedWithUser(userID: String): List<VisualizationDTO> {
         val visualizations = visualizationsRef
             .whereArrayContains("sharedWithUsers", userID)
-            .get().await()
+            .get()
+            .await()
         if (visualizations.isEmpty) return emptyList()
         return visualizations.documents.map { doc ->
             doc.toObject(VisualizationDTO::class.java)

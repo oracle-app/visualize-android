@@ -85,9 +85,11 @@ class VisualizationRepositoryImpl @Inject constructor(
     override suspend fun getUserFeedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard> = coroutineScope {
         val cached = feedCacheManager.cachedFeed
         if (!forceRefresh && cached != null) return@coroutineScope cached
-        val sharedDeferred   = async { getSharedVisualizations(userID, forceRefresh = true) }
+        val sharedDeferred = async { getSharedVisualizations(userID, forceRefresh = true) }
         val personalDeferred = async { getPersonalVisualizations(userID, forceRefresh = true) }
-        val combinedFeed     = sharedDeferred.await() + personalDeferred.await()
+        val combinedFeed = (sharedDeferred.await() + personalDeferred.await())
+            .distinctBy { it.id }
+            .sortedByDescending { it.createdAt }
         feedCacheManager.cachedFeed = combinedFeed
         return@coroutineScope combinedFeed
     }
@@ -97,7 +99,10 @@ class VisualizationRepositoryImpl @Inject constructor(
     ): List<VisualizationCard> = coroutineScope {
         if (dtos.isEmpty()) return@coroutineScope emptyList()
         val hiddenIDs   = userDatasource.getUserByID(userID).hiddenVisualizations?.toSet() ?: emptySet()
-        val visibleDTOs = dtos.filter { !hiddenIDs.contains(it.id) }
+        val visibleDTOs = dtos
+            .filter { !hiddenIDs.contains(it.id) }
+            .sortedByDescending { it.createdAt }
+
         if (visibleDTOs.isEmpty()) return@coroutineScope emptyList()
 
         val allUserIDs  = (visibleDTOs.map { it.authorID } + visibleDTOs.flatMap { it.sharedWithUsers }).toSet().toList()
