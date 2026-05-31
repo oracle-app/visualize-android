@@ -65,7 +65,7 @@ fun VisualizationDTO.toVisualizationCard(
         }
     }
 
-    val allUsers = allUsersDict.values.toList()
+    val allUsers = allUsersDict.values.toList().sortedBy { it.username }
 
     return VisualizationCard(
         id = this.id,
