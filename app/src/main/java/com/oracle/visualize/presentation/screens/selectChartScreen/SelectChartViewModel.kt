@@ -21,6 +21,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
+import com.oracle.visualize.domain.usecases.visualization.PublishVisualizationsInBulkUseCase
 
 /**
  * ViewModel for the Select Chart screen.
@@ -30,7 +31,7 @@ import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 class SelectChartViewModel @Inject constructor(
     private val repository: AnalyzeRepository,
     private val authRepository: com.oracle.visualize.domain.repositories.AuthRepository,
-    private val publishVisualizationsInBulkUseCase: com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase,
+    private val publishVisualizationsInBulkUseCase: PublishVisualizationsInBulkUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(){
     val taskId: String = savedStateHandle.toRoute<NavRoutes.ChartSelection>().taskId
