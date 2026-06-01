@@ -9,6 +9,7 @@ import com.oracle.visualize.domain.models.User
 interface UserRepository {
     suspend fun getUserSuggestionsByEmail(email: String): AppResult<List<ShareUser>>
     suspend fun getUserByUserID(userId: String): AppResult<User>
+    suspend fun getUsersByIDs(userIDs: List<String>): List<ShareUser>
 
     suspend fun uploadProfilePicture(userID: String, uri: String): AppResult<String>
 

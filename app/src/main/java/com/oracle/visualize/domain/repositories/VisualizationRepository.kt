@@ -4,6 +4,7 @@ import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.VisualizationFullScreen
+import com.oracle.visualize.domain.models.VisualizationSharedData
 
 /**
  * Interface defining the operations for visualization management.
@@ -23,6 +24,12 @@ interface VisualizationRepository {
     suspend fun getUserFeedVisualizations(userID: String, forceRefresh: Boolean): AppResult<List<VisualizationCard>>
     suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>): AppResult<Unit>
 
+    /** Returns the full screen model for a single visualization. */
+    suspend fun getIndividualVisualization(visualizationID: String): AppResult<VisualizationFullScreen?>
+
+    /** Returns the sharing metadata (sharedWithUsers, sharedWithTeams) for a single visualization. */
+    suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData?
+
     /** Permanently deletes a visualization and removes it from every recipient's feed. */
     suspend fun deleteVisualizationForEveryone(visualizationId: String): AppResult<Unit>
 
@@ -38,6 +45,4 @@ interface VisualizationRepository {
         userIds: List<String>,
         teamIds: List<String>
     ): AppResult<Unit>
-
-    suspend fun getIndividualVisualization(visualizationID: String): AppResult<VisualizationFullScreen?>
 }

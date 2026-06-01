@@ -17,6 +17,7 @@ import com.oracle.visualize.core.utils.safeApiCall
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.VisualizationFullScreen
+import com.oracle.visualize.domain.models.VisualizationSharedData
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -74,7 +75,6 @@ class VisualizationRepositoryImpl @Inject constructor(
             if (!forceRefresh && cached != null) return@safeApiCall cached.filter { it.authorID == userID }
             fetchDetailsAndMapBatch(visualizationDataSource.getPersonalVisualizations(userID), userID)
         }
-
     }
 
     override suspend fun getUserFeedVisualizations(
@@ -109,13 +109,13 @@ class VisualizationRepositoryImpl @Inject constructor(
         val visibleDTOs = dtos.filter { !hiddenIDs.contains(it.id) }
         if (visibleDTOs.isEmpty()) return@coroutineScope emptyList()
 
-        val allUserIDs  = (visibleDTOs.map { it.authorID } + visibleDTOs.flatMap { it.sharedWithUsers }).toSet().toList()
+        val allUserIDs    = (visibleDTOs.map { it.authorID } + visibleDTOs.flatMap { it.sharedWithUsers }).toSet().toList()
         val sharedTeamIDs = visibleDTOs.flatMap { it.sharedWithTeams }.toSet().toList()
 
         val usersDeferred = async { fetchUsersInChunks(allUserIDs) }
         val teamsDeferred = async { fetchTeamsInChunks(sharedTeamIDs) }
-        val usersDTOs = usersDeferred.await()
-        val teamsDTOs = teamsDeferred.await()
+        val usersDTOs     = usersDeferred.await()
+        val teamsDTOs     = teamsDeferred.await()
 
         val usersDict = usersDTOs.associateBy { it.id }.toMutableMap()
         val teamsDict = teamsDTOs.associateBy { it.id }
@@ -156,6 +156,22 @@ class VisualizationRepositoryImpl @Inject constructor(
     override suspend fun deleteVisualizationForEveryone(visualizationId: String): AppResult<Unit> {
         return safeApiCall{
             visualizationDataSource.deleteVisualization(visualizationId)
+        }
+    }
+
+    // ─── feature/feed-share-and-delete methods ─────────────────────────────────
+
+    override suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData? {
+        return try {
+            // Reuses getIndividualVisualization datasource method — same Firestore document
+            val dto = visualizationDataSource.getIndividualVisualization(visualizationId) ?: return null
+            VisualizationSharedData(
+                sharedWithUsers = dto.sharedWithUsers,
+                sharedWithTeams = dto.sharedWithTeams
+            )
+        } catch (e: Exception) {
+            if (e is AppError) throw e
+            throw AppError.NetworkError("Failed to fetch visualization: ${e.message}")
         }
     }
 
