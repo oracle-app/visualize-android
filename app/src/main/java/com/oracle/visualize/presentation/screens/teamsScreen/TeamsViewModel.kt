@@ -3,6 +3,7 @@ package com.oracle.visualize.presentation.screens.teamsScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.team.DeleteTeamUseCase
 import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,40 +17,42 @@ import javax.inject.Inject
 class TeamsViewModel @Inject constructor(
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
     private val deleteTeamUseCase: DeleteTeamUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
     val uiState: StateFlow<TeamsUiState> = _uiState.asStateFlow()
-
-    private val userID: String = authRepository.getCurrentUserID()
-
     init { loadTeams() }
 
     private fun loadTeams() {
         viewModelScope.launch {
             _uiState.value = TeamsUiState.Loading
 
-            val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
-            val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
+            try {
+                val userID = authRepository.getCurrentUserID()
+                val currentUser = userRepository.getUserByUserID(userID)
 
-            if (myTeamsResult.isFailure) {
-                _uiState.value = TeamsUiState.Error(
-                    myTeamsResult.exceptionOrNull()?.message ?: "Failed to load teams"
-                )
-                return@launch
-            }
-            if (teamsImInResult.isFailure) {
-                _uiState.value = TeamsUiState.Error(
-                    teamsImInResult.exceptionOrNull()?.message ?: "Failed to load teams"
-                )
-                return@launch
-            }
+                val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
+                val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
 
-            _uiState.value = TeamsUiState.Content(
-                myTeams   = myTeamsResult.getOrDefault(emptyList()),
-                teamsImIn = teamsImInResult.getOrDefault(emptyList())
-            )
+                if (myTeamsResult.isFailure) {
+                    _uiState.value = TeamsUiState.Error(myTeamsResult.exceptionOrNull()?.message ?: "Failed to load teams")
+                    return@launch
+                }
+                if (teamsImInResult.isFailure) {
+                    _uiState.value = TeamsUiState.Error(teamsImInResult.exceptionOrNull()?.message ?: "Failed to load teams")
+                    return@launch
+                }
+
+                _uiState.value = TeamsUiState.Content(
+                    myTeams   = myTeamsResult.getOrDefault(emptyList()),
+                    teamsImIn = teamsImInResult.getOrDefault(emptyList()),
+                    userType  = currentUser.userType
+                )
+            } catch (e: Exception) {
+                _uiState.value = TeamsUiState.Error(e.message ?: "Failed to load user info")
+            }
         }
     }
 

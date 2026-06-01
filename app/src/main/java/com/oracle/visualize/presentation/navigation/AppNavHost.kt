@@ -108,7 +108,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier      = Modifier.fillMaxSize(),
                 navController = navController,
                 onLogout      = {
-                    navController.navigate(NavRoutes.Splash)
+                    navController.navigate(NavRoutes.Splash) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

@@ -29,8 +29,14 @@ fun MainScreen(
     val navItems by viewModel.navItems.collectAsStateWithLifecycle()
 
     LaunchedEffect(backStackEntry?.destination?.route) {
-        if (backStackEntry?.destination?.hasRoute(NavRoutes.Feed::class) == true) {
+        val isFeed = backStackEntry?.destination?.hasRoute(NavRoutes.Feed::class) == true
+        val isSplash = backStackEntry?.destination?.hasRoute(NavRoutes.Splash::class) == true
+        val isLogin = backStackEntry?.destination?.hasRoute(NavRoutes.Login::class) == true
+
+        if (isFeed) {
             viewModel.loadNavItems()
+        } else if (isSplash || isLogin) {
+            viewModel.clearState()
         }
     }
 

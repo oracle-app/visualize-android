@@ -29,8 +29,6 @@ class MainViewModel @Inject constructor(
 
     private val _navItems = MutableStateFlow<List<NavItem>>(emptyList())
     val navItems: StateFlow<List<NavItem>> = _navItems.asStateFlow()
-
-    // Variable para rastrear qué usuario cargó la barra y evitar recargas innecesarias
     private var lastLoadedUserId: String? = null
 
     init {
@@ -86,5 +84,10 @@ class MainViewModel @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    fun clearState() {
+        _navItems.value = emptyList()
+        lastLoadedUserId = null
     }
 }

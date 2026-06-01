@@ -3,7 +3,9 @@ package com.oracle.visualize.presentation.screens.createEditScreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.team.CreateTeamUseCase
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
 import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
@@ -24,6 +26,7 @@ class CreateEditTeamViewModel @Inject constructor(
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository, // INYECTAMOS USER REPOSITORY
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -35,7 +38,6 @@ class CreateEditTeamViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
     private val teamIdArg: String? = savedStateHandle.get<String>("teamId")
-    private val userID: String = authRepository.getCurrentUserID()
 
     init {
         loadInitialData()
@@ -46,45 +48,61 @@ class CreateEditTeamViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = CreateEditTeamUiState.Loading
 
-            if (teamIdArg != null) {
-                getUsersTeamsUseCase.getTeamsUserOwns(userID).fold(
-                    onSuccess = { teams ->
-                        val team = teams.find { it.id == teamIdArg }
-                        _uiState.value = CreateEditTeamUiState.Content(
-                            teamId      = teamIdArg,
-                            teamName    = team?.name ?: "",
-                            members     = team?.members ?: emptyList(),
-                            ownerID     = userID,
-                            suggestions = emptyList()
-                        )
-                    },
-                    onFailure = { e ->
-                        _uiState.value = CreateEditTeamUiState.Error(
-                            e.message ?: "Failed to load team"
-                        )
+            try {
+                val currentUserID = authRepository.getCurrentUserID()
+                val currentUser = userRepository.getUserByUserID(currentUserID)
+
+                if (teamIdArg != null) {
+                    val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(currentUserID) }
+                    val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(currentUserID) }
+
+                    val ownedTeams  = ownedDeferred.await().getOrNull()  ?: emptyList()
+                    val memberTeams = memberDeferred.await().getOrNull() ?: emptyList()
+
+                    val teamToEdit = (ownedTeams + memberTeams).find { it.id == teamIdArg }
+
+                    if (teamToEdit != null) {
+                        val isOwner = teamToEdit.ownerID == currentUserID
+                        val isAdmin = currentUser.userType == UserType.ADMIN
+
+                        if (isOwner || isAdmin) {
+                            _uiState.value = CreateEditTeamUiState.Content(
+                                teamId      = teamIdArg,
+                                teamName    = teamToEdit.name,
+                                members     = teamToEdit.members,
+                                ownerID     = teamToEdit.ownerID,
+                                suggestions = emptyList()
+                            )
+                        } else {
+                            _uiState.value = CreateEditTeamUiState.Error("No tienes permiso para editar este equipo.")
+                        }
+                    } else {
+                        _uiState.value = CreateEditTeamUiState.Error("No se encontró el equipo.")
                     }
-                )
-            } else {
-                val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(userID) }
-                val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(userID) }
+                } else {
+                    val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(currentUserID) }
+                    val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(currentUserID) }
 
-                val ownedTeams  = ownedDeferred.await().getOrNull()  ?: emptyList()
-                val memberTeams = memberDeferred.await().getOrNull() ?: emptyList()
+                    val ownedTeams  = ownedDeferred.await().getOrNull()  ?: emptyList()
+                    val memberTeams = memberDeferred.await().getOrNull() ?: emptyList()
 
-                val ownerAsUser = (ownedTeams + memberTeams)
-                    .flatMap { it.members }
-                    .firstOrNull { it.id == userID }
+                    val ownerAsUser = (ownedTeams + memberTeams)
+                        .flatMap { it.members }
+                        .firstOrNull { it.id == currentUserID }
 
-                val suggestions = (ownedTeams + memberTeams)
-                    .flatMap { it.members }
-                    .filter    { it.id != userID }
-                    .distinctBy { it.id }
+                    val suggestions = (ownedTeams + memberTeams)
+                        .flatMap { it.members }
+                        .filter    { it.id != currentUserID }
+                        .distinctBy { it.id }
 
-                _uiState.value = CreateEditTeamUiState.Content(
-                    ownerID     = userID,
-                    members     = listOfNotNull(ownerAsUser),
-                    suggestions = suggestions
-                )
+                    _uiState.value = CreateEditTeamUiState.Content(
+                        ownerID     = currentUserID,
+                        members     = listOfNotNull(ownerAsUser),
+                        suggestions = suggestions
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = CreateEditTeamUiState.Error(e.message ?: "Error al cargar la información")
             }
         }
     }
@@ -165,7 +183,6 @@ class CreateEditTeamViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _uiState.value = state.copy(isSubmitting = true)
-            // ownerID must not be in membersIDs — exclude it explicitly
             val memberIDs = state.members.map { it.id }.filter { it != state.ownerID }
             val result = if (state.isEditMode)
                 updateTeamUseCase(state.teamId!!, memberIDs, state.teamName.trim())
