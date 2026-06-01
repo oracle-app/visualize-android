@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
-import com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase
+import com.oracle.visualize.domain.usecases.visualization.PublishVisualizationsInBulkUseCase
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 
@@ -262,7 +262,7 @@ class ShareAndPostViewModel @Inject constructor(
                         val firstPageDto = pagesList.first()
                         val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
 
-                        val previewDto = firstPageDto.copy(chartName = customTitle)
+                        val previewDto = firstPageDto.copy(chartName = customTitle, preview = true)
                         val combinedDto = firstPageDto.copy(
                             chartName = customTitle,
                             page = 0,

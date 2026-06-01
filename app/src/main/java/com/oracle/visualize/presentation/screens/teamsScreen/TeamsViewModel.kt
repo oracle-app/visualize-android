@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.DeleteTeamUseCase
-import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
+import com.oracle.visualize.domain.usecases.team.DeleteTeamUseCase
+import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

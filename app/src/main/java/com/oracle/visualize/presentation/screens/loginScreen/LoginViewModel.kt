@@ -3,7 +3,7 @@ package com.oracle.visualize.presentation.screens.loginScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.usecases.LoginUseCase
+import com.oracle.visualize.domain.usecases.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

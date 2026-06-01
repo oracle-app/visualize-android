@@ -1,7 +1,7 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.RegisterUseCase
+import com.oracle.visualize.domain.usecases.auth.RegisterUseCase
 import com.oracle.visualize.fixtures.UserFixtures
 import io.mockk.coEvery
 import io.mockk.coVerify

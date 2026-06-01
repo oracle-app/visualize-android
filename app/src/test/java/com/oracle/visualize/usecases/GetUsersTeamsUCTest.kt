@@ -3,7 +3,7 @@ package com.oracle.visualize.usecases
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.domain.repositories.TeamRepository
-import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
+import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
 import com.oracle.visualize.fixtures.TeamFixtures
 import com.oracle.visualize.fixtures.UserFixtures
 import io.mockk.MockKAnnotations

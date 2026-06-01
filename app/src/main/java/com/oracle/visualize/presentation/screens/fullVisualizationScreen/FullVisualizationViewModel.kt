@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.GetIndividualVisualizationUseCase
-import com.oracle.visualize.domain.usecases.ParseFullScreenChartUseCase
+import com.oracle.visualize.domain.usecases.visualization.GetIndividualVisualizationUseCase
+import com.oracle.visualize.domain.usecases.chart.ParseFullScreenChartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

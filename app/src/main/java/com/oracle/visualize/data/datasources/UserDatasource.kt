@@ -8,9 +8,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.exceptions.AppError
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resumeWithException
 
 /**
  * Data source for user-related operations using Firestore.
@@ -134,10 +136,18 @@ class UserDatasource @Inject constructor(
      * @throws AppError.NetworkError If a network error occurs.
      */
     suspend fun hideVisualizationForUser(userID: String, visualizationId: String) {
-        firestore.collection("users")
-            .document(userID)
-            .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
-            .await()
+        suspendCancellableCoroutine { cont ->
+            val task = firestore.collection("users")
+                .document(userID)
+                .update("hiddenVisualizations", FieldValue.arrayUnion(visualizationId))
+            task.addOnSuccessListener {
+                if (cont.isActive) cont.resume(Unit) {}
+            }
+            task.addOnFailureListener { e ->
+                if (cont.isActive) cont.resumeWithException(e)
+            }
+            cont.invokeOnCancellation { }
+        }
     }
 
 }

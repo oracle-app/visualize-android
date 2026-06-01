@@ -80,7 +80,7 @@ fun ChartRenderGeneral(
 
             is HorizontalBarChart -> {
                 RenderHorizontalBarChart(chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                        enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels)
+                    enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels)
             }
 
             is StackedBarChart -> {
