@@ -1,6 +1,8 @@
 package com.oracle.visualize.presentation.screens.notificationScreen
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,10 +26,12 @@ import com.oracle.visualize.presentation.screens.notificationScreen.components.N
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.style.TextAlign
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.enums.NotificationGroup
 
 /**
  * Placeholder screen for notifications.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotificationPage(modifier: Modifier = Modifier,
                      viewModel: NotificationViewModel = hiltViewModel()
@@ -72,23 +76,45 @@ fun NotificationPage(modifier: Modifier = Modifier,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(items = uiState.notifications,
-                        key = { it.id }
-                    )
-                    { notification ->
-                        NotificationCard(notification = notification)
+
+                    NotificationGroup.entries.forEach { group ->
+                        val notifications = uiState.groupedNotifications[group]
+
+                        val subtitle = when (group) {
+                            NotificationGroup.TODAY      -> R.string.today
+                            NotificationGroup.YESTERDAY  -> R.string.yesterday
+                            NotificationGroup.LAST30     -> R.string.last_30_days
+                            NotificationGroup.OLDER      -> R.string.older
+                        }
+
+                        item{
+                            Text(
+                                text = stringResource(subtitle),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+
+                        if (notifications.isNullOrEmpty()) {
+                            item {
+                                Text(
+                                    text = stringResource(R.string.no_notifications_yet),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }else {
+                            items(items = notifications, key = { it.id }) { notification ->
+                                NotificationCard(notification = notification)
+                            }                        }
+
                     }
-                    item {
-                        Text(
-                            text = stringResource(R.string.no_notifications_yet),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+
                 }
             }
         }

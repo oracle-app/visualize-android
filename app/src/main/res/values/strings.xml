@@ -307,4 +307,10 @@
     <string name="no_notifications_yet">No Notifications Yet</string>
     <string name="notify_you">We’ll notify you when there’s something new.</string>
 
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="older">Older</string>
+
+
 </resources>

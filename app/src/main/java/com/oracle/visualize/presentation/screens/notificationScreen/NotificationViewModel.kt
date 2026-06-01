@@ -1,13 +1,15 @@
 package com.oracle.visualize.presentation.screens.notificationScreen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.GetNotificationsForUserUseCase
-import com.oracle.visualize.domain.usecases.MarkAllNotificationsAsReadUseCase
-import com.oracle.visualize.presentation.screens.feedScreen.FeedUiState
+import com.oracle.visualize.domain.usecases.notification.GetNotificationsForUserUseCase
+import com.oracle.visualize.domain.usecases.notification.GroupNotificationsUseCase
+import com.oracle.visualize.domain.usecases.notification.MarkAllNotificationsAsReadUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,9 +25,11 @@ import javax.inject.Inject
  * will be marked as read.
  *
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
     private val getNotificationsForUserUseCase: GetNotificationsForUserUseCase,
+    private val groupNotificationsUseCase: GroupNotificationsUseCase,
     private val markAllNotificationsAsReadUseCase: MarkAllNotificationsAsReadUseCase,
     private val authRepository: AuthRepository
 ): ViewModel() {
@@ -47,12 +51,14 @@ class NotificationViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun loadNotifications() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             getNotificationsForUserUseCase(currentUserID).fold(
                 onSuccess = { notifications ->
-                    _uiState.update { it.copy(notifications = notifications, isLoading = false) }
+                    val grouped = groupNotificationsUseCase(notifications)
+                    _uiState.update { it.copy(groupedNotifications = grouped, isLoading = false) }
                 },
                 onFailure = { error ->
                     val uiErrorMessage = when (error) {

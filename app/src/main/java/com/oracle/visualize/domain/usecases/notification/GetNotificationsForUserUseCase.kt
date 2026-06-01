@@ -13,6 +13,7 @@ class GetNotificationsForUserUseCase @Inject constructor(
             return Result.failure(AppError.GeneralValidationError("Notification ID is empty"))
         return runCatching {
             notificationRepository.getNotificationsForUser(userID)
+                .sortedByDescending { it.createdAt }
         }
     }
 
