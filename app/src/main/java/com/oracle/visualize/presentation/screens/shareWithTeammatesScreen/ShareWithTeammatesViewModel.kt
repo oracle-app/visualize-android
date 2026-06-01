@@ -10,7 +10,7 @@ import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import com.oracle.visualize.domain.usecases.GetUserSuggestionsUseCase
-import com.oracle.visualize.domain.usecases.UpdateSharedUsersUseCase
+import com.oracle.visualize.domain.usecases.visualization.UpdateSharedUsersUseCase
 import com.oracle.visualize.presentation.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
