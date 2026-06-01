@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -22,15 +21,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -77,7 +73,7 @@ fun RenderAreaChart(
     val maxY = remember(data) { data.values.maxOfOrNull { it.sum() } ?: 0f }
     val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, ChartPalette.THEME1) }
 
-    Box(modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true)) {
+    Box(modifier = modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

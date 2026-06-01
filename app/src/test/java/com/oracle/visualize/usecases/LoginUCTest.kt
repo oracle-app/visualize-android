@@ -2,7 +2,7 @@ package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.LoginUseCase
+import com.oracle.visualize.domain.usecases.auth.LoginUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify

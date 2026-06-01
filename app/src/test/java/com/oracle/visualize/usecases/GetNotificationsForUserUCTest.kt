@@ -3,7 +3,7 @@ package com.oracle.visualize.usecases
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Notification
 import com.oracle.visualize.domain.repositories.NotificationRepository
-import com.oracle.visualize.domain.usecases.GetNotificationsForUserUseCase
+import com.oracle.visualize.domain.usecases.notification.GetNotificationsForUserUseCase
 import com.oracle.visualize.fixtures.NotificationFixtures
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

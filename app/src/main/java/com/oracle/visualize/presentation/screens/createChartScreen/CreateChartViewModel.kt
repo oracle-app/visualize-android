@@ -7,7 +7,7 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
-import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
+import com.oracle.visualize.domain.usecases.visualization.ValidateDatasetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

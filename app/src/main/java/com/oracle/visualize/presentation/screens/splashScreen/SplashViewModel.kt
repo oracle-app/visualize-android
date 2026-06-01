@@ -2,7 +2,7 @@ package com.oracle.visualize.presentation.screens.splashScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
+import com.oracle.visualize.domain.usecases.auth.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
