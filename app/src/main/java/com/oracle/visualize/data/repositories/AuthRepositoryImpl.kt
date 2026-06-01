@@ -48,7 +48,7 @@ class AuthRepositoryImpl @Inject constructor(
             val authUser = authUserDTO.toDomain()
 
             // 3. Persist the profile in Firestore using the raw ID (String)
-            val userDto = UserDTO(username = name, email = email)
+            val userDto = UserDTO(username = name, email = email, userType = "WRITER")
             userDatasource.saveUserProfile(authUser.uid, userDto)
 
             // 4. Return the raw entity to fulfill the contract

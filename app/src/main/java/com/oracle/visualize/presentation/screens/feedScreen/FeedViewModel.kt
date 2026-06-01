@@ -9,10 +9,10 @@ import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.DeleteVisualizationForEveryoneUseCase
-import com.oracle.visualize.domain.usecases.HideVisualizationForMeUseCase
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
+import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
+import com.oracle.visualize.domain.usecases.visualization.HideVisualizationForMeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
