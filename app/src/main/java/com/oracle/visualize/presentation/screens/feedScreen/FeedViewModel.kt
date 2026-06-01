@@ -175,28 +175,33 @@ class FeedViewModel @Inject constructor(
     fun onConfirmDeleteForEveryone(visualizationId: String) {
         updateSuccess { it.copy(deleteDialogForId = null) }
         viewModelScope.launch {
-            deleteVisualizationForEveryoneUseCase(visualizationId).fold(
-                onSuccess = {
+
+            when (val result = deleteVisualizationForEveryoneUseCase(visualizationId)) {
+                is AppResult.Success -> {
                     feedCacheManager.clearCache()
                     allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
                     applyLocalFilterAndSearch()
-                },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
-            )
+                }
+                is AppResult.Error -> {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
 
     fun onConfirmHideForMe(visualizationId: String) {
         updateSuccess { it.copy(hideDialogForId = null) }
         viewModelScope.launch {
-            hideVisualizationForMeUseCase(currentUserID, visualizationId).fold(
-                onSuccess = {
+            when (val result = hideVisualizationForMeUseCase(currentUserID, visualizationId)) {
+                is AppResult.Success -> {
                     feedCacheManager.clearCache()
                     allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
                     applyLocalFilterAndSearch()
-                },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
-            )
+                }
+                is AppResult.Error -> {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
 

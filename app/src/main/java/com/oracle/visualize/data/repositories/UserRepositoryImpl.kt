@@ -1,6 +1,5 @@
 package com.oracle.visualize.data.repositories
 
-import android.net.Uri
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
@@ -22,25 +21,15 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
     override suspend fun getUserSuggestionsByEmail(email: String): AppResult<List<ShareUser>> {
         return safeApiCall {
+            val usersRaw: List<UserDTO> = userDatasource.getUserSuggestionsForSearch(email)
 
-    override suspend fun getUsersByIDs(userIDs: List<String>): List<ShareUser> {
-        return try {
-            userDatasource.getUsersByIDs(userIDs).map { it.toShareUser() }
-        } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.NetworkError("Failed to fetch users by IDs: ${e.message}")
+            usersRaw.map { userDTO -> userDTO.toShareUser() }
         }
     }
 
-    override suspend fun getUserSuggestionsByEmail(email: String): List<ShareUser> {
-        return try {
-            val usersRaw: List<UserDTO> = userDatasource.getUserSuggestionsForSearch(email)
-            usersRaw.map { userDTO -> userDTO.toShareUser() }
-
-        } catch (e: AppError) {
-            throw e
-        } catch (e: Exception) {
-            throw AppError.NetworkError("Failed to fetch user suggestions: ${e.message}")
+    override suspend fun getUsersByIDs(userIDs: List<String>): AppResult<List<ShareUser>> {
+        return safeApiCall {
+            userDatasource.getUsersByIDs(userIDs).map { it.toShareUser() }
         }
     }
 

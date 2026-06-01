@@ -181,6 +181,8 @@
     <string name="error_chart_unable_load">Unable to Load Charts</string>
     <string name="error_teams_load_failed">Failed to load teams</string>
     <string name="error_team_delete_failed">Failed to delete team</string>
+    <string name="error_share_load_failed">Failed to load sharing info. Please try again.</string>
+    <string name="error_share_failed">"Failed to share. Please try again."</string>
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>

@@ -28,7 +28,7 @@ interface VisualizationRepository {
     suspend fun getIndividualVisualization(visualizationID: String): AppResult<VisualizationFullScreen?>
 
     /** Returns the sharing metadata (sharedWithUsers, sharedWithTeams) for a single visualization. */
-    suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData?
+    suspend fun getVisualizationById(visualizationId: String): AppResult<VisualizationSharedData?>
 
     /** Permanently deletes a visualization and removes it from every recipient's feed. */
     suspend fun deleteVisualizationForEveryone(visualizationId: String): AppResult<Unit>

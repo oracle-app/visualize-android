@@ -161,17 +161,16 @@ class VisualizationRepositoryImpl @Inject constructor(
 
     // ─── feature/feed-share-and-delete methods ─────────────────────────────────
 
-    override suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData? {
-        return try {
+    override suspend fun getVisualizationById(visualizationId: String): AppResult<VisualizationSharedData?> {
+        return safeApiCall {
             // Reuses getIndividualVisualization datasource method — same Firestore document
-            val dto = visualizationDataSource.getIndividualVisualization(visualizationId) ?: return null
+            val dto = visualizationDataSource.getIndividualVisualization(visualizationId) ?: throw Exception(
+                "Visualization not found"
+            )
             VisualizationSharedData(
                 sharedWithUsers = dto.sharedWithUsers,
                 sharedWithTeams = dto.sharedWithTeams
             )
-        } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.NetworkError("Failed to fetch visualization: ${e.message}")
         }
     }
 
