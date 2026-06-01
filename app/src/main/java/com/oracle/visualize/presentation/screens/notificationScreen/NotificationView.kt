@@ -1,8 +1,7 @@
 package com.oracle.visualize.presentation.screens.notificationScreen
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,7 +30,6 @@ import com.oracle.visualize.domain.models.enums.NotificationGroup
 /**
  * Placeholder screen for notifications.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotificationPage(modifier: Modifier = Modifier,
                      viewModel: NotificationViewModel = hiltViewModel()

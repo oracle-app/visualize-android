@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.notificationScreen
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
@@ -25,7 +24,6 @@ import javax.inject.Inject
  * will be marked as read.
  *
  */
-@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
     private val getNotificationsForUserUseCase: GetNotificationsForUserUseCase,
@@ -51,7 +49,6 @@ class NotificationViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun loadNotifications() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
