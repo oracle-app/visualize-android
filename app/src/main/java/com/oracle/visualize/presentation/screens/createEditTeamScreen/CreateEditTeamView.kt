@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.createEditScreen
+package com.oracle.visualize.presentation.screens.createEditTeamScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,7 +62,10 @@ fun CreateEditTeamPage(
         }
         is CreateEditTeamUiState.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = stringResource(state.message),
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
         is CreateEditTeamUiState.Success -> {}
@@ -157,7 +160,12 @@ private fun CreateEditTeamContent(
                             singleLine = true
                         )
                         if (state.nameError != null) {
-                            Text(text = state.nameError, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp))
+                            Text(
+                                text = stringResource(state.nameError),
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 2.dp)
+                            )
                         }
                     }
                     item {

@@ -1,8 +1,5 @@
 package com.oracle.visualize.presentation.screens.profileScreen
 
-import android.net.Uri
-import com.oracle.visualize.ui.theme.ChartPalette
-
 
 sealed interface ProfileUiState {
     object Idle : ProfileUiState

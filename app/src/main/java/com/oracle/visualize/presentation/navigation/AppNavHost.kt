@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
-import com.oracle.visualize.presentation.screens.createEditScreen.CreateEditTeamPage
+import com.oracle.visualize.presentation.screens.createEditTeamScreen.CreateEditTeamPage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
@@ -84,10 +84,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.Notifications> {
             NotificationPage(modifier = Modifier.fillMaxSize())
-        }
-
-        composable<NavRoutes.Teams> {
-            // TODO: Implement TeamsPage
         }
 
         composable<NavRoutes.Profile> {

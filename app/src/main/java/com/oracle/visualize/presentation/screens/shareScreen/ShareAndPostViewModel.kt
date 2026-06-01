@@ -53,12 +53,12 @@ class ShareAndPostViewModel @Inject constructor(
     private var userID = ""
 
     init {
-        try {
-            userID = authRepository.getCurrentUserID()
+        userID = authRepository.getCurrentUserID() ?: ""
+        if (userID.isBlank()) {
+            _uiState.value = ShareUiState.Error(R.string.error_unknown_retry)
+        } else {
             loadData()
             setupSearchDebounce()
-        } catch (e: Exception) {
-            _uiState.value = ShareUiState.Error(R.string.error_unknown_retry)
         }
     }
 
@@ -68,15 +68,15 @@ class ShareAndPostViewModel @Inject constructor(
                 .debounce(500)
                 .filter { it.isNotBlank() }
                 .collect { query ->
-                    getUserSuggestionsUseCase(query.lowercase().trim()).fold(
-                        onSuccess = { results ->
-                            updateSuggestions(results)
-                        },
-                        onFailure = { error ->
-                            Log.e("ShareAndPostViewModel", "Error fetching user suggestions: ${error.message}")
+                    when (val result = getUserSuggestionsUseCase(query.lowercase().trim())) {
+                        is AppResult.Success -> {
+                            updateSuggestions(result.data)
+                        }
+                        is AppResult.Error -> {
+                            Log.e("ShareAndPostViewModel", "Error fetching user suggestions: ${result.error.message}")
                             updateSuggestions(emptyList())
                         }
-                    )
+                    }
                 }
         }
     }
@@ -84,25 +84,26 @@ class ShareAndPostViewModel @Inject constructor(
     private fun loadData() {
         viewModelScope.launch {
             _uiState.value = ShareUiState.Loading
-            try {
-                val myTeams = teamRepository.getTeamsOwnedByUser(userID)
-                val teamsImIn = teamRepository.getTeamsUserIsIn(userID)
-                val suggestedUsers = emptyList<ShareUser>()
 
+            val myTeams = teamRepository.getTeamsOwnedByUser(userID)
+            val teamsImIn = teamRepository.getTeamsUserIsIn(userID)
+
+            if (myTeams is AppResult.Success && teamsImIn is AppResult.Success) {
                 _uiState.value = ShareUiState.Content(
-                    myTeams        = myTeams,
-                    teamsImIn      = teamsImIn,
-                    suggestedUsers = suggestedUsers
+                    myTeams = myTeams.data,
+                    teamsImIn = teamsImIn.data,
+                    suggestedUsers = emptyList()
                 )
-            } catch (e: Exception) {
-                // Translates technical error
-                val errorMessage = when (e) {
+            } else {
+                val error = (myTeams as? AppResult.Error)?.error ?: (teamsImIn as? AppResult.Error)?.error
+
+                val errorMessage = when (error) {
                     is AppError.NetworkError -> R.string.error_network
                     is AppError.ParsingError -> R.string.error_parsing
                     else -> R.string.error_unknown_retry
                 }
 
-                Log.e("ShareAndPostViewModel", "Failed to load initial data", e)
+                Log.e("ShareAndPostViewModel", "Failed to load initial data", error)
                 _uiState.value = ShareUiState.Error(errorMessage)
             }
         }
@@ -195,72 +196,88 @@ class ShareAndPostViewModel @Inject constructor(
     private fun confirmShare(current: ShareUiState.Content) {
         viewModelScope.launch {
             _uiState.value = ShareUiState.Loading
-            try {
-                val shareArgs = savedStateHandle.toRoute<com.oracle.visualize.presentation.navigation.NavRoutes.ShareAndPost>()
-                val taskId = shareArgs.taskId
-                val selectedChartIndices = shareArgs.selectedChartIndices
-                val customTitles = shareArgs.customTitles
+            val shareArgs =
+                savedStateHandle.toRoute<com.oracle.visualize.presentation.navigation.NavRoutes.ShareAndPost>()
+            val taskId = shareArgs.taskId
+            val selectedChartIndices = shareArgs.selectedChartIndices
+            val customTitles = shareArgs.customTitles
 
-                val sharedWithUsers = current.selectedUsers.map { it.id }
-                val sharedWithTeams = current.selectedTeamIds.toList()
+            val sharedWithUsers = current.selectedUsers.map { it.id }
+            val sharedWithTeams = current.selectedTeamIds.toList()
 
-                // Step 1: Fetch Page 1 for all charts concurrently
-                val firstPageDeferreds = selectedChartIndices.map { chartIndex ->
-                    async {
-                        repository.getPagedResultsDto(taskId, chartIndex, 1) to chartIndex
+            // Step 1: Fetch Page 1 for all charts concurrently
+            val firstPageDeferreds = selectedChartIndices.map { chartIndex ->
+                async {
+                    repository.getPagedResultsDto(taskId, chartIndex, 1) to chartIndex
+                }
+            }
+            val firstPageResults = firstPageDeferreds.awaitAll()
+
+            val chartPageJobs = mutableListOf<Deferred<Pair<Int, AppResult<ChartResponseDTO>>>>()
+            val firstPagesMap = mutableMapOf<Int, ChartResponseDTO>()
+
+            for ((res, chartIndex) in firstPageResults) {
+                when (res) {
+                    is AppResult.Success -> {
+                        val firstPageDto = res.data
+                        firstPagesMap[chartIndex] = firstPageDto
+                        val totalPages = firstPageDto.totalPages
+                        for (page in 2..totalPages) {
+                            chartPageJobs.add(
+                                async {
+                                    chartIndex to repository.getPagedResultsDto(taskId, chartIndex, page)
+                                }
+                            )
+                        }
+                    }
+
+                    is AppResult.Error -> {
+                        Log.e("ShareAndPostViewModel", "Failed to fetch page 1 for chart $chartIndex")
+                        _uiState.value = ShareUiState.Error(R.string.error_network)
+                        return@launch
                     }
                 }
-                val firstPageResults = firstPageDeferreds.awaitAll()
+            }
 
-                val chartPageJobs = mutableListOf<Deferred<Pair<Int, AppResult<ChartResponseDTO>>>>()
-                val firstPagesMap = mutableMapOf<Int, ChartResponseDTO>()
+            // Await all additional pages in parallel
+            val additionalPagesResults = chartPageJobs.awaitAll()
 
-                for ((res, chartIndex) in firstPageResults) {
-                    if (res !is AppResult.Success) {
-                        throw Exception((res as? AppResult.Error)?.error?.message ?: "Failed to fetch page 1 for chart $chartIndex")
-                    }
-                    val firstPageDto = res.data
-                    firstPagesMap[chartIndex] = firstPageDto
+            // Group pages by chartIndex
+            val pagesByChart = mutableMapOf<Int, MutableList<ChartResponseDTO>>()
+            firstPagesMap.forEach { (chartIndex, firstPageDto) ->
+                pagesByChart.getOrPut(chartIndex) { mutableListOf() }.add(firstPageDto)
+            }
 
-                    // Step 2: Fetch remaining pages (2..totalPages) concurrently
-                    val totalPages = firstPageDto.totalPages
-                    for (page in 2..totalPages) {
-                        chartPageJobs.add(
-                            async {
-                                chartIndex to repository.getPagedResultsDto(taskId, chartIndex, page)
-                            }
-                        )
-                    }
-                }
-
-                // Await all additional pages in parallel
-                val additionalPagesResults = chartPageJobs.awaitAll()
-
-                // Group pages by chartIndex
-                val pagesByChart = mutableMapOf<Int, MutableList<ChartResponseDTO>>()
-                firstPagesMap.forEach { (chartIndex, firstPageDto) ->
-                    pagesByChart.getOrPut(chartIndex) { mutableListOf() }.add(firstPageDto)
-                }
-
-                for ((chartIndex, res) in additionalPagesResults) {
-                    if (res is AppResult.Success) {
+            for ((chartIndex, res) in additionalPagesResults) {
+                when (res) {
+                    is AppResult.Success -> {
                         pagesByChart.getOrPut(chartIndex) { mutableListOf() }.add(res.data)
-                    } else {
-                        throw Exception((res as? AppResult.Error)?.error?.message ?: "Failed to fetch page for chart $chartIndex")
+                    }
+
+                    is AppResult.Error -> {
+                        Log.e("ShareAndPostViewModel", "Failed to fetch page for chart $chartIndex")
+                        _uiState.value = ShareUiState.Error(R.string.error_network)
+                        return@launch
                     }
                 }
+            }
 
-                // Step 3: Run CPU-intensive merging and JSON serialization on Dispatchers.Default
-                val visualizations = withContext(Dispatchers.Default) {
+            // Step 3: Run CPU-intensive merging and JSON serialization on Dispatchers.Default
+            val visualizations = try {
+                withContext(Dispatchers.Default) {
                     selectedChartIndices.mapIndexed { i, chartIndex ->
                         val customTitle = customTitles.getOrElse(i) { "Visualization ${chartIndex + 1}" }
-                        val pagesList = pagesByChart[chartIndex] ?: throw Exception("Missing pages for chart $chartIndex")
-                        
+                        val pagesList =
+                            pagesByChart[chartIndex] ?: throw Exception("Missing pages for chart $chartIndex")
+
                         // Sort pages to ensure they are merged in correct chronological order
                         pagesList.sortBy { it.page }
 
                         val firstPageDto = pagesList.first()
-                        val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
+                        val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(
+                            firstPageDto.chartType,
+                            pagesList
+                        )
 
                         val previewDto = firstPageDto.copy(chartName = customTitle, preview = true)
                         val combinedDto = firstPageDto.copy(
@@ -283,20 +300,22 @@ class ShareAndPostViewModel @Inject constructor(
                         )
                     }
                 }
-
-                // Step 4: Publish visualizations in bulk to Firebase
-                publishVisualizationsInBulkUseCase(visualizations).fold(
-                    onSuccess = {
-                        _uiState.value = ShareUiState.Success
-                    },
-                    onFailure = {
-                        throw it
-                    }
-                )
-
             } catch (e: Exception) {
-                Log.e("ShareAndPostViewModel", "Failed to share visualizations", e)
-                _uiState.value = ShareUiState.Error(R.string.error_network)
+                Log.e("ShareAndPostViewModel", "Data mapping error", e)
+                _uiState.value = ShareUiState.Success
+                return@launch
+            }
+
+            // Step 4: Publish visualizations in bulk to Firebase
+            when (val publishResult = publishVisualizationsInBulkUseCase(visualizations)) {
+                is AppResult.Success -> {
+                    _uiState.value = ShareUiState.Success
+                }
+
+                is AppResult.Error -> {
+                    Log.e("ShareAndPostViewModel", "Failed to shared: ${publishResult.error.message}")
+                    _uiState.value = ShareUiState.Error(R.string.error_network)
+                }
             }
         }
     }

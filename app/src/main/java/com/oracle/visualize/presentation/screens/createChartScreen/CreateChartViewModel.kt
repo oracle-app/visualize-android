@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.domain.repositories.AnalyzeRepository
@@ -39,15 +40,19 @@ class CreateChartViewModel @Inject constructor(
     fun onFileSelected(dataset: SelectedDataset, file: File) {
         val fileSizeFormatted = formatFileSize(dataset.sizeBytes)
 
-        validateDatasetUseCase(dataset.name, dataset.sizeBytes).onSuccess {
-            startUpload(dataset.name, fileSizeFormatted, file)
-        }.onFailure { exception ->
-            Log.e("CreateViewModel", "File validation failed: ${exception.message}")
-            _uiState.value = CreateChartUiState.Error(
-                message = R.string.error_invalid_format,
-                fileName = dataset.name,
-                fileSize = fileSizeFormatted
-            )
+        when (val validationResult = validateDatasetUseCase(dataset.name, dataset.sizeBytes)) {
+            is AppResult.Success -> {
+                startUpload(dataset.name, fileSizeFormatted, file)
+            }
+            is AppResult.Error -> {
+                Log.e("CreateViewModel", "File validation failed: ${validationResult.error.message}")
+                _uiState.value = CreateChartUiState.Error(
+                    message = R.string.error_invalid_format,
+                    fileName = dataset.name,
+                    fileSize = fileSizeFormatted
+                )
+            }
+
         }
     }
 
@@ -55,24 +60,35 @@ class CreateChartViewModel @Inject constructor(
         uploadJob?.cancel()
         uploadJob = viewModelScope.launch {
             _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, 0f)
-            
-            val result = repository.analyzeData(file)
-            
-            when (result) {
-                is AppResult.Success -> {
-                    val taskId = result.data
-                    for (progressValue in 1..100) {
-                        delay(200)
-                        if (_uiState.value is CreateChartUiState.Uploading){
-                            _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, progressValue / 100f)
-                        }
+
+            val animationJob = launch {
+                for (progressValue in 1..90) {
+                    delay(150)
+                    if (_uiState.value is CreateChartUiState.Uploading) {
+                        _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, progressValue / 100f)
                     }
-                    _uiState.value = CreateChartUiState.Success(fileName, fileSize, taskId)
+                }
+            }
+
+            when (val result = repository.analyzeData(file)) {
+                is AppResult.Success -> {
+                    animationJob.cancel()
+
+                    _uiState.value = CreateChartUiState.Uploading(fileName, fileSize, 1f)
+                    delay(400)
+
+                    _uiState.value = CreateChartUiState.Success(fileName, fileSize, result.data)
                 }
                 is AppResult.Error -> {
+                    animationJob.cancel()
                     Log.e("CreateViewModel", "Upload failed: ${result.error.message}")
+
+                    val errorStringId = when (result.error) {
+                        is AppError.NetworkError -> R.string.error_network
+                        else -> R.string.error_generic
+                    }
                     _uiState.value = CreateChartUiState.Error(
-                        message = R.string.error_generic,
+                        message = errorStringId,
                         fileName = fileName,
                         fileSize = fileSize
                     )

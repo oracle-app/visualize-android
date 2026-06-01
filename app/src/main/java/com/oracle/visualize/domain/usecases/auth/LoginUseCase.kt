@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.auth
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
 import javax.inject.Inject
@@ -16,36 +17,34 @@ class LoginUseCase @Inject constructor(private val authRepository: AuthRepositor
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
 
     // Returns Result<AuthUser>
-    suspend operator fun invoke(email: String, password: String): Result<AuthUser> {
+    suspend operator fun invoke(email: String, password: String): AppResult<AuthUser> {
         // 1. Validations using Return
         if (email.isBlank()) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                     AppError.AuthField.EMAIL,
-                    "Email is required"
+                    "Required fields cannot be left blank."
                 )
             )
         }
 
         if (!email.matches(emailRegex)) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                     AppError.AuthField.EMAIL,
-                    "Valid Email required"))
+                    "Please enter a valid email address."))
         }
 
         if (password.isBlank()) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                     AppError.AuthField.PASSWORD,
-                    "Password is required"
+                    "Required fields cannot be left blank."
                 )
             )
         }
 
-        return runCatching {
-            authRepository.login(email, password)
-        }
+        return authRepository.login(email, password)
 
     }
 }

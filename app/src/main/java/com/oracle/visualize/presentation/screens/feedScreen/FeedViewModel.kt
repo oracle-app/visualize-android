@@ -1,9 +1,11 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
@@ -34,11 +36,12 @@ class FeedViewModel @Inject constructor(
     private var feedJob: Job? = null
 
     init {
-        try {
-            currentUserID = authRepository.getCurrentUserID()
-            loadData(forceRefresh = false)
-        } catch (e: Exception) {
+        currentUserID = authRepository.getCurrentUserID() ?: ""
+
+        if (currentUserID.isBlank()) {
             _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+        } else {
+            loadData(forceRefresh = false)
         }
     }
 
@@ -52,7 +55,10 @@ class FeedViewModel @Inject constructor(
 
     fun loadChartForCard(card: VisualizationCard) {
         viewModelScope.launch {
-            val chart = parseSingleChartUseCase(card)
+            val chart = when (val result = parseSingleChartUseCase(card)) {
+                is AppResult.Success -> result.data
+                is AppResult.Error -> null
+            }
 
             allFeedItems = allFeedItems.map { item ->
                 if (item.card.id == card.id) {
@@ -77,15 +83,15 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
-            observeUserFeedUseCase(currentUserID, forceRefresh = true).collect { result ->
-                result.fold(
-                    onSuccess = { items ->
-                        allFeedItems = items.distinctBy { it.card.id }
+            observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
+                when (result) {
+                    is AppResult.Success -> {
+                        allFeedItems = result.data.distinctBy { it.card.id }
                         applyLocalFilterAndSearch()
-                    },
-                    onFailure = { error ->
+                    }
+                    is AppResult.Error -> {
                         allFeedItems = emptyList()
-                        val uiErrorMessage = when (error) {
+                        val uiErrorMessage = when (result.error) {
                             is AppError.NetworkError -> R.string.error_network
                             is AppError.ParsingError -> R.string.error_parsing
                             is AppError.NotFound     -> R.string.error_viz_not_found
@@ -93,7 +99,7 @@ class FeedViewModel @Inject constructor(
                         }
                         _uiState.value = FeedUiState.Error(uiErrorMessage)
                     }
-                )
+                }
             }
         }
     }
