@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.visualization
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.VisualizationFullScreen
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import javax.inject.Inject
@@ -16,11 +17,11 @@ class GetIndividualVisualizationUseCase @Inject constructor(
     private val visualizationRepository: VisualizationRepository
 ) {
     // Return type Result<VisualizationFullScreen?>
-    suspend operator fun invoke(visualizationID: String): Result<VisualizationFullScreen?> {
+    suspend operator fun invoke(visualizationID: String): AppResult<VisualizationFullScreen?> {
         if (visualizationID.isBlank()) {
-            return Result.failure(AppError.GeneralValidationError("Visualization ID is empty"))
+            return AppResult.Error(AppError.GeneralValidationError("Visualization ID is empty"))
         }
 
-        return runCatching { visualizationRepository.getIndividualVisualization(visualizationID) }
+        return visualizationRepository.getIndividualVisualization(visualizationID)
     }
 }

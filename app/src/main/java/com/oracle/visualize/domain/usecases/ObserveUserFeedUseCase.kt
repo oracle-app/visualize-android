@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases
 
 import com.oracle.visualize.data.datasources.local.ChartCacheManager
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import kotlinx.coroutines.flow.Flow
@@ -13,18 +14,23 @@ class ObserveUserFeedUseCase @Inject constructor(
     private val visualizationRepository: VisualizationRepository,
     private val chartCacheManager: ChartCacheManager
 ) {
-    operator fun invoke(userID: String, forceRefresh: Boolean): Flow<Result<List<FeedItem>>> = flow {
-        try {
-            val cards = visualizationRepository.getUserFeedVisualizations(userID, forceRefresh)
+    operator fun invoke(userID: String, forceRefresh: Boolean): Flow<AppResult<List<FeedItem>>> = flow {
+        val result = visualizationRepository.getUserFeedVisualizations(userID, forceRefresh)
 
-            val initialItems = cards.map { card ->
-                val cached = chartCacheManager.getChart(card.id)
-                FeedItem(card = card, chart = cached, isChartLoading = cached == null)
+        when (result) {
+            is AppResult.Success -> {
+                val initialItems = result.data.map { card ->
+                    val cached = chartCacheManager.getChart(card.id)
+                    FeedItem(card = card, chart = cached, isChartLoading = cached == null)
+                }
+                emit(AppResult.Success(initialItems))
             }
-            emit(Result.success(initialItems))
-
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+            is AppResult.Error -> {
+                emit(AppResult.Error(result.error))
+            }
         }
+
+
+
     }
 }

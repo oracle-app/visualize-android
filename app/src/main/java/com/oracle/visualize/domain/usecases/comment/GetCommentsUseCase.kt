@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases.comment
 
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.repositories.CommentRepository
 import javax.inject.Inject
@@ -14,12 +15,10 @@ class GetCommentsUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         visualizationId: String
-    ): Result<List<Comment>> {
+    ): AppResult<List<Comment>> {
         if (visualizationId.isBlank()) {
-            return Result.success(emptyList())
+            return AppResult.Success(emptyList())
         }
-        return runCatching {
-            commentRepository.getComments(visualizationId)
-        }
+        return commentRepository.getComments(visualizationId)
     }
 }

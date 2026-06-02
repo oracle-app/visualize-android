@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.comment
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.CommentRepository
 import jakarta.inject.Inject
 
@@ -11,22 +12,20 @@ class DeleteThreadUseCase @Inject constructor(
         visualizationId: String,
         commentId: String,
         threadId: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         if (visualizationId.isBlank()){
-            return Result.failure(AppError.NotFound())
+            return AppResult.Error(AppError.NotFound())
         }
         if (commentId.isBlank()){
-            return Result.failure(AppError.NotFound())
+            return AppResult.Error(AppError.NotFound())
         }
         if (threadId.isBlank()){
-            return Result.failure(AppError.NotFound())
+            return AppResult.Error(AppError.NotFound())
         }
-        return runCatching {
-            commentsRepository.deleteThread(
+        return commentsRepository.deleteThread(
                 visualizationId = visualizationId,
                 commentId = commentId,
                 threadId = threadId
-            )
-        }
+        )
     }
 }

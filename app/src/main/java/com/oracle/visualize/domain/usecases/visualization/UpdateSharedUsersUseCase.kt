@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.visualization
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import javax.inject.Inject
 
@@ -26,11 +27,10 @@ class UpdateSharedUsersUseCase @Inject constructor(
         visualizationId: String,
         userIds: List<String>,
         teamIds: List<String> = emptyList()
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         if (visualizationId.isBlank())
-            return Result.failure(AppError.GeneralValidationError("Visualization ID cannot be empty"))
-        return runCatching {
-            visualizationRepository.updateSharedUsers(visualizationId, userIds, teamIds)
-        }
+            return AppResult.Error(AppError.GeneralValidationError("Visualization ID cannot be empty"))
+
+        return visualizationRepository.updateSharedUsers(visualizationId, userIds, teamIds)
     }
 }

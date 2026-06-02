@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.visualization.GetIndividualVisualizationUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseFullScreenChartUseCase
@@ -39,7 +40,7 @@ class FullVisualizationViewModel @Inject constructor(
     private var currentUserID: String = ""
 
     init {
-        currentUserID = authRepository.getCurrentUserID()
+        currentUserID = authRepository.getCurrentUserID() ?: ""
     }
 
     fun loadVisualization(visualizationId: String) {
@@ -51,31 +52,49 @@ class FullVisualizationViewModel @Inject constructor(
                 )
             }
 
-            getIndividualVisualizationUseCase(visualizationId).fold(
-                onSuccess = { visualization ->
-                    val chart = visualization?.let { parseFullScreenChartUseCase(it) }
+            when (val result = getIndividualVisualizationUseCase(visualizationId)) {
+                is AppResult.Success -> {
+                    val visualization = result.data
 
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            visualization = visualization,
-                            chart = chart,
-                            errorMessage = if (visualization == null) {
-                                R.string.error_viz_not_found
-                            } else if (chart == null) {
-                                R.string.error_chart_not_found
-                            } else {
-                                null
+                    if (visualization == null) {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = R.string.error_viz_not_found
+                            )
+                        }
+                    } else {
+                        when (val chartResult = parseFullScreenChartUseCase(visualization)) {
+                            is AppResult.Success -> {
+                                _uiState.update {
+                                    it.copy(
+                                        isLoading = false,
+                                        visualization = visualization,
+                                        chart = chartResult.data,
+                                        errorMessage = null
+                                    )
+                                }
                             }
-                        )
+
+                            is AppResult.Error -> {
+                                _uiState.update {
+                                    it.copy(
+                                        isLoading = false,
+                                        visualization = visualization,
+                                        errorMessage = R.string.error_chart_not_found
+                                    )
+                                }
+                            }
+                        }
                     }
-                },
-                onFailure = { error ->
-                    val uiErrorMessage = when (error) {
+                }
+
+                is AppResult.Error -> {
+                    val uiErrorMessage = when (result.error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.ParsingError -> R.string.error_parsing
-                        is AppError.NotFound     -> R.string.error_viz_not_found
-                        else                     -> R.string.error_unknown_retry
+                        is AppError.NotFound -> R.string.error_viz_not_found
+                        else -> R.string.error_unknown_retry
                     }
 
                     _uiState.update {
@@ -86,7 +105,7 @@ class FullVisualizationViewModel @Inject constructor(
                         )
                     }
                 }
-            )
+            }
         }
     }
 

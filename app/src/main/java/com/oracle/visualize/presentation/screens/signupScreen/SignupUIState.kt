@@ -1,15 +1,17 @@
 package com.oracle.visualize.presentation.screens.signupScreen
 
+import androidx.annotation.StringRes
+
 data class SignUpUiState(
     val name: String = "",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
-    val nameError: String? = null,
-    val emailError: String? = null,
-    val passwordError: String? = null,
-    val confirmPasswordError: String? = null,
-    val error: String? = null,
+    @StringRes val nameErrorRes: Int? = null,
+    @StringRes val emailErrorRes: Int? = null,
+    @StringRes val passwordErrorRes: Int? = null,
+    @StringRes val confirmPasswordErrorRes: Int? = null,
+    @StringRes val errorRes: Int? = null,
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,

@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.auth
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
 import javax.inject.Inject
 
@@ -9,24 +10,22 @@ class ResetPasswordUseCase @Inject constructor(
 ){
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
 
-    suspend operator fun invoke(email: String): Result<Unit> {
+    suspend operator fun invoke(email: String): AppResult<Unit> {
         if (email.isBlank()){
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.EMAIL,
-                "Email is required")
+                "Required fields cannot be left blank.")
             )
         }
         if (!email.matches(emailRegex)) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.EMAIL,
-                "Valid Email required")
+                "Please enter a valid email address.")
             )
         }
 
-        return runCatching {
-            authRepository.resetPassword(email)
-        }
+        return authRepository.resetPassword(email)
     }
 }

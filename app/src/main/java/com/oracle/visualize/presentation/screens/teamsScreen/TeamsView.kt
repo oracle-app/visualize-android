@@ -71,7 +71,7 @@ fun TeamsPage(
         is TeamsUiState.Error -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(onClick = { viewModel.onEvent(TeamsUiEvent.Refresh) }) {
                         Text(stringResource(R.string.teams_retry))

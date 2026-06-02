@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.repositories
 
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.VisualizationFullScreen
@@ -15,24 +16,25 @@ interface VisualizationRepository {
         configJSON: String,
         sharedWithUsers: List<String>,
         sharedWithTeams: List<String>
-    )
-    suspend fun getAllVisualizations(): List<Visualization>
-    suspend fun getSharedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard>
-    suspend fun getPersonalVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard>
-    suspend fun getUserFeedVisualizations(userID: String, forceRefresh: Boolean): List<VisualizationCard>
-    suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>)
+    ): AppResult<Unit>
+
+    suspend fun getAllVisualizations(): AppResult<List<Visualization>>
+    suspend fun getSharedVisualizations(userID: String, forceRefresh: Boolean): AppResult<List<VisualizationCard>>
+    suspend fun getPersonalVisualizations(userID: String, forceRefresh: Boolean): AppResult<List<VisualizationCard>>
+    suspend fun getUserFeedVisualizations(userID: String, forceRefresh: Boolean): AppResult<List<VisualizationCard>>
+    suspend fun publishVisualizationsInBulk(visualizations: List<Visualization>): AppResult<Unit>
 
     /** Returns the full screen model for a single visualization. */
-    suspend fun getIndividualVisualization(visualizationID: String): VisualizationFullScreen?
+    suspend fun getIndividualVisualization(visualizationID: String): AppResult<VisualizationFullScreen?>
 
     /** Returns the sharing metadata (sharedWithUsers, sharedWithTeams) for a single visualization. */
-    suspend fun getVisualizationById(visualizationId: String): VisualizationSharedData?
+    suspend fun getVisualizationById(visualizationId: String): AppResult<VisualizationSharedData?>
 
     /** Permanently deletes a visualization and removes it from every recipient's feed. */
-    suspend fun deleteVisualizationForEveryone(visualizationId: String)
+    suspend fun deleteVisualizationForEveryone(visualizationId: String): AppResult<Unit>
 
     /** Hides a visualization from the current user's feed without deleting it. */
-    suspend fun hideVisualizationForMe(userID: String, visualizationId: String)
+    suspend fun hideVisualizationForMe(userID: String, visualizationId: String): AppResult<Unit>
 
     /**
      * Overwrites the sharedWithUsers and sharedWithTeams lists of a visualization.
@@ -42,5 +44,5 @@ interface VisualizationRepository {
         visualizationId: String,
         userIds: List<String>,
         teamIds: List<String>
-    )
+    ): AppResult<Unit>
 }

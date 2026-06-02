@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.comment
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.domain.repositories.CommentRepository
 import jakarta.inject.Inject
@@ -23,20 +24,18 @@ class CreateThreadUseCase @Inject constructor(
         authorName: String,
         authorAvatarURL: String?,
         content: String
-    ): Result<Thread> {
+    ): AppResult<Thread> {
         if (content.isBlank()) {
-            return Result.failure(AppError.InvalidComment())
+            return AppResult.Error(AppError.InvalidComment())
         }
 
-        return runCatching {
-            commentsRepository.createThread(
+        return commentsRepository.createThread(
                 visualizationId = visualizationId,
                 commentId = commentId,
                 authorID = authorID,
                 authorName = authorName,
                 authorAvatarURL = authorAvatarURL,
                 content = content.trim()
-            )
-        }
+        )
     }
 }

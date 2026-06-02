@@ -2,7 +2,9 @@ package com.oracle.visualize.presentation.screens.resetPasswordScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.usecases.auth.ResetPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,8 +30,8 @@ class ResetPasswordViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 email = email,
-                emailError = null,
-                error = null
+                emailErrorRes = null,
+                errorRes = null
             )
         }
     }
@@ -43,57 +45,78 @@ class ResetPasswordViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     isLoading = true,
-                    emailError = null,
-                    error = null,
+                    emailErrorRes = null,
+                    errorRes = null,
                     success = false
                 )
             }
 
-            val result = resetPasswordUseCase(currentState.email)
-
-            result.fold(
-                onSuccess = {
+            when (val result = resetPasswordUseCase(currentState.email)) {
+                is AppResult.Success -> {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             success = true
                         )
                     }
-                },
-                onFailure = { exception ->
-                    val message = exception.message ?: "Unable to send reset link. Please try again."
-
-                    when (exception) {
+                }
+                is AppResult.Error -> {
+                    when (val exception = result.error) {
                         is AppError.AuthValidationError -> {
-                            if (exception.field == AppError.AuthField.EMAIL) {
-                                _uiState.update {
-                                    it.copy(isLoading = false, emailError = message)
+
+                            when (exception.field) {
+                                AppError.AuthField.EMAIL -> {
+                                    val msg = exception.message ?: ""
+
+                                    val resId = when {
+
+                                        // Empty Email
+                                        msg.contains("Required", ignoreCase = true) -> {
+                                            R.string.error_auth_field_empty
+                                        }
+
+                                        // Invalid Email
+                                        else -> {
+                                            R.string.error_email_invalid
+                                        }
+                                    }
+                                    _uiState.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            emailErrorRes = resId
+                                        )
+                                    }
                                 }
-                            } else {
-                                _uiState.update {
-                                    it.copy(isLoading = false, error = message)
-                                }
+
+                                else -> {}
                             }
+
                         }
                         is AppError.NetworkError -> {
                             _uiState.update {
-                                it.copy(isLoading = false, error = message)
+                                it.copy(
+                                    isLoading = false,
+                                    errorRes = R.string.error_network
+                                )
                             }
                         }
                         else -> {
                             _uiState.update {
-                                it.copy(isLoading = false, error = message)
+                                it.copy(
+                                    isLoading = false,
+                                    errorRes = R.string.error_unknown_retry
+                                )
                             }
                         }
                     }
                 }
-            )
+            }
         }
     }
 
     fun clearError() {
         _uiState.update {
-            it.copy(error = null)
+            it.copy(errorRes = null)
         }
     }
 }

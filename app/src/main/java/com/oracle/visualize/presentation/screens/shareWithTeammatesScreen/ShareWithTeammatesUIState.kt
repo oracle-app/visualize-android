@@ -7,7 +7,7 @@ sealed interface ShareWithTeammatesUiState {
 
     object Loading : ShareWithTeammatesUiState
 
-    data class Error(val message: String) : ShareWithTeammatesUiState
+    data class Error(val message: Int) : ShareWithTeammatesUiState
 
     data class Content(
         val visualizationId: String,
@@ -23,6 +23,6 @@ sealed interface ShareWithTeammatesUiState {
         // Submit
         val isSubmitting: Boolean = false,
         val shareSuccess: Boolean = false,
-        val errorMessage: String? = null
+        val errorMessage: Int? = null
     ) : ShareWithTeammatesUiState
 }
