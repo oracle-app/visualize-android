@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.screens.profileScreen.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.Avatar
 
@@ -31,6 +34,10 @@ fun ProfileHeader(
     profileImageUrl: String,
     onEditClick: () -> Unit
 ) {
+    val emailTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onBackground } else {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    }
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -67,6 +74,7 @@ fun ProfileHeader(
         Text(
             text = userName,
             style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
 
@@ -75,7 +83,9 @@ fun ProfileHeader(
         Text(
             text = email,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 17.sp,
+            color = emailTextColor
         )
     }
 }

@@ -83,7 +83,7 @@ fun ShareWithTeammatesScreen(
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
             }
         }
     }
@@ -97,8 +97,10 @@ private fun ShareWithTeammatesContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope             = rememberCoroutineScope()
 
+    val currentErrorMessage = state.errorMessage?.let { stringResource(id = it) }
+
     LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let { msg ->
+        currentErrorMessage?.let { msg ->
             scope.launch { snackbarHostState.showSnackbar(msg) }
         }
     }

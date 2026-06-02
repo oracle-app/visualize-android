@@ -3,20 +3,20 @@ package com.oracle.visualize.presentation.screens.profileScreen.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.ui.theme.ChartPalette
 import androidx.compose.ui.res.stringResource
-import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
 
 @Composable
 fun ChartThemePicker(
     selectedPalette: String,
     onPaletteChange: (String) -> Unit
 ) {
-    SettingsCard(title = stringResource(R.string.chart_theme_title)) {
+    SettingsCard(title = stringResource(R.string.chart_theme_title), titleDrawableImage = R.drawable.baseline_color_lens_24) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
                 ThemeItem(

@@ -157,12 +157,34 @@
     <string name="error_parsing">There was a problem reading some visualizations.</string>
     <string name="error_viz_not_found">No visualizations found.</string>
     <string name="error_chart_not_found">No chart found.</string>
-    <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
+    <string name="error_unknown_retry">An unexpected error occurred.\nPlease try again.</string>
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
 
     <string name="error_upload_snip">Error. Image could not be uploaded.</string>
+    <string name="error_email_invalid">Please enter a valid email address.</string>
+    <string name="error_auth_field_empty">Required fields cannot be left blank.</string>
+    <string name="error_invalid_credentials">Incorrect email or password.\nPlease try again.</string>
+    <string name="error_alert">Something went wrong.\nPlease try again.</string>
+    <string name="error_name_length">Name must be at least 2 characters.</string>
+    <string name="error_email_already">This email is already registered.</string>
+    <string name="error_password_length">Password must be at least 8 characters.</string>
+    <string name="error_password_weak">Password must include letters and numbers.</string>
+    <string name="error_passwords_not_match">Passwords do not match.</string>
+    <string name="error_team_load_failed">Failed to load team</string>
+    <string name="error_team_name_empty">Team name cannot be empty</string>
+    <string name="error_team_saved_failed">Failed to save team</string>
+    <string name="error_charts_not_generate">No charts could be generated for this dataset.</string>
+    <string name="error_chart_invalid_state">Invalid state</string>
+    <string name="error_charts_not_selected">"No charts selected"</string>
+    <string name="error_chart_page_failed">Failed to fetch page for chart $chartIndex</string>
+    <string name="error_chart_unable_load">Unable to Load Charts</string>
+    <string name="error_teams_load_failed">Failed to load teams</string>
+    <string name="error_team_delete_failed">Failed to delete team</string>
+    <string name="error_share_load_failed">Failed to load sharing info. Please try again.</string>
+    <string name="error_share_failed">"Failed to share. Please try again."</string>
+
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>

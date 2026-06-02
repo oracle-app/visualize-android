@@ -1,4 +1,4 @@
-package com.oracle.visualize.presentation.screens.createEditScreen
+package com.oracle.visualize.presentation.screens.createEditTeamScreen
 
 import com.oracle.visualize.domain.models.ShareUser
 
@@ -15,7 +15,7 @@ sealed interface CreateEditTeamUiState {
         val suggestions: List<ShareUser> = emptyList(),
         val ownerID: String = "",
         val isSubmitting: Boolean = false,
-        val nameError: String? = null,
+        val nameError: Int? = null,
         // True while the "Unsaved Changes" dialog is visible
         val showUnsavedChangesDialog: Boolean = false
     ) : CreateEditTeamUiState {
@@ -26,6 +26,6 @@ sealed interface CreateEditTeamUiState {
             teamName.isNotBlank() || members.size > 1
     }
 
-    data class Error(val message: String) : CreateEditTeamUiState
+    data class Error(val message: Int) : CreateEditTeamUiState
     object Success : CreateEditTeamUiState
 }

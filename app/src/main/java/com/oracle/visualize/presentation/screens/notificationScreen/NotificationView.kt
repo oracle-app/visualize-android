@@ -67,12 +67,14 @@ fun NotificationPage(modifier: Modifier = Modifier,
                         .fillMaxSize()
                         .padding(paddingValues),
                     contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = stringResource(uiState.error!!),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.displayLarge
-                    )
+                ) {
+                    uiState.error?.let { errorId ->
+                        Text(
+                            text = stringResource(id = errorId),
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.displayLarge
+                        )
+                    }
                 }
             }
             else -> {

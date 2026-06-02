@@ -92,8 +92,17 @@ fun SignUpPage(
                 onValueChange = viewModel::onNameChange,
                 placeholder = stringResource(R.string.name),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.nameError != null
+                isError = uiState.nameErrorRes != null
             )
+
+            uiState.nameErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(22.dp))
 
@@ -102,8 +111,17 @@ fun SignUpPage(
                 onValueChange = viewModel::onEmailChange,
                 placeholder = stringResource(R.string.email),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.emailError != null
+                isError = uiState.emailErrorRes != null
             )
+
+            uiState.emailErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(22.dp))
 
@@ -112,11 +130,20 @@ fun SignUpPage(
                 onValueChange = viewModel::onPasswordChange,
                 placeholder = stringResource(R.string.password),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.passwordError != null,
+                isError = uiState.passwordErrorRes != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isPasswordVisible,
                 onVisibilityClick = viewModel::onPasswordVisibilityChange
             )
+
+            uiState.passwordErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -125,11 +152,21 @@ fun SignUpPage(
                 onValueChange = viewModel::onConfirmPasswordChange,
                 placeholder = stringResource(R.string.confirm_password),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.confirmPasswordError != null,
+                isError = uiState.confirmPasswordErrorRes != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isConfirmPasswordVisible,
                 onVisibilityClick = viewModel::onConfirmPasswordVisibilityChange
             )
+
+            uiState.confirmPasswordErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
+
             Text(
                 text = stringResource(R.string.passremember),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
@@ -138,11 +175,11 @@ fun SignUpPage(
 
             )
 
-            uiState.error?.let {
+            uiState.errorRes?.let { errorId ->
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = it,
+                    text = stringResource(id = errorId),
                     color = MaterialTheme.colorScheme.error,
                     fontSize = 12.sp
                 )

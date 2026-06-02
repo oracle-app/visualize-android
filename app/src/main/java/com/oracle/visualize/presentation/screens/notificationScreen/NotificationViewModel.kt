@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.usecases.notification.GetNotificationsForUserUseCase
 import com.oracle.visualize.domain.usecases.notification.GroupNotificationsUseCase
@@ -37,36 +38,32 @@ class NotificationViewModel @Inject constructor(
     private var currentUserID: String = ""
 
     init {
-        try {
-            currentUserID = authRepository.getCurrentUserID()
+        currentUserID = authRepository.getCurrentUserID().toString()
+        if (currentUserID.isBlank()) {
+            _uiState.update { it.copy(error = R.string.error_unknown_retry) }
+        } else {
             loadNotifications()
-        } catch (e: Exception) {
-            _uiState.update {
-                it.copy(
-                    error = R.string.error_unknown_retry
-                )
-            }
         }
     }
 
     fun loadNotifications() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            getNotificationsForUserUseCase(currentUserID).fold(
-                onSuccess = { notifications ->
-                    val grouped = groupNotificationsUseCase(notifications)
+            when (val result = getNotificationsForUserUseCase(currentUserID)) {
+                is AppResult.Success -> {
+                    val grouped = groupNotificationsUseCase(result.data)
                     _uiState.update { it.copy(groupedNotifications = grouped, isLoading = false) }
-                },
-                onFailure = { error ->
-                    val uiErrorMessage = when (error) {
+                }
+
+                is AppResult.Error -> {
+                    val uiErrorMessage = when (result.error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.NotFound -> R.string.error_com_not_found
-                        else -> R.string.no_notifications_yet
+                        else -> R.string.error_unknown_retry
                     }
-
                     _uiState.update { it.copy(error = uiErrorMessage, isLoading = false) }
                 }
-            )
+            }
         }
     }
 }

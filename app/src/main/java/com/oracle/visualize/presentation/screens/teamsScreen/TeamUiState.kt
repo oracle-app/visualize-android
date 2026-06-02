@@ -18,5 +18,5 @@ sealed interface TeamsUiState {
         val teamPendingDeleteId: String? = null
     ) : TeamsUiState
 
-    data class Error(val message: String) : TeamsUiState
+    data class Error(val message: Int) : TeamsUiState
 }
