@@ -1,3 +1,5 @@
+package com.oracle.visualize.presentation.screens.teamsScreen.components
+
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

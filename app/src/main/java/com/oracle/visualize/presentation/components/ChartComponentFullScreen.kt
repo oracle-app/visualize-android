@@ -1,22 +1,32 @@
 package com.oracle.visualize.presentation.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
@@ -24,10 +34,12 @@ import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.VerticalBarChart
+import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.Symbol
-import io.github.koalaplot.core.legend.FlowLegend
+import io.github.koalaplot.core.legend.FlowLegend2
 import io.github.koalaplot.core.legend.LegendLocation
+import io.github.koalaplot.core.style.KoalaPlotTheme
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
 /**
@@ -45,64 +57,111 @@ fun ChartRenderFullScreen(
     chart: Chart<*>,
     showAxisLabels: Boolean = true
 ) {
-    val labels = chart.fieldNames
+    val localConfig = LocalConfiguration.current
 
-    val dSize = when (chart.data) {
-        is List<*> -> chart.data.size
-        is Map<*,*> -> (chart.data.values.firstOrNull() as? List<*>)?.size ?: 1
-        else -> 1
+    val labels = remember(chart)  { chart.fieldNames }
+
+    val dSize = remember(chart.data) {
+        when (chart.data) {
+            is List<*> -> chart.data.size
+            is Map<*,*> -> (chart.data.values.firstOrNull() as? List<*>)?.size ?: 1
+            else -> 1
+        }
     }
 
     val cleanLabels = labels.ifEmpty {
         List(dSize) { "${stringResource(R.string.chart_legend_cat_label)} ${it + 1}" }
     }
 
-    val colors = generateChartColors(cleanLabels.size)
+    val colors = remember(cleanLabels.size) {
+        generateChartColors(cleanLabels.size, ChartPalette.THEME1)
+    }
 
     when (chart) {
         is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {
             Column(modifier = modifier.fillMaxSize()) {
-                Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-                    .padding(horizontal = 10.dp).fillMaxSize()) {
+                Column(
+                    modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                        .padding(horizontal = 10.dp).fillMaxSize()
+                ) {
                     ChartRenderGeneral(modifier, chart)
                 }
             }
         }
+
         else -> {
             ChartLayout(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                    .fillMaxSize(),
                 title = {},
                 legend = {
-                    Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 2.dp)) {
-                        FlowLegend(
-                            modifier = Modifier
-                                .border(1.dp,
-                                    MaterialTheme.colorScheme.onPrimaryContainer,
-                                    RoundedCornerShape(12.dp)
+                    when (localConfig.orientation) {
+                        Configuration.ORIENTATION_LANDSCAPE -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(IntrinsicSize.Max)
+                                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(8.dp),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Top
+                            ) {
+                                cleanLabels.forEachIndexed { index, label ->
+                                    Row(
+                                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 24.dp, end = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ){
+                                        Symbol(shape = CircleShape, fillBrush = SolidColor(colors[index]))
+                                        Text(
+                                            modifier = Modifier.padding(start = 4.dp),
+                                            text = cleanLabels[index],
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = Color.DarkGray,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        else -> {
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .background(color = MaterialTheme.colorScheme.onPrimary),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                FlowLegend2(
+                                    itemCount = cleanLabels.size,
+                                    modifier = Modifier.wrapContentSize().padding(16.dp),
+                                    symbol = { Symbol(shape = CircleShape, fillBrush = SolidColor(colors[it])) },
+                                    label = {
+                                        Text(
+                                            text = cleanLabels[it],
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = Color.DarkGray,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    },
+                                    symbolGap = KoalaPlotTheme.sizes.gap,
+                                    columnGap = KoalaPlotTheme.sizes.gap,
+                                    rowGap = KoalaPlotTheme.sizes.gap
                                 )
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimary,
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .padding(16.dp).align(Alignment.Center),
-                            itemCount = cleanLabels.size,
-                            symbol = { Symbol(
-                                shape = CircleShape,
-                                fillBrush = SolidColor(colors[it])
-                            ) },
-                            label = {
-                                Text(
-                                    cleanLabels[it],
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = Color.DarkGray
-                                ) }
-                        )
+                            }
+                        }
                     }
                 },
-                legendLocation = LegendLocation.TOP
+                legendLocation = when (localConfig.orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> LegendLocation.LEFT
+                    else -> LegendLocation.TOP
+                }
             ) {
-                Column(modifier = modifier.fillMaxSize()) {
-                    Column(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+                Box(modifier = modifier.fillMaxSize()) {
+                    Box(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
                         .padding(horizontal = 10.dp).fillMaxSize()) {
                         ChartRenderGeneral(modifier, chart, showAxisLabels)
                     }

@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.screens.loginScreen
 
+import androidx.annotation.StringRes
+
 /**
  * Represents the UI state for the Login screen.
  *
@@ -10,9 +12,9 @@ package com.oracle.visualize.presentation.screens.loginScreen
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
-    val emailError: String? = null,
-    val passwordError: String? = null,
-    val error: String? = null,
+    @StringRes val emailErrorRes: Int? = null,
+    @StringRes val passwordErrorRes: Int? = null,
+    @StringRes val errorRes: Int? = null,
     val isPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,
     val success: Boolean = false

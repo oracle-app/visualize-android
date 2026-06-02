@@ -47,6 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.ui.text.style.TextAlign
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.screens.selectChartScreen.components.ChartCard
 
@@ -63,7 +68,7 @@ import com.oracle.visualize.presentation.screens.selectChartScreen.components.Ch
 fun ChartSelectionPage(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
-    onNavigateToShare: () -> Unit,
+    onNavigateToShare: (taskId: String, selectedChartIndices: List<Int>, customTitles: List<String>) -> Unit,
     onNavigateToFeed: () -> Unit,
     viewModel: SelectChartViewModel = hiltViewModel()
 ) {
@@ -84,7 +89,7 @@ fun ChartSelectionPage(
     }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -114,13 +119,15 @@ fun ChartSelectionPage(
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
         },
         bottomBar = {
-            if (uiState is ChartSelectionUiState.Success) {
+            val state = uiState
+            if (state is ChartSelectionUiState.Success) {
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     tonalElevation = 0.dp,
@@ -133,8 +140,17 @@ fun ChartSelectionPage(
                             .padding(horizontal = 16.dp, vertical = 20.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        val context = androidx.compose.ui.platform.LocalContext.current
+
                         Button(
-                            onClick = onNavigateToFeed,
+                            onClick = {
+                                viewModel.postSelectedChartsToPersonalFeed(
+                                    onSuccess = onNavigateToFeed,
+                                    onError = { errorMsg ->
+                                        android.widget.Toast.makeText(context, errorMsg, android.widget.Toast.LENGTH_LONG).show()
+                                    }
+                                )
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),
@@ -155,7 +171,12 @@ fun ChartSelectionPage(
                         }
 
                         Button(
-                            onClick = onNavigateToShare,
+                            onClick = {
+                                val selected = state.charts.filter { it.isSelected }
+                                val indices = selected.map { it.chartIndex }
+                                val titles = selected.map { it.customTitle }
+                                onNavigateToShare(viewModel.taskId, indices, titles)
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(56.dp),
@@ -192,11 +213,58 @@ fun ChartSelectionPage(
                     }
                 }
                 is ChartSelectionUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = state.message,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Retry",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(64.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = stringResource(id = R.string.error_chart_unable_load),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = stringResource(id = state.message),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Button(
+                                onClick = { viewModel.fetchOverview() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                shape = RoundedCornerShape(24.dp),
+                                modifier = Modifier.height(48.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Retry",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
                 }
                 is ChartSelectionUiState.Success -> {

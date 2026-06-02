@@ -1,10 +1,12 @@
+package com.oracle.visualize.presentation.screens.teamsScreen
+
+import com.oracle.visualize.presentation.screens.teamsScreen.components.MyTeamRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,10 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.presentation.screens.teamsScreen.TeamsUiEvent
-import com.oracle.visualize.presentation.screens.teamsScreen.TeamsUiState
-import com.oracle.visualize.presentation.screens.teamsScreen.TeamsViewModel
 import com.oracle.visualize.presentation.screens.teamsScreen.components.DeleteTeamDialog
+import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamPosition
 import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamsImInRow
 import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamsTopBar
 
@@ -71,7 +71,7 @@ fun TeamsPage(
         is TeamsUiState.Error -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(onClick = { viewModel.onEvent(TeamsUiEvent.Refresh) }) {
                         Text(stringResource(R.string.teams_retry))

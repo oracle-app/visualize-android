@@ -41,7 +41,9 @@ class AuthFirebasesource @Inject constructor(private val auth: FirebaseAuth) {
     /**
      * Logs out the currently authenticated user.
      */
-    fun logout() = auth.signOut()
+    fun logout() {
+        FirebaseAuth.getInstance().signOut()
+    }
 
     /**
      * Gets the currently authenticated [FirebaseUser], if any.
@@ -50,5 +52,9 @@ class AuthFirebasesource @Inject constructor(private val auth: FirebaseAuth) {
      */
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
+    }
+
+    suspend fun resetPassword(email: String) {
+        auth.sendPasswordResetEmail(email).await()
     }
 }

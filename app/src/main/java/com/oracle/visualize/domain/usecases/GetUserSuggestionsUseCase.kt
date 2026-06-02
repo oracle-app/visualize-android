@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases
 
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.repositories.UserRepository
 import javax.inject.Inject
@@ -14,14 +15,12 @@ import javax.inject.Singleton
 class GetUserSuggestionsUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(query: String): Result<List<ShareUser>> {
+    suspend operator fun invoke(query: String): AppResult<List<ShareUser>> {
 
         if (query.isBlank()) {
-            return Result.success(emptyList())
+            return AppResult.Success(emptyList())
         }
 
-        return runCatching {
-            userRepository.getUserSuggestionsByEmail(query)
-        }
+        return userRepository.getUserSuggestionsByEmail(query)
     }
 }

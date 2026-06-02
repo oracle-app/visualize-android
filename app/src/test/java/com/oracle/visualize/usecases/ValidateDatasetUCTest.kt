@@ -1,7 +1,7 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.usecases.ValidateDatasetUseCase
+import com.oracle.visualize.domain.usecases.visualization.ValidateDatasetUseCase
 import com.oracle.visualize.fixtures.DatasetFixtures
 import junit.framework.TestCase.assertTrue
 import org.junit.Test

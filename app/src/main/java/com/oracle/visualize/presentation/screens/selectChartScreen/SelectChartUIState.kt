@@ -13,7 +13,7 @@ sealed interface ChartSelectionUiState {
         val hasTitleChanges: Boolean = false
     ) : ChartSelectionUiState
 
-    data class Error(val message: String) : ChartSelectionUiState
+    data class Error(val message: Int) : ChartSelectionUiState
 }
 
 /**
@@ -21,6 +21,7 @@ sealed interface ChartSelectionUiState {
  */
 data class ChartSelection(
     val id: String = UUID.randomUUID().toString(),
+    val chartIndex: Int,
     val chart: Chart<*>,
     val customTitle: String,
     val isSelected: Boolean = false
