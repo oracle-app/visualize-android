@@ -7,8 +7,11 @@ import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
 import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
@@ -26,6 +29,7 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(
     private val observeUserFeedUseCase: ObserveUserFeedUseCase,
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
     private val parseSingleChartUseCase: ParseSingleChartUseCase,
     private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
     private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
@@ -37,14 +41,18 @@ class FeedViewModel @Inject constructor(
 
     private var allFeedItems: List<FeedItem> = emptyList()
     private var currentUserID: String = ""
+    private var currentUserType: UserType = UserType.CONSUMER
     private var feedJob: Job? = null
 
     init {
-        try {
-            currentUserID = authRepository.getCurrentUserID()
-            loadData(forceRefresh = false)
-        } catch (e: Exception) {
-            _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+        viewModelScope.launch {
+            try {
+                currentUserID = authRepository.getCurrentUserID()
+                currentUserType = userRepository.getUserByUserID(currentUserID).userType
+                loadData(forceRefresh = false)
+            } catch (e: Exception) {
+                _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+            }
         }
     }
 
@@ -214,7 +222,13 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        val isDeletableMap = filteredItems.associate { it.card.id to (it.card.authorID == currentUserID) }
+        val permissionsMap = filteredItems.associate { item ->
+            item.card.id to VisualizationPermissions(
+                userType = currentUserType,
+                currentUserID = currentUserID,
+                authorID = item.card.authorID
+            )
+        }
 
         _uiState.update {
             FeedUiState.Success(
@@ -224,7 +238,7 @@ class FeedViewModel @Inject constructor(
                 selectedFilter = filter,
                 isRefreshing   = false,
                 isSearching    = isSearching,
-                isDeletableMap = isDeletableMap
+                permissionsMap = permissionsMap
             )
         }
     }

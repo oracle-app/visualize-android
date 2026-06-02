@@ -44,6 +44,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.presentation.screens.feedScreen.components.FeedCardMenu
 import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
@@ -74,6 +75,7 @@ fun FeedCard(
     chart: Chart<*>?,
     isChartLoading: Boolean,
     onLoadChartRequest: () -> Unit,
+    permissions: VisualizationPermissions,
     isDeletable: Boolean = false,
     isMenuOpen: Boolean = false,
     onMenuOpen: () -> Unit = {},
@@ -148,7 +150,9 @@ fun FeedCard(
                             properties       = PopupProperties(focusable = true)
                         ) {
                             FeedCardMenu(
-                                isDeletable         = isDeletable,
+                                canDelete           = permissions.canDelete,
+                                canHide             = permissions.canHide,
+                                canShare            = permissions.canShare,
                                 onDismiss           = onMenuDismiss,
                                 onShare             = onShare,
                                 onDeleteForEveryone = onDeleteForEveryone,
