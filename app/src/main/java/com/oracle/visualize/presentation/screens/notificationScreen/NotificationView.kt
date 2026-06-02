@@ -79,10 +79,14 @@ fun NotificationPage(modifier: Modifier = Modifier,
             }
             else -> {
                 LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(16.dp)
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = paddingValues.calculateTopPadding() + 16.dp,
+                        bottom = paddingValues.calculateBottomPadding() + 16.dp
+                    )
                 ) {
 
                     NotificationGroup.entries.forEach { group ->

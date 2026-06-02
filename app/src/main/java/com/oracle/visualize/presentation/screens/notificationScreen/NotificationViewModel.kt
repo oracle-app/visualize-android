@@ -53,6 +53,7 @@ class NotificationViewModel @Inject constructor(
                 is AppResult.Success -> {
                     val grouped = groupNotificationsUseCase(result.data)
                     _uiState.update { it.copy(groupedNotifications = grouped, isLoading = false) }
+                    markAllNotificationsAsReadUseCase(currentUserID)
                 }
 
                 is AppResult.Error -> {

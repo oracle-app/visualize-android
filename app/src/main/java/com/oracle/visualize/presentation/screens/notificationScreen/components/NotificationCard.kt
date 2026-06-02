@@ -1,7 +1,10 @@
 package com.oracle.visualize.presentation.screens.notificationScreen.components
 
 
+import android.content.Context
+import android.text.format.DateUtils
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Notification
 import com.oracle.visualize.presentation.components.UserAvatar
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
+fun formatTime(date: Date): String {
+    return DateUtils.getRelativeTimeSpanString(
+        date.time,
+        System.currentTimeMillis(),
+        DateUtils.MINUTE_IN_MILLIS
+    ).toString()
+}
 
 @Composable
 fun NotificationCard(
@@ -31,6 +44,8 @@ fun NotificationCard(
     modifier: Modifier = Modifier
 ) {
     val shape = RoundedCornerShape(5.dp)
+    val formattedDate = formatTime(notification.createdAt)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -52,12 +67,19 @@ fun NotificationCard(
                     .size(10.dp)
                     .clip(CircleShape)
                     .background(
-                        if (!notification.isRead) MaterialTheme.colorScheme.error
-                        else Color.Transparent
+                        if (!notification.isRead)
+                            MaterialTheme.colorScheme.error
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = CircleShape
                     )
             )
             Text(
-                text = notification.createdAt.toString(),
+                text = formattedDate,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -76,7 +98,9 @@ fun NotificationCard(
             ) {
                 UserAvatar(
                     username = "?",
-                    profilePictureURL = notification.senderProfilePictureURL
+                    profilePictureURL = notification.senderProfilePictureURL,
+                    modifier = Modifier,
+                    size = 40
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
