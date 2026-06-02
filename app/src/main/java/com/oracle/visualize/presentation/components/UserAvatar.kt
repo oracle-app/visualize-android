@@ -48,7 +48,7 @@ private fun FallbackAvatar(
     size: Int
 ) {
     Box(
-        modifier = Modifier.size(size.dp).clip(CircleShape).background(Color(0xFFE8A87C)),
+        modifier = Modifier.size(size.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center
     ) {
         Text(
