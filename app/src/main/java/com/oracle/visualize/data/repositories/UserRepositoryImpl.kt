@@ -9,6 +9,7 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.ui.theme.ChartPalette
 import javax.inject.Inject
 
 /**
@@ -64,5 +65,22 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun updatePfp(userId: String, uri: String): Unit {
         return userDatasource.updatePfp(userId, uri)
+    }
+
+    override suspend fun getChartTheme(userID: String): ChartPalette {
+        return try {
+            val color = userDatasource.getChartTheme(userID)
+            when (color) {
+                "THEME1" -> ChartPalette.THEME1
+                "THEME2" -> ChartPalette.THEME2
+                "THEME3" -> ChartPalette.THEME3
+                "THEME4" -> ChartPalette.THEME4
+                else -> ChartPalette.THEME1
+            }
+        } catch (e: AppError.NotFound) {
+            throw AppError.NotFound("User not found: ${e.message}")
+        } catch (e: AppError.NetworkError) {
+            throw AppError.NetworkError("Failed to get the chart theme: ${e.message}")
+        }
     }
 }

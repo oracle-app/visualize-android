@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
 import com.oracle.visualize.domain.usecases.visualization.GetIndividualVisualizationUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseFullScreenChartUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getIndividualVisualizationUseCase: GetIndividualVisualizationUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val parseFullScreenChartUseCase: ParseFullScreenChartUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -37,6 +40,7 @@ class FullVisualizationViewModel @Inject constructor(
     case it becomes relevant for a future feature.
     */
     private var currentUserID: String = ""
+    private var userChartTheme: ChartPalette? = null
 
     init {
         currentUserID = authRepository.getCurrentUserID()
@@ -50,6 +54,9 @@ class FullVisualizationViewModel @Inject constructor(
                     errorMessage = null
                 )
             }
+
+            val chartColorThemeResult = getUserChartThemeUseCase(currentUserID)
+            userChartTheme = chartColorThemeResult.getOrDefault(ChartPalette.THEME1)
 
             getIndividualVisualizationUseCase(visualizationId).fold(
                 onSuccess = { visualization ->

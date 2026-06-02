@@ -57,6 +57,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun ChartRenderFullScreen(
     modifier: Modifier = Modifier,
     chart: Chart<*>,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     showAxisLabels: Boolean = true
 ) {
     val localConfig = LocalConfiguration.current
@@ -165,7 +166,7 @@ fun ChartRenderFullScreen(
                 Box(modifier = modifier.fillMaxSize()) {
                     Box(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
                         .padding(horizontal = 10.dp).fillMaxSize()) {
-                        ChartRenderGeneral(modifier, chart, showAxisLabels)
+                        ChartRenderGeneral(modifier, chart, showAxisLabels = showAxisLabels)
                     }
                 }
             }

@@ -9,10 +9,12 @@ import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.DeleteVisualizationForEveryoneUseCase
-import com.oracle.visualize.domain.usecases.HideVisualizationForMeUseCase
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
+import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
+import com.oracle.visualize.domain.usecases.visualization.HideVisualizationForMeUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +31,7 @@ class FeedViewModel @Inject constructor(
     private val parseSingleChartUseCase: ParseSingleChartUseCase,
     private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
     private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val feedCacheManager: FeedCacheManager
 ) : ViewModel() {
 
@@ -38,6 +41,8 @@ class FeedViewModel @Inject constructor(
     private var allFeedItems: List<FeedItem> = emptyList()
     private var currentUserID: String = ""
     private var feedJob: Job? = null
+
+    private var userChartTheme: ChartPalette? = null
 
     init {
         try {
@@ -84,6 +89,9 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
+            val palette = getUserChartThemeUseCase(currentUserID)
+            userChartTheme = palette.getOrDefault(ChartPalette.THEME1)
+
             observeUserFeedUseCase(currentUserID, forceRefresh = true).collect { result ->
                 result.fold(
                     onSuccess = { items ->
@@ -224,7 +232,8 @@ class FeedViewModel @Inject constructor(
                 selectedFilter = filter,
                 isRefreshing   = false,
                 isSearching    = isSearching,
-                isDeletableMap = isDeletableMap
+                isDeletableMap = isDeletableMap,
+                chartColorTheme = userChartTheme!!,
             )
         }
     }

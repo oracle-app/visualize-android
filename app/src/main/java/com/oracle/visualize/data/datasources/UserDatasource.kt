@@ -150,4 +150,19 @@ class UserDatasource @Inject constructor(
         }
     }
 
+    /**
+     * Gets the chart color theme selected by the user.
+     *
+     * @param userID The unique ID of the user.
+     * @return The chart theme's name.
+     * @throws AppError.NotFound If the user doesn't exist.
+     * @throws AppError.NetworkError If a network error occurs.
+     */
+    suspend fun getChartTheme(userID: String): String {
+        val user = firestore.collection("users").document(userID).get().await()
+
+        if (!user.exists()) throw AppError.NotFound("User with ID $userID does not exist in the database.")
+
+        return user.get("chartTheme").toString()
+    }
 }

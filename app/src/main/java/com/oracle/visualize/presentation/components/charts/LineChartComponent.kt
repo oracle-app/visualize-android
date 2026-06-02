@@ -67,15 +67,15 @@ import kotlin.collections.component2
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderLineChart(
-    modifier: Modifier = Modifier, chart: LineChart, showAxisLabels: Boolean,
+    modifier: Modifier = Modifier, chart: LineChart, chartColorTheme: ChartPalette, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
     val processedData = remember (chart.data) {
         listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     }
-    val lineColor = generateChartColors(1, ChartPalette.THEME1).firstOrNull() ?: Color.Blue
-    val dotColors = generateChartColors(2, ChartPalette.THEME1)
+    val lineColor = generateChartColors(1, chartColorTheme).firstOrNull() ?: Color.Blue
+    val dotColors = generateChartColors(2, chartColorTheme)
 
     var xMetric = stringResource(R.string.line_scatter_x_metric)
     var yMetric = stringResource(R.string.line_scatter_y_metric)

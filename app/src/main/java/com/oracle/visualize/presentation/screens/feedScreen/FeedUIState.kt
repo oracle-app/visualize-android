@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.feedScreen
 
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.ui.theme.ChartPalette
 
 sealed interface FeedUiState {
 
@@ -20,6 +21,7 @@ sealed interface FeedUiState {
         val deleteDialogForId: String? = null,
         val hideDialogForId: String? = null,
         val isDeletableMap: Map<String, Boolean> = emptyMap(),
-        val pendingShareId: String? = null
+        val pendingShareId: String? = null,
+        val chartColorTheme: ChartPalette
     ) : FeedUiState
 }

@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.repositories
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.models.User
+import com.oracle.visualize.ui.theme.ChartPalette
 
 interface UserRepository {
     suspend fun getUsersByIDs(userIDs: List<String>): List<ShareUser>
@@ -17,4 +18,5 @@ interface UserRepository {
 
     suspend fun updatePfp(userID: String, uri: String): Unit
 
+    suspend fun getChartTheme(userID: String): ChartPalette
 }

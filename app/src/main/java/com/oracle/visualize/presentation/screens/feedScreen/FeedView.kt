@@ -142,6 +142,7 @@ fun FeedPage(
                                 FeedCard(
                                     item                = feedItem.card,
                                     chart               = feedItem.chart,
+                                    chartColorTheme     = state.chartColorTheme,
                                     currentUserID       = state.currentUserID,
                                     isChartLoading      = feedItem.isChartLoading,
                                     onLoadChartRequest  = { feedViewModel.loadChartForCard(feedItem.card) },
