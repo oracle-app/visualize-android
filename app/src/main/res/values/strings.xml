@@ -304,6 +304,7 @@
     <string name="dialog_delete_team_confirm">Delete</string>
 
     //Notifications
+    <string name="notification_title">Notifications</string>
     <string name="no_notifications_yet">No Notifications Yet</string>
     <string name="notify_you">We’ll notify you when there’s something new.</string>
 

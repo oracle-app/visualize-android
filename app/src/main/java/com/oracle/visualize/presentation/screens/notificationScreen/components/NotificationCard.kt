@@ -36,7 +36,7 @@ fun NotificationCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(MaterialTheme.colorScheme.onSurface)
+            .background(MaterialTheme.colorScheme.onSecondaryContainer)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     )
     {
