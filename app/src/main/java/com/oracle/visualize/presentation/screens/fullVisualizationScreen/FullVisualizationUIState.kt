@@ -8,6 +8,6 @@ data class FullVisualizationUIState(
     val isLoading: Boolean = false,
     val visualization: VisualizationFullScreen? = null,
     val chart: Chart<*>? = null,
-    val chartColorTheme: ChartPalette,
+    val chartColorTheme: ChartPalette = ChartPalette.THEME1,
     val errorMessage: Int? = null
 )

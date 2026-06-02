@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.team
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.TeamRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,13 +15,8 @@ import javax.inject.Singleton
 class DeleteTeamUseCase @Inject constructor(
     private val teamRepository: TeamRepository
 ) {
-    suspend operator fun invoke(teamID: String): Result<Unit> {
-        if (teamID.isBlank()) return Result.failure(AppError.GeneralValidationError("Team ID cannot be empty"))
-        return try {
-            teamRepository.deleteTeam(teamID)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    suspend operator fun invoke(teamID: String): AppResult<Unit> {
+        if (teamID.isBlank()) return AppResult.Error(AppError.GeneralValidationError("Team ID cannot be empty"))
+        return teamRepository.deleteTeam(teamID)
     }
 }

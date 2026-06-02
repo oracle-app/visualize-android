@@ -1,9 +1,9 @@
 package com.oracle.visualize.domain.usecases.visualization
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.VisualizationCard
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,12 +19,9 @@ class GetAllUserVisualizationsUseCase @Inject constructor(
     suspend operator fun invoke(
         userID: String,
         forceRefresh: Boolean = false
-    ): Result<List<VisualizationCard>> {
-        if (userID.isBlank()) return Result.failure(AppError.GeneralValidationError("User ID empty"))
-        return runCatching {
-            coroutineScope {
-                visualizationRepository.getUserFeedVisualizations(userID, forceRefresh)
-            }
-        }
+    ): AppResult<List<VisualizationCard>> {
+        if (userID.isBlank()) return AppResult.Error(AppError.GeneralValidationError("User ID empty"))
+
+        return visualizationRepository.getUserFeedVisualizations(userID, forceRefresh)
     }
 }

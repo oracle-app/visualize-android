@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.chart
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.ui.theme.ChartPalette
 import javax.inject.Inject
@@ -17,8 +18,8 @@ import javax.inject.Singleton
 class GetUserChartThemeUseCase @Inject constructor(
     private val userRepository: UserRepository
 ){
-    suspend operator fun invoke(userID: String): Result<ChartPalette> {
-        if (userID.isBlank()) return Result.failure(AppError.GeneralValidationError("User ID empty"))
-        return runCatching { userRepository.getChartTheme(userID) }
+    suspend operator fun invoke(userID: String): AppResult<ChartPalette> {
+        if (userID.isBlank()) return AppResult.Error(AppError.GeneralValidationError("User ID empty"))
+        return userRepository.getChartTheme(userID)
     }
 }

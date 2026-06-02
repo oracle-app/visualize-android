@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -29,7 +28,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.HorizontalBarChart
@@ -57,7 +55,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun ChartRenderFullScreen(
     modifier: Modifier = Modifier,
     chart: Chart<*>,
-    chartColorTheme: ChartPalette = ChartPalette.THEME1,
+    chartColorTheme: ChartPalette,
     showAxisLabels: Boolean = true
 ) {
     val localConfig = LocalConfiguration.current
@@ -77,7 +75,7 @@ fun ChartRenderFullScreen(
     }
 
     val colors = remember(cleanLabels.size) {
-        generateChartColors(cleanLabels.size, ChartPalette.THEME1)
+        generateChartColors(cleanLabels.size, chartColorTheme)
     }
 
     when (chart) {
@@ -87,7 +85,7 @@ fun ChartRenderFullScreen(
                     modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
                         .padding(horizontal = 10.dp).fillMaxSize()
                 ) {
-                    ChartRenderGeneral(modifier, chart)
+                    ChartRenderGeneral(modifier = modifier, chart = chart, chartColorTheme = chartColorTheme)
                 }
             }
         }
@@ -166,7 +164,7 @@ fun ChartRenderFullScreen(
                 Box(modifier = modifier.fillMaxSize()) {
                     Box(modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
                         .padding(horizontal = 10.dp).fillMaxSize()) {
-                        ChartRenderGeneral(modifier, chart, showAxisLabels = showAxisLabels)
+                        ChartRenderGeneral(modifier, chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme)
                     }
                 }
             }

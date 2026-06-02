@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import android.view.View
-import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.filled.ModeComment
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.DisposableEffectResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,7 +37,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
@@ -221,7 +218,9 @@ fun FullVisualizationPage(
                                     .fillMaxWidth()
                                     .fillMaxHeight()
                             ) {
-                                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
+                                ChartRenderFullScreen(
+                                    chart = chart, showAxisLabels = true, chartColorTheme = uiState.chartColorTheme
+                                )
                             }
                         }
                     }

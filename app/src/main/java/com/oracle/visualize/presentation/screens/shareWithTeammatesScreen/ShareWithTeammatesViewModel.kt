@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.oracle.visualize.R
 import com.oracle.visualize.data.datasources.local.FeedCacheManager
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.TeamRepository
 import com.oracle.visualize.domain.repositories.UserRepository
@@ -39,7 +41,7 @@ class ShareWithTeammatesViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
 
-    private val currentUserID: String = authRepository.getCurrentUserID()
+    private val currentUserID: String = authRepository.getCurrentUserID() ?: ""
 
     private val visualizationId: String =
         savedStateHandle.toRoute<NavRoutes.ShareWithTeammates>().visualizationId
@@ -52,35 +54,45 @@ class ShareWithTeammatesViewModel @Inject constructor(
     private fun loadData() {
         viewModelScope.launch {
             _uiState.value = ShareWithTeammatesUiState.Loading
-            try {
-                val myTeamsDeferred    = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
-                val teamsImInDeferred  = async { teamRepository.getTeamsUserIsIn(currentUserID) }
-                val currentVizDeferred = async { visualizationRepository.getVisualizationById(visualizationId) }
+            val myTeamsDeferred    = async { teamRepository.getTeamsOwnedByUser(currentUserID) }
+            val teamsImInDeferred  = async { teamRepository.getTeamsUserIsIn(currentUserID) }
+            val currentVizDeferred = async { visualizationRepository.getVisualizationById(visualizationId) }
 
-                val myTeams    = myTeamsDeferred.await()
-                val teamsImIn  = teamsImInDeferred.await()
-                    .filter { team -> myTeams.none { it.id == team.id } }
-                val currentViz = currentVizDeferred.await()
+            val myTeamsResult = myTeamsDeferred.await()
+            val teamsImInResult = teamsImInDeferred.await()
+            val currentVizResult = currentVizDeferred.await()
+
+            if (
+                myTeamsResult is AppResult.Success &&
+                teamsImInResult is AppResult.Success &&
+                currentVizResult is AppResult.Success
+                ) {
+                val myTeams = myTeamsResult.data
+                val teamsImInRaw = teamsImInResult.data
+                val currentViz = currentVizResult.data
+
+                val teamsImIn = teamsImInRaw.filter { team -> myTeams.none() { it.id == team.id} }
 
                 val existingUserIds = currentViz?.sharedWithUsers ?: emptyList()
                 val existingTeamIds = (currentViz?.sharedWithTeams ?: emptyList()).toSet()
-                val existingUsers   = if (existingUserIds.isNotEmpty()) {
+
+                val existingUsersResult = if (existingUserIds.isNotEmpty()) {
                     userRepository.getUsersByIDs(existingUserIds)
                 } else {
-                    emptyList()
+                    AppResult.Success(emptyList())
                 }
 
-                _uiState.value = ShareWithTeammatesUiState.Content(
-                    visualizationId = visualizationId,
-                    sharedUsers     = existingUsers,
-                    selectedTeamIds = existingTeamIds,
-                    myTeams         = myTeams,
-                    teamsImIn       = teamsImIn
-                )
-            } catch (e: Exception) {
-                _uiState.value = ShareWithTeammatesUiState.Error(
-                    "Failed to load sharing info. Please try again."
-                )
+                if (existingUsersResult is AppResult.Success) {
+                    _uiState.value = ShareWithTeammatesUiState.Content(
+                        visualizationId = visualizationId,
+                        sharedUsers = existingUsersResult.data ?: emptyList(),
+                        selectedTeamIds = existingTeamIds,
+                        myTeams = myTeams,
+                        teamsImIn = teamsImIn
+                    )
+                } else {
+                    _uiState.value = ShareWithTeammatesUiState.Error(R.string.error_share_load_failed)
+                }
             }
         }
     }
@@ -91,20 +103,20 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 .debounce(400)
                 .filter { it.isNotBlank() }
                 .collect { query ->
-                    getUserSuggestionsUseCase(query.lowercase().trim()).fold(
-                        onSuccess = { results ->
-                            val current = _uiState.value as? ShareWithTeammatesUiState.Content
-                                ?: return@fold
+                    when (val result = getUserSuggestionsUseCase(query.lowercase().trim())){
+                        is AppResult.Success -> {
+                            val results = result.data
+                            val current = _uiState.value as? ShareWithTeammatesUiState.Content ?: return@collect
                             val filtered = results.filter { suggestion ->
                                 suggestion.id != currentUserID &&
                                     current.sharedUsers.none { it.id == suggestion.id }
                             }
                             _uiState.value = current.copy(suggestedUsers = filtered)
-                        },
-                        onFailure = {
+                        }
+                        is AppResult.Error -> {
                             updateContent { it.copy(suggestedUsers = emptyList()) }
                         }
-                    )
+                    }
                 }
         }
     }
@@ -159,20 +171,20 @@ class ShareWithTeammatesViewModel @Inject constructor(
                 _uiState.value = current.copy(isSubmitting = true, errorMessage = null)
 
                 viewModelScope.launch {
-                    updateSharedUsersUseCase(visualizationId, userIds, teamIds).fold(
-                        onSuccess = {
+                    when (val result = updateSharedUsersUseCase(visualizationId, userIds, teamIds)) {
+                        is AppResult.Success -> {
                             feedCacheManager.clearCache()
                             updateContent { it.copy(isSubmitting = false, shareSuccess = true) }
-                        },
-                        onFailure = { error ->
+                        }
+                        is AppResult.Error -> {
                             updateContent {
                                 it.copy(
                                     isSubmitting = false,
-                                    errorMessage = error.message ?: "Failed to share. Please try again."
+                                    errorMessage = R.string.error_share_failed
                                 )
                             }
                         }
-                    )
+                    }
                 }
             }
 
