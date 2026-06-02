@@ -51,16 +51,18 @@ fun NotificationCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(MaterialTheme.colorScheme.onSecondaryContainer)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(MaterialTheme.colorScheme.tertiary)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     )
     {
         Row(
             verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
+                .background(MaterialTheme.colorScheme.tertiary)
+
         ) {
             Box(
                 modifier = Modifier
@@ -80,22 +82,18 @@ fun NotificationCard(
             )
             Text(
                 text = formattedDate,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary
             )
         }
         Row(
             verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(shape)
-                .background(MaterialTheme.colorScheme.onSurface)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+                .background(MaterialTheme.colorScheme.tertiary)
+        )  {
                 UserAvatar(
                     username = "?",
                     profilePictureURL = notification.senderProfilePictureURL,
@@ -106,12 +104,12 @@ fun NotificationCard(
                 Text(
                     text = notification.body,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
     }
-}
+
 
 
