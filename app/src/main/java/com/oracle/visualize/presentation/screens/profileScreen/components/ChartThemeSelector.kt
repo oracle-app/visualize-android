@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.ui.theme.ChartPalette
 import androidx.compose.ui.res.stringResource
-import com.oracle.visualize.presentation.screens.profileScreen.components.SettingsCard
 
 @Composable
 fun ChartThemePicker(

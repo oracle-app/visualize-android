@@ -2,9 +2,12 @@ package com.oracle.visualize.presentation.screens.teamsScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
+import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.DeleteTeamUseCase
-import com.oracle.visualize.domain.usecases.GetUsersTeamsUseCase
+import com.oracle.visualize.domain.usecases.team.DeleteTeamUseCase
+import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +25,16 @@ class TeamsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
     val uiState: StateFlow<TeamsUiState> = _uiState.asStateFlow()
 
-    private val userID: String = authRepository.getCurrentUserID()
+    private val userID: String = authRepository.getCurrentUserID() ?: ""
 
-    init { loadTeams() }
+    init {
+        if (userID.isBlank()) {
+            _uiState.value = TeamsUiState.Error(R.string.error_unknown_retry)
+        } else {
+            loadTeams()
+        }
+    }
+
 
     private fun loadTeams() {
         viewModelScope.launch {
@@ -33,23 +43,23 @@ class TeamsViewModel @Inject constructor(
             val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
             val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
 
-            if (myTeamsResult.isFailure) {
-                _uiState.value = TeamsUiState.Error(
-                    myTeamsResult.exceptionOrNull()?.message ?: "Failed to load teams"
+            if (myTeamsResult is AppResult.Success && teamsImInResult is AppResult.Success) {
+                _uiState.value = TeamsUiState.Content(
+                    myTeams = myTeamsResult.data,
+                    teamsImIn = teamsImInResult.data
                 )
-                return@launch
-            }
-            if (teamsImInResult.isFailure) {
-                _uiState.value = TeamsUiState.Error(
-                    teamsImInResult.exceptionOrNull()?.message ?: "Failed to load teams"
-                )
-                return@launch
-            }
+            } else {
+                val error = (myTeamsResult as? AppResult.Error)?.error
+                    ?: (teamsImInResult as? AppResult.Error)?.error
 
-            _uiState.value = TeamsUiState.Content(
-                myTeams   = myTeamsResult.getOrDefault(emptyList()),
-                teamsImIn = teamsImInResult.getOrDefault(emptyList())
-            )
+                val errorId = when (error) {
+                    is AppError.NetworkError -> R.string.error_network
+                    else -> R.string.error_teams_load_failed
+                }
+                _uiState.value = TeamsUiState.Error(
+                    errorId
+                )
+            }
         }
     }
 
@@ -76,14 +86,20 @@ class TeamsViewModel @Inject constructor(
             is TeamsUiEvent.ConfirmDeleteTeam -> {
                 _uiState.value = current.copy(teamPendingDeleteId = null)
                 viewModelScope.launch {
-                    deleteTeamUseCase(event.teamId).fold(
-                        onSuccess = { loadTeams() },
-                        onFailure = { e ->
+                    when (val result = deleteTeamUseCase(event.teamId)) {
+                        is AppResult.Success -> {
+                            loadTeams()
+                        }
+                        is AppResult.Error -> {
+                            val errorId = when (result.error) {
+                                is AppError.NetworkError -> R.string.error_network
+                                else -> R.string.error_team_delete_failed
+                            }
                             _uiState.value = TeamsUiState.Error(
-                                e.message ?: "Failed to delete team"
+                                errorId
                             )
                         }
-                    )
+                    }
                 }
             }
 

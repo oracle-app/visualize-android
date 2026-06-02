@@ -5,15 +5,15 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import androidx.lifecycle.viewModelScope
-import com.oracle.visualize.domain.exceptions.AppError
-import com.oracle.visualize.domain.usecases.ClearChartCacheUseCase
-import com.oracle.visualize.domain.usecases.ClearFeedCacheUseCase
-import com.oracle.visualize.domain.usecases.DeleteProfilePictureUseCase
-import com.oracle.visualize.domain.usecases.GetCurrentUserUseCase
-import com.oracle.visualize.domain.usecases.GetUserByIDUseCase
-import com.oracle.visualize.domain.usecases.LogoutUseCase
-import com.oracle.visualize.domain.usecases.SetChartThemeUseCase
-import com.oracle.visualize.domain.usecases.UpdatePfpUseCase
+import com.oracle.visualize.domain.exceptions.AppResult
+import com.oracle.visualize.domain.usecases.cache.ClearChartCacheUseCase
+import com.oracle.visualize.domain.usecases.cache.ClearFeedCacheUseCase
+import com.oracle.visualize.domain.usecases.profile.DeleteProfilePictureUseCase
+import com.oracle.visualize.domain.usecases.auth.GetCurrentUserUseCase
+import com.oracle.visualize.domain.usecases.auth.GetUserByIDUseCase
+import com.oracle.visualize.domain.usecases.auth.LogoutUseCase
+import com.oracle.visualize.domain.usecases.chart.SetChartThemeUseCase
+import com.oracle.visualize.domain.usecases.profile.UpdatePfpUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,20 +39,29 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
-    private suspend fun fetchUserData(): Result<Unit> {
+    private suspend fun fetchUserData() {
         val uid = currentUser?.uid
-            ?: return Result.failure(AppError.AuthFailed())
+        if (uid == null) {
+            _uiState.value = ProfileUiState.Idle
+            return
+        }
 
-        return getUserByIDUseCase(uid).fold(
-            onSuccess = { user ->
-                _uiState.value = ProfileUiState.Ready(user.username, user.email, user.profilePictureURL, user.chartTheme)
-                Result.success(Unit)
-            },
-            onFailure = { e ->
-                Log.e("ProfileViewModel", "Failed to fetch user: ${e.message}")
-                Result.failure(e)
+        when (val result = getUserByIDUseCase(uid)) {
+            is AppResult.Success -> {
+                val user = result.data
+                _uiState.value = ProfileUiState.Ready(
+                    username = user.username,
+                    eMail = user.email,
+                    image = user.profilePictureURL,
+                    chartTheme = user.chartTheme
+                )
             }
-        )
+
+            is AppResult.Error -> {
+                Log.e("ProfileViewModel", "Failed to fetch user: ${result.error.message}")
+                _uiState.value = ProfileUiState.Idle
+            }
+        }
     }
 
     private var chartThemeJob: Job? = null
@@ -65,8 +74,11 @@ class ProfileViewModel @Inject constructor(
         chartThemeJob?.cancel()
         chartThemeJob = viewModelScope.launch {
             delay(500)
-            setChartThemeUseCase(currentUser?.uid?: "", selectedPalette).onFailure { exception ->
-                Log.e("ProfileViewModel", "Failed to set chart theme: ${exception.message}")
+            when (val result = setChartThemeUseCase(currentUser?.uid?: "", selectedPalette)) {
+                is AppResult.Success -> {}
+                is AppResult.Error -> {
+                    Log.e("ProfileViewModel", "Failed to set chart theme: ${result.error.message}")
+                }
             }
         }
     }
@@ -74,9 +86,6 @@ class ProfileViewModel @Inject constructor(
     fun setUiState() {
         viewModelScope.launch {
             fetchUserData()
-                .onFailure {
-                    _uiState.value = ProfileUiState.Idle
-                }
         }
     }
 
@@ -94,14 +103,14 @@ class ProfileViewModel @Inject constructor(
 
     fun updatePfp(uri: String) {
         viewModelScope.launch {
-            updatePfpUseCase(currentUser?.uid ?: "", uri).fold(
-                onSuccess = {
+            when (val result = updatePfpUseCase(currentUser?.uid ?: "", uri)) {
+                is AppResult.Success -> {
                     fetchUserData()
-                },
-                onFailure = { exception ->
-                    Log.e("ProfileViewModel", "Failed to update profile picture: ${exception.message}")
                 }
-            )
+                is AppResult.Error -> {
+                    Log.e("ProfileViewModel", "Failed to update profile picture: ${result.error.message}")
+                }
+            }
         }
     }
 
@@ -116,8 +125,11 @@ class ProfileViewModel @Inject constructor(
 
     fun deleteProfilePicture() {
         viewModelScope.launch {
-            deleteProfilePictureUseCase(currentUser?.uid ?: "").onFailure { e ->
-                Log.e("ProfileViewModel", "Failed to delete profile picture: ${e.message}")
+            when (val result = deleteProfilePictureUseCase(currentUser?.uid ?: "")) {
+                is AppResult.Success -> {}
+                is AppResult.Error -> {
+                    Log.e("ProfileViewModel", "Failed to delete profile picture: ${result.error.message}")
+                }
             }
         }
     }

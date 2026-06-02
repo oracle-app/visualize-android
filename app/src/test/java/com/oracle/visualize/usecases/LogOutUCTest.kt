@@ -1,7 +1,7 @@
 package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.repositories.AuthRepository
-import com.oracle.visualize.domain.usecases.LogoutUseCase
+import com.oracle.visualize.domain.usecases.auth.LogoutUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.every

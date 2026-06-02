@@ -1,20 +1,20 @@
 package com.oracle.visualize.presentation.screens.threadsScreen
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
-import com.oracle.visualize.domain.usecases.CreateCommentUseCase
-import com.oracle.visualize.domain.usecases.CreateThreadUseCase
-import com.oracle.visualize.domain.usecases.DeleteCommentUseCase
-import com.oracle.visualize.domain.usecases.DeleteThreadUseCase
-import com.oracle.visualize.domain.usecases.GetAllUserVisualizationsUseCase
-import com.oracle.visualize.domain.usecases.GetCommentsUseCase
-import com.oracle.visualize.domain.usecases.GetThreadsUseCase
-import com.oracle.visualize.domain.usecases.UploadSnipUseCase
+import com.oracle.visualize.domain.usecases.comment.CreateCommentUseCase
+import com.oracle.visualize.domain.usecases.comment.CreateThreadUseCase
+import com.oracle.visualize.domain.usecases.comment.DeleteCommentUseCase
+import com.oracle.visualize.domain.usecases.comment.DeleteThreadUseCase
+import com.oracle.visualize.domain.usecases.visualization.GetAllUserVisualizationsUseCase
+import com.oracle.visualize.domain.usecases.comment.GetCommentsUseCase
+import com.oracle.visualize.domain.usecases.comment.GetThreadsUseCase
+import com.oracle.visualize.domain.usecases.comment.UploadSnipUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,17 +23,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for the Threads screen.
- *
- * Handles loading visualization information, loading comments,
- * and creating new comments for the selected visualization.
- *
- * @property createCommentUseCase Use case used to create comments.
- * @property getCommentsUseCase Use case used to fetch comments.
- * @property getAllUserVisualizationsUseCase Use case used to fetch visualization data.
- * @property authRepository Repository used to retrieve current user data.
- */
 @HiltViewModel
 class ThreadsViewModel @Inject constructor(
     private val createCommentUseCase: CreateCommentUseCase,
@@ -54,64 +43,51 @@ class ThreadsViewModel @Inject constructor(
     private var currentUserImageUrl: String? = null
 
     init {
-        currentUserID = authRepository.getCurrentUserID()
+        currentUserID = authRepository.getCurrentUserID() ?: ""
 
         viewModelScope.launch {
-            try {
-                val currentUser = userRepository.getUserByUserID(currentUserID)
-                currentUserName = currentUser?.username ?: currentUserID
-                currentUserImageUrl = currentUser?.profilePictureURL
-            } catch (e: Exception) {
-                currentUserName = currentUserID
-                currentUserImageUrl = null
+            when (val result = userRepository.getUserByUserID(currentUserID)) {
+                is AppResult.Success -> {
+                    currentUserName = result.data.username ?: currentUserID
+                    currentUserImageUrl = result.data.profilePictureURL
+                }
+                is AppResult.Error -> {
+                    currentUserName = currentUserID
+                    currentUserImageUrl = null
+                }
             }
         }
     }
 
-    private suspend fun getUserDisplayData(
-        userID: String
-    ): Pair<String, String?> {
-        return try {
-            val user = userRepository.getUserByUserID(userID)
-            Pair(
-                user?.username ?: userID,
-                user?.profilePictureURL
-            )
-        } catch (e: Exception) {
-            Pair(userID, null)
+    private suspend fun getUserDisplayData(userID: String): Pair<String, String?> {
+        return when (val result = userRepository.getUserByUserID(userID)) {
+            is AppResult.Success -> {
+                Pair(result.data.username ?: userID, result.data.profilePictureURL)
+            }
+            is AppResult.Error -> {
+                Pair(userID, null)
+            }
         }
     }
 
     fun loadThreads(visualizationId: String) {
-        _uiState.update {
-            it.copy(
-                isLoading = true,
-                errorMessage = null
-            )
-        }
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
         viewModelScope.launch {
             val visualizationsResult = getAllUserVisualizationsUseCase(currentUserID)
-            val commentsResult = getCommentsUseCase(visualizationId)
-            val visualizationTitle = visualizationsResult.getOrNull()
-                ?.find { it.id == visualizationId }
-                ?.title
-                ?: ""
+            val visualizationTitle = if (visualizationsResult is AppResult.Success) {
+                visualizationsResult.data.find { it.id == visualizationId }?.title ?: ""
+            } else ""
 
-            commentsResult.fold(
-                onSuccess = { comments ->
-                    val commentsUi = comments.map { comment ->
-
+            when (val commentsResult = getCommentsUseCase(visualizationId)) {
+                is AppResult.Success -> {
+                    val commentsUi = commentsResult.data.map { comment ->
                         val commentAuthor = getUserDisplayData(comment.authorID)
 
-                        val threads = getThreadsUseCase(
-                            visualizationId = visualizationId,
-                            commentId = comment.id
-                        ).getOrElse {
-                            emptyList()
-                        }
+                        val threadsResult = getThreadsUseCase(visualizationId, comment.id)
+                        val threads = if (threadsResult is AppResult.Success) threadsResult.data else emptyList()
 
                         val threadsUi = threads.map { thread ->
-
                             val threadAuthor = getUserDisplayData(thread.authorID)
 
                             ThreadUiModel(
@@ -143,9 +119,9 @@ class ThreadsViewModel @Inject constructor(
                             comments = commentsUi
                         )
                     }
-                },
-                onFailure = { error ->
-                    val uiErrorMessage = when (error) {
+                }
+                is AppResult.Error -> {
+                    val uiErrorMessage = when (commentsResult.error) {
                         is AppError.NetworkError -> R.string.error_network
                         is AppError.ParsingError -> R.string.error_parsing
                         is AppError.NotFound -> R.string.error_com_not_found
@@ -160,21 +136,18 @@ class ThreadsViewModel @Inject constructor(
                         )
                     }
                 }
-            )
+            }
         }
     }
 
     suspend fun uploadSnip(uri: String): String? {
-        return uploadSnipUseCase(
-            userID = currentUserID,
-            uri = uri
-        ).fold(
-            onSuccess = { url -> url },
-            onFailure = {
+        return when (val result = uploadSnipUseCase(currentUserID, uri)) {
+            is AppResult.Success -> result.data
+            is AppResult.Error -> {
                 _uiState.update { it.copy(errorMessage = R.string.error_upload_snip) }
                 null
             }
-        )
+        }
     }
 
     fun createComment(
@@ -183,13 +156,9 @@ class ThreadsViewModel @Inject constructor(
         imageURL: String? = null
     ) {
         viewModelScope.launch {
-            createCommentUseCase(
-                visualizationId = visualizationId,
-                authorID = currentUserID,
-                content = content,
-                imageURL = imageURL
-            ).fold(
-                onSuccess = { newComment ->
+            when (val result = createCommentUseCase(visualizationId, currentUserID, content, imageURL)) {
+                is AppResult.Success -> {
+                    val newComment = result.data
                     val currentUserData = getUserDisplayData(currentUserID)
 
                     val newCommentUi = CommentUiModel(
@@ -204,19 +173,13 @@ class ThreadsViewModel @Inject constructor(
                     )
 
                     _uiState.update {
-                        it.copy(
-                            comments = it.comments + newCommentUi
-                        )
-                    }
-                },
-                onFailure = {
-                    _uiState.update {
-                        it.copy(
-                            errorMessage = R.string.error_create_comment
-                        )
+                        it.copy(comments = it.comments + newCommentUi)
                     }
                 }
-            )
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(errorMessage = R.string.error_create_comment) }
+                }
+            }
         }
     }
 
@@ -237,15 +200,16 @@ class ThreadsViewModel @Inject constructor(
         content: String
     ) {
         viewModelScope.launch {
-            createThreadUseCase(
+            when (val result = createThreadUseCase(
                 visualizationId = visualizationId,
                 commentId = commentId,
                 authorID = currentUserID,
                 authorName = currentUserName,
                 authorAvatarURL = currentUserImageUrl,
                 content = content
-            ).fold(
-                onSuccess = { newThread ->
+            )) {
+                is AppResult.Success -> {
+                    val newThread = result.data
                     val newThreadUi = ThreadUiModel(
                         id = newThread.id,
                         authorID = newThread.authorID,
@@ -267,94 +231,65 @@ class ThreadsViewModel @Inject constructor(
                             }
                         )
                     }
-                },
-                onFailure = {
-                    _uiState.update {
-                        it.copy(errorMessage = R.string.error_create_comment)
-                    }
                 }
-            )
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(errorMessage = R.string.error_create_comment) }
+                }
+            }
         }
     }
 
-    fun startReply(
-        commentId: String,
-        authorName: String
-    ) {
+    fun startReply(commentId: String, authorName: String) {
         _uiState.update {
-            it.copy(
-                replyingToCommentId = commentId,
-                replyingToAuthorName = authorName
-            )
+            it.copy(replyingToCommentId = commentId, replyingToAuthorName = authorName)
         }
     }
 
     fun cancelReply() {
         _uiState.update {
-            it.copy(
-                replyingToCommentId = null,
-                replyingToAuthorName = null
-            )
+            it.copy(replyingToCommentId = null, replyingToAuthorName = null)
         }
     }
 
-    fun deleteComment(
-        visualizationId: String,
-        commentId: String
-    ) {
+    fun deleteComment(visualizationId: String, commentId: String) {
         viewModelScope.launch {
-            deleteCommentUseCase(
-                visualizationId = visualizationId,
-                commentId = commentId
-            ).fold(
-                onSuccess = {
+            when (deleteCommentUseCase(visualizationId, commentId)) {
+                is AppResult.Success -> {
                     _uiState.update { state ->
-                        state.copy(
-                            comments = state.comments.filterNot { it.id == commentId }
-                        )
+                        state.copy(comments = state.comments.filterNot { it.id == commentId })
                     }
-                },
-                onFailure = {
+                }
+                is AppResult.Error -> {
                     _uiState.update { state ->
                         state.copy(errorMessage = R.string.error_unknown_retry)
                     }
                 }
-            )
+            }
         }
     }
 
-    fun deleteThread(
-        visualizationId: String,
-        commentId: String,
-        threadId: String
-    ) {
+    fun deleteThread(visualizationId: String, commentId: String, threadId: String) {
         viewModelScope.launch {
-            deleteThreadUseCase(
-                visualizationId = visualizationId,
-                commentId = commentId,
-                threadId = threadId
-            ).fold(
-                onSuccess = {
+            when (deleteThreadUseCase(visualizationId, commentId, threadId)) {
+                is AppResult.Success -> {
                     _uiState.update { state ->
                         state.copy(
                             comments = state.comments.map { comment ->
                                 if (comment.id == commentId) {
-                                    comment.copy(
-                                        threads = comment.threads.filterNot { it.id == threadId }
-                                    )
+                                    comment.copy(threads = comment.threads.filterNot { it.id == threadId })
                                 } else {
                                     comment
                                 }
                             }
                         )
                     }
-                },
-                onFailure = {
+                }
+                is AppResult.Error -> {
                     _uiState.update { state ->
                         state.copy(errorMessage = R.string.error_unknown_retry)
                     }
                 }
-            )
+            }
         }
     }
 }

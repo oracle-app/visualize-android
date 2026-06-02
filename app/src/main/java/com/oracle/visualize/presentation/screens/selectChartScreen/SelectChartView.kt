@@ -231,14 +231,14 @@ fun ChartSelectionPage(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Unable to Load Charts",
+                                text = stringResource(id = R.string.error_chart_unable_load),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = state.message,
+                                text = stringResource(id = state.message),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                                 textAlign = TextAlign.Center,
