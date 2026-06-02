@@ -21,6 +21,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
+import com.oracle.visualize.domain.usecases.visualization.PublishVisualizationsInBulkUseCase
 
 /**
  * ViewModel for the Select Chart screen.
@@ -30,7 +31,7 @@ import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 class SelectChartViewModel @Inject constructor(
     private val repository: AnalyzeRepository,
     private val authRepository: com.oracle.visualize.domain.repositories.AuthRepository,
-    private val publishVisualizationsInBulkUseCase: com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase,
+    private val publishVisualizationsInBulkUseCase: PublishVisualizationsInBulkUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(){
     val taskId: String = savedStateHandle.toRoute<NavRoutes.ChartSelection>().taskId
@@ -193,7 +194,7 @@ class SelectChartViewModel @Inject constructor(
                         val firstPageDto = pagesList.first()
                         val mergedData = com.oracle.visualize.data.mapper.ChartMapper.mergePagedData(firstPageDto.chartType, pagesList)
 
-                        val previewDto = firstPageDto.copy(chartName = selection.customTitle)
+                        val previewDto = firstPageDto.copy(chartName = selection.customTitle, preview = true)
                         val combinedDto = firstPageDto.copy(
                             chartName = selection.customTitle,
                             page = 0,

@@ -21,10 +21,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
@@ -86,7 +84,7 @@ fun RenderScatterChart(
         yMetric = chart.metrics[1].ifBlank { yMetric }
     }
 
-    Box(modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true)) {
+    Box(modifier = modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(
