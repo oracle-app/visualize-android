@@ -120,7 +120,7 @@ private fun TeamsContent(
                             text       = stringResource(R.string.teams_my_teams_section),
                             fontSize   = 24.sp,
                             fontWeight = FontWeight.Normal,
-                            color      = subtitleTextColors, // Color dinámico
+                            color      = subtitleTextColors,
                             modifier   = Modifier.padding(bottom = 12.dp)
                         )
                     }
@@ -150,7 +150,7 @@ private fun TeamsContent(
                         text       = stringResource(R.string.teams_im_in_section),
                         fontSize   = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color      = subtitleTextColors, // Color dinámico
+                        color      = subtitleTextColors,
                         modifier   = Modifier.padding(bottom = 12.dp)
                     )
                 }
