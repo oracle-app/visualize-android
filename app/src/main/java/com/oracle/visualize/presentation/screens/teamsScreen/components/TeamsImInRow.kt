@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,7 @@ import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStack
 
+
 @Composable
 fun TeamsImInRow(
     team: ShareTeam,
@@ -41,15 +43,31 @@ fun TeamsImInRow(
     position: TeamPosition,
     onToggle: () -> Unit
 ) {
+    val teamNameColor = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    val arrowTint = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    val amountOfMembersTextColor = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.outlineVariant
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+        modifier = Modifier.fillMaxWidth().clip(teamShape(position))
             .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier          = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onToggle() }
                 .padding(horizontal = 16.dp, vertical = 16.dp)
@@ -59,13 +77,13 @@ fun TeamsImInRow(
                     text       = team.name,
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Normal,
-                    color      = MaterialTheme.colorScheme.onSurface
+                    color      = teamNameColor
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text     = stringResource(R.string.teams_member_count, team.memberCount),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.colorScheme.onSurfaceVariant
+                    color    = amountOfMembersTextColor
                 )
             }
             MemberAvatarStack(members = team.members, isSelected = false)
@@ -73,16 +91,12 @@ fun TeamsImInRow(
             Icon(
                 imageVector        = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
-                tint               = MaterialTheme.colorScheme.onSurfaceVariant
+                tint               = arrowTint
             )
         }
 
         AnimatedVisibility(visible = isExpanded, enter = expandVertically(), exit = shrinkVertically()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-            ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                 team.members.forEach { member ->
                     MemberListItem(user = member, isOwner = member.id == team.ownerID)
                     Spacer(modifier = Modifier.height(12.dp))
@@ -94,6 +108,18 @@ fun TeamsImInRow(
 
 @Composable
 fun MemberListItem(user: ShareUser, isOwner: Boolean) {
+    val memberNameColor = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    val ownerOrEmailColor = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.outlineVariant
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier          = Modifier.fillMaxWidth()
@@ -105,19 +131,19 @@ fun MemberListItem(user: ShareUser, isOwner: Boolean) {
                 text       = user.username,
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color      = MaterialTheme.colorScheme.onSurface
+                color      = memberNameColor
             )
             Text(
                 text     = user.email,
                 fontSize = 12.sp,
-                color    = MaterialTheme.colorScheme.onSurfaceVariant
+                color    = ownerOrEmailColor
             )
         }
         if (isOwner) {
             Text(
                 text     = stringResource(R.string.teams_owner_label),
                 fontSize = 12.sp,
-                color    = MaterialTheme.colorScheme.onSurfaceVariant
+                color    = ownerOrEmailColor
             )
         }
     }

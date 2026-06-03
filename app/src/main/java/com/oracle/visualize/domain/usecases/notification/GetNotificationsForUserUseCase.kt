@@ -13,7 +13,9 @@ class GetNotificationsForUserUseCase @Inject constructor(
         if (userID.isBlank())
             return AppResult.Error(AppError.GeneralValidationError("Notification ID is empty"))
 
-        return notificationRepository.getNotificationsForUser(userID)
+        return when (val result = notificationRepository.getNotificationsForUser(userID)) {
+            is AppResult.Success -> AppResult.Success(result.data.sortedByDescending { it.createdAt })
+            is AppResult.Error -> result
+        }
     }
-
 }

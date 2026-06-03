@@ -59,7 +59,7 @@
     <string name="line_scatter_y_metric">y</string>
     <string name="stacked_bar_series">Series</string>
 
-    // Chart full screen
+    // Chart legends full screen
     <string name="chart_legend_cat_label">Category</string>
     <string name="fullscreen_sharing_label_1">Sharing with</string>
     <string name="fullscreen_sharing_label_2">members</string>
@@ -161,6 +161,7 @@
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
+
     <string name="error_upload_snip">Error. Image could not be uploaded.</string>
     <string name="error_email_invalid">Please enter a valid email address.</string>
     <string name="error_auth_field_empty">Required fields cannot be left blank.</string>
@@ -183,6 +184,7 @@
     <string name="error_team_delete_failed">Failed to delete team</string>
     <string name="error_share_load_failed">Failed to load sharing info. Please try again.</string>
     <string name="error_share_failed">"Failed to share. Please try again."</string>
+
 
     //Icon Descriptions
     <string name="icon_remove_user">Remove User</string>
@@ -284,6 +286,7 @@
     <string name="did_not_get_email">Didn’t get the email?</string>
     <string name="resend_email">Resend email</string>
 
+
     // Teams Screen
 
     <string name="teams_title">Teams</string>
@@ -321,5 +324,16 @@
     <string name="dialog_delete_team_message">This team and its members will be removed. This action cannot be undone.</string>
     <string name="dialog_delete_team_cancel">Cancel</string>
     <string name="dialog_delete_team_confirm">Delete</string>
+
+    //Notifications
+    <string name="notification_title">Notifications</string>
+    <string name="no_notifications_yet">No Notifications Yet</string>
+    <string name="notify_you">We’ll notify you when there’s something new.</string>
+
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="older">Older</string>
+
 
 </resources>
