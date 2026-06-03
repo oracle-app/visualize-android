@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
@@ -38,11 +39,16 @@ class MainViewModel @Inject constructor(
     fun loadNavItems() {
         viewModelScope.launch {
             try {
-                val currentUserID = authRepository.getCurrentUserID()
+                val currentUserID = authRepository.getCurrentUserID() ?: ""
+
                 if (currentUserID.isBlank()) return@launch
                 if (currentUserID == lastLoadedUserId && _navItems.value.isNotEmpty()) return@launch
+                val userResult = userRepository.getUserByUserID(currentUserID)
+                val currentUserType = when (userResult) {
+                    is AppResult.Success -> userResult.data.userType
+                    is AppResult.Error -> UserType.CONSUMER
+                }
 
-                val currentUser = userRepository.getUserByUserID(currentUserID)
                 lastLoadedUserId = currentUserID
                 val items = mutableListOf(
                     NavItem(
@@ -67,8 +73,7 @@ class MainViewModel @Inject constructor(
                         destination = NavRoutes.Profile(userId = currentUserID)
                     )
                 )
-
-                if (currentUser.userType != UserType.CONSUMER) {
+                if (currentUserType != UserType.CONSUMER) {
                     items.add(
                         0,
                         NavItem(
