@@ -123,6 +123,7 @@ private fun TeamsContent(
                     MyTeamRow(
                         team           = team,
                         isSwiped       = state.swipedTeamId == team.id,
+
                         position       = when {
                             state.myTeams.size == 1         -> TeamPosition.SINGLE
                             index == 0                      -> TeamPosition.TOP
