@@ -19,5 +19,5 @@ sealed interface TeamsUiState {
         val userType: UserType = UserType.CONSUMER
     ) : TeamsUiState
 
-    data class Error(val message: String) : TeamsUiState
+    data class Error(val message: Int) : TeamsUiState
 }

@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.auth
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.AuthUser
 import com.oracle.visualize.domain.repositories.AuthRepository
 import javax.inject.Inject
@@ -16,70 +17,85 @@ class RegisterUseCase @Inject constructor(
 ) {
 
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
+    private val passwordNumberRegex = ".*[0-9].*".toRegex()
+    private val passwordLetterRegex = ".*[a-zA-Z].*".toRegex()
 
     suspend operator fun invoke(
         name: String,
         email: String,
         password: String,
         confirmPassword: String
-    ): Result<AuthUser> {
+    ): AppResult<AuthUser> {
 
         // 1. Validations using Fail Fast with Result
         if (name.isBlank()){
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.NAME,
-                "Name is required")
+                "Required fields cannot be left blank.")
             )
         }
-
+        if (name.length < 3) {
+            return AppResult.Error(
+                AppError.AuthValidationError(
+                    AppError.AuthField.NAME,
+                    "Name must be at least 2 characters."
+                )
+            )
+        }
         if (email.isBlank()) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.EMAIL,
-                "Email is required")
+                "Required fields cannot be left blank.")
             )
         }
         if (!email.matches(emailRegex)) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.EMAIL,
-                "Valid Email required")
+                "Please enter a valid email address.")
             )
         }
         if (password.isBlank()) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.PASSWORD,
-                "Password is required")
+                "Required fields cannot be left blank.")
             )
         }
-        if (password.length < 6) {
-            return Result.failure(
+        if (password.length < 8) {
+            return AppResult.Error(
                 AppError.AuthValidationError(
                     AppError.AuthField.PASSWORD,
-                    "Password must be at least 6 characters")
+                    "Password must be at least 8 characters")
             )
         }
-
+        if (!password.matches(passwordNumberRegex) || !password.matches(passwordLetterRegex)){
+            return AppResult.Error(
+                AppError.AuthValidationError(
+                    AppError.AuthField.PASSWORD,
+                    "Password must include letters and numbers."
+                )
+            )
+        }
         if (confirmPassword.isBlank()) {
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                     AppError.AuthField.CONFIRM_PASSWORD,
-                    "Confirm Password is required")
+                    "Required fields cannot be left blank.")
             )
         }
 
         if (password != confirmPassword){
-            return Result.failure(
+            return AppResult.Error(
                 AppError.AuthValidationError(
                 AppError.AuthField.CONFIRM_PASSWORD,
-                "Passwords mismatch")
+                "Passwords do not match.")
             )
         }
 
-        return runCatching {
-            authRepository.register(name, email, password)
-        }
+        return authRepository.register(name, email, password)
+
     }
 }

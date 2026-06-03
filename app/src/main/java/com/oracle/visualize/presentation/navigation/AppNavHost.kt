@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
-import com.oracle.visualize.presentation.screens.createEditScreen.CreateEditTeamPage
+import com.oracle.visualize.presentation.screens.createEditTeamScreen.CreateEditTeamPage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
 import com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.ShareWithTeammatesScreen
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
@@ -25,6 +25,13 @@ import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
+/**
+ * The main navigation host for the application.
+ * Defines all the routes and their corresponding composable screens.
+ *
+ * @param navController The [NavHostController] that manages the navigation within this host.
+ * @param modifier The modifier to be applied to the NavHost.
+ */
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {

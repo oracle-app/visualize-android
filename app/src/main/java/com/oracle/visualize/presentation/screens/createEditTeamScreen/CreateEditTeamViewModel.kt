@@ -1,8 +1,11 @@
-package com.oracle.visualize.presentation.screens.createEditScreen
+package com.oracle.visualize.presentation.screens.createEditTeamScreen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
+import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
@@ -26,7 +29,7 @@ class CreateEditTeamViewModel @Inject constructor(
     private val getUserSuggestionsUseCase: GetUserSuggestionsUseCase,
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository, // INYECTAMOS USER REPOSITORY
+    private val userRepository: UserRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -38,6 +41,7 @@ class CreateEditTeamViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
     private val teamIdArg: String? = savedStateHandle.get<String>("teamId")
+    private val userID: String = authRepository.getCurrentUserID() ?: ""
 
     init {
         loadInitialData()
@@ -49,20 +53,34 @@ class CreateEditTeamViewModel @Inject constructor(
             _uiState.value = CreateEditTeamUiState.Loading
 
             try {
-                val currentUserID = authRepository.getCurrentUserID()
-                val currentUser = userRepository.getUserByUserID(currentUserID)
+                val userResult = userRepository.getUserByUserID(userID)
+                val currentUser = when (userResult) {
+                    is AppResult.Success -> userResult.data
+                    is AppResult.Error -> {
+                        _uiState.value = CreateEditTeamUiState.Error(R.string.error_team_load_failed)
+                        return@launch
+                    }
+                }
+
+                val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(userID) }
+                val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(userID) }
+
+                val ownerResult = ownedDeferred.await()
+                val memberResult = memberDeferred.await()
+
+                if (ownerResult is AppResult.Error && ownerResult.error is AppError.NetworkError) {
+                    _uiState.value = CreateEditTeamUiState.Error(R.string.error_network)
+                    return@launch
+                }
+
+                val ownedTeams  = if (ownerResult is AppResult.Success) ownerResult.data else emptyList()
+                val memberTeams = if (memberResult is AppResult.Success) memberResult.data else emptyList()
 
                 if (teamIdArg != null) {
-                    val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(currentUserID) }
-                    val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(currentUserID) }
-
-                    val ownedTeams  = ownedDeferred.await().getOrNull()  ?: emptyList()
-                    val memberTeams = memberDeferred.await().getOrNull() ?: emptyList()
-
                     val teamToEdit = (ownedTeams + memberTeams).find { it.id == teamIdArg }
 
                     if (teamToEdit != null) {
-                        val isOwner = teamToEdit.ownerID == currentUserID
+                        val isOwner = teamToEdit.ownerID == userID
                         val isAdmin = currentUser.userType == UserType.ADMIN
 
                         if (isOwner || isAdmin) {
@@ -74,35 +92,29 @@ class CreateEditTeamViewModel @Inject constructor(
                                 suggestions = emptyList()
                             )
                         } else {
-                            _uiState.value = CreateEditTeamUiState.Error("No tienes permiso para editar este equipo.")
+                            _uiState.value = CreateEditTeamUiState.Error(R.string.permission_denied)
                         }
                     } else {
-                        _uiState.value = CreateEditTeamUiState.Error("No se encontró el equipo.")
+                        _uiState.value = CreateEditTeamUiState.Error(R.string.error_team_load_failed)
                     }
                 } else {
-                    val ownedDeferred  = async { getUsersTeamsUseCase.getTeamsUserOwns(currentUserID) }
-                    val memberDeferred = async { getUsersTeamsUseCase.getTeamsUserIsIn(currentUserID) }
-
-                    val ownedTeams  = ownedDeferred.await().getOrNull()  ?: emptyList()
-                    val memberTeams = memberDeferred.await().getOrNull() ?: emptyList()
-
                     val ownerAsUser = (ownedTeams + memberTeams)
                         .flatMap { it.members }
-                        .firstOrNull { it.id == currentUserID }
+                        .firstOrNull { it.id == userID }
 
                     val suggestions = (ownedTeams + memberTeams)
                         .flatMap { it.members }
-                        .filter    { it.id != currentUserID }
+                        .filter    { it.id != userID }
                         .distinctBy { it.id }
 
                     _uiState.value = CreateEditTeamUiState.Content(
-                        ownerID     = currentUserID,
+                        ownerID     = userID,
                         members     = listOfNotNull(ownerAsUser),
                         suggestions = suggestions
                     )
                 }
             } catch (e: Exception) {
-                _uiState.value = CreateEditTeamUiState.Error(e.message ?: "Error al cargar la información")
+                _uiState.value = CreateEditTeamUiState.Error(R.string.error_team_load_failed)
             }
         }
     }
@@ -115,16 +127,16 @@ class CreateEditTeamViewModel @Inject constructor(
                     _uiState.value = current.copy(searchResults = emptyList())
                     return@collect
                 }
-                getUserSuggestionsUseCase(query.lowercase().trim()).fold(
-                    onSuccess = { results ->
+                when (val result = getUserSuggestionsUseCase(query.lowercase().trim())) {
+                    is AppResult.Success -> {
                         _uiState.value = current.copy(
-                            searchResults = results.filter { r ->
+                            searchResults = result.data.filter { r ->
                                 current.members.none { it.id == r.id }
                             }
                         )
-                    },
-                    onFailure = {}
-                )
+                    }
+                    is AppResult.Error -> {}
+                }
             }
         }
     }
@@ -178,7 +190,7 @@ class CreateEditTeamViewModel @Inject constructor(
 
     private fun submitTeam(state: CreateEditTeamUiState.Content) {
         if (state.teamName.isBlank()) {
-            _uiState.value = state.copy(nameError = "Team name cannot be empty")
+            _uiState.value = state.copy(nameError = R.string.error_team_name_empty)
             return
         }
         viewModelScope.launch {
@@ -189,15 +201,17 @@ class CreateEditTeamViewModel @Inject constructor(
             else
                 createTeamUseCase(memberIDs, state.teamName.trim(), state.ownerID)
 
-            result.fold(
-                onSuccess = { _uiState.value = CreateEditTeamUiState.Success },
-                onFailure = { e ->
+            when (result) {
+                is AppResult.Success -> {
+                    _uiState.value = CreateEditTeamUiState.Success
+                }
+                is AppResult.Error -> {
                     _uiState.value = state.copy(
                         isSubmitting = false,
-                        nameError    = e.message ?: "Failed to save team"
+                        nameError    = R.string.error_team_saved_failed
                     )
                 }
-            )
+            }
         }
     }
 }
