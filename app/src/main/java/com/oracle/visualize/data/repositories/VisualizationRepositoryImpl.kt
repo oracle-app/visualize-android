@@ -79,26 +79,32 @@ class VisualizationRepositoryImpl @Inject constructor(
 
     override suspend fun getUserFeedVisualizations(
         userID: String,
-        forceRefresh: Boolean): AppResult<List<VisualizationCard>> = coroutineScope {
-            val cached = feedCacheManager.cachedFeed
-            if (!forceRefresh && cached != null) return@coroutineScope AppResult.Success(cached)
-            val sharedDeferred   = async { getSharedVisualizations(userID, forceRefresh = true) }
-            val personalDeferred = async { getPersonalVisualizations(userID, forceRefresh = true) }
-            val sharedResult = sharedDeferred.await()
-            val personalResult = personalDeferred.await()
+        forceRefresh: Boolean
+    ): AppResult<List<VisualizationCard>> = coroutineScope {
+        val cached = feedCacheManager.cachedFeed
+        if (!forceRefresh && cached != null) return@coroutineScope AppResult.Success(cached)
 
-            if (sharedResult is AppResult.Success && personalResult is AppResult.Success) {
-                val combinedFeed = sharedResult.data + personalResult.data
-                feedCacheManager.cachedFeed = combinedFeed
-                return@coroutineScope AppResult.Success(combinedFeed)
+        val sharedDeferred   = async { getSharedVisualizations(userID, forceRefresh = true) }
+        val personalDeferred = async { getPersonalVisualizations(userID, forceRefresh = true) }
+
+        val sharedResult = sharedDeferred.await()
+        val personalResult = personalDeferred.await()
+
+        if (sharedResult is AppResult.Success && personalResult is AppResult.Success) {
+            val combinedFeed = (sharedResult.data + personalResult.data)
+                .distinctBy { it.id }
+                .sortedByDescending { it.createdAt }
+
+            feedCacheManager.cachedFeed = combinedFeed
+            return@coroutineScope AppResult.Success(combinedFeed)
+        } else {
+            val error = if (sharedResult is AppResult.Error) {
+                sharedResult.error
             } else {
-                val error = if (sharedResult is AppResult.Error) {
-                    sharedResult.error}
-                else {
-                    (personalResult as AppResult.Error).error
-                }
-                return@coroutineScope AppResult.Error(error)
+                (personalResult as AppResult.Error).error
             }
+            return@coroutineScope AppResult.Error(error)
+        }
     }
 
     private suspend fun fetchDetailsAndMapBatch(
@@ -106,7 +112,10 @@ class VisualizationRepositoryImpl @Inject constructor(
     ): List<VisualizationCard> = coroutineScope {
         if (dtos.isEmpty()) return@coroutineScope emptyList()
         val hiddenIDs   = userDatasource.getUserByID(userID).hiddenVisualizations?.toSet() ?: emptySet()
-        val visibleDTOs = dtos.filter { !hiddenIDs.contains(it.id) }
+        val visibleDTOs = dtos
+            .filter { !hiddenIDs.contains(it.id) }
+            .sortedByDescending { it.createdAt }
+
         if (visibleDTOs.isEmpty()) return@coroutineScope emptyList()
 
         val allUserIDs    = (visibleDTOs.map { it.authorID } + visibleDTOs.flatMap { it.sharedWithUsers }).toSet().toList()
@@ -163,7 +172,6 @@ class VisualizationRepositoryImpl @Inject constructor(
 
     override suspend fun getVisualizationById(visualizationId: String): AppResult<VisualizationSharedData?> {
         return safeApiCall {
-            // Reuses getIndividualVisualization datasource method — same Firestore document
             val dto = visualizationDataSource.getIndividualVisualization(visualizationId) ?: throw Exception(
                 "Visualization not found"
             )

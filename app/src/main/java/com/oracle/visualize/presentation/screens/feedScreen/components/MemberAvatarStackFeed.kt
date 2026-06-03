@@ -36,7 +36,7 @@ private val AVATAR_OFFSET  = 16.dp
 fun MemberAvatarStackFeed(
     members: List<User>,
 ) {
-    val displayCount = minOf(members.size, 3)
+    val displayCount = if (members.size <= 4) members.size else 3
     val extraCount = members.size - displayCount
 
     Row(
@@ -61,7 +61,6 @@ fun MemberAvatarStackFeed(
                         )
                     }
                 }
-                // We draw in reverse order so the first one ends up on top
                 repeat(displayCount) { index ->
                     val memberIndex = displayCount - 1 - index
                     Box(
@@ -90,7 +89,6 @@ fun MemberAvatarStackFeed(
 
             layout(totalWidth, height) {
                 placeables.forEachIndexed { index, placeable ->
-                    // index 0 = extra bubble or last member, last index = first member (on top)
                     var x = (itemCount - 1 - index) * offset
                     if (placeables.size > 3 && index == 0) x += 22
                     placeable.placeWithLayer(x, 0, zIndex = index.toFloat())
