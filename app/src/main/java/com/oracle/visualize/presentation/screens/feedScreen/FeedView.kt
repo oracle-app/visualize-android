@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +23,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
+import com.oracle.visualize.presentation.screens.feedScreen.components.DeleteForEveryoneDialog
+import com.oracle.visualize.presentation.screens.feedScreen.components.DeleteForMeDialog
 import com.oracle.visualize.presentation.screens.feedScreen.components.SkeletonFeedCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,10 +40,47 @@ import com.oracle.visualize.presentation.screens.feedScreen.components.SkeletonF
 fun FeedPage(
     modifier: Modifier = Modifier,
     feedViewModel: FeedViewModel = hiltViewModel(),
-    onVisualizationClick: (String) -> Unit = {}
+    onVisualizationClick: (String) -> Unit = {},
+    onShareVisualization: (String) -> Unit = {}
 ) {
-    val uiState    by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val uiState        by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
+    val scrollBehavior  = TopAppBarDefaults.pinnedScrollBehavior()
+
+    // Auto-reload when resuming from ShareWithTeammates
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.currentStateFlow.collect { state ->
+            if (state == Lifecycle.State.RESUMED) {
+                feedViewModel.refreshIfCacheInvalidated()
+            }
+        }
+    }
+
+    // Dialogs and deferred navigation — outside LazyColumn so they float above the list
+    if (uiState is FeedUiState.Success) {
+        val state = uiState as FeedUiState.Success
+
+        LaunchedEffect(state.pendingShareId) {
+            state.pendingShareId?.let { id ->
+                feedViewModel.onShareNavigated()
+                onShareVisualization(id)
+            }
+        }
+
+        state.deleteDialogForId?.let { vizId ->
+            DeleteForEveryoneDialog(
+                onDismiss = { feedViewModel.onDismissDialog() },
+                onConfirm = { feedViewModel.onConfirmDeleteForEveryone(vizId) }
+            )
+        }
+
+        state.hideDialogForId?.let { vizId ->
+            DeleteForMeDialog(
+                onDismiss = { feedViewModel.onDismissDialog() },
+                onConfirm = { feedViewModel.onConfirmHideForMe(vizId) }
+            )
+        }
+    }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -79,7 +121,10 @@ fun FeedPage(
                         item {
                             Spacer(modifier = Modifier.height(22.dp))
                             if (state.isSearching) {
-                                SearchSection(text = state.searchText, onTextChange = { feedViewModel.onSearchTextChange(it) })
+                                SearchSection(
+                                    text         = state.searchText,
+                                    onTextChange = { feedViewModel.onSearchTextChange(it) }
+                                )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -95,12 +140,19 @@ fun FeedPage(
                         } else {
                             items(items = state.items, key = { it.card.id }) { feedItem ->
                                 FeedCard(
-                                    item               = feedItem.card,
-                                    chart              = feedItem.chart,
-                                    currentUserID      = state.currentUserID,
-                                    isChartLoading     = feedItem.isChartLoading,
-                                    onLoadChartRequest = { feedViewModel.loadChartForCard(feedItem.card) },
-                                    onClick            = { onVisualizationClick(feedItem.card.id) }
+                                    item                = feedItem.card,
+                                    chart               = feedItem.chart,
+                                    currentUserID       = state.currentUserID,
+                                    isChartLoading      = feedItem.isChartLoading,
+                                    onLoadChartRequest  = { feedViewModel.loadChartForCard(feedItem.card) },
+                                    isDeletable         = state.isDeletableMap[feedItem.card.id] ?: false,
+                                    isMenuOpen          = state.menuOpenForId == feedItem.card.id,
+                                    onClick             = { onVisualizationClick(feedItem.card.id) },
+                                    onMenuOpen          = { feedViewModel.onMenuOpen(feedItem.card.id) },
+                                    onMenuDismiss       = { feedViewModel.onMenuDismiss() },
+                                    onDeleteForEveryone = { feedViewModel.onRequestDeleteForEveryone(feedItem.card.id) },
+                                    onHideForMe         = { feedViewModel.onRequestHideForMe(feedItem.card.id) },
+                                    onShare             = { feedViewModel.onRequestShare(feedItem.card.id) }
                                 )
                             }
                         }

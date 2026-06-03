@@ -5,7 +5,6 @@ import com.oracle.visualize.domain.models.*
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 import com.google.gson.JsonObject
 import com.google.gson.JsonArray
-import org.json.JSONArray
 import org.json.JSONException
 
 /**

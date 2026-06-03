@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.screens.teamsScreen
 
 import com.oracle.visualize.presentation.screens.teamsScreen.components.MyTeamRow
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -71,7 +72,7 @@ fun TeamsPage(
         is TeamsUiState.Error -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(onClick = { viewModel.onEvent(TeamsUiEvent.Refresh) }) {
                         Text(stringResource(R.string.teams_retry))
@@ -88,6 +89,12 @@ private fun TeamsContent(
     modifier: Modifier = Modifier,
     onEvent: (TeamsUiEvent) -> Unit
 ) {
+    val subtitleTextColors = if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -98,9 +105,7 @@ private fun TeamsContent(
             TeamsTopBar()
 
             LazyColumn(
-                modifier       = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
                 item {
@@ -109,7 +114,7 @@ private fun TeamsContent(
                         text       = stringResource(R.string.teams_my_teams_section),
                         fontSize   = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color      = MaterialTheme.colorScheme.onSurface,
+                        color      = subtitleTextColors,
                         modifier   = Modifier.padding(bottom = 12.dp)
                     )
                 }
@@ -138,7 +143,7 @@ private fun TeamsContent(
                         text       = stringResource(R.string.teams_im_in_section),
                         fontSize   = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color      = MaterialTheme.colorScheme.onSurface,
+                        color      = subtitleTextColors,
                         modifier   = Modifier.padding(bottom = 12.dp)
                     )
                 }
@@ -162,10 +167,7 @@ private fun TeamsContent(
 
         FloatingActionButton(
             onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
-            modifier       = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 32.dp, end = 24.dp)
-                .size(80.dp),
+            modifier       = Modifier.align(Alignment.BottomEnd).padding(bottom = 32.dp, end = 24.dp).size(80.dp),
             containerColor = MaterialTheme.colorScheme.secondary,
             contentColor   = MaterialTheme.colorScheme.onSecondary,
             shape          = RoundedCornerShape(24.dp)

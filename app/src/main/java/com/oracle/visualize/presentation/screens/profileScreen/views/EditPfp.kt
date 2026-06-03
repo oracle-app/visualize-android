@@ -33,22 +33,18 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.oracle.visualize.R
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPfp(
-
     pfp: String? = null,
     onBack: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onSaveChanges: () -> Unit
 
-)
-{
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TopAppBar(
             title = {
                 Text(

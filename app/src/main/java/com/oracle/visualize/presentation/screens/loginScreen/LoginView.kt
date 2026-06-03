@@ -93,9 +93,18 @@ fun LoginPage(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
                 placeholder = stringResource(R.string.email),
-                isError = uiState.emailError != null,
+                isError = uiState.emailErrorRes != null,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
             )
+
+            uiState.emailErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -103,12 +112,21 @@ fun LoginPage(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
                 placeholder = stringResource(R.string.password),
-                isError = uiState.passwordError != null,
+                isError = uiState.passwordErrorRes != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isPasswordVisible,
                 onVisibilityClick = viewModel::onPasswordVisibilityChange,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
             )
+
+            uiState.passwordErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -123,11 +141,11 @@ fun LoginPage(
                     .padding(vertical = 4.dp, horizontal = 8.dp)
             )
 
-            uiState.error?.let {
+            uiState.errorRes?.let { errorId ->
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = it,
+                    text = stringResource(id = errorId),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )

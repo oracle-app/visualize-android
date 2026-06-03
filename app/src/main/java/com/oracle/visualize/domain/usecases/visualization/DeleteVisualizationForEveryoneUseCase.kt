@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.visualization
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,11 +16,9 @@ import javax.inject.Singleton
 class DeleteVisualizationForEveryoneUseCase @Inject constructor(
     private val visualizationRepository: VisualizationRepository
 ) {
-    suspend operator fun invoke(visualizationId: String): Result<Unit> {
+    suspend operator fun invoke(visualizationId: String): AppResult<Unit> {
         if (visualizationId.isBlank())
-            return Result.failure(AppError.GeneralValidationError("Visualization ID cannot be empty"))
-        return runCatching {
-            visualizationRepository.deleteVisualizationForEveryone(visualizationId)
-        }
+            return AppResult.Error(AppError.GeneralValidationError("Visualization ID cannot be empty"))
+        return visualizationRepository.deleteVisualizationForEveryone(visualizationId)
     }
 }

@@ -13,7 +13,7 @@ sealed interface ChartSelectionUiState {
         val hasTitleChanges: Boolean = false
     ) : ChartSelectionUiState
 
-    data class Error(val message: String) : ChartSelectionUiState
+    data class Error(val message: Int) : ChartSelectionUiState
 }
 
 /**

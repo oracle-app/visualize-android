@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.comment
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.CommentRepository
 import jakarta.inject.Inject
 
@@ -10,18 +11,16 @@ class DeleteCommentUseCase @Inject constructor(
     suspend operator fun invoke(
         visualizationId: String,
         commentId: String
-    ): Result<Unit> {
+    ): AppResult<Unit> {
         if (visualizationId.isBlank()){
-            return Result.failure(AppError.NotFound())
+            return AppResult.Error(AppError.NotFound())
         }
         if (commentId.isBlank()){
-            return Result.failure(AppError.NotFound())
+            return AppResult.Error(AppError.NotFound())
         }
-        return runCatching {
-            commentsRepository.deleteComment(
+        return commentsRepository.deleteComment(
                 visualizationId = visualizationId,
                 commentId = commentId
-            )
-        }
+        )
     }
 }

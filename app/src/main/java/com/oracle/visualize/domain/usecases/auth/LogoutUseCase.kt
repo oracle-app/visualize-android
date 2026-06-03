@@ -7,7 +7,7 @@ import javax.inject.Singleton
 /**
  * Use case for logging out the current user.
  *
- * @property repository The repository used for authentication operations.
+ * @property authRepository The repository used for authentication operations.
  */
 @Singleton
 class LogoutUseCase @Inject constructor(
