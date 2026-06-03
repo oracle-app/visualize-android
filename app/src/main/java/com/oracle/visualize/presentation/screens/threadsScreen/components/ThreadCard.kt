@@ -29,6 +29,7 @@ import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -40,7 +41,7 @@ fun ThreadCard(
 ) {
     val formattedDate = SimpleDateFormat(
         "dd/MM/yy",
-        Locale.getDefault()
+        LocalLocale.current.platformLocale
     ).format(thread.createdAt)
 
     var expanded by remember { mutableStateOf(false) }
@@ -51,7 +52,7 @@ fun ThreadCard(
             .combinedClickable(
                 onClick = {},
                 onLongClick = {
-                    if (isCurrentUser) {
+                    if (thread.permissions.canDelete) {
                         expanded = true
                     }
                 }
