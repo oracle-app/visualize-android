@@ -23,20 +23,27 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
+import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
 import com.oracle.visualize.domain.usecases.visualization.PublishVisualizationsInBulkUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 
 @HiltViewModel
 class SelectChartViewModel @Inject constructor(
     private val repository: AnalyzeRepository,
-    private val authRepository: com.oracle.visualize.domain.repositories.AuthRepository,
+    private val authRepository: AuthRepository,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val publishVisualizationsInBulkUseCase: PublishVisualizationsInBulkUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(){
     val taskId: String = savedStateHandle.toRoute<NavRoutes.ChartSelection>().taskId
     private val _uiState = MutableStateFlow<ChartSelectionUiState>(ChartSelectionUiState.Loading)
     val uiState: StateFlow<ChartSelectionUiState> = _uiState.asStateFlow()
+    private var currentUserID: String = ""
+    private var userChartTheme: ChartPalette = ChartPalette.THEME1
 
     init {
+        currentUserID = authRepository.getCurrentUserID() ?: ""
         fetchOverview()
     }
 
@@ -47,6 +54,11 @@ class SelectChartViewModel @Inject constructor(
             val chartSelections = mutableListOf<ChartSelection>()
             var lastErrorMessageId: Int? = null
 
+            userChartTheme = when (val chartColorThemeResult = getUserChartThemeUseCase(currentUserID)){
+                is AppResult.Success -> chartColorThemeResult.data
+                is AppResult.Error -> userChartTheme
+            }
+
             for (chartIndex in 0..4) {
                 when (val result = repository.previewedResults(taskId, chartIndex, true)) {
                     is AppResult.Success -> {
@@ -55,6 +67,7 @@ class SelectChartViewModel @Inject constructor(
                                 ChartSelection(
                                     chartIndex = chartIndex,
                                     chart = chart,
+                                    chartColorTheme = userChartTheme,
                                     customTitle = chart.chartTitle,
                                     isSelected = true,
                                 )

@@ -309,6 +309,7 @@ fun ChartSelectionPage(
                             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                                 ChartCard(
                                     chart = selection.chart,
+                                    chartColorTheme = selection.chartColorTheme,
                                     title = selection.customTitle,
                                     isSelected = selection.isSelected,
                                     onSelect = { viewModel.toggleSelection(selection.id) },

@@ -22,6 +22,6 @@ sealed interface FeedUiState {
         val hideDialogForId: String? = null,
         val isDeletableMap: Map<String, Boolean> = emptyMap(),
         val pendingShareId: String? = null,
-        val chartColorTheme: ChartPalette
+        val chartColorTheme: ChartPalette = ChartPalette.THEME1
     ) : FeedUiState
 }
