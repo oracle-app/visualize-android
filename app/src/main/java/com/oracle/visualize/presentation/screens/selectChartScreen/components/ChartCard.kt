@@ -19,10 +19,12 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.presentation.components.ChartRenderGeneral
+import com.oracle.visualize.ui.theme.ChartPalette
 
 @Composable
 fun ChartCard(
     chart: Chart<*>,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     title: String,
     isSelected: Boolean,
     onSelect: () -> Unit,
@@ -88,7 +90,7 @@ fun ChartCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     .padding(16.dp)
             ) {
-                ChartRenderGeneral(chart = chart)
+                ChartRenderGeneral(chart = chart, chartColorTheme = chartColorTheme)
             }
         }
     }

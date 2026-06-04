@@ -48,6 +48,7 @@ import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.presentation.screens.feedScreen.components.FeedCardMenu
 import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
+import com.oracle.visualize.ui.theme.ChartPalette
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -73,6 +74,7 @@ fun FeedCard(
     currentUserID: String = "",
     onClick: () -> Unit = {},
     chart: Chart<*>?,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     isChartLoading: Boolean,
     onLoadChartRequest: () -> Unit,
     permissions: VisualizationPermissions,
@@ -185,7 +187,8 @@ fun FeedCard(
                             showAxisLabels   = false,
                             enableTooltips   = false,
                             enableZoomAndPan = false,
-                            feedCardLabels   = true
+                            feedCardLabels   = true,
+                            chartColorTheme = chartColorTheme
                         )
                     } else {
                         Text(

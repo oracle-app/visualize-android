@@ -27,13 +27,13 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel, enableTooltips: Boolean) {
+fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel, chartColorTheme: ChartPalette, enableTooltips: Boolean) {
     val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
-    val colors = generateChartColors(categories.size, ChartPalette.THEME1)
+    val colors = generateChartColors(categories.size, chartColorTheme)
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         PieChart(

@@ -46,6 +46,7 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun ChartRenderGeneral(
     modifier: Modifier = Modifier,
     chart: Chart<*>,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     showAxisLabels: Boolean = true,
     enableTooltips: Boolean = true,
     enableZoomAndPan: Boolean = true,
@@ -72,15 +73,17 @@ fun ChartRenderGeneral(
 
                 Box(modifier = boxModifier) {
                     RenderVerticalBarChart(
-                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                        enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                        enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
                     )
                 }
             }
 
             is HorizontalBarChart -> {
-                RenderHorizontalBarChart(chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                    enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels)
+                RenderHorizontalBarChart(
+                    chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                    enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                )
             }
 
             is StackedBarChart -> {
@@ -92,29 +95,30 @@ fun ChartRenderGeneral(
 
                 Box(modifier = boxModifier) {
                     RenderStackedBarChart(
-                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels,
-                        enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan,
-                        feedCardLabels = feedCardLabels
+                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                        enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
                     )
                 }
             }
 
             is LineChart -> RenderLineChart(
-                chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
             )
 
             is ScatterChart -> RenderScatterChart(
-                chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
             )
 
-            is PieChartModel -> RenderPieChart(chart = chart, enableTooltips = enableTooltips)
+            is PieChartModel -> RenderPieChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
 
-            is DonutChart -> RenderDonutChart(chart = chart, enableTooltips = enableTooltips)
+            is DonutChart -> RenderDonutChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
 
-            is AreaChart -> RenderAreaChart(chart = chart, showAxisLabels = showAxisLabels,
-                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan)
+            is AreaChart -> RenderAreaChart(
+                chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan
+            )
         }
     }
 }

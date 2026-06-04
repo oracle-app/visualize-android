@@ -13,10 +13,12 @@ import com.oracle.visualize.domain.models.enums.VisualizationFilter
 import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
-import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
-import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
 import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
 import com.oracle.visualize.domain.usecases.visualization.HideVisualizationForMeUseCase
+import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
+import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +36,7 @@ class FeedViewModel @Inject constructor(
     private val parseSingleChartUseCase: ParseSingleChartUseCase,
     private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
     private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val feedCacheManager: FeedCacheManager
 ) : ViewModel() {
 
@@ -44,6 +47,8 @@ class FeedViewModel @Inject constructor(
     private var currentUserID: String = ""
     private var currentUserType: UserType = UserType.CONSUMER
     private var feedJob: Job? = null
+
+    private var userChartTheme: ChartPalette = ChartPalette.THEME1
 
     init {
         currentUserID = authRepository.getCurrentUserID() ?: ""
@@ -109,7 +114,14 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
+
+            userChartTheme = when (val chartThemeResult = getUserChartThemeUseCase(currentUserID)) {
+                is AppResult.Success -> chartThemeResult.data
+                is AppResult.Error -> userChartTheme
+            }
+
             observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
+
                 when (result) {
                     is AppResult.Success -> {
                         allFeedItems = result.data.distinctBy { it.card.id }
@@ -260,6 +272,7 @@ class FeedViewModel @Inject constructor(
                 selectedFilter = filter,
                 isRefreshing   = false,
                 isSearching    = isSearching,
+                chartColorTheme = userChartTheme,
                 permissionsMap = permissionsMap
             )
         }
