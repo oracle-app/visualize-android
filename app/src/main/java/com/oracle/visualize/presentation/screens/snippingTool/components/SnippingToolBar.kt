@@ -53,9 +53,9 @@ fun SnippingToolbar(
     var showColorPicker by remember { mutableStateOf(false) }
     var showThicknessPicker by remember { mutableStateOf(false) }
     var showShapePicker by remember { mutableStateOf(false) }
-
     val density = LocalDensity.current
     val offsetPx = with(density) { 42.dp.roundToPx() }
+    val iconsize = 42.dp
 
     Box(modifier = modifier) {
         Surface(
@@ -68,7 +68,7 @@ fun SnippingToolbar(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onPenClick, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onPenClick, modifier = Modifier.size(iconsize)) {
                     Icon(
                         painter = painterResource(R.drawable.pen),
                         contentDescription = stringResource(R.string.toolbar_pen),
@@ -76,7 +76,7 @@ fun SnippingToolbar(
                         else MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
-                IconButton(onClick = onEraserClick, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onEraserClick, modifier = Modifier.size(iconsize)) {
                     Icon(
                         painter = painterResource(R.drawable.eraser),
                         contentDescription = stringResource(R.string.toolbar_eraser),
@@ -85,7 +85,7 @@ fun SnippingToolbar(
                     )
                 }
                 Box {
-                    IconButton(onClick = { showColorPicker = !showColorPicker }, modifier = Modifier.size(32.dp)) {
+                    IconButton(onClick = { showColorPicker = !showColorPicker }, modifier = Modifier.size(iconsize)) {
                         Box(
                             modifier = Modifier
                                 .size(20.dp)
@@ -107,7 +107,7 @@ fun SnippingToolbar(
                     }
                 }
                 Box {
-                    IconButton(onClick = { showThicknessPicker = !showThicknessPicker }, modifier = Modifier.size(32.dp)) {
+                    IconButton(onClick = { showThicknessPicker = !showThicknessPicker }, modifier = Modifier.size(iconsize)) {
                         Icon(
                             painter = painterResource(R.drawable.thickness),
                             contentDescription = stringResource(R.string.toolbar_thickness),
@@ -120,7 +120,7 @@ fun SnippingToolbar(
                         }
                     }
                 }
-                IconButton(onClick = onTextClick, modifier = Modifier.size(32.dp)) {
+                IconButton(onClick = onTextClick, modifier = Modifier.size(iconsize)) {
                     Icon(
                         Icons.Default.TextFields,
                         contentDescription = stringResource(R.string.toolbar_text),
@@ -129,7 +129,7 @@ fun SnippingToolbar(
                     )
                 }
                 Box {
-                    IconButton(onClick = { showShapePicker = !showShapePicker }, modifier = Modifier.size(32.dp)) {
+                    IconButton(onClick = { showShapePicker = !showShapePicker }, modifier = Modifier.size(iconsize)) {
                         Icon(
                             painter = painterResource(R.drawable.shapes),
                             contentDescription = stringResource(R.string.toolbar_shape),
@@ -153,7 +153,7 @@ fun SnippingToolbar(
                         showShapePicker = false
                         onCropClick()
                     },
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(iconsize)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.scissors),

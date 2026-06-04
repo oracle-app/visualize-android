@@ -8,18 +8,26 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,6 +59,7 @@ import com.oracle.visualize.presentation.screens.snippingTool.components.Snippin
 import kotlinx.coroutines.launch
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.oracle.visualize.R
@@ -214,91 +223,105 @@ fun SnippingToolView(
                 uiState.chart != null -> {
                     val chart = uiState.chart!!
 
-                    ZoomableChart(
-                        chart = chart,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                    ) {
-                        ChartRenderFullScreen(
-                            chart = chart, showAxisLabels = true, chartColorTheme = uiState.chartColorTheme
-                        )
-                    }
-
-                    DrawingCanvas(
-                        elements = uiState.elements,
-                        selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
-                        selectedShape = uiState.selectedShape,
-                        selectedColor = uiState.selectedColor,
-                        strokeWidth = uiState.strokeWidth,
-                        onAddElement = { viewModel.addElement(it) },
-                        modifier = Modifier
+                    Scaffold(
+                        containerColor = Color.Transparent,
+                        topBar = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .windowInsetsPadding(WindowInsets.statusBars.add(WindowInsets(top = 16.dp)))
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                SnippingToolActionBar(
+                                    onUndo = { viewModel.undo() },
+                                    onRedo = { viewModel.redo() }
+                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Button(
+                                        onClick = { viewModel.toggleCancelDialog() },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                            contentColor = MaterialTheme.colorScheme.onError
+                                        )
+                                    ) {
+                                        Text("Discard")
+                                    }
+                                    Button(onClick = { viewModel.toggleConfirmDialog() },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.secondary,
+                                            contentColor = MaterialTheme.colorScheme.onSecondary
+                                        )) {
+                                        Text("Share")
+                                    }
+                                }
+                            }
+                        },
+                        bottomBar = {
+                            SnippingToolbar(
+                                onPenClick = { viewModel.selectTool(DrawingTool.PEN) },
+                                onEraserClick = { viewModel.selectTool(DrawingTool.ERASER) },
+                                onColorClick = { color -> viewModel.setColor(color.selectedColor) },
+                                strokeWidth = uiState.strokeWidth,
+                                onThicknessClick = { viewModel.setStrokeWidth(it) },
+                                onTextClick = { viewModel.selectTool(DrawingTool.TEXT) },
+                                onShapeClick = { shape ->
+                                    viewModel.selectTool(DrawingTool.SHAPE)
+                                    viewModel.setShape(shape)
+                                },
+                                onCropClick = { viewModel.toggleCrop() },
+                                selectedColor = uiState.selectedColor,
+                                selectedTool = uiState.selectedTool,
+                                cropMode = uiState.isCroppingMode,
+                                modifier = Modifier
+                                    .windowInsetsPadding(WindowInsets.statusBars)
+                            )
+                        }
+                    ) { innerPadding ->
+                        Box(modifier = Modifier
                             .fillMaxSize()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                                translationX = offset.x
-                                translationY = offset.y
-                                compositingStrategy = CompositingStrategy.Offscreen
-                            },
-                        isDrawingMode = uiState.isDrawingMode
-                    )
+                            .padding(innerPadding)
+                        ) {
+                            ZoomableChart(
+                                chart = chart,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                ChartRenderFullScreen(
+                                    chart = chart,
+                                    showAxisLabels = true,
+                                    chartColorTheme = uiState.chartColorTheme
+                                )
+                            }
+
+                            DrawingCanvas(
+                                elements = uiState.elements,
+                                selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
+                                selectedShape = uiState.selectedShape,
+                                selectedColor = uiState.selectedColor,
+                                strokeWidth = uiState.strokeWidth,
+                                onAddElement = { viewModel.addElement(it) },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        translationX = offset.x
+                                        translationY = offset.y
+                                        compositingStrategy = CompositingStrategy.Offscreen
+                                    },
+                                isDrawingMode = uiState.isDrawingMode
+                            )
+
+                            CropOverlay(
+                                cropRect = uiState.cropRect,
+                                onCropRectChange = { viewModel.setCropRect(it) },
+                                isCropDraggable = uiState.isCroppingMode,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
                 }
-            }
-        }
-
-        CropOverlay(
-            cropRect = uiState.cropRect,
-            onCropRectChange = { viewModel.setCropRect(it) },
-            isCropDraggable = uiState.isCroppingMode,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        SnippingToolbar(
-            onPenClick = { viewModel.selectTool(DrawingTool.PEN) },
-            onEraserClick = { viewModel.selectTool(DrawingTool.ERASER) },
-            onColorClick = { color -> viewModel.setColor(color.selectedColor) },
-            strokeWidth = uiState.strokeWidth,
-            onThicknessClick = { viewModel.setStrokeWidth(it) },
-            onTextClick = { viewModel.selectTool(DrawingTool.TEXT) },
-            onShapeClick = { shape ->
-                viewModel.selectTool(DrawingTool.SHAPE)
-                viewModel.setShape(shape)
-            },
-            onCropClick = { viewModel.toggleCrop() },
-            selectedColor = uiState.selectedColor,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = 48.dp),
-            selectedTool = uiState.selectedTool,
-            cropMode = uiState.isCroppingMode
-        )
-
-        SnippingToolActionBar(
-            onUndo = { viewModel.undo() },
-            onRedo = { viewModel.redo() },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 64.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 48.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            FloatingActionButton(
-                onClick = { viewModel.toggleCancelDialog() },
-                containerColor = MaterialTheme.colorScheme.error
-            ) {
-                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.fab_cancel), tint = MaterialTheme.colorScheme.onSecondary)
-            }
-            FloatingActionButton(
-                onClick = { viewModel.toggleConfirmDialog() },
-                containerColor = MaterialTheme.colorScheme.secondary
-            ) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.fab_confirm), tint = MaterialTheme.colorScheme.onSecondary)
             }
         }
     }

@@ -263,12 +263,10 @@ private fun DrawScope.drawShapePreview(
             )
         }
         ShapeType.CIRCLE -> {
-            val center = Offset((start.x + end.x) / 2, (start.y + end.y) / 2)
-            val radius = sqrt((end.x - start.x).pow(2) + (end.y - start.y).pow(2)) / 2
-            drawCircle(
+            drawOval(
                 color = color,
-                center = center,
-                radius = radius,
+                topLeft = Offset(minOf(start.x, end.x), minOf(start.y, end.y)),
+                size = Size(abs(end.x - start.x), abs(end.y - start.y)),
                 style = stroke
             )
         }
