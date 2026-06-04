@@ -11,6 +11,8 @@
     <string name="edit">Edit</string>
     <string name="save_changes">Save Changes</string>
 
+    // Roles
+    <string name="permission_denied">User does not possess the role to perform this action</string>>
 
     // Navigation Bar
 

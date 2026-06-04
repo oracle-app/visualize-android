@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
+import com.oracle.visualize.domain.models.ThreadPermissions
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.repositories.AuthRepository
 import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.comment.CreateCommentUseCase
@@ -41,6 +43,7 @@ class ThreadsViewModel @Inject constructor(
     private var currentUserID: String = ""
     private var currentUserName: String = ""
     private var currentUserImageUrl: String? = null
+    private var currentUserType: UserType = UserType.CONSUMER
 
     init {
         currentUserID = authRepository.getCurrentUserID() ?: ""
@@ -50,6 +53,7 @@ class ThreadsViewModel @Inject constructor(
                 is AppResult.Success -> {
                     currentUserName = result.data.username ?: currentUserID
                     currentUserImageUrl = result.data.profilePictureURL
+                    currentUserType = result.data.userType
                 }
                 is AppResult.Error -> {
                     currentUserName = currentUserID
@@ -75,9 +79,11 @@ class ThreadsViewModel @Inject constructor(
 
         viewModelScope.launch {
             val visualizationsResult = getAllUserVisualizationsUseCase(currentUserID)
-            val visualizationTitle = if (visualizationsResult is AppResult.Success) {
-                visualizationsResult.data.find { it.id == visualizationId }?.title ?: ""
-            } else ""
+            val visualization = if (visualizationsResult is AppResult.Success) {
+                visualizationsResult.data.find { it.id == visualizationId }
+            } else null
+            val visualizationTitle = visualization?.title ?: ""
+            val visualizationOwnerID = visualization?.authorID ?: ""
 
             when (val commentsResult = getCommentsUseCase(visualizationId)) {
                 is AppResult.Success -> {
@@ -96,7 +102,13 @@ class ThreadsViewModel @Inject constructor(
                                 authorName = thread.authorName.ifBlank { threadAuthor.first },
                                 authorImageURL = thread.authorAvatarURL ?: threadAuthor.second,
                                 content = thread.content,
-                                createdAt = thread.createdAt
+                                createdAt = thread.createdAt,
+                                permissions = ThreadPermissions(
+                                    userType = currentUserType,
+                                    currentUserID = currentUserID,
+                                    visualizationOwnerID = visualizationOwnerID,
+                                    commentAuthorID = thread.authorID
+                                )
                             )
                         }
 
@@ -108,13 +120,20 @@ class ThreadsViewModel @Inject constructor(
                             content = comment.content,
                             imageURL = comment.imageURL,
                             createdAt = comment.createdAt,
-                            threads = threadsUi
+                            threads = threadsUi,
+                            permissions = ThreadPermissions(
+                                userType = currentUserType,
+                                currentUserID = currentUserID,
+                                visualizationOwnerID = visualizationOwnerID,
+                                commentAuthorID = comment.authorID
+                            )
                         )
                     }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             visualizationTitle = visualizationTitle,
+                            visualizationOwnerID = visualizationOwnerID,
                             currentUserId = currentUserID,
                             comments = commentsUi
                         )
@@ -169,7 +188,13 @@ class ThreadsViewModel @Inject constructor(
                         content = newComment.content,
                         imageURL = newComment.imageURL,
                         createdAt = newComment.createdAt,
-                        threads = emptyList()
+                        threads = emptyList(),
+                        permissions = ThreadPermissions(
+                            userType = currentUserType,
+                            currentUserID = currentUserID,
+                            visualizationOwnerID = _uiState.value.visualizationOwnerID,
+                            commentAuthorID = currentUserID
+                        )
                     )
 
                     _uiState.update {
@@ -216,7 +241,13 @@ class ThreadsViewModel @Inject constructor(
                         authorName = newThread.authorName,
                         authorImageURL = newThread.authorAvatarURL,
                         content = newThread.content,
-                        createdAt = newThread.createdAt
+                        createdAt = newThread.createdAt,
+                        permissions = ThreadPermissions(
+                            userType = currentUserType,
+                            currentUserID = currentUserID,
+                            visualizationOwnerID = _uiState.value.visualizationOwnerID,
+                            commentAuthorID = currentUserID
+                        )
                     )
                     _uiState.update { state ->
                         state.copy(
