@@ -2,9 +2,12 @@ package com.oracle.visualize.presentation.screens.snippingTool
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
+import com.oracle.visualize.domain.models.Chart
+import com.oracle.visualize.domain.models.VisualizationFullScreen
 import com.oracle.visualize.presentation.screens.snippingTool.components.DrawElement
 import com.oracle.visualize.presentation.screens.snippingTool.components.DrawingTool
 import com.oracle.visualize.presentation.screens.snippingTool.components.ShapeType
+import com.oracle.visualize.ui.theme.ChartPalette
 
 data class SnippingToolUiState(
     val elements: List<DrawElement> = emptyList(),
@@ -18,5 +21,11 @@ data class SnippingToolUiState(
     val isCroppingMode: Boolean = false,
     val showConfirmDialog: Boolean = false,
     val showCancelDialog: Boolean = false,
-    val isTransformable: Boolean = true
+    val isTransformable: Boolean = true,
+
+    val isLoading: Boolean = false,
+    val visualization: VisualizationFullScreen? = null,
+    val chart: Chart<*>? = null,
+    val chartColorTheme: ChartPalette = ChartPalette.THEME1,
+    val errorMessage: Int? = null
 )

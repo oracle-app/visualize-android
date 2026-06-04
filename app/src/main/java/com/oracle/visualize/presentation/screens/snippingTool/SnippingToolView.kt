@@ -8,18 +8,22 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,13 +51,19 @@ import com.oracle.visualize.presentation.screens.snippingTool.components.Snippin
 import kotlinx.coroutines.launch
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.components.ChartRenderFullScreen
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun SnippingToolView(
-    bitmap: Bitmap,
-    onDone: (Bitmap) -> Unit,
+    visualizationId: String,
+    onDone: (String) -> Unit,
     onCancel: () ->  Unit,
     modifier: Modifier = Modifier,
     viewModel: SnippingToolViewModel = hiltViewModel()
@@ -87,6 +97,11 @@ fun SnippingToolView(
         scale = (scale * zoomChange).coerceIn(1f, 5f)
         offset += panChange
     }
+    val context = LocalContext.current
+
+    LaunchedEffect(visualizationId) {
+        viewModel.loadVisualization(visualizationId)
+    }
 
     if (uiState.showConfirmDialog) {
         AlertDialog(
@@ -100,7 +115,13 @@ fun SnippingToolView(
                 TextButton(onClick = {
                     viewModel.toggleConfirmDialog()
                     coroutineScope.launch {
-                        onDone(viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap()))
+                        val bitmap = viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap())
+                        val uri = withContext(Dispatchers.IO) {
+                            File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                            }.toURI().toString()
+                        }
+                        onDone(uri)
                     }
                 }) {
                     Text(
@@ -175,38 +196,55 @@ fun SnippingToolView(
                     drawLayer(graphicsLayer)
                 }
         ) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                    }
-            )
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
 
-            DrawingCanvas(
-                elements = uiState.elements,
-                selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
-                selectedShape = uiState.selectedShape,
-                selectedColor = uiState.selectedColor,
-                strokeWidth = uiState.strokeWidth,
-                onAddElement = { viewModel.addElement(it) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                        compositingStrategy = CompositingStrategy.Offscreen
-                    },
-                isDrawingMode = uiState.isDrawingMode
-            )
+                uiState.errorMessage != null -> {
+                    Text(
+                        text = stringResource(uiState.errorMessage!!),
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                uiState.chart != null -> {
+                    val chart = uiState.chart!!
+
+                    ZoomableChart(
+                        chart = chart,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    ) {
+                        ChartRenderFullScreen(
+                            chart = chart, showAxisLabels = true, chartColorTheme = uiState.chartColorTheme
+                        )
+                    }
+
+                    DrawingCanvas(
+                        elements = uiState.elements,
+                        selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
+                        selectedShape = uiState.selectedShape,
+                        selectedColor = uiState.selectedColor,
+                        strokeWidth = uiState.strokeWidth,
+                        onAddElement = { viewModel.addElement(it) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                translationX = offset.x
+                                translationY = offset.y
+                                compositingStrategy = CompositingStrategy.Offscreen
+                            },
+                        isDrawingMode = uiState.isDrawingMode
+                    )
+                }
+            }
         }
 
         CropOverlay(
