@@ -335,5 +335,11 @@
     <string name="last_30_days">Last 30 days</string>
     <string name="older">Older</string>
 
+    // Chart color themes
+    <string name="chart_changed_to_theme">Changed to Theme</string>
+    <string name="chart_theme_lagoon">Lagoon</string>
+    <string name="chart_theme_sunset">Sunset</string>
+    <string name="chart_theme_harvest">Harvest</string>
+    <string name="chart_theme_petal">Petal</string>
 
 </resources>
