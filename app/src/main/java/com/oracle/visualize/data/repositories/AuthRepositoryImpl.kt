@@ -22,8 +22,8 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val authDatasource: AuthFirebasesource,
     private val userDatasource: UserDatasource
+): AuthRepository {
 
-    ): AuthRepository {
     override suspend fun login(email: String, password: String): AppResult<AuthUser> {
         return safeApiCall {
             try {
@@ -44,7 +44,7 @@ class AuthRepositoryImpl @Inject constructor(
                 val authUser = authUserDTO.toDomain()
 
                 // 3. Persist the profile in Firestore using the raw ID (String)
-                val userDto = UserDTO(username = name, email = email)
+                val userDto = UserDTO(username = name, email = email, userType = "WRITER")
                 userDatasource.saveUserProfile(authUser.uid, userDto)
 
                 // 4. Return the raw entity to fulfill the contract
@@ -64,12 +64,11 @@ class AuthRepositoryImpl @Inject constructor(
     override fun logout() = authDatasource.logout()
 
     override fun getCurrentUser(): AuthUser? {
-      return authDatasource.getCurrentUser()?.toDomain()
+        return authDatasource.getCurrentUser()?.toDomain()
     }
 
     override fun getCurrentUserID(): String? {
         val currentUser = authDatasource.getCurrentUser()
-
         return currentUser?.uid
     }
 
@@ -78,6 +77,4 @@ class AuthRepositoryImpl @Inject constructor(
             authDatasource.resetPassword(email)
         }
     }
-
 }
-

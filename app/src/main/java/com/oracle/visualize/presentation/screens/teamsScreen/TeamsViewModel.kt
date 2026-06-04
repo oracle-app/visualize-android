@@ -6,6 +6,7 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.team.DeleteTeamUseCase
 import com.oracle.visualize.domain.usecases.team.GetUsersTeamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class TeamsViewModel @Inject constructor(
     private val getUsersTeamsUseCase: GetUsersTeamsUseCase,
     private val deleteTeamUseCase: DeleteTeamUseCase,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TeamsUiState>(TeamsUiState.Loading)
@@ -35,30 +37,41 @@ class TeamsViewModel @Inject constructor(
         }
     }
 
-
     private fun loadTeams() {
         viewModelScope.launch {
             _uiState.value = TeamsUiState.Loading
 
-            val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
-            val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
-
-            if (myTeamsResult is AppResult.Success && teamsImInResult is AppResult.Success) {
-                _uiState.value = TeamsUiState.Content(
-                    myTeams = myTeamsResult.data,
-                    teamsImIn = teamsImInResult.data
-                )
-            } else {
-                val error = (myTeamsResult as? AppResult.Error)?.error
-                    ?: (teamsImInResult as? AppResult.Error)?.error
-
-                val errorId = when (error) {
-                    is AppError.NetworkError -> R.string.error_network
-                    else -> R.string.error_teams_load_failed
+            try {
+                val userResult = userRepository.getUserByUserID(userID)
+                val currentUserType = when (userResult) {
+                    is AppResult.Success -> userResult.data.userType
+                    is AppResult.Error -> {
+                        _uiState.value = TeamsUiState.Error(R.string.error_teams_load_failed)
+                        return@launch
+                    }
                 }
-                _uiState.value = TeamsUiState.Error(
-                    errorId
-                )
+
+                val myTeamsResult   = getUsersTeamsUseCase.getTeamsUserOwns(userID)
+                val teamsImInResult = getUsersTeamsUseCase.getTeamsUserIsIn(userID)
+
+                if (myTeamsResult is AppResult.Success && teamsImInResult is AppResult.Success) {
+                    _uiState.value = TeamsUiState.Content(
+                        myTeams   = myTeamsResult.data,
+                        teamsImIn = teamsImInResult.data,
+                        userType  = currentUserType
+                    )
+                } else {
+                    val error = (myTeamsResult as? AppResult.Error)?.error
+                        ?: (teamsImInResult as? AppResult.Error)?.error
+
+                    val errorId = when (error) {
+                        is AppError.NetworkError -> R.string.error_network
+                        else -> R.string.error_teams_load_failed
+                    }
+                    _uiState.value = TeamsUiState.Error(errorId)
+                }
+            } catch (e: Exception) {
+                _uiState.value = TeamsUiState.Error(R.string.error_teams_load_failed)
             }
         }
     }

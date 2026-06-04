@@ -1,5 +1,7 @@
 package com.oracle.visualize.domain.models
 
+import com.oracle.visualize.domain.models.enums.UserType
+
 /**
  * Domain model representing a User.
  */
@@ -10,14 +12,9 @@ data class User (
     val username: String,
     val profilePictureURL: String,
     val themePreference: ThemePreference,
-    val chartTheme: String, // Pending: Check variable Type
+    val chartTheme: String,
     val hiddenVisualizations: List<String>
 )
-
-enum class UserType {
-    ADMIN, WRITER, CONSUMER
-}
-
 enum class ThemePreference {
     LIGHT, DARK, SYSTEM
 }

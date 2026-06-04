@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -23,7 +25,6 @@ import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
-
 /**
  * The main navigation host for the application.
  * Defines all the routes and their corresponding composable screens.
@@ -31,6 +32,7 @@ import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
  * @param navController The [NavHostController] that manages the navigation within this host.
  * @param modifier The modifier to be applied to the NavHost.
  */
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -113,7 +115,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier      = Modifier.fillMaxSize(),
                 navController = navController,
                 onLogout      = {
-                    navController.navigate(NavRoutes.Splash)
+                    navController.navigate(NavRoutes.Splash) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

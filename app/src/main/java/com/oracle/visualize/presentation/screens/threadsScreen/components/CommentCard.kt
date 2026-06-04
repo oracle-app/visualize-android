@@ -27,6 +27,7 @@ import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.CommentUiModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun CommentCard(
@@ -54,7 +55,7 @@ fun CommentCard(
 
     val formattedDate = SimpleDateFormat(
         "dd/MM/yy",
-        Locale.getDefault()
+        LocalLocale.current.platformLocale
     ).format(comment.createdAt)
 
     var expanded by remember { mutableStateOf(false) }
@@ -96,7 +97,7 @@ fun CommentCard(
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
-            if (isCurrentUser) {
+            if (comment.permissions.canDelete) {
                 Box {
                     IconButton(
                         onClick = {
