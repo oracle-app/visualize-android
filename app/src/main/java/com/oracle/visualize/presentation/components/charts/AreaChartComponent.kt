@@ -60,7 +60,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderAreaChart(
-    modifier: Modifier = Modifier, chart: AreaChart, showAxisLabels: Boolean,
+    modifier: Modifier = Modifier, chart: AreaChart, chartColorTheme: ChartPalette, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -71,7 +71,7 @@ fun RenderAreaChart(
     val minX = remember(sortedKeys) { sortedKeys.firstOrNull() ?: 0f }
     val maxX = remember(sortedKeys) { sortedKeys.lastOrNull() ?: 0f }
     val maxY = remember(data) { data.values.maxOfOrNull { it.sum() } ?: 0f }
-    val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, ChartPalette.THEME1) }
+    val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, chartColorTheme) }
 
     Box(modifier = modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {

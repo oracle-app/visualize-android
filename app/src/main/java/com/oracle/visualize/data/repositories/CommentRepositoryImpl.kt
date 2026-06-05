@@ -4,6 +4,8 @@ import com.oracle.visualize.data.datasources.CommentDatasource
 import com.oracle.visualize.data.datasources.dtos.CommentDTO
 import com.oracle.visualize.data.datasources.dtos.ThreadDTO
 import com.oracle.visualize.data.mapper.toDomain
+import com.oracle.visualize.domain.exceptions.AppResult
+import com.oracle.visualize.core.utils.safeApiCall
 import com.oracle.visualize.domain.models.Comment
 import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.domain.repositories.CommentRepository
@@ -18,46 +20,55 @@ class CommentRepositoryImpl @Inject constructor(
         authorID: String,
         content: String,
         imageURL: String?
-    ): Comment {
-        val commentDTO = CommentDTO(
-            authorID = authorID,
-            content = content,
-            imageURL = imageURL
-        )
+    ): AppResult<Comment> {
+        return safeApiCall {
+            val commentDTO = CommentDTO(
+                authorID = authorID,
+                content = content,
+                imageURL = imageURL
+            )
 
-        val id = commentDatasource.createComment(
-            visualizationId = visualizationId,
-            commentDTO = commentDTO
-        )
+            val id = commentDatasource.createComment(
+                visualizationId = visualizationId,
+                commentDTO = commentDTO
+            )
 
-        return commentDTO
-            .copy(id = id)
-            .toDomain()
+            commentDTO
+                .copy(id = id)
+                .toDomain()
+        }
+
     }
 
     override suspend fun getComments(
         visualizationId: String
-    ): List<Comment> {
-        return commentDatasource
-            .getComments(visualizationId)
-            .map { it.toDomain() }
+    ): AppResult<List<Comment>> {
+        return safeApiCall {
+            commentDatasource
+                .getComments(visualizationId)
+                .map { it.toDomain() }
+        }
     }
 
     override suspend fun getThreads(
         visualizationId: String,
         commentId: String
-    ): List<Thread> {
-        return commentDatasource
-            .getThreads(
-                visualizationId = visualizationId,
-                commentId = commentId
-            )
-            .map { it.toDomain() }
+    ): AppResult<List<Thread>> {
+        return safeApiCall {
+            commentDatasource
+                .getThreads(
+                    visualizationId = visualizationId,
+                    commentId = commentId
+                )
+                .map { it.toDomain() }
+        }
     }
 
 
-    override suspend fun uploadSnip(userID: String, uri: String): String {
-        return commentDatasource.uploadSnip(userID, uri)
+    override suspend fun uploadSnip(userID: String, uri: String): AppResult<String> {
+        return safeApiCall {
+            commentDatasource.uploadSnip(userID, uri)
+        }
     }
 
     override suspend fun createThread(
@@ -67,45 +78,51 @@ class CommentRepositoryImpl @Inject constructor(
         authorName: String,
         authorAvatarURL: String?,
         content: String
-    ): Thread {
-        val threadDTO = ThreadDTO(
-            authorID = authorID,
-            authorName = authorName,
-            authorAvatarURL = authorAvatarURL,
-            content = content
-        )
+    ): AppResult<Thread> {
+        return safeApiCall {
+            val threadDTO = ThreadDTO(
+                authorID = authorID,
+                authorName = authorName,
+                authorAvatarURL = authorAvatarURL,
+                content = content
+            )
 
-        val id = commentDatasource.createThread(
-            visualizationId = visualizationId,
-            commentId = commentId,
-            threadDTO = threadDTO
-        )
+            val id = commentDatasource.createThread(
+                visualizationId = visualizationId,
+                commentId = commentId,
+                threadDTO = threadDTO
+            )
 
-        return threadDTO
-            .copy(id = id)
-            .toDomain()
+            threadDTO
+                .copy(id = id)
+                .toDomain()
+        }
+
     }
 
     override suspend fun deleteComment(
         visualizationId: String,
         commentId: String
-    ) {
-        commentDatasource.deleteComment(
-            visualizationId = visualizationId,
-            commentId = commentId
-        )
+    ): AppResult<Unit> {
+        return safeApiCall {
+            commentDatasource.deleteComment(
+                visualizationId = visualizationId,
+                commentId = commentId
+            )
+        }
     }
 
     override suspend fun deleteThread(
         visualizationId: String,
         commentId: String,
         threadId: String
-    ){
-        commentDatasource.deleteThread(
-            visualizationId = visualizationId,
-            commentId = commentId,
-            threadId = threadId
-        )
-
+    ): AppResult<Unit> {
+        return safeApiCall {
+            commentDatasource.deleteThread(
+                visualizationId = visualizationId,
+                commentId = commentId,
+                threadId = threadId
+            )
+        }
     }
 }

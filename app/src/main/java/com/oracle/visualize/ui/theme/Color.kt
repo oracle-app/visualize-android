@@ -56,35 +56,35 @@ val DarkMode_GreyContent = Color(0xFF4B2F0E)
 
 // Theme 1.
 
-val Theme1_1 = Color(0xFF003566)
-val Theme1_2 = Color(0xFF0096C7)
-val Theme1_3 = Color(0xFF0FEED0)
-val Theme1_4 = Color(0xFF00BFD8)
-val Theme1_5 = Color(0xFF52E1FF)
+val Theme1_1 = Color(0xFF00BFD8)
+val Theme1_2 = Color(0xFF44EBB6)
+val Theme1_3 = Color(0xFF1EA9D7)
+val Theme1_4 = Color(0xFF8CED8F)
+val Theme1_5 = Color(0xFF54CFFF)
 
 // Theme 2.
 
-val Theme2_1 = Color(0xFFCA4D3C)
-val Theme2_2 = Color(0xFF4190AC)
-val Theme2_3 = Color(0xFFEB9632)
-val Theme2_4 = Color(0xFF4C825C)
-val Theme2_5 = Color(0xFFA890B6)
+val Theme2_1 = Color(0xFF6D95FF)
+val Theme2_2 = Color(0xFFB0A5FF)
+val Theme2_3 = Color(0xFFF372AD)
+val Theme2_4 = Color(0xFFFB7738)
+val Theme2_5 = Color(0xFFF3B340)
 
 // Theme 3.
 
-val Theme3_1 = Color(0xFF4A7FF7)
-val Theme3_2 = Color(0xFFAE8DF5)
-val Theme3_3 = Color(0xFFF3B86B)
-val Theme3_4 = Color(0xFF2EC4B6)
-val Theme3_5 = Color(0xFF42423E)
+val Theme3_1 = Color(0xFFF76D5A)
+val Theme3_2 = Color(0xFF46AACD)
+val Theme3_3 = Color(0xFFEB9632)
+val Theme3_4 = Color(0xFF61A776)
+val Theme3_5 = Color(0xFFD37EB1)
 
 // Theme 4.
 
-val Theme4_1 = Color(0xFFC9184A)
-val Theme4_2 = Color(0xFFFF4D6D)
-val Theme4_3 = Color(0xFFFF85A1)
+val Theme4_1 = Color(0xFFFF8198)
+val Theme4_2 = Color(0xFFFFC6D6)
+val Theme4_3 = Color(0xFFFFB978)
 val Theme4_4 = Color(0xFFFF99C8)
-val Theme4_5 = Color(0xFFF72585)
+val Theme4_5 = Color(0xFFFF63A7)
 
 // This is where the Snipping Tool draw colors are defined.
 

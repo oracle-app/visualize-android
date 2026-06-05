@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.teamsScreen.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +27,14 @@ fun DeleteTeamDialog(
         if (c == Color.Transparent) MaterialTheme.colorScheme.surface else c
     }
 
+    val titleTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    val dialogDescriptionTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor   = containerColor,
@@ -35,14 +44,14 @@ fun DeleteTeamDialog(
                 text       = stringResource(R.string.dialog_delete_team_title),
                 fontSize   = 24.sp,
                 fontWeight = FontWeight.Normal,
-                color      = MaterialTheme.colorScheme.onSurface
+                color      = titleTextColor
             )
         },
         text = {
             Text(
                 text     = stringResource(R.string.dialog_delete_team_message),
                 fontSize = 16.sp,
-                color    = MaterialTheme.colorScheme.onSurfaceVariant
+                color    = dialogDescriptionTextColor
             )
         },
         dismissButton = {

@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.usecases.comment
 
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Thread
 import com.oracle.visualize.domain.repositories.CommentRepository
 import javax.inject.Inject
@@ -15,16 +16,14 @@ class GetThreadsUseCase @Inject constructor(
     suspend operator fun invoke(
         visualizationId: String,
         commentId: String
-    ): Result<List<Thread>> {
+    ): AppResult<List<Thread>> {
         if (visualizationId.isBlank() || commentId.isBlank()) {
-            return Result.success(emptyList())
+            return AppResult.Success(emptyList())
         }
 
-        return runCatching {
-            commentRepository.getThreads(
+        return commentRepository.getThreads(
                 visualizationId = visualizationId,
                 commentId = commentId
-            )
-        }
+        )
     }
 }

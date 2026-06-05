@@ -59,7 +59,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderStackedBarChart(
-    modifier: Modifier = Modifier, chart: StackedBarChart, showAxisLabels: Boolean,
+    modifier: Modifier = Modifier, chart: StackedBarChart, chartColorTheme: ChartPalette, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -76,7 +76,7 @@ fun RenderStackedBarChart(
     }
 
     val seriesColors = remember(seriesNames.size) {
-        generateChartColors(seriesNames.size, ChartPalette.THEME1)
+        generateChartColors(seriesNames.size, chartColorTheme)
     }
 
     val maxY = remember(chart.data.values) { chart.data.values.maxOfOrNull { it.sum() } ?: 0f }

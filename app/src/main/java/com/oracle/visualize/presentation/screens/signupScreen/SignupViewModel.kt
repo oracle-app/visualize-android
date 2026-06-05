@@ -2,7 +2,9 @@ package com.oracle.visualize.presentation.screens.signupScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.usecases.auth.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,19 +24,19 @@ class SignUpViewModel @Inject constructor(
 
     fun onNameChange(name: String) {
         _uiState.update {
-            it.copy(name = name, nameError = null, error = null)
+            it.copy(name = name, nameErrorRes = null, errorRes = null)
         }
     }
 
     fun onEmailChange(email: String) {
         _uiState.update {
-            it.copy(email = email, emailError = null, error = null)
+            it.copy(email = email, emailErrorRes = null, errorRes = null)
         }
     }
 
     fun onPasswordChange(password: String) {
         _uiState.update {
-            it.copy(password = password, passwordError = null, error = null)
+            it.copy(password = password, passwordErrorRes = null, errorRes = null)
         }
     }
 
@@ -42,8 +44,8 @@ class SignUpViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 confirmPassword = confirmPassword,
-                confirmPasswordError = null,
-                error = null
+                confirmPasswordErrorRes = null,
+                errorRes = null
             )
         }
     }
@@ -67,11 +69,11 @@ class SignUpViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     isLoading = true,
-                    nameError = null,
-                    emailError = null,
-                    passwordError = null,
-                    confirmPasswordError = null,
-                    error = null,
+                    nameErrorRes = null,
+                    emailErrorRes = null,
+                    passwordErrorRes = null,
+                    confirmPasswordErrorRes = null,
+                    errorRes = null,
                     success = false
                 )
             }
@@ -83,72 +85,151 @@ class SignUpViewModel @Inject constructor(
                 confirmPassword = state.confirmPassword
             )
 
-            result.fold(
-                onSuccess = {
+            when (result) {
+                is AppResult.Success -> {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
                             success = true
                         )
                     }
-                },
-                onFailure = { exception ->
-                    val message = exception.message ?: "Unable to create account. Please try again."
+                }
+                is AppResult.Error -> {
+                    val exception = result.error
 
                     when (exception) {
-
                         is AppError.AuthValidationError -> {
 
-                            //
                             when (exception.field) {
-                                AppError.AuthField.NAME -> _uiState.update {
-                                    it.copy(isLoading = false, nameError = message)
-                                }
+                                AppError.AuthField.NAME -> {
+                                    val msg = exception.message ?: ""
 
-                                AppError.AuthField.EMAIL -> _uiState.update {
-                                    it.copy(isLoading = false, emailError = message)
-                                }
+                                    val resId = when {
 
-                                AppError.AuthField.PASSWORD -> _uiState.update {
-                                    it.copy(isLoading = false, passwordError = message)
-                                }
+                                        // Empty Name
+                                        msg.contains("Required", ignoreCase = true) -> {
+                                            R.string.error_auth_field_empty
+                                        }
 
-                                AppError.AuthField.CONFIRM_PASSWORD -> _uiState.update {
-                                    it.copy(isLoading = false, confirmPasswordError = message)
+                                        // Short Name
+                                        else -> {
+                                            R.string.error_name_length
+                                        }
+                                    }
+                                    _uiState.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            nameErrorRes = resId
+                                        )
+                                    }
                                 }
+                                AppError.AuthField.EMAIL -> {
+                                    val msg = exception.message ?: ""
 
+                                    val resId = when {
+
+                                        // Empty Email
+                                        msg.contains("Required", ignoreCase = true) -> {
+                                            R.string.error_auth_field_empty
+                                        }
+
+                                        // Invalid Email
+                                        else -> {
+                                            R.string.error_email_invalid
+                                        }
+                                    }
+                                    _uiState.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            emailErrorRes = resId
+                                        )
+                                    }
+                                }
+                                AppError.AuthField.PASSWORD -> {
+                                    val msg = exception.message ?: ""
+
+                                    val resId = when {
+
+                                        // Empty Password
+                                        msg.contains("Required", ignoreCase = true) -> {
+                                            R.string.error_auth_field_empty
+                                        }
+
+                                        // Short Password
+                                        msg.contains("8", ignoreCase = true) -> {
+                                            R.string.error_password_length
+                                        }
+
+                                        // Weak Password
+                                        else -> {
+                                            R.string.error_password_weak
+                                        }
+                                    }
+
+                                    _uiState.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            passwordErrorRes = resId
+                                        )
+                                    }
+                                }
+                                AppError.AuthField.CONFIRM_PASSWORD -> {
+                                    val msg = exception.message ?: ""
+
+                                    val resId = when {
+
+                                        // Empty Confirm Password
+                                        msg.contains("Required", ignoreCase = true) -> {
+                                            R.string.error_auth_field_empty
+                                        }
+
+                                        // Passwords Mismatches
+                                        else -> {
+                                            R.string.error_passwords_not_match
+                                        }
+                                    }
+
+                                    _uiState.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            confirmPasswordErrorRes = resId
+                                        )
+                                    }
+                                }
                             }
                         }
 
                         is AppError.EmailAlreadyExists -> {
                             _uiState.update {
-                                it.copy(isLoading = false, emailError = message)
+                                it.copy(
+                                    isLoading = false,
+                                    emailErrorRes = R.string.error_email_already
+                                )
+
                             }
                         }
 
                         is AppError.NetworkError -> {
                             _uiState.update {
-                                it.copy(isLoading = false, error = message)
-                            }
-                        }
-
-                        is AppError.AuthFailed,
-                        is AppError.NotFound,
-                        is AppError.ParsingError
-                            -> {
-                            _uiState.update {
-                                it.copy(isLoading = false, error = message)
+                                it.copy(
+                                    isLoading = false,
+                                    errorRes = R.string.error_network
+                                )
                             }
                         }
 
                         else -> {
                             _uiState.update {
-                                it.copy(isLoading = false, error = "An unexpected error occurred")
+                                it.copy(
+                                    isLoading = false,
+                                    errorRes = R.string.error_alert
+                                )
                             }
                         }
                     }
+
                 }
-            )
+            }
         }
     }
 }

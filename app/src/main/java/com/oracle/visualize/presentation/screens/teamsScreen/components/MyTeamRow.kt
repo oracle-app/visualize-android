@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,6 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -62,11 +65,16 @@ fun MyTeamRow(
 ) {
     val offset by animateDpAsState(targetValue = if (isSwiped) (-140).dp else 0.dp, label = "swipeOffset")
 
+    val teamNameColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    val amountOfMembersTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .clip(ROW_SHAPE)
+        modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).clip(shape = teamShape(position))
             .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         // Swipe action buttons (revealed on swipe)
@@ -128,13 +136,13 @@ fun MyTeamRow(
                     text       = team.name,
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Normal,
-                    color      = MaterialTheme.colorScheme.onSurface
+                    color      = teamNameColor
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text     = stringResource(R.string.teams_member_count, team.memberCount),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.colorScheme.onSurfaceVariant
+                    color    = amountOfMembersTextColor
                 )
             }
             MemberAvatarStack(members = team.members, isSelected = false)

@@ -36,7 +36,7 @@ private val AVATAR_OFFSET  = 16.dp
 fun MemberAvatarStackFeed(
     members: List<User>,
 ) {
-    val displayCount = minOf(members.size, 3)
+    val displayCount = if (members.size <= 4) members.size else 3
     val extraCount = members.size - displayCount
 
     Row(
@@ -57,11 +57,10 @@ fun MemberAvatarStackFeed(
                         Text(
                             text = "+$extraCount",
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.outlineVariant
                         )
                     }
                 }
-                // We draw in reverse order so the first one ends up on top
                 repeat(displayCount) { index ->
                     val memberIndex = displayCount - 1 - index
                     Box(
@@ -85,20 +84,16 @@ fun MemberAvatarStackFeed(
             val avatarSize = placeables.firstOrNull()?.width ?: 0
             val offset = (AVATAR_SIZE - AVATAR_OFFSET).roundToPx()
             val itemCount = placeables.size
-            val totalWidth = if (itemCount > 0)
-                avatarSize + (offset * (itemCount - 1))
-            else 0
+            val totalWidth = if (itemCount > 0) avatarSize + (offset * (itemCount - 1)) else 0
             val height = placeables.firstOrNull()?.height ?: 0
 
             layout(totalWidth, height) {
                 placeables.forEachIndexed { index, placeable ->
-                    // index 0 = extra bubble or last member, last index = first member (on top)
-                    val x = (itemCount - 1 - index) * offset
+                    var x = (itemCount - 1 - index) * offset
+                    if (placeables.size > 3 && index == 0) x += 22
                     placeable.placeWithLayer(x, 0, zIndex = index.toFloat())
                 }
             }
         }
-
-
     }
 }

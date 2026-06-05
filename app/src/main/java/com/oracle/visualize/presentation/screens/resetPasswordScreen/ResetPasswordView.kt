@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -171,16 +170,23 @@ fun ResetPasswordPage(
                         value = uiState.email,
                         onValueChange = viewModel::onEmailChange,
                         placeholder = stringResource(R.string.email),
-                        isError = uiState.emailError != null,
+                        isError = uiState.emailErrorRes != null,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
                     )
+                    uiState.emailErrorRes ?.let {
+                        Text(
+                            text = stringResource(id = it),
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 11.sp,
+                            modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                        )
+                    }
 
-                    val displayError = uiState.error ?: uiState.emailError
-                    displayError?.let {
+                    uiState.errorRes?.let { errorId ->
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = it,
+                            text = stringResource(id = errorId),
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center

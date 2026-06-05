@@ -5,14 +5,20 @@ import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
 import com.oracle.visualize.domain.usecases.visualization.HideVisualizationForMeUseCase
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,9 +32,11 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(
     private val observeUserFeedUseCase: ObserveUserFeedUseCase,
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
     private val parseSingleChartUseCase: ParseSingleChartUseCase,
     private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
     private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val feedCacheManager: FeedCacheManager
 ) : ViewModel() {
 
@@ -37,14 +45,32 @@ class FeedViewModel @Inject constructor(
 
     private var allFeedItems: List<FeedItem> = emptyList()
     private var currentUserID: String = ""
+    private var currentUserType: UserType = UserType.CONSUMER
     private var feedJob: Job? = null
 
+    private var userChartTheme: ChartPalette = ChartPalette.THEME1
+
     init {
-        try {
-            currentUserID = authRepository.getCurrentUserID()
-            loadData(forceRefresh = false)
-        } catch (e: Exception) {
+        currentUserID = authRepository.getCurrentUserID() ?: ""
+
+        if (currentUserID.isBlank()) {
             _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+        } else {
+            viewModelScope.launch {
+                try {
+                    when (val userResult = userRepository.getUserByUserID(currentUserID)) {
+                        is AppResult.Success -> {
+                            currentUserType = userResult.data.userType
+                            loadData(forceRefresh = false)
+                        }
+                        is AppResult.Error -> {
+                            _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                        }
+                    }
+                } catch (e: Exception) {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
 
@@ -60,7 +86,11 @@ class FeedViewModel @Inject constructor(
 
     fun loadChartForCard(card: VisualizationCard) {
         viewModelScope.launch {
-            val chart = parseSingleChartUseCase(card)
+            val chart = when (val result = parseSingleChartUseCase(card)) {
+                is AppResult.Success -> result.data
+                is AppResult.Error -> null
+            }
+
             allFeedItems = allFeedItems.map { item ->
                 if (item.card.id == card.id) {
                     item.copy(chart = chart, isChartLoading = false)
@@ -84,15 +114,22 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
-            observeUserFeedUseCase(currentUserID, forceRefresh = true).collect { result ->
-                result.fold(
-                    onSuccess = { items ->
-                        allFeedItems = items.distinctBy { it.card.id }
+
+            userChartTheme = when (val chartThemeResult = getUserChartThemeUseCase(currentUserID)) {
+                is AppResult.Success -> chartThemeResult.data
+                is AppResult.Error -> userChartTheme
+            }
+
+            observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
+
+                when (result) {
+                    is AppResult.Success -> {
+                        allFeedItems = result.data.distinctBy { it.card.id }
                         applyLocalFilterAndSearch()
-                    },
-                    onFailure = { error ->
+                    }
+                    is AppResult.Error -> {
                         allFeedItems = emptyList()
-                        val uiErrorMessage = when (error) {
+                        val uiErrorMessage = when (result.error) {
                             is AppError.NetworkError -> R.string.error_network
                             is AppError.ParsingError -> R.string.error_parsing
                             is AppError.NotFound     -> R.string.error_viz_not_found
@@ -100,7 +137,7 @@ class FeedViewModel @Inject constructor(
                         }
                         _uiState.value = FeedUiState.Error(uiErrorMessage)
                     }
-                )
+                }
             }
         }
     }
@@ -169,28 +206,33 @@ class FeedViewModel @Inject constructor(
     fun onConfirmDeleteForEveryone(visualizationId: String) {
         updateSuccess { it.copy(deleteDialogForId = null) }
         viewModelScope.launch {
-            deleteVisualizationForEveryoneUseCase(visualizationId).fold(
-                onSuccess = {
+
+            when (val result = deleteVisualizationForEveryoneUseCase(visualizationId)) {
+                is AppResult.Success -> {
                     feedCacheManager.clearCache()
                     allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
                     applyLocalFilterAndSearch()
-                },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
-            )
+                }
+                is AppResult.Error -> {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
 
     fun onConfirmHideForMe(visualizationId: String) {
         updateSuccess { it.copy(hideDialogForId = null) }
         viewModelScope.launch {
-            hideVisualizationForMeUseCase(currentUserID, visualizationId).fold(
-                onSuccess = {
+            when (val result = hideVisualizationForMeUseCase(currentUserID, visualizationId)) {
+                is AppResult.Success -> {
                     feedCacheManager.clearCache()
                     allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
                     applyLocalFilterAndSearch()
-                },
-                onFailure = { _uiState.value = FeedUiState.Error(R.string.error_unknown_retry) }
-            )
+                }
+                is AppResult.Error -> {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
 
@@ -214,7 +256,13 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        val isDeletableMap = filteredItems.associate { it.card.id to (it.card.authorID == currentUserID) }
+        val permissionsMap = filteredItems.associate { item ->
+            item.card.id to VisualizationPermissions(
+                userType = currentUserType,
+                currentUserID = currentUserID,
+                authorID = item.card.authorID
+            )
+        }
 
         _uiState.update {
             FeedUiState.Success(
@@ -224,7 +272,8 @@ class FeedViewModel @Inject constructor(
                 selectedFilter = filter,
                 isRefreshing   = false,
                 isSearching    = isSearching,
-                isDeletableMap = isDeletableMap
+                chartColorTheme = userChartTheme,
+                permissionsMap = permissionsMap
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.oracle.visualize.domain.usecases.visualization
 
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.VisualizationRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,13 +16,12 @@ import javax.inject.Singleton
 class HideVisualizationForMeUseCase @Inject constructor(
     private val visualizationRepository: VisualizationRepository
 ) {
-    suspend operator fun invoke(userID: String, visualizationId: String): Result<Unit> {
+    suspend operator fun invoke(userID: String, visualizationId: String): AppResult<Unit> {
         if (userID.isBlank())
-            return Result.failure(AppError.GeneralValidationError("User ID cannot be empty"))
+            return AppResult.Error(AppError.GeneralValidationError("User ID cannot be empty"))
         if (visualizationId.isBlank())
-            return Result.failure(AppError.GeneralValidationError("Visualization ID cannot be empty"))
-        return runCatching {
-            visualizationRepository.hideVisualizationForMe(userID, visualizationId)
-        }
+            return AppResult.Error(AppError.GeneralValidationError("Visualization ID cannot be empty"))
+
+        return visualizationRepository.hideVisualizationForMe(userID, visualizationId)
     }
 }
