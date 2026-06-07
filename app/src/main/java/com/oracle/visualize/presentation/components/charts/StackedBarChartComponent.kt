@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -63,7 +64,7 @@ fun RenderStackedBarChart(
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val categories = remember(chart.data) { chart.data.keys.toList() }
+    val categories = remember(chart.data) { listOf("") + chart.data.keys.toList() }
     val seriesCount = remember(chart.data) { chart.data.values.firstOrNull()?.size ?: 0 }
     val seriesLabel = stringResource(R.string.stacked_bar_series)
 
@@ -84,7 +85,12 @@ fun RenderStackedBarChart(
     Box(modifier = modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
-                xAxisModel = remember(categories) { CategoryAxisModel(categories) },
+                xAxisModel = rememberFloatLinearAxisModel(
+                    range = 0f..categories.size.toFloat(),
+                    minViewExtent = 1f,
+                    minimumMajorTickIncrement = 1f,
+                    minimumMajorTickSpacing = 10.dp
+                ),
                 yAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxOf(1f, maxY),
                     minViewExtent = 0.01f,
@@ -94,15 +100,17 @@ fun RenderStackedBarChart(
                 xAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = {
-                        Text(
-                            text = it,
-                            modifier = Modifier.rotate(45f).padding(top = 8.dp),
-                            fontSize = if (feedCardLabels) 8.sp else 10.sp,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.DarkGray,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        if (it.toInt() in categories.indices) {
+                            Text(
+                                text = categories[it.toInt()],
+                                modifier = Modifier.rotate(45f).padding(top = 8.dp),
+                                fontSize = if (feedCardLabels) 8.sp else 10.sp,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.DarkGray,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     },
                     title = {
                         if (showAxisLabels && !chart.metrics.isEmpty()) {
@@ -143,53 +151,53 @@ fun RenderStackedBarChart(
                     if (categories.isNotEmpty() && seriesCount > 0) {
                         seriesNames.forEachIndexed { seriesIndex, _ ->
                             series {
-                                chart.data.forEach { (category, values) ->
-                                    if (seriesIndex < values.size) {
-                                        item(
-                                            x = category,
-                                            y = values[seriesIndex],
-                                            bar = { _, itemIndex, plotEntry ->
-                                                if (!enableTooltips) {
-                                                    DefaultBar(
-                                                        brush = SolidColor(seriesColors[itemIndex]),
-                                                        modifier = Modifier.fillMaxWidth()
-                                                    )
-                                                } else {
-                                                    val tooltipDisplayState = rememberTooltipState(
-                                                        initialIsVisible = false, isPersistent = true
-                                                    )
-
-                                                    val currentYValue = plotEntry.y.end - plotEntry.y.start
-
-                                                    TooltipBox(
-                                                        tooltip = { PlainTooltip { Text(text = "${seriesNames[itemIndex]}: $currentYValue") } },
-                                                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                                            positioning = TooltipAnchorPosition.Above,
-                                                        ),
-                                                        state = tooltipDisplayState
-                                                    ) {
+                                categories.forEachIndexed { categoryIndex, category ->
+                                    val categoryValues = chart.data[category]
+                                    categoryValues?.size?.let {
+                                        if (seriesIndex < it) {
+                                            item(
+                                                x = (categoryIndex).toFloat(),
+                                                y = categoryValues[seriesIndex],
+                                                bar = { _, itemIndex, plotEntry ->
+                                                    if (!enableTooltips) {
                                                         DefaultBar(
-                                                            brush = SolidColor(seriesColors[itemIndex]),
-                                                            modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
-                                                                awaitPointerEventScope {
-                                                                    while (true) {
-                                                                        val fingerEvent = awaitPointerEvent()
+                                                            brush = SolidColor(seriesColors[itemIndex])
+                                                        )
+                                                    } else {
+                                                        val tooltipDisplayState = rememberTooltipState(
+                                                            initialIsVisible = false, isPersistent = true
+                                                        )
 
-                                                                        if (fingerEvent.changes.size > 1) continue
+                                                        val currentYValue = plotEntry.y.end - plotEntry.y.start
 
-                                                                        if (fingerEvent.type == PointerEventType.Release) {
-                                                                            val change = fingerEvent.changes[0]
-
-                                                                            if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                        TooltipBox(
+                                                            tooltip = { PlainTooltip { Text(text = "${seriesNames[itemIndex]}: $currentYValue") } },
+                                                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                                                positioning = TooltipAnchorPosition.Above,
+                                                            ),
+                                                            state = tooltipDisplayState
+                                                        ) {
+                                                            DefaultBar(
+                                                                brush = SolidColor(seriesColors[itemIndex]),
+                                                                modifier = Modifier.pointerInput(Unit) {
+                                                                    awaitPointerEventScope {
+                                                                        while (true) {
+                                                                            val fingerEvent = awaitPointerEvent()
+                                                                            if (fingerEvent.changes.size > 1) continue
+                                                                            if (fingerEvent.type == PointerEventType.Release) {
+                                                                                val change = fingerEvent.changes[0]
+                                                                                if (change.changedToUp()) coroutineScope.launch { tooltipDisplayState.show() }
+                                                                            }
                                                                         }
                                                                     }
+                                                                    //detectTapGestures { coroutineScope.launch { tooltipDisplayState.show() } }
                                                                 }
-                                                            }
-                                                        )
+                                                            )
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
                                 }
                             }
