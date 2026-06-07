@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,7 +86,7 @@ fun RenderLineChart(
         yMetric = chart.metrics[1].ifBlank { yMetric }
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 60.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

@@ -72,7 +72,7 @@ fun RenderHorizontalBarChart(
         generateChartColors(categories.size, chartColorTheme, isBarChart = true)
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 30.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

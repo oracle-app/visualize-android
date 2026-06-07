@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -72,7 +73,7 @@ fun RenderVerticalBarChart(
         generateChartColors(categories.size, chartColorTheme, isBarChart = true)
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 30.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

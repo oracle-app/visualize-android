@@ -3,6 +3,7 @@ package com.oracle.visualize.presentation.components.charts
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -82,7 +83,7 @@ fun RenderStackedBarChart(
 
     val maxY = remember(chart.data.values) { chart.data.values.maxOfOrNull { it.sum() } ?: 0f }
 
-    Box(modifier = modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 30.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(
