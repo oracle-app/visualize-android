@@ -6,7 +6,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,23 +42,11 @@ fun TeamsImInRow(
     position: TeamPosition,
     onToggle: () -> Unit
 ) {
-    val teamNameColor = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val teamNameColor = MaterialTheme.colorScheme.onSurface
 
-    val arrowTint = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val arrowTint = MaterialTheme.colorScheme.onSurface
 
-    val amountOfMembersTextColor = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.outlineVariant
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val amountOfMembersTextColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
         modifier = Modifier.fillMaxWidth().clip(teamShape(position))
@@ -108,17 +95,9 @@ fun TeamsImInRow(
 
 @Composable
 fun MemberListItem(user: ShareUser, isOwner: Boolean) {
-    val memberNameColor = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val memberNameColor = MaterialTheme.colorScheme.onSurface
 
-    val ownerOrEmailColor = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.outlineVariant
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val ownerOrEmailColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

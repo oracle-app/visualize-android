@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -65,13 +64,9 @@ fun MyTeamRow(
 ) {
     val offset by animateDpAsState(targetValue = if (isSwiped) (-140).dp else 0.dp, label = "swipeOffset")
 
-    val teamNameColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val teamNameColor = MaterialTheme.colorScheme.onSurface
 
-    val amountOfMembersTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val amountOfMembersTextColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
         modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).clip(shape = teamShape(position))

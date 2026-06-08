@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.profileScreen.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -103,9 +102,7 @@ fun EditProfile(
             title = stringResource(R.string.about_title),
             titleDrawableImage = R.drawable.baseline_info_24
         ) {
-            val textColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outline } else {
-                MaterialTheme.colorScheme.scrim
-            }
+            val textColor = MaterialTheme.colorScheme.onBackground
 
             Text(
                 modifier = Modifier.padding(start = 8.dp),
@@ -129,7 +126,7 @@ fun EditProfile(
             border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.error
             ),
             modifier = Modifier

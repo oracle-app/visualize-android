@@ -3,7 +3,6 @@ package com.oracle.visualize.presentation.screens.splashScreen
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.ui.theme.DarkMode_StrongBlue
 
 @Composable
 fun SplashPage(
@@ -172,8 +170,8 @@ fun SplashPage(
                         .height(50.dp),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isSystemInDarkTheme()) 0.26f else 1f),
-                        contentColor = if (isSystemInDarkTheme()) DarkMode_StrongBlue else MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(1f),
+                        contentColor = MaterialTheme.colorScheme.primary
                     ),
 
                 ) {

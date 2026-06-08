@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.createEditTeamScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -76,13 +75,9 @@ fun CreateEditTeamPage(
 
 @Composable
 private fun UnsavedChangesDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    val titleTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val titleTextColor = MaterialTheme.colorScheme.onSurface
 
-    val dialogDescriptionTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -124,13 +119,9 @@ private fun CreateEditTeamContent(
     state: CreateEditTeamUiState.Content,
     onEvent: (CreateEditTeamUiEvent) -> Unit
 ) {
-    val titleSubtitleTextColors = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val titleSubtitleTextColors = MaterialTheme.colorScheme.onSurface
 
-    val queryTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val queryTextColor = MaterialTheme.colorScheme.onSurface
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -322,9 +313,7 @@ private fun CreateEditTeamContent(
 
 @Composable
 private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
-    val usernameColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val usernameColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onClick() }) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 64)
@@ -338,13 +327,9 @@ private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
 
 @Composable
 private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
-    val titleSubtitleTextColors = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val titleSubtitleTextColors = MaterialTheme.colorScheme.onSurface
 
-    val emailColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val emailColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(modifier = Modifier.fillMaxWidth().clickable { onAdd() }.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 40)
@@ -358,13 +343,9 @@ private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
 
 @Composable
 private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
-    val nameTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val nameTextColor = MaterialTheme.colorScheme.onSurface
 
-    val ownerEmailColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val ownerEmailColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),

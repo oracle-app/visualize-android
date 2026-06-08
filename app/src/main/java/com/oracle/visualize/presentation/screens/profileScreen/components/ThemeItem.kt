@@ -3,7 +3,6 @@ package com.oracle.visualize.presentation.screens.profileScreen.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,9 +26,8 @@ fun ThemeItem(
     val shape = RoundedCornerShape(35)
 
     val borderColor: Color = if(isSelected) {
-        if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-            MaterialTheme.colorScheme.onSurface
-        }
+
+        MaterialTheme.colorScheme.onPrimaryContainer
 
     } else {
         Color.Transparent

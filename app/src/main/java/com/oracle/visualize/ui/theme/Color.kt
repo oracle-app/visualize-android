@@ -5,51 +5,74 @@ import androidx.compose.ui.graphics.Color
 
 // Below are the colors of the Visualize Brand Identity (Light Mode)
 
-val StrongBlue = Color(0xFF34797C)
-val White = Color(0xFFFFFFFF)
-val LightBlue = Color(0xFFE4F4F4)
-val DarkGray = Color(0xFF323232)
+val primary = Color(0xFF34797C)
+val onPrimary = Color(0xFFFFFFFF)
+val primaryContainer = Color(0xFFE4F4F4)
+val onPrimaryContainer = Color(0xFF323232)
 
-val NotAsDarkGray = Color(0xFF798B8A)
-val StrongOrange = Color(0xFFEB9632)
-val VeryLightGray = Color(0xFFFFFEFD)
-val NotAsLightGray = Color(0xFF597271)
-val LighterBlue = Color(0xFFE6EDEC)
-val GrayishBlue = Color(0xFFA9C8C4)
-val SearchHint = Color(0xFF7FA9A9)
-val ErrorRed = Color(0xFFEC4848)
-val ScrimColor = Color(0xFF1A2F3F)
+val secondary = Color(0xFFEB9632)
+val onSecondary = Color(0xFFFFFFFF)
 
-val NotAsLightOrange = Color(0xFFEDAE62)
+val secondaryContainer = Color(0xFFFFFFFF)
+val onSecondaryContainer = Color(0xFF597271)
 
-val LightOrange = Color(0xFFF0C592)
+val tertiaryContainer = Color(0xFFEDAE62)
+val onTertiaryContainer = Color(0xFFF0C592)
 
-val GreyishBlue = Color(0xFFADC6C5)
+val tertiary = Color(0xFFADC6C5)
+val onTertiary = Color(0xFFC5D5D4)
 
-val LightGreyishBlue = Color(0xFFC5D5D4)
+val tertiaryFixed = Color(0xFFFDF2E5)
 
-val GreyContent = Color(0xFFFDF2E5)
+val background = Color(0xFFFFFEFD)
+val onBackground = Color(0xFF323232)
+val surface = Color(0xFFFFFFFF)
+val onSurface = Color(0xFF000000)
+
+val surfaceVariant = Color(0xFFE6EDEC)
+val onSurfaceVariant = Color(0xFF689A9C)
+
+val outline = Color(0xFFA9C8C4)
+val outlineVariant = Color(0xFF798B8A)
+val error = Color(0xFFEC4848)
+val onError = Color(0xFFFFFFFF)
+val scrim = Color(0xFF1A2F3F)
 
 // And below are the colors of the Visualize Brand Identity (Dark Mode)
 
-val DarkMode_StrongBlue = Color(0xFF8AC1C4)
-val DarkMode_LightBlue = Color(0xFF244546)
-val DarkMode_DarkGray = Color(0xFFD9D9D9)
-val DarkMode_NotAsDarkGray = Color(0xFF8FA3A3)
-val DarkMode_Background = Color(0xFF171818)
-val DarkMode_NotAsLightGray = Color(0xFF597271)
-val DarkMode_LighterBlue = Color(0xFF3D504D)
-val DarkMode_GrayishBlue = Color(0xFFBBBBBB)
+val DARKprimary = Color(0xFF3C8B8E)
+val DARKonPrimary = Color(0xFFFFFFFF)
 
-val DarkMode_NotAsLightOrange = Color(0xFFBA7A2E)
+val DARKprimaryContainer = Color(0xFF283434)
+val DARKonPrimaryContainer = Color(0xFFFFFFFF)
 
-val DarkMode_LightOrange = Color(0xFF895D29)
+val DARKsecondary = Color(0xFFEB9632)
+val DARKonSecondary = Color(0xFFFFFFFF)
 
-val DarkMode_GreyishBlue = Color(0xFF316465)
+val DARKsecondaryContainer = Color(0xFFFFFFFF)
+val DARKonSecondaryContainer = Color(0xFF85A9A8)
 
-val DarkMode_LightGreyishBlue = Color(0xFF2E4F4E)
+val DARKtertiaryContainer = Color(0xFFEDAE62)
+val DARKonTertiaryContainer = Color(0xFFF0C592)
 
-val DarkMode_GreyContent = Color(0xFF4B2F0E)
+val DARKtertiary = Color(0xFFADC6C5)
+val DARKonTertiary = Color(0xFFC5D5D4)
+
+val DARKtertiaryFixed = Color(0xFFFDF2E5)
+
+val DARKbackground = Color(0xFF171818)
+val DARKonBackground = Color(0xFFFFFFFF)
+val DARKsurface = Color(0xFF000000)
+val DARKonSurface = Color(0xFFFFFFFF)
+
+val DARKsurfaceVariant = Color(0xFF253330)
+val DARKonSurfaceVariant = Color(0xFF346163)
+
+val DARKoutline = Color(0xFFA9C8C4)
+val DARKoutlineVariant = Color(0xFF798B8A)
+val DARKerror = Color(0xFFEC4848)
+val DARKonError = Color(0xFFFFFFFF)
+val DARKscrim = Color(0xFF1A2F3F)
 
 
 // This is where the Chart Theme colors are defined.

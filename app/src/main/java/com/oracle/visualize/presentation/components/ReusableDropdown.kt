@@ -1,13 +1,21 @@
 package com.oracle.visualize.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 // Example usage:
 // AppDropdownMenu(
@@ -35,24 +43,28 @@ fun AppDropdownMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        offset = offset
+        offset = offset,
+        modifier = Modifier
+            .width(200.dp)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         items.forEach { (label, onClick) ->
             DropdownMenuItem(
-                text = { Text(label, color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                text = {
+                    Text(
+                        text = label,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
                 onClick = {
                     onClick()
                     onDismiss()
                 },
-                colors = MenuItemColors(
-                    textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    leadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    trailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f),
-                )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
             )
         }
     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -33,7 +34,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
-import com.oracle.visualize.ui.theme.White
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -311,7 +311,7 @@ fun TableExampleComponent() {
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
-                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = White)
+                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = Color.Red)
                 }
             }
         }

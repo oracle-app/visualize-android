@@ -1,12 +1,10 @@
 package com.oracle.visualize.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,17 +59,11 @@ fun FeedTopBar(
         VisualizationFilter.SHARED   to stringResource(R.string.feed_filter_shared)
     )
 
-    val filterTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val filterTextColor = MaterialTheme.colorScheme.onSurface
 
-    val selectFilterBGColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.primary } else {
-        MaterialTheme.colorScheme.primaryContainer
-    }
+    val selectFilterBGColor = MaterialTheme.colorScheme.primaryContainer
 
-    val dropdownBGColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.primaryContainer } else {
-        MaterialTheme.colorScheme.onPrimary
-    }
+    val dropdownBGColor = MaterialTheme.colorScheme.surface
 
     TopAppBar(
         windowInsets = TopAppBarDefaults.windowInsets,
@@ -85,7 +77,7 @@ fun FeedTopBar(
                             ?: stringResource(R.string.feed_filter_all),
                         fontWeight = FontWeight.Bold,
                         fontSize = 30.sp,
-                        color = filterTextColor
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     IconButton(

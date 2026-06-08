@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.teamsScreen
 
 import com.oracle.visualize.presentation.screens.teamsScreen.components.MyTeamRow
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -93,11 +92,7 @@ private fun TeamsContent(
     val isConsumer = state.userType == UserType.CONSUMER
     val isAdmin = state.userType == UserType.ADMIN
 
-    val subtitleTextColors = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val subtitleTextColors = MaterialTheme.colorScheme.onSurface
 
     Box(
         modifier = modifier
