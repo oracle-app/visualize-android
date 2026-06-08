@@ -5,10 +5,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +35,9 @@ import com.oracle.visualize.presentation.screens.snippingTool.components.pickers
 import com.oracle.visualize.presentation.screens.snippingTool.components.pickers.ShapePicker
 import com.oracle.visualize.presentation.screens.snippingTool.components.pickers.ThicknessPicker
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.PopupProperties
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.screens.snippingTool.components.pickers.TextPicker
 
 @Composable
 fun SnippingToolbar(
@@ -41,12 +45,16 @@ fun SnippingToolbar(
     onEraserClick: () -> Unit,
     onColorClick: (DrawModeColors) -> Unit,
     strokeWidth: Float,
+    fontSize: Float,
     onThicknessClick: (Float) -> Unit,
     onTextClick: () -> Unit,
+    onFontSizeChange: (Float) -> Unit,
     onShapeClick: (ShapeType) -> Unit,
     onCropClick: () -> Unit,
     selectedColor: Color,
     selectedTool: DrawingTool?,
+    isItalics: Boolean,
+    italicsToggle: () -> Unit,
     cropMode: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -57,11 +65,23 @@ fun SnippingToolbar(
     val offsetPx = with(density) { 42.dp.roundToPx() }
     val iconsize = 42.dp
 
-    Box(modifier = modifier) {
+    fun openThickness() { showThicknessPicker = !showThicknessPicker; showShapePicker = false }
+    fun openShapes()    { showShapePicker = !showShapePicker; showThicknessPicker = false }
+    fun onTextButtonClick() {
+        showThicknessPicker = false
+        showShapePicker = false
+        onTextClick()
+    }
+
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
         Surface(
             shape = RoundedCornerShape(50),
             color = MaterialTheme.colorScheme.primaryContainer,
-            tonalElevation = 4.dp
+            tonalElevation = 4.dp,
+            shadowElevation = 4.dp
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
@@ -84,6 +104,7 @@ fun SnippingToolbar(
                         else MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
+
                 Box {
                     IconButton(onClick = { showColorPicker = !showColorPicker }, modifier = Modifier.size(iconsize)) {
                         Box(
@@ -95,7 +116,12 @@ fun SnippingToolbar(
                         )
                     }
                     if (showColorPicker) {
-                        Popup(alignment = Alignment.BottomCenter, offset = IntOffset(0, -offsetPx)) {
+                        Popup(
+                            alignment = Alignment.BottomCenter,
+                            offset = IntOffset(0, -offsetPx),
+                            onDismissRequest = { showColorPicker = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
                             ColorPicker(
                                 selectedColor = selectedColor,
                                 onColorChange = { color ->
@@ -106,8 +132,9 @@ fun SnippingToolbar(
                         }
                     }
                 }
+
                 Box {
-                    IconButton(onClick = { showThicknessPicker = !showThicknessPicker }, modifier = Modifier.size(iconsize)) {
+                    IconButton(onClick = { openThickness() }, modifier = Modifier.size(iconsize)) {
                         Icon(
                             painter = painterResource(R.drawable.thickness),
                             contentDescription = stringResource(R.string.toolbar_thickness),
@@ -115,21 +142,43 @@ fun SnippingToolbar(
                         )
                     }
                     if (showThicknessPicker) {
-                        Popup(alignment = Alignment.BottomCenter, offset = IntOffset(0, -offsetPx)) {
+                        Popup(
+                            alignment = Alignment.BottomCenter,
+                            offset = IntOffset(0, -offsetPx),
+                            onDismissRequest = { showThicknessPicker = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
                             ThicknessPicker(strokeWidth = strokeWidth, onThicknessChange = { onThicknessClick(it) })
                         }
                     }
                 }
-                IconButton(onClick = onTextClick, modifier = Modifier.size(iconsize)) {
-                    Icon(
-                        Icons.Default.TextFields,
-                        contentDescription = stringResource(R.string.toolbar_text),
-                        tint = if (selectedTool == DrawingTool.TEXT && !cropMode) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
+
                 Box {
-                    IconButton(onClick = { showShapePicker = !showShapePicker }, modifier = Modifier.size(iconsize)) {
+                    IconButton(onClick = { onTextButtonClick() }, modifier = Modifier.size(iconsize)) {
+                        Icon(
+                            Icons.Default.TextFields,
+                            contentDescription = stringResource(R.string.toolbar_text),
+                            tint = if (selectedTool == DrawingTool.TEXT && !cropMode) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    if (selectedTool == DrawingTool.TEXT && !cropMode) {
+                        Popup(
+                            alignment = Alignment.BottomCenter,
+                            offset = IntOffset(0, -offsetPx)
+                        ) {
+                            TextPicker(
+                                isItalics = isItalics,
+                                fontSize = fontSize,
+                                onFontSizeChange = { onFontSizeChange(it) },
+                                onItalicsToggle = { italicsToggle() }
+                            )
+                        }
+                    }
+                }
+
+                Box {
+                    IconButton(onClick = { openShapes() }, modifier = Modifier.size(iconsize)) {
                         Icon(
                             painter = painterResource(R.drawable.shapes),
                             contentDescription = stringResource(R.string.toolbar_shape),
@@ -138,7 +187,12 @@ fun SnippingToolbar(
                         )
                     }
                     if (showShapePicker) {
-                        Popup(alignment = Alignment.BottomCenter, offset = IntOffset(0, -offsetPx)) {
+                        Popup(
+                            alignment = Alignment.BottomCenter,
+                            offset = IntOffset(0, -offsetPx),
+                            onDismissRequest = { showShapePicker = false },
+                            properties = PopupProperties(focusable = true)
+                        ) {
                             ShapePicker(onShapeChange = { shape ->
                                 onShapeClick(shape)
                                 showShapePicker = false
@@ -146,6 +200,7 @@ fun SnippingToolbar(
                         }
                     }
                 }
+
                 IconButton(
                     onClick = {
                         showColorPicker = false
@@ -156,11 +211,12 @@ fun SnippingToolbar(
                     modifier = Modifier.size(iconsize)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.scissors),
+                        Icons.Filled.Crop,
                         contentDescription = stringResource(R.string.toolbar_crop),
                         tint = if (cropMode) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onPrimaryContainer
                     )
+
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
@@ -38,6 +39,12 @@ class SnippingToolViewModel @Inject constructor(
     val uiState: StateFlow<SnippingToolUiState> = _uiState.asStateFlow()
     private var currentUserID: String = ""
     private var userChartTheme: ChartPalette = ChartPalette.THEME1
+
+    private var containerSize: IntSize = IntSize.Zero
+
+    fun setContainerSize(size: IntSize) {
+        containerSize = size
+    }
 
     fun addElement(element: DrawElement) {
         _uiState.update { current ->
@@ -80,6 +87,14 @@ class SnippingToolViewModel @Inject constructor(
         _uiState.update { it.copy(strokeWidth = width) }
     }
 
+    fun setItalics() {
+        _uiState.update { it.copy(isItalics = !it.isItalics) }
+    }
+
+    fun setFontSize(fontsize: Float) {
+        _uiState.update { it.copy(fontSize = fontsize) }
+    }
+
     fun selectTool(tool: DrawingTool) {
         _uiState.update { current ->
             if (current.isDrawingMode && current.selectedTool == tool) {
@@ -118,14 +133,14 @@ class SnippingToolViewModel @Inject constructor(
     }
 
     fun setCropRect(rect: IntRect) {
-        val screenWidth = context.resources.displayMetrics.widthPixels
-        val screenHeight = context.resources.displayMetrics.heightPixels
+        val width = containerSize.width.takeIf { it > 0 } ?: context.resources.displayMetrics.widthPixels
+        val height = containerSize.height.takeIf { it > 0 } ?: context.resources.displayMetrics.heightPixels
 
         _uiState.update { it.copy(cropRect = IntRect(
-            left = rect.left.coerceIn(0, screenWidth),
-            top = rect.top.coerceIn(0, screenHeight),
-            right = rect.right.coerceIn(0, screenWidth),
-            bottom = rect.bottom.coerceIn(0, screenHeight)
+            left = rect.left.coerceIn(0, width),
+            top = rect.top.coerceIn(0, height),
+            right = rect.right.coerceIn(0, width),
+            bottom = rect.bottom.coerceIn(0, height)
         ))}
     }
 

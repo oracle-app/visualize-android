@@ -37,13 +37,13 @@ fun SnippingToolActionBar(
         ) {
             IconButton(
                 onClick = onUndo,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(40.dp)
             ) {
                 Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = stringResource(com.oracle.visualize.R.string.undo), tint = MaterialTheme.colorScheme.onPrimaryContainer)
             }
             IconButton(
                 onClick = onRedo,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(40.dp)
             ) {
                 Icon(Icons.AutoMirrored.Default.Redo, contentDescription = stringResource(com.oracle.visualize.R.string.redo), tint = MaterialTheme.colorScheme.onPrimaryContainer)
             }
