@@ -195,16 +195,16 @@ private fun TeamsContent(
                 onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
                 modifier       = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 24.dp, end = 24.dp)
-                    .size(72.dp),
+                    .padding(bottom = 32.dp, end = 24.dp)
+                    .size(80.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor   = MaterialTheme.colorScheme.onSecondary,
-                shape          = RoundedCornerShape(50.dp)
+                shape          = RoundedCornerShape(20.dp)
             ) {
                 Icon(
                     imageVector        = Icons.Default.Add,
                     contentDescription = stringResource(R.string.teams_create_fab_description),
-                    modifier           = Modifier.size(36.dp)
+                    modifier           = Modifier.size(40.dp)
                 )
             }
         }
