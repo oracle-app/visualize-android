@@ -43,7 +43,6 @@ fun MemberAvatarStack(
     ) {
         Layout(
             content = {
-                // Burbuja primero en content pero con zIndex bajo → queda detrás
                 if (showExtraBubble) {
                     Box(
                         modifier = Modifier
@@ -60,7 +59,6 @@ fun MemberAvatarStack(
                         )
                     }
                 }
-                // Avatares después → zIndex alto, quedan encima de la burbuja
                 repeat(displayCount) { index ->
                     val memberIndex = displayCount - 1 - index
                     Box(
@@ -95,9 +93,9 @@ fun MemberAvatarStack(
                 placeables.forEachIndexed { index, placeable ->
                     val x = (itemCount - 1 - index) * offset
                     val z = if (showExtraBubble && index == 0) {
-                        0f                              // burbuja → zIndex mínimo, detrás de todo
+                        0f
                     } else {
-                        (itemCount - index).toFloat()   // avatares → zIndex alto, encima
+                        (itemCount - index).toFloat()
                     }
                     if (showExtraBubble && index == 0) {
                         placeable.placeWithLayer(x = x + extraBubbleSpace, y = 0, zIndex = z)
