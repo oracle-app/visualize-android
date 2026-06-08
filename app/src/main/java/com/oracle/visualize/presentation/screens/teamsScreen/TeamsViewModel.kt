@@ -35,6 +35,7 @@ class TeamsViewModel @Inject constructor(
         }
     }
 
+
     private fun loadTeams() {
         viewModelScope.launch {
             _uiState.value = TeamsUiState.Loading
@@ -44,7 +45,7 @@ class TeamsViewModel @Inject constructor(
 
             if (myTeamsResult is AppResult.Success && teamsImInResult is AppResult.Success) {
                 _uiState.value = TeamsUiState.Content(
-                    myTeams   = myTeamsResult.data,
+                    myTeams = myTeamsResult.data,
                     teamsImIn = teamsImInResult.data
                 )
             } else {
@@ -53,9 +54,11 @@ class TeamsViewModel @Inject constructor(
 
                 val errorId = when (error) {
                     is AppError.NetworkError -> R.string.error_network
-                    else                     -> R.string.error_teams_load_failed
+                    else -> R.string.error_teams_load_failed
                 }
-                _uiState.value = TeamsUiState.Error(errorId)
+                _uiState.value = TeamsUiState.Error(
+                    errorId
+                )
             }
         }
     }
@@ -63,7 +66,13 @@ class TeamsViewModel @Inject constructor(
     fun onEvent(event: TeamsUiEvent) {
         val current = _uiState.value as? TeamsUiState.Content ?: return
         when (event) {
-
+            is TeamsUiEvent.ToggleExpand -> {
+                val updated = if (event.teamId in current.expandedTeamIds)
+                    current.expandedTeamIds - event.teamId
+                else
+                    current.expandedTeamIds + event.teamId
+                _uiState.value = current.copy(expandedTeamIds = updated)
+            }
 
             is TeamsUiEvent.SwipeTeam ->
                 _uiState.value = current.copy(swipedTeamId = event.teamId)
@@ -78,13 +87,17 @@ class TeamsViewModel @Inject constructor(
                 _uiState.value = current.copy(teamPendingDeleteId = null)
                 viewModelScope.launch {
                     when (val result = deleteTeamUseCase(event.teamId)) {
-                        is AppResult.Success -> loadTeams()
-                        is AppResult.Error   -> {
+                        is AppResult.Success -> {
+                            loadTeams()
+                        }
+                        is AppResult.Error -> {
                             val errorId = when (result.error) {
                                 is AppError.NetworkError -> R.string.error_network
-                                else                     -> R.string.error_team_delete_failed
+                                else -> R.string.error_team_delete_failed
                             }
-                            _uiState.value = TeamsUiState.Error(errorId)
+                            _uiState.value = TeamsUiState.Error(
+                                errorId
+                            )
                         }
                     }
                 }

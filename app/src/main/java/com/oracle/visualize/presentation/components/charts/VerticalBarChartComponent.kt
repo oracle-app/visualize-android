@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderVerticalBarChart(
-    chart: VerticalBarChart, modifier: Modifier = Modifier, showAxisLabels: Boolean,
+    modifier: Modifier = Modifier, chart: VerticalBarChart, chartColorTheme: ChartPalette, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -67,7 +67,7 @@ fun RenderVerticalBarChart(
     val values = remember(data) { data.values.toList() }
     val maxValue = remember(values) { values.maxOrNull() ?: 0f }
     val barColors = remember(categories) {
-        generateChartColors(categories.size, ChartPalette.THEME1)
+        generateChartColors(categories.size, chartColorTheme)
     }
 
     Box(modifier = modifier) {

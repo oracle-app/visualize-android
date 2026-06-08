@@ -27,7 +27,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.presentation.components.FeedCard
 import com.oracle.visualize.presentation.components.FeedTopBar
 import com.oracle.visualize.presentation.components.SearchSection
@@ -142,10 +144,15 @@ fun FeedPage(
                                 FeedCard(
                                     item                = feedItem.card,
                                     chart               = feedItem.chart,
+                                    chartColorTheme     = state.chartColorTheme,
                                     currentUserID       = state.currentUserID,
                                     isChartLoading      = feedItem.isChartLoading,
                                     onLoadChartRequest  = { feedViewModel.loadChartForCard(feedItem.card) },
-                                    isDeletable         = state.isDeletableMap[feedItem.card.id] ?: false,
+                                    permissions         = state.permissionsMap[feedItem.card.id] ?: VisualizationPermissions(
+                                        UserType.CONSUMER,
+                                        "",
+                                        ""
+                                    ),
                                     isMenuOpen          = state.menuOpenForId == feedItem.card.id,
                                     onClick             = { onVisualizationClick(feedItem.card.id) },
                                     onMenuOpen          = { feedViewModel.onMenuOpen(feedItem.card.id) },

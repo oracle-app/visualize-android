@@ -33,13 +33,13 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, enableTooltips: Boolean) {
+fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, chartColorTheme: ChartPalette, enableTooltips: Boolean) {
     val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
-    val colors = generateChartColors(categories.size, ChartPalette.THEME1)
+    val colors = generateChartColors(categories.size, chartColorTheme)
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         PieChart(

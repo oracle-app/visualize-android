@@ -44,9 +44,11 @@ import androidx.compose.ui.window.PopupProperties
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.presentation.screens.feedScreen.components.FeedCardMenu
 import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
+import com.oracle.visualize.ui.theme.ChartPalette
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -72,8 +74,10 @@ fun FeedCard(
     currentUserID: String = "",
     onClick: () -> Unit = {},
     chart: Chart<*>?,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     isChartLoading: Boolean,
     onLoadChartRequest: () -> Unit,
+    permissions: VisualizationPermissions,
     isDeletable: Boolean = false,
     isMenuOpen: Boolean = false,
     onMenuOpen: () -> Unit = {},
@@ -148,7 +152,9 @@ fun FeedCard(
                             properties       = PopupProperties(focusable = true)
                         ) {
                             FeedCardMenu(
-                                isDeletable         = isDeletable,
+                                canDelete           = permissions.canDelete,
+                                canHide             = permissions.canHide,
+                                canShare            = permissions.canShare,
                                 onDismiss           = onMenuDismiss,
                                 onShare             = onShare,
                                 onDeleteForEveryone = onDeleteForEveryone,
@@ -181,7 +187,8 @@ fun FeedCard(
                             showAxisLabels   = false,
                             enableTooltips   = false,
                             enableZoomAndPan = false,
-                            feedCardLabels   = true
+                            feedCardLabels   = true,
+                            chartColorTheme = chartColorTheme
                         )
                     } else {
                         Text(

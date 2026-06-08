@@ -7,8 +7,10 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
 import com.oracle.visualize.domain.usecases.visualization.GetIndividualVisualizationUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseFullScreenChartUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,17 +29,15 @@ import javax.inject.Inject
 @HiltViewModel
 class FullVisualizationViewModel @Inject constructor(
     private val getIndividualVisualizationUseCase: GetIndividualVisualizationUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val parseFullScreenChartUseCase: ParseFullScreenChartUseCase,
     private val authRepository: AuthRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FullVisualizationUIState())
     val uiState: StateFlow<FullVisualizationUIState> = _uiState.asStateFlow()
 
-    /*
-    NOTE: The currentUserID just became apparently useless, but I'll leave it here in
-    case it becomes relevant for a future feature.
-    */
     private var currentUserID: String = ""
+    private var userChartTheme: ChartPalette = ChartPalette.THEME1
 
     init {
         currentUserID = authRepository.getCurrentUserID() ?: ""
@@ -50,6 +50,11 @@ class FullVisualizationViewModel @Inject constructor(
                     isLoading = true,
                     errorMessage = null
                 )
+            }
+
+            userChartTheme = when (val chartColorThemeResult = getUserChartThemeUseCase(currentUserID)){
+                is AppResult.Success -> chartColorThemeResult.data
+                is AppResult.Error -> userChartTheme
             }
 
             when (val result = getIndividualVisualizationUseCase(visualizationId)) {
@@ -71,6 +76,7 @@ class FullVisualizationViewModel @Inject constructor(
                                         isLoading = false,
                                         visualization = visualization,
                                         chart = chartResult.data,
+                                        chartColorTheme = userChartTheme,
                                         errorMessage = null
                                     )
                                 }
@@ -81,6 +87,7 @@ class FullVisualizationViewModel @Inject constructor(
                                     it.copy(
                                         isLoading = false,
                                         visualization = visualization,
+                                        chartColorTheme = userChartTheme,
                                         errorMessage = R.string.error_chart_not_found
                                     )
                                 }
@@ -101,6 +108,7 @@ class FullVisualizationViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             visualization = null,
+                            chartColorTheme = userChartTheme,
                             errorMessage = uiErrorMessage
                         )
                     }

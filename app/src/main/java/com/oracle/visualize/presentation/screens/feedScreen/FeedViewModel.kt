@@ -8,12 +8,17 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
 import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
 import com.oracle.visualize.domain.usecases.visualization.HideVisualizationForMeUseCase
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
 import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,9 +32,11 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(
     private val observeUserFeedUseCase: ObserveUserFeedUseCase,
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
     private val parseSingleChartUseCase: ParseSingleChartUseCase,
     private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
     private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
     private val feedCacheManager: FeedCacheManager
 ) : ViewModel() {
 
@@ -38,7 +45,10 @@ class FeedViewModel @Inject constructor(
 
     private var allFeedItems: List<FeedItem> = emptyList()
     private var currentUserID: String = ""
+    private var currentUserType: UserType = UserType.CONSUMER
     private var feedJob: Job? = null
+
+    private var userChartTheme: ChartPalette = ChartPalette.THEME1
 
     init {
         currentUserID = authRepository.getCurrentUserID() ?: ""
@@ -46,7 +56,21 @@ class FeedViewModel @Inject constructor(
         if (currentUserID.isBlank()) {
             _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
         } else {
-            loadData(forceRefresh = false)
+            viewModelScope.launch {
+                try {
+                    when (val userResult = userRepository.getUserByUserID(currentUserID)) {
+                        is AppResult.Success -> {
+                            currentUserType = userResult.data.userType
+                            loadData(forceRefresh = false)
+                        }
+                        is AppResult.Error -> {
+                            _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                        }
+                    }
+                } catch (e: Exception) {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
 
@@ -90,7 +114,14 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
+
+            userChartTheme = when (val chartThemeResult = getUserChartThemeUseCase(currentUserID)) {
+                is AppResult.Success -> chartThemeResult.data
+                is AppResult.Error -> userChartTheme
+            }
+
             observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
+
                 when (result) {
                     is AppResult.Success -> {
                         allFeedItems = result.data.distinctBy { it.card.id }
@@ -225,7 +256,13 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        val isDeletableMap = filteredItems.associate { it.card.id to (it.card.authorID == currentUserID) }
+        val permissionsMap = filteredItems.associate { item ->
+            item.card.id to VisualizationPermissions(
+                userType = currentUserType,
+                currentUserID = currentUserID,
+                authorID = item.card.authorID
+            )
+        }
 
         _uiState.update {
             FeedUiState.Success(
@@ -235,7 +272,8 @@ class FeedViewModel @Inject constructor(
                 selectedFilter = filter,
                 isRefreshing   = false,
                 isSearching    = isSearching,
-                isDeletableMap = isDeletableMap
+                chartColorTheme = userChartTheme,
+                permissionsMap = permissionsMap
             )
         }
     }

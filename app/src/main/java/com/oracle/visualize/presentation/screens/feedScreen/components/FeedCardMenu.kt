@@ -24,13 +24,13 @@ import com.oracle.visualize.R
 
 /**
  * Floating card menu displayed when the three-dot icon on a [FeedCard] is tapped.
- * Role-aware via [isDeletable]:
- * - true  (owner)     → Share + Delete for everyone
- * - false (non-owner) → Hide for me
+ * Menus are dynamically generated based on the user's role and ownership via the Policy Object.
  */
 @Composable
 fun FeedCardMenu(
-    isDeletable: Boolean,
+    canDelete: Boolean,
+    canHide: Boolean,
+    canShare: Boolean,
     onDismiss: () -> Unit,
     onShare: () -> Unit,
     onDeleteForEveryone: () -> Unit,
@@ -50,23 +50,32 @@ fun FeedCardMenu(
             .width(260.dp)
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
-            if (isDeletable) {
+
+            if (canShare) {
                 FeedCardMenuItem(
                     label   = stringResource(R.string.feed_menu_share),
                     color   = MaterialTheme.colorScheme.onPrimaryContainer,
                     onClick = { onDismiss(); onShare() }
                 )
-                HorizontalDivider(
-                    modifier  = Modifier.padding(horizontal = 16.dp),
-                    thickness = 0.5.dp,
-                    color     = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                )
+            }
+
+            if (canShare && (canDelete || canHide)) {
+                MenuDivider()
+            }
+
+            if (canDelete) {
                 FeedCardMenuItem(
                     label   = stringResource(R.string.feed_menu_delete_for_everyone),
                     color   = MaterialTheme.colorScheme.error,
                     onClick = { onDismiss(); onDeleteForEveryone() }
                 )
-            } else {
+            }
+
+            if (canDelete && canHide) {
+                MenuDivider()
+            }
+
+            if (canHide) {
                 FeedCardMenuItem(
                     label   = stringResource(R.string.feed_menu_hide_for_me),
                     color   = MaterialTheme.colorScheme.error,
@@ -78,6 +87,15 @@ fun FeedCardMenu(
 }
 
 @Composable
+private fun MenuDivider() {
+    HorizontalDivider(
+        modifier  = Modifier.padding(horizontal = 16.dp),
+        thickness = 0.5.dp,
+        color     = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+    )
+}
+
+@Composable
 private fun FeedCardMenuItem(label: String, color: Color, onClick: () -> Unit) {
     Box(
         modifier = Modifier
@@ -85,7 +103,12 @@ private fun FeedCardMenuItem(label: String, color: Color, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        Text(text = label, color = color, fontSize = 20.sp,
-            fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = label,
+            color = color,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Normal,
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }

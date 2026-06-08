@@ -3,6 +3,7 @@ package com.oracle.visualize.data.repositories
 import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.User
 import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.ui.theme.ChartPalette
 import javax.inject.Inject
 import com.oracle.visualize.data.datasources.UserDatasource
 import com.oracle.visualize.data.mapper.toDomain
@@ -68,6 +69,19 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updatePfp(userId: String, uri: String): AppResult<Unit> {
         return safeApiCall {
             userDatasource.updatePfp(userId, uri)
+        }
+    }
+
+    override suspend fun getChartTheme(userID: String): AppResult<ChartPalette> {
+        return safeApiCall {
+            val color = userDatasource.getChartTheme(userID)
+            when (color) {
+                "THEME1" -> ChartPalette.THEME1
+                "THEME2" -> ChartPalette.THEME2
+                "THEME3" -> ChartPalette.THEME3
+                "THEME4" -> ChartPalette.THEME4
+                else -> ChartPalette.THEME1
+            }
         }
     }
 }

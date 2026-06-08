@@ -218,7 +218,9 @@ fun FullVisualizationPage(
                                     .fillMaxWidth()
                                     .fillMaxHeight()
                             ) {
-                                ChartRenderFullScreen(chart = chart, showAxisLabels = true)
+                                ChartRenderFullScreen(
+                                    chart = chart, showAxisLabels = true, chartColorTheme = uiState.chartColorTheme
+                                )
                             }
                         }
                     }

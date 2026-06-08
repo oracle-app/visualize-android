@@ -16,7 +16,6 @@ sealed interface CreateEditTeamUiState {
         val ownerID: String = "",
         val isSubmitting: Boolean = false,
         val nameError: Int? = null,
-        // True while the "Unsaved Changes" dialog is visible
         val showUnsavedChangesDialog: Boolean = false
     ) : CreateEditTeamUiState {
         val isEditMode: Boolean get() = teamId != null

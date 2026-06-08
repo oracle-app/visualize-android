@@ -4,7 +4,7 @@ import com.oracle.visualize.data.datasources.dtos.UserDTO
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.domain.models.ThemePreference
 import com.oracle.visualize.domain.models.User
-import com.oracle.visualize.domain.models.UserType
+import com.oracle.visualize.domain.models.enums.UserType
 
 /**
  * Extension function to map [UserDTO] to [User] domain model.
@@ -21,7 +21,7 @@ fun UserDTO.toDomain(): User = User(
     hiddenVisualizations = hiddenVisualizations,
 
     userType = runCatching {
-        UserType.valueOf(userType)
+        UserType.valueOf(userType.trim().uppercase())
     }.getOrDefault(UserType.CONSUMER),
 
     themePreference = runCatching {
