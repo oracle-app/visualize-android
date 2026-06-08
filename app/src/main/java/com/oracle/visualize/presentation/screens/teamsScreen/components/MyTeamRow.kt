@@ -66,7 +66,7 @@ fun MyTeamRow(
 
     val teamNameColor = MaterialTheme.colorScheme.onSurface
 
-    val amountOfMembersTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val amountOfMembersTextColor = MaterialTheme.colorScheme.primary
 
     Box(
         modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min).clip(shape = teamShape(position))

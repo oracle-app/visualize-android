@@ -161,10 +161,10 @@ private fun CreateEditTeamContent(
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.create_team_name_placeholder), fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.outlineVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
-                            label = { Text(text = stringResource(R.string.create_team_name_placeholder), color = MaterialTheme.colorScheme.outlineVariant) },
+                            label = { Text(text = stringResource(R.string.create_team_name_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)),
                             colors = TextFieldDefaults.colors(
@@ -218,7 +218,7 @@ private fun CreateEditTeamContent(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Search, contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         },
                         trailingIcon = if (state.searchQuery.isNotBlank()) ({
@@ -228,7 +228,7 @@ private fun CreateEditTeamContent(
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }) else null,
@@ -291,7 +291,7 @@ private fun CreateEditTeamContent(
                     item {
                         Text(
                             text = stringResource(R.string.create_team_empty_hint), fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.outlineVariant, textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
                         )
                     }

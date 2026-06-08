@@ -92,7 +92,7 @@ private fun TeamsContent(
     val isConsumer = state.userType == UserType.CONSUMER
     val isAdmin = state.userType == UserType.ADMIN
 
-    val subtitleTextColors = MaterialTheme.colorScheme.onSurface
+    val subtitleTextColors = MaterialTheme.colorScheme.onBackground
 
     Box(
         modifier = modifier

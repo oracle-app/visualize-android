@@ -46,7 +46,7 @@ fun TeamsImInRow(
 
     val arrowTint = MaterialTheme.colorScheme.onSurface
 
-    val amountOfMembersTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val amountOfMembersTextColor = MaterialTheme.colorScheme.primary
 
     Column(
         modifier = Modifier.fillMaxWidth().clip(teamShape(position))
@@ -97,7 +97,7 @@ fun TeamsImInRow(
 fun MemberListItem(user: ShareUser, isOwner: Boolean) {
     val memberNameColor = MaterialTheme.colorScheme.onSurface
 
-    val ownerOrEmailColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val ownerOrEmailColor = MaterialTheme.colorScheme.primary
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
