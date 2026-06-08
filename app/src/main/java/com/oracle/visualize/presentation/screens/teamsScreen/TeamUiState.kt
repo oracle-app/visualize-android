@@ -13,7 +13,7 @@ sealed interface TeamsUiState {
     data class Content(
         val myTeams: List<ShareTeam> = emptyList(),
         val teamsImIn: List<ShareTeam> = emptyList(),
-        val expandedTeamIds: Set<String> = emptySet(),       // Teams I'm In expanded rows
+        val expandedTeamIds: Set<String> = emptySet(),
         val swipedTeamId: String? = null,
         val teamPendingDeleteId: String? = null,
         val userType: UserType = UserType.CONSUMER
