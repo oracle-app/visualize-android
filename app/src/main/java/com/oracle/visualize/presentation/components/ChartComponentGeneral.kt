@@ -69,7 +69,9 @@ fun ChartRenderGeneral(
     val sidePadding = if (feedCardLabels) 6.dp else 6.dp
 
     Column(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.onPrimary)
             .padding(top = topPadding, start = sidePadding, end = sidePadding, bottom = bottomPadding)
     ) {
         when (chart) {
