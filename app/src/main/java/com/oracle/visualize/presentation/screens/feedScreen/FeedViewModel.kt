@@ -168,7 +168,25 @@ class FeedViewModel @Inject constructor(
      * forces a full reload so the feed reflects the latest shared users immediately.
      */
     fun refreshIfCacheInvalidated() {
-        if (feedCacheManager.cachedFeed == null) {
+        val freshUserID = authRepository.getCurrentUserID() ?: ""
+
+        if (freshUserID.isNotBlank() && freshUserID != currentUserID) {
+            currentUserID = freshUserID
+
+            viewModelScope.launch {
+                when (val userResult = userRepository.getUserByUserID(currentUserID)) {
+                    is AppResult.Success -> {
+                        currentUserType = userResult.data.userType
+                        loadData(forceRefresh = true)
+                    }
+                    is AppResult.Error -> {
+                        updateSuccess { it }
+                        _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                    }
+                }
+            }
+        }
+        else if (feedCacheManager.cachedFeed == null) {
             loadData(forceRefresh = true)
         }
     }
