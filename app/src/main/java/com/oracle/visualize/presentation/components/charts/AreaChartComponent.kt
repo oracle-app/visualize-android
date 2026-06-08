@@ -3,7 +3,9 @@ package com.oracle.visualize.presentation.components.charts
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -73,7 +75,8 @@ fun RenderAreaChart(
     val maxY = remember(data) { data.values.maxOfOrNull { it.sum() } ?: 0f }
     val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, chartColorTheme) }
 
-    Box(modifier = modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 20.dp) else modifier) {
+        Spacer(modifier = Modifier.height(40.dp))
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(
