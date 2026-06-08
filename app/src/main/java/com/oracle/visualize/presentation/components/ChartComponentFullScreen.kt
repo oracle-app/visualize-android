@@ -92,9 +92,7 @@ fun ChartRenderFullScreen(
 
         else -> {
             ChartLayout(
-                modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.onPrimary)
-                    .fillMaxSize(),
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary).fillMaxSize(),
                 title = {},
                 legend = {
                     when (localConfig.orientation) {
