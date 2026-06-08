@@ -23,8 +23,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AuthTextField
-import com.oracle.visualize.ui.theme.iOS_DarkText
-import com.oracle.visualize.ui.theme.iOS_SloganGray
+import com.oracle.visualize.ui.theme.DarkText
+import com.oracle.visualize.ui.theme.SloganGray
 import androidx.compose.foundation.isSystemInDarkTheme
 
 @Composable
@@ -79,7 +79,7 @@ fun LoginPage(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.sp,
-                color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onPrimaryContainer else iOS_DarkText
+                color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onPrimaryContainer else DarkText
             )
 
             Spacer(modifier = Modifier.height(58.dp))
@@ -178,7 +178,7 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.no_account),
                 fontSize = 14.sp,
-                color = iOS_SloganGray
+                color = SloganGray
             )
 
             TextButton(
