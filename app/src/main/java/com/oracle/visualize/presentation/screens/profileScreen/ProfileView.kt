@@ -129,8 +129,9 @@ fun ProfilePage(
             confirm = stringResource(R.string.log_out),
             cancel = stringResource(R.string.cancel),
             onConfirm = {
-                profileViewModel.logout()
-                onLogout()
+                profileViewModel.logout(onLogoutComplete = {
+                    onLogout()
+                })
                 showLogoutDialog = false
             },
             onDismiss = { showLogoutDialog = false }

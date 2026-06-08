@@ -115,11 +115,12 @@ class ProfileViewModel @Inject constructor(
     }
 
 
-    fun logout() {
+    fun logout(onLogoutComplete: () -> Unit) {
         viewModelScope.launch {
             logoutUseCase()
             clearFeedCacheUseCase()
             clearChartCacheUseCase()
+            onLogoutComplete()
         }
     }
 

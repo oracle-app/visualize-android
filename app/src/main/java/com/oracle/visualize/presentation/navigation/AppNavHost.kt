@@ -117,7 +117,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 navController = navController,
                 onLogout      = {
                     navController.navigate(NavRoutes.Splash) {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
                     }
                 }
             )
@@ -192,7 +194,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier              = Modifier.fillMaxSize(),
                 onLoginSuccess        = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Login) { inclusive = true }
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
                     }
                 },
                 onSignUpClick         = { navController.navigate(NavRoutes.Signup) },
@@ -205,7 +209,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier        = Modifier.fillMaxSize(),
                 onSignUpSuccess = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Splash) { inclusive = true }
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
                     }
                 },
                 onLoginClick    = {

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,6 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.DonutChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -41,7 +43,10 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, chartColo
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
     val colors = generateChartColors(categories.size, chartColorTheme)
 
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = if (enableTooltips) modifier.padding(top = 40.dp).fillMaxSize() else modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         PieChart(
             values = values,
             label = { index ->
