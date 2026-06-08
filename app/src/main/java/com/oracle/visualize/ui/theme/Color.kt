@@ -51,6 +51,13 @@ val DarkMode_LightGreyishBlue = Color(0xFF2E4F4E)
 
 val DarkMode_GreyContent = Color(0xFF4B2F0E)
 
+// iOS Palette Colors
+val iOS_DarkText = Color(0xFF13212C)
+val iOS_SloganGray = Color(0xFF597271)
+val iOS_OffWhite = Color(0xFFFBF9F3)
+val iOS_Teal = Color(0xFF34797C)
+val iOS_Orange = Color(0xFFE18212)
+
 
 // This is where the Chart Theme colors are defined.
 

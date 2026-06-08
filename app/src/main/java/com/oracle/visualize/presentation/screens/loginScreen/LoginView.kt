@@ -9,14 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +23,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AuthTextField
+import com.oracle.visualize.ui.theme.iOS_DarkText
+import com.oracle.visualize.ui.theme.iOS_SloganGray
+import androidx.compose.foundation.isSystemInDarkTheme
 
 @Composable
 fun LoginPage(
@@ -33,15 +35,7 @@ fun LoginPage(
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val unknown = stringResource(R.string.error_unknown)
-    val appVersion = remember {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0)
-            .versionName ?: unknown
-    }
 
     LaunchedEffect(uiState.success) {
         if (uiState.success) {
@@ -83,8 +77,9 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.welcome),
                 fontSize = 32.sp,
-                letterSpacing = 1.sp,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.sp,
+                color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onPrimaryContainer else iOS_DarkText
             )
 
             Spacer(modifier = Modifier.height(58.dp))
@@ -183,7 +178,7 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.no_account),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground
+                color = iOS_SloganGray
             )
 
             TextButton(
@@ -193,14 +188,15 @@ fun LoginPage(
                 Text(
                     text = stringResource(R.string.signup),
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "V${appVersion}",
+                text = stringResource(R.string.version),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )

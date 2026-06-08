@@ -38,7 +38,6 @@ import com.oracle.visualize.presentation.screens.profileScreen.components.Settin
 
 @Composable
 fun EditProfile(
-    appversion: String,
     username: String,
     email: String,
     image: String,
@@ -109,7 +108,7 @@ fun EditProfile(
 
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = "${stringResource(R.string.version_declaration)} $appversion\n${stringResource(R.string.developer)}",
+                text = "${stringResource(R.string.version_declaration)} ${stringResource(R.string.version)}\n${stringResource(R.string.developer)}",
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall,
                 color = textColor.copy(alpha = 0.6f)

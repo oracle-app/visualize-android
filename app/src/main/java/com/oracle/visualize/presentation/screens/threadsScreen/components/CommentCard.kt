@@ -25,9 +25,8 @@ import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.CommentUiModel
-import java.text.SimpleDateFormat
-import java.util.Locale
-import androidx.compose.ui.platform.LocalLocale
+import com.oracle.visualize.util.DateUtils
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun CommentCard(
@@ -40,23 +39,21 @@ fun CommentCard(
     onDeleteThreadClick: (threadId: String) -> Unit
 ) {
     val containerColor = if (isCurrentUser) {
-        MaterialTheme.colorScheme.onTertiaryContainer
+        MaterialTheme.colorScheme.primaryContainer
     } else {
         MaterialTheme.colorScheme.onTertiary
     }
 
     val headerColor = if (isCurrentUser) {
-        MaterialTheme.colorScheme.tertiaryContainer
+        MaterialTheme.colorScheme.outline
     } else {
         MaterialTheme.colorScheme.tertiary
     }
 
-    val timelineColor = MaterialTheme.colorScheme.tertiaryFixed
+    val timelineColor = MaterialTheme.colorScheme.primaryContainer
 
-    val formattedDate = SimpleDateFormat(
-        "dd/MM/yy",
-        LocalLocale.current.platformLocale
-    ).format(comment.createdAt)
+    val context = LocalContext.current
+    val formattedDate = DateUtils.formatTime(comment.createdAt, context)
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -86,15 +83,15 @@ fun CommentCard(
             Column(modifier = Modifier.weight(1f)) {
 
                 Text(
-                    text = comment.authorName,
+                    text = if (isCurrentUser) stringResource(R.string.by_me) else comment.authorName,
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 Text(
                     text = formattedDate,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
             if (comment.permissions.canDelete) {
