@@ -90,7 +90,11 @@ fun ChartCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     .padding(16.dp)
             ) {
-                ChartRenderGeneral(chart = chart, chartColorTheme = chartColorTheme)
+                ChartRenderGeneral(
+                    chart = chart,
+                    chartColorTheme = chartColorTheme,
+                    feedCardLabels = true
+                )
             }
         }
     }

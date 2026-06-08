@@ -70,7 +70,7 @@ fun RenderHorizontalBarChart(
         generateChartColors(categories.size, chartColorTheme)
     }
 
-    Box(modifier = Modifier) {
+    Box(modifier = modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(
@@ -130,7 +130,7 @@ fun RenderHorizontalBarChart(
                         if (!enableTooltips) {
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
-                                modifier = modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         } else {
                             val tooltipDisplayState = rememberTooltipState(
@@ -146,7 +146,7 @@ fun RenderHorizontalBarChart(
                             ) {
                                 DefaultBar(
                                     brush = SolidColor(barColors[index]),
-                                    modifier = modifier.fillMaxWidth().pointerInput(Unit) {
+                                    modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
                                         awaitPointerEventScope {
                                             while (true) {
                                                 val fingerEvent = awaitPointerEvent()

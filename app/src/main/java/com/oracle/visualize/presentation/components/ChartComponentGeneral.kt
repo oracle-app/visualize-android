@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,6 +23,7 @@ import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.StackedBarChart
+import com.oracle.visualize.domain.models.TileChart
 import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.presentation.components.charts.RenderAreaChart
 import com.oracle.visualize.presentation.components.charts.RenderDonutChart
@@ -30,6 +32,7 @@ import com.oracle.visualize.presentation.components.charts.RenderLineChart
 import com.oracle.visualize.presentation.components.charts.RenderPieChart
 import com.oracle.visualize.presentation.components.charts.RenderScatterChart
 import com.oracle.visualize.presentation.components.charts.RenderStackedBarChart
+import com.oracle.visualize.presentation.components.charts.RenderTileChart
 import com.oracle.visualize.presentation.components.charts.RenderVerticalBarChart
 import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -59,9 +62,11 @@ fun ChartRenderGeneral(
     var boxModifier: Modifier
     var chartModifier: Modifier
 
+    val topPadding = if (feedCardLabels) 8.dp else 18.dp
+
     Column(
         modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-            .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)
+            .padding(top = topPadding, start = 0.dp, end = 12.dp, bottom = 8.dp)
     ) {
         when (chart) {
             is VerticalBarChart -> {
@@ -118,6 +123,12 @@ fun ChartRenderGeneral(
             is AreaChart -> RenderAreaChart(
                 chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
                 enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan
+            )
+            is TileChart -> RenderTileChart(
+                modifier = Modifier.fillMaxSize(),
+                chart = chart, 
+                chartColorTheme = chartColorTheme,
+                isFeedCard = feedCardLabels
             )
         }
     }
