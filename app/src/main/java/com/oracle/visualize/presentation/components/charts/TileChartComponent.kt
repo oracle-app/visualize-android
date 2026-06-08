@@ -35,6 +35,7 @@ fun RenderTileChart(
 
     // Calculate row distribution logic
     val rowCounts = when (count) {
+        3 -> listOf(2, 1)
         4 -> listOf(2, 2)
         else -> {
             val rows = mutableListOf<Int>()

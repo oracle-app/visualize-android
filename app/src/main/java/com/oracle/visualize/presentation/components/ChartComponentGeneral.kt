@@ -65,10 +65,12 @@ fun ChartRenderGeneral(
     var chartModifier: Modifier
 
     val topPadding = if (feedCardLabels) 8.dp else 18.dp
+    val bottomPadding = if (feedCardLabels) 8.dp else 8.dp
+    val sidePadding = if (feedCardLabels) 6.dp else 6.dp
 
     Column(
         modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-            .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)
+            .padding(top = topPadding, start = sidePadding, end = sidePadding, bottom = bottomPadding)
     ) {
         when (chart) {
             is VerticalBarChart -> {
