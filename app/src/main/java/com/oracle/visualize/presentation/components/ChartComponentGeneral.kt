@@ -101,12 +101,16 @@ fun ChartRenderGeneral(
 
             is PieChartModel -> RenderPieChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
 
-            is DonutChart -> RenderDonutChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
+            is DonutChart -> RenderDonutChart(
+                chart = chart, chartColorTheme = chartColorTheme, feedCardLabel = feedCardLabels,
+                enableTooltips = enableTooltips
+            )
 
             is AreaChart -> RenderAreaChart(
                 chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
                 enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan
             )
+
             is TileChart -> RenderTileChart(
                 modifier = Modifier.fillMaxSize(),
                 chart = chart,
