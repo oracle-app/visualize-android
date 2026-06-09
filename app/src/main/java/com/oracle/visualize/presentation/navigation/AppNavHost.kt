@@ -247,7 +247,12 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                             visualizationId = route.visualizationId
                         )
                     ) {
-                        popUpTo(NavRoutes.FullScreen(route.visualizationId)) {
+                        popUpTo(
+                            NavRoutes.SnipPreview(
+                                visualizationId = route.visualizationId,
+                                snipUri = route.snipUri
+                            )
+                        ) {
                             inclusive = true
                         }
                     }

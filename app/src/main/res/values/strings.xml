@@ -246,7 +246,7 @@
     <string name="fab_confirm">Confirm</string>
     <string name="fab_cancel">Cancel</string>
     <string name="dialog_confirm_title">Share as New Thread</string>
-    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread. To reply to an existing thread, go to the Threads section.</string>
+    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread.</string>
     <string name="dialog_confirm_yes">Share</string>
     <string name="dialog_confirm_yes_atl">Sharing...</string>
     <string name="dialog_confirm_no">Cancel</string>

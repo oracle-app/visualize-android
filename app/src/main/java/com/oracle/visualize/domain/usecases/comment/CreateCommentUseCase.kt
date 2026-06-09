@@ -23,7 +23,7 @@ class CreateCommentUseCase @Inject constructor(
         imageURL: String? = null
     ): AppResult<Comment> {
 
-        if (content.isBlank()) {
+        if (content.isBlank() && imageURL.isNullOrBlank()) {
             return AppResult.Error(AppError.InvalidComment())
         }
 
