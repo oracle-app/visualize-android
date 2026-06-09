@@ -12,7 +12,7 @@
     <string name="save_changes">Save Changes</string>
 
     // Roles
-    <string name="permission_denied">User does not possess the role to perform this action</string>>
+    <string name="permission_denied">User does not possess the role to perform this action</string>
 
     // Navigation Bar
 
@@ -44,17 +44,21 @@
 
     <string name="time_just_now">just now</string>
     <string name="time_mins_ago">%d min ago</string>
-    <string name="time_hours_ago">%d h ago</string>
-    <string name="time_days_ago">%d d ago</string>
+    <string name="time_hours_ago">%dh ago</string>
+    <string name="time_days_ago">%d days ago</string>
+    <string name="time_a_week_ago">a week ago</string>
     <plurals name="time_weeks_ago">
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
-    <string name="by_author">By %s</string>
-    <string name="by_me">By Me</string>
+    <string name="time_short_mins">%dm</string>
+    <string name="time_short_hours">%dh</string>
+    <string name="time_short_days">%dd</string>
+    <string name="time_short_weeks">%dw</string>
+    <string name="by_author">by %s</string>
+    <string name="by_me">by me</string>
     <string name="bullet_separator">•</string>
-    <string name="failed_load_chart">Failed to load chart"</string>
-ß
+    <string name="failed_load_chart">Failed to load chart</string>
     //Chart Component
     <string name="invalid_chart">"Invalid chart type was detected"</string>
     <string name="line_scatter_x_metric">x</string>
@@ -171,8 +175,9 @@
     <string name="error_alert">Something went wrong.\nPlease try again.</string>
     <string name="error_name_length">Name must be at least 2 characters.</string>
     <string name="error_email_already">This email is already registered.</string>
-    <string name="error_password_length">Password must be at least 8 characters.</string>
+    <string name="error_password_length">Password must be at least 12 characters.</string>
     <string name="error_password_weak">Password must include letters and numbers.</string>
+    <string name="error_password_special">Password must include one of ($ @ ! % * # ? &amp; .).</string>
     <string name="error_passwords_not_match">Passwords do not match.</string>
     <string name="error_team_load_failed">Failed to load team</string>
     <string name="error_team_name_empty">Team name cannot be empty</string>
@@ -261,9 +266,9 @@
     <string name="splash_description">Create, choose, and share AI-\n
                         powered graphs in seconds.\n
                         Fast, simple, and secure.</string>
-    <string name="login">Log In</string>
-    <string name="signup">Sign Up</string>
-    <string name="version">V1.0.0</string>
+    <string name="login">Log in</string>
+    <string name="signup">Sign up</string>
+    <string name="version">V 1.0.0</string>
 
     //Login Page
     <string name="welcome">Welcome</string>
@@ -273,7 +278,7 @@
     <string name="forgot_your_password">Forgot your password?</string>
 
     //Signup Page
-    <string name="already_have_account">Already have an account</string>
+    <string name="already_have_account">Already have an account?</string>
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>

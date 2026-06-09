@@ -47,6 +47,10 @@ sealed interface NavRoutes {
     data class CreateEditTeam(val teamId: String? = null) : NavRoutes
     @Serializable
     object ResetPassword : NavRoutes
+
+    @Serializable
+    data class SnippingTool(val visualizationId: String) : NavRoutes
+
     @Serializable
     data class SnipPreview(val visualizationId: String, val snipUri: String): NavRoutes
 }

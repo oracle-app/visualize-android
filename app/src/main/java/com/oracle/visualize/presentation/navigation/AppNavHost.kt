@@ -25,6 +25,7 @@ import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
 import com.oracle.visualize.presentation.screens.snipPreviewScreen.SnipPreviewPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
+import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
 
 /**
  * The main navigation host for the application.
@@ -132,9 +133,17 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier            = Modifier.fillMaxSize(),
                 startInSnippingMode = route.startInSnippingMode,
                 onBackClick         = { navController.popBackStack() },
-                onThreadsClick = {
+                onThreadsClick      = { uri ->
                     navController.navigate(
                         NavRoutes.Threads(
+                            visualizationId = route.visualizationId,
+                            snipUri         = uri
+                        )
+                    )
+                },
+                onSnippingClick = { chart ->
+                    navController.navigate(
+                        NavRoutes.SnippingTool(
                             visualizationId = route.visualizationId
                         )
                     )
@@ -257,6 +266,23 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                         }
                     }
                 }
+            )
+        }
+
+        composable<NavRoutes.SnippingTool> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.SnippingTool>()
+            SnippingToolView(
+                modifier = Modifier.fillMaxSize(),
+                visualizationId = route.visualizationId,
+                onDone = { uri ->
+                    navController.navigate(
+                        NavRoutes.Threads(
+                            visualizationId = route.visualizationId,
+                            snipUri = uri
+                        )
+                    )
+                },
+                onCancel = { navController.popBackStack() },
             )
         }
     }

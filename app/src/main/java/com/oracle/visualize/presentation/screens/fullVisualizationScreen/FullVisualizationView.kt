@@ -66,7 +66,8 @@ fun FullVisualizationPage(
     onBackClick: () -> Unit,
     onSnipClick: (String?) -> Unit,
     onThreadsClick: (String?) -> Unit = {},
-    startInSnippingMode: Boolean = false
+    startInSnippingMode: Boolean = false,
+    onSnippingClick: (String?) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var snippingBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -96,33 +97,10 @@ fun FullVisualizationPage(
     }
 
     LaunchedEffect(startInSnippingMode, uiState.isLoading) {
-        if (startInSnippingMode && !uiState.isLoading) {
-
-            // Small delay to allow the graph startup animation to play before cropping.
-
-            delay(500)
-
-
-            val bitmap = captureController.captureAsync().await()
-            snippingBitmap = bitmap.asAndroidBitmap()
+        if (startInSnippingMode) {
+            onSnippingClick(visualizationId)
         }
     }
-
-    snippingBitmap?.let { bitmap ->
-        SnippingToolView(
-            bitmap = bitmap,
-            onDone = { result ->
-                viewModel.onSnipCompleted(result)
-                val uri = File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
-                    file.outputStream().use { result.compress(Bitmap.CompressFormat.PNG, 100, it) }
-                }.toURI().toString()
-                onSnipClick(uri)
-            },
-            onCancel = { snippingBitmap = null }
-        )
-        return
-    }
-
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -134,15 +112,7 @@ fun FullVisualizationPage(
             ) {
                 FloatingActionButton(
                     onClick = {
-                        scope.launch{
-                            try {
-                                val bitmap = captureController.captureAsync().await()
-                                snippingBitmap = bitmap.asAndroidBitmap()
-                                Log.d("Snipping Tool", "Bitmap")
-                            } catch (e: Exception) {
-                                Log.e("Snipping Tool", "Error capturando: ${e.message}")
-                            }
-                        }
+                        onSnippingClick(visualizationId)
                     },
                     containerColor = MaterialTheme.colorScheme.secondary
                 ) {

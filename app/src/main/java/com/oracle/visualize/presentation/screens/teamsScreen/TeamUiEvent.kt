@@ -4,7 +4,7 @@ package com.oracle.visualize.presentation.screens.teamsScreen
  * All possible UI events from the Teams screen.
  */
 sealed interface TeamsUiEvent {
-    data class ToggleExpand(val teamId: String) : TeamsUiEvent
+    data class ToggleExpand(val teamId: String) : TeamsUiEvent            // Teams I'm In
     data class SwipeTeam(val teamId: String?) : TeamsUiEvent
     // Opens the delete confirmation dialog
     data class RequestDeleteTeam(val teamId: String) : TeamsUiEvent

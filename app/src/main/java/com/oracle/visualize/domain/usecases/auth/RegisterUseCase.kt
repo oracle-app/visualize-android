@@ -19,6 +19,7 @@ class RegisterUseCase @Inject constructor(
     private val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}\$".toRegex()
     private val passwordNumberRegex = ".*[0-9].*".toRegex()
     private val passwordLetterRegex = ".*[a-zA-Z].*".toRegex()
+    private val passwordSpecialRegex = ".*[\$@!%*#?&.].*".toRegex()
 
     suspend operator fun invoke(
         name: String,
@@ -64,11 +65,11 @@ class RegisterUseCase @Inject constructor(
                 "Required fields cannot be left blank.")
             )
         }
-        if (password.length < 8) {
+        if (password.length < 12) {
             return AppResult.Error(
                 AppError.AuthValidationError(
                     AppError.AuthField.PASSWORD,
-                    "Password must be at least 8 characters")
+                    "Password must be at least 12 characters")
             )
         }
         if (!password.matches(passwordNumberRegex) || !password.matches(passwordLetterRegex)){
@@ -76,6 +77,14 @@ class RegisterUseCase @Inject constructor(
                 AppError.AuthValidationError(
                     AppError.AuthField.PASSWORD,
                     "Password must include letters and numbers."
+                )
+            )
+        }
+        if (!password.matches(passwordSpecialRegex)){
+            return AppResult.Error(
+                AppError.AuthValidationError(
+                    AppError.AuthField.PASSWORD,
+                    "Password must include special character."
                 )
             )
         }

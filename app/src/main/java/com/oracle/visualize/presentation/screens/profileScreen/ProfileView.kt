@@ -138,15 +138,6 @@ fun ProfilePage(
         )
     }
 
-    // This is where the page fetches the current app version.
-
-    val unknown = stringResource(R.string.error_unknown)
-    val appVersion = remember {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0)
-            .versionName ?: unknown
-    }
-
     // Page layout start
 
     when (val state = uiState) {
@@ -161,7 +152,6 @@ fun ProfilePage(
                 when (state) {
                     is ProfileUiState.Ready -> {
                         EditProfile(
-                            appversion = appVersion,
                             username = state.username,
                             email = state.eMail,
                             image = state.image,

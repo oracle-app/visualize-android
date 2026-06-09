@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.profileScreen.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +37,6 @@ import com.oracle.visualize.presentation.screens.profileScreen.components.Settin
 
 @Composable
 fun EditProfile(
-    appversion: String,
     username: String,
     email: String,
     image: String,
@@ -51,7 +49,7 @@ fun EditProfile(
     ) {
 
     Image(
-        painter = painterResource(id = R.drawable.profilebgtransparent),
+        painter = painterResource(id = R.drawable.splashbackground),
         contentDescription = null,
         modifier = Modifier
             .fillMaxWidth()
@@ -103,13 +101,11 @@ fun EditProfile(
             title = stringResource(R.string.about_title),
             titleDrawableImage = R.drawable.baseline_info_24
         ) {
-            val textColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outline } else {
-                MaterialTheme.colorScheme.scrim
-            }
+            val textColor = MaterialTheme.colorScheme.onSurfaceVariant
 
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = "${stringResource(R.string.version_declaration)} $appversion\n${stringResource(R.string.developer)}",
+                text = "${stringResource(R.string.version_declaration)} ${stringResource(R.string.version)}\n${stringResource(R.string.developer)}",
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall,
                 color = textColor.copy(alpha = 0.6f)
