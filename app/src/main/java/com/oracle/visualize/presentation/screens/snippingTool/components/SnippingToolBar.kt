@@ -49,7 +49,8 @@ fun SnippingToolbar(
     onThicknessClick: (Float) -> Unit,
     onTextClick: () -> Unit,
     onFontSizeChange: (Float) -> Unit,
-    onShapeClick: (ShapeType) -> Unit,
+    onShapeClick: () -> Unit,
+    onShapeSet: (ShapeType) -> Unit,
     onCropClick: () -> Unit,
     selectedColor: Color,
     selectedTool: DrawingTool?,
@@ -178,7 +179,10 @@ fun SnippingToolbar(
                 }
 
                 Box {
-                    IconButton(onClick = { openShapes() }, modifier = Modifier.size(iconsize)) {
+                    IconButton(onClick = {
+                        openShapes()
+                        onShapeClick()
+                    }, modifier = Modifier.size(iconsize)) {
                         Icon(
                             painter = painterResource(R.drawable.shapes),
                             contentDescription = stringResource(R.string.toolbar_shape),
@@ -194,7 +198,7 @@ fun SnippingToolbar(
                             properties = PopupProperties(focusable = true)
                         ) {
                             ShapePicker(onShapeChange = { shape ->
-                                onShapeClick(shape)
+                                onShapeSet(shape)
                                 showShapePicker = false
                             })
                         }

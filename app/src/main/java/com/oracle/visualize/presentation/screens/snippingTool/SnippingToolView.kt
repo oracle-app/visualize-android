@@ -230,18 +230,16 @@ fun SnippingToolView(
                         },
                         bottomBar = {
                             SnippingToolbar(
-                                onPenClick = { viewModel.selectTool(DrawingTool.PEN) },
-                                onEraserClick = { viewModel.selectTool(DrawingTool.ERASER) },
+                                onPenClick = { viewModel.toggleTool(DrawingTool.PEN) },
+                                onEraserClick = { viewModel.toggleTool(DrawingTool.ERASER) },
                                 onColorClick = { color -> viewModel.setColor(color.selectedColor) },
                                 strokeWidth = uiState.strokeWidth,
                                 fontSize = uiState.fontSize,
                                 onThicknessClick = { viewModel.setStrokeWidth(it) },
-                                onTextClick = { viewModel.selectTool(DrawingTool.TEXT) },
+                                onTextClick = { viewModel.toggleTool(DrawingTool.TEXT) },
                                 onFontSizeChange = {viewModel.setFontSize(it)},
-                                onShapeClick = { shape ->
-                                    viewModel.selectTool(DrawingTool.SHAPE)
-                                    viewModel.setShape(shape)
-                                },
+                                onShapeClick = { viewModel.selectTool(DrawingTool.SHAPE) },
+                                onShapeSet = { shape -> viewModel.setShape(shape)},
                                 onCropClick = { viewModel.toggleCrop() },
                                 selectedColor = uiState.selectedColor,
                                 selectedTool = uiState.selectedTool,
