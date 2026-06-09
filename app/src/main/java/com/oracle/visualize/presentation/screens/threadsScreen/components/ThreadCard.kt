@@ -27,9 +27,8 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
-import java.text.SimpleDateFormat
-import java.util.Locale
-import androidx.compose.ui.platform.LocalLocale
+import com.oracle.visualize.core.utils.DateUtils
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,10 +38,8 @@ fun ThreadCard(
     modifier: Modifier = Modifier,
     onDeleteClick: () -> Unit
 ) {
-    val formattedDate = SimpleDateFormat(
-        "dd/MM/yy",
-        LocalLocale.current.platformLocale
-    ).format(thread.createdAt)
+    val context = LocalContext.current
+    val formattedDate = DateUtils.formatTime(thread.createdAt, context, isShort = true)
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -69,7 +66,7 @@ fun ThreadCard(
                 size = 32,
                 modifier = Modifier.border(
                     width = 3.dp,
-                    color = MaterialTheme.colorScheme.tertiaryFixed,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = CircleShape
                 )
             )
@@ -90,7 +87,7 @@ fun ThreadCard(
                     bottomEnd = 14.dp
                 ),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryFixed
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 4.dp
@@ -107,15 +104,15 @@ fun ThreadCard(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = thread.authorName,
+                            text = if (isCurrentUser) stringResource(R.string.by_me) else thread.authorName,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.weight(1f)
                         )
                         Text(
                             text = formattedDate,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 

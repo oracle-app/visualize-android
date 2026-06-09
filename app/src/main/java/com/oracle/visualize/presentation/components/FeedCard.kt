@@ -49,24 +49,8 @@ import com.oracle.visualize.presentation.screens.feedScreen.components.FeedCardM
 import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
 import com.oracle.visualize.ui.theme.ChartPalette
+import com.oracle.visualize.core.utils.DateUtils
 import java.util.Date
-import java.util.concurrent.TimeUnit
-
-fun formatTime(date: Date, context: Context): String {
-    val now   = Date()
-    val diff  = now.time - date.time
-    val mins  = TimeUnit.MILLISECONDS.toMinutes(diff)
-    val hours = TimeUnit.MILLISECONDS.toHours(diff)
-    val days  = TimeUnit.MILLISECONDS.toDays(diff)
-    val weeks = (days / 7).toInt()
-    return when {
-        mins  < 1  -> context.getString(R.string.time_just_now)
-        mins  < 60 -> context.getString(R.string.time_mins_ago, mins)
-        hours < 24 -> context.getString(R.string.time_hours_ago, hours)
-        days  < 7  -> context.getString(R.string.time_days_ago, days)
-        else       -> context.resources.getQuantityString(R.plurals.time_weeks_ago, weeks, weeks)
-    }
-}
 
 @Composable
 fun FeedCard(
@@ -128,7 +112,7 @@ fun FeedCard(
                         )
                         Text(text = "...", color = MaterialTheme.colorScheme.surfaceVariant)
                         Text(
-                            text     = formatTime(item.createdAt, context),
+                            text     = DateUtils.formatTime(item.createdAt, context),
                             color    = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp
                         )

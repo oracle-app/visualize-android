@@ -156,8 +156,13 @@ class SignUpViewModel @Inject constructor(
                                         }
 
                                         // Short Password
-                                        msg.contains("8", ignoreCase = true) -> {
+                                        msg.contains("12", ignoreCase = true) -> {
                                             R.string.error_password_length
+                                        }
+
+                                        // Special Character
+                                        msg.contains("special", ignoreCase = true) -> {
+                                            R.string.error_password_special
                                         }
 
                                         // Weak Password
