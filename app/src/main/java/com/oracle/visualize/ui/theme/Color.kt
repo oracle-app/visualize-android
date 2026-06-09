@@ -19,7 +19,7 @@ val onSecondaryContainer = Color(0xFF597271)
 val tertiaryContainer = Color(0xFFEDAE62)
 val onTertiaryContainer = Color(0xFFF0C592)
 
-val tertiary = Color(0xFFADC6C5)
+val tertiary = Color(0xFF728382)
 val onTertiary = Color(0xFFC5D5D4)
 
 val tertiaryFixed = Color(0xFFFDF2E5)
@@ -49,16 +49,16 @@ val DARKonPrimaryContainer = Color(0xFFFFFFFF)
 val DARKsecondary = Color(0xFFEB9632)
 val DARKonSecondary = Color(0xFFFFFFFF)
 
-val DARKsecondaryContainer = Color(0xFFFFFFFF)
-val DARKonSecondaryContainer = Color(0xFF85A9A8)
+val DARKsecondaryContainer = Color(0xFF000000)
+val DARKonSecondaryContainer = Color(0xFF293838)
 
-val DARKtertiaryContainer = Color(0xFFEDAE62)
-val DARKonTertiaryContainer = Color(0xFFF0C592)
+val DARKtertiaryContainer = Color(0xFFc08645)
+val DARKonTertiaryContainer = Color(0xFF926c40)
 
-val DARKtertiary = Color(0xFFADC6C5)
-val DARKonTertiary = Color(0xFFC5D5D4)
+val DARKtertiary = Color(0xFF446d73)
+val DARKonTertiary = Color(0xFF688b8f)
 
-val DARKtertiaryFixed = Color(0xFFFDF2E5)
+val DARKtertiaryFixed = Color(0xFF4B2F0E)
 
 val DARKbackground = Color(0xFF171818)
 val DARKonBackground = Color(0xFFFFFFFF)
@@ -69,7 +69,7 @@ val DARKsurfaceVariant = Color(0xFF253330)
 val DARKonSurfaceVariant = Color(0xFF346163)
 
 val DARKoutline = Color(0xFFA9C8C4)
-val DARKoutlineVariant = Color(0xFF798B8A)
+val DARKoutlineVariant = Color(0xFF9AB0AF)
 val DARKerror = Color(0xFFEC4848)
 val DARKonError = Color(0xFFFFFFFF)
 val DARKscrim = Color(0xFF1A2F3F)

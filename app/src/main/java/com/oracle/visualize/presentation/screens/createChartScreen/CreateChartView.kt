@@ -186,7 +186,7 @@ fun DashedSelector(onClick: () -> Unit) {
                 size = Size(size.width - strokeWidth, size.height - strokeWidth)
             )
         }
-        val teal = MaterialTheme.colorScheme.onSurfaceVariant
+        val teal = MaterialTheme.colorScheme.primary
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Canvas(modifier = Modifier.size(48.dp)) {
                 val iconSize = size.width
@@ -311,7 +311,7 @@ fun TableExampleComponent() {
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
-                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = Color.Red)
+                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
                 }
             }
         }

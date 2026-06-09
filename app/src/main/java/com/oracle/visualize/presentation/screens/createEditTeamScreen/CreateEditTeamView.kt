@@ -77,7 +77,7 @@ fun CreateEditTeamPage(
 private fun UnsavedChangesDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     val titleTextColor = MaterialTheme.colorScheme.onSurface
 
-    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.primary
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -161,10 +161,10 @@ private fun CreateEditTeamContent(
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.create_team_name_placeholder), fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.outlineVariant
                                 )
                             },
-                            label = { Text(text = stringResource(R.string.create_team_name_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            label = { Text(text = stringResource(R.string.create_team_name_placeholder), color = MaterialTheme.colorScheme.outlineVariant) },
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                 .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)),
                             colors = TextFieldDefaults.colors(
@@ -172,7 +172,7 @@ private fun CreateEditTeamContent(
                                 unfocusedTextColor = queryTextColor,
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                errorContainerColor = MaterialTheme.colorScheme.error,
                                 focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 errorIndicatorColor = MaterialTheme.colorScheme.error,
@@ -291,7 +291,7 @@ private fun CreateEditTeamContent(
                     item {
                         Text(
                             text = stringResource(R.string.create_team_empty_hint), fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.tertiary, textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
                         )
                     }
@@ -313,7 +313,7 @@ private fun CreateEditTeamContent(
 
 @Composable
 private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
-    val usernameColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val usernameColor = MaterialTheme.colorScheme.primary
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onClick() }) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 64)
@@ -329,7 +329,7 @@ private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
 private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
     val titleSubtitleTextColors = MaterialTheme.colorScheme.onSurface
 
-    val emailColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val emailColor = MaterialTheme.colorScheme.primary
 
     Row(modifier = Modifier.fillMaxWidth().clickable { onAdd() }.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 40)
@@ -345,7 +345,7 @@ private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
 private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
     val nameTextColor = MaterialTheme.colorScheme.onSurface
 
-    val ownerEmailColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val ownerEmailColor = MaterialTheme.colorScheme.primary
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),

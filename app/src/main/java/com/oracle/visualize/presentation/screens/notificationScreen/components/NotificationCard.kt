@@ -51,7 +51,7 @@ fun NotificationCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(MaterialTheme.colorScheme.tertiary)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 8.dp, vertical = 8.dp)
     )
     {
@@ -61,7 +61,6 @@ fun NotificationCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .background(MaterialTheme.colorScheme.tertiary)
 
         ) {
             Box(
@@ -70,7 +69,7 @@ fun NotificationCard(
                     .clip(CircleShape)
                     .background(
                         if (!notification.isRead)
-                            MaterialTheme.colorScheme.error
+                            MaterialTheme.colorScheme.secondary
                         else
                             MaterialTheme.colorScheme.surfaceVariant
                     )
@@ -92,7 +91,6 @@ fun NotificationCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .background(MaterialTheme.colorScheme.tertiary)
         )  {
                 UserAvatar(
                     username = "?",
