@@ -57,13 +57,6 @@ fun ChartRenderGeneral(
     enableZoomAndPan: Boolean = true,
     feedCardLabels: Boolean = false
 ) {
-    val scrollState = rememberScrollState()
-    var chartWidth: Dp
-    var barCount: Int
-    var scrollable: Boolean
-    var boxModifier: Modifier
-    var chartModifier: Modifier
-
     val topPadding = if (feedCardLabels) 8.dp else 18.dp
     val bottomPadding = if (feedCardLabels) 8.dp else 8.dp
     val sidePadding = if (feedCardLabels) 6.dp else 6.dp
