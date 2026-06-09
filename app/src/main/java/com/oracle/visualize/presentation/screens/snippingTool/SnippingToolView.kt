@@ -88,38 +88,6 @@ fun SnippingToolView(
         offset += panChange
     }
 
-    if (uiState.showConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { viewModel.toggleConfirmDialog() },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            title = { Text(stringResource(R.string.dialog_confirm_title)) },
-            text = { Text(stringResource(R.string.dialog_confirm_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.toggleConfirmDialog()
-                    coroutineScope.launch {
-                        onDone(viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap()))
-                    }
-                }) {
-                    Text(
-                        stringResource(R.string.dialog_confirm_yes),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewModel.toggleConfirmDialog() }) {
-                    Text(
-                        stringResource(R.string.dialog_confirm_no),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        )
-    }
-
     if (uiState.showCancelDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.toggleCancelDialog() },
@@ -257,7 +225,15 @@ fun SnippingToolView(
                 Icon(Icons.Default.Close, contentDescription = stringResource(R.string.fab_cancel), tint = MaterialTheme.colorScheme.onSecondary)
             }
             FloatingActionButton(
-                onClick = { viewModel.toggleConfirmDialog() },
+                onClick = {
+                    coroutineScope.launch {
+                        onDone(
+                            viewModel.confirmCrop(
+                                graphicsLayer.toImageBitmap().asAndroidBitmap()
+                            )
+                        )
+                    }
+                },
                 containerColor = MaterialTheme.colorScheme.secondary
             ) {
                 Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.fab_confirm), tint = MaterialTheme.colorScheme.onSecondary)

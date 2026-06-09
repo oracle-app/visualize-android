@@ -22,6 +22,7 @@ import com.oracle.visualize.presentation.screens.resetPasswordScreen.ResetPasswo
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
+import com.oracle.visualize.presentation.screens.snipPreviewScreen.SnipPreviewPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
 
@@ -131,13 +132,22 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier            = Modifier.fillMaxSize(),
                 startInSnippingMode = route.startInSnippingMode,
                 onBackClick         = { navController.popBackStack() },
-                onThreadsClick      = { uri ->
+                onThreadsClick = {
                     navController.navigate(
                         NavRoutes.Threads(
-                            visualizationId = route.visualizationId,
-                            snipUri         = uri
+                            visualizationId = route.visualizationId
                         )
                     )
+                },
+                onSnipClick = { uri ->
+                    uri?.let { safeUri ->
+                        navController.navigate(
+                            NavRoutes.SnipPreview(
+                                visualizationId = route.visualizationId,
+                                snipUri = safeUri
+                            )
+                        )
+                    }
                 }
             )
         }
@@ -218,6 +228,30 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             ResetPasswordPage(
                 modifier           = Modifier.fillMaxSize(),
                 onBackToLoginClick = { navController.popBackStack() }
+            )
+        }
+
+        composable<NavRoutes.SnipPreview> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.SnipPreview>()
+
+            SnipPreviewPage(
+                visualizationId = route.visualizationId,
+                snipUri = route.snipUri,
+                modifier = Modifier.fillMaxSize(),
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onShareCompleted = {
+                    navController.navigate(
+                        NavRoutes.Threads(
+                            visualizationId = route.visualizationId
+                        )
+                    ) {
+                        popUpTo(NavRoutes.FullScreen(route.visualizationId)) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }

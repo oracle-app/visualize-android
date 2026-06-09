@@ -64,6 +64,7 @@ fun FullVisualizationPage(
     modifier: Modifier = Modifier,
     viewModel: FullVisualizationViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
+    onSnipClick: (String?) -> Unit,
     onThreadsClick: (String?) -> Unit = {},
     startInSnippingMode: Boolean = false
 ) {
@@ -115,7 +116,7 @@ fun FullVisualizationPage(
                 val uri = File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
                     file.outputStream().use { result.compress(Bitmap.CompressFormat.PNG, 100, it) }
                 }.toURI().toString()
-                onThreadsClick(uri)
+                onSnipClick(uri)
             },
             onCancel = { snippingBitmap = null }
         )
