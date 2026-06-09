@@ -12,13 +12,13 @@
     <string name="save_changes">Save Changes</string>
 
     // Roles
-    <string name="permission_denied">User does not possess the role to perform this action</string>>
+    <string name="permission_denied">User does not possess the role to perform this action</string>
 
     // Navigation Bar
 
     <string name="nav_create">Create</string>
     <string name="nav_teams">Teams</string>
-    <string name="nav_feed">Feed</string>
+    <string name="nav_feed" translatable="false">Feed</string>
     <string name="nav_notifications">Notifications</string>
     <string name="nav_profile">Profile</string>
 
@@ -43,22 +43,22 @@
     // FeedCard Time Formatting
 
     <string name="time_just_now">just now</string>
-    <string name="time_mins_ago">%d min ago</string>
-    <string name="time_hours_ago">%d h ago</string>
-    <string name="time_days_ago">%d d ago</string>
+    <string name="time_mins_ago" translatable="false">%d min ago</string>
+    <string name="time_hours_ago" translatable="false">%d h ago</string>
+    <string name="time_days_ago" translatable="false">%d d ago</string>
     <plurals name="time_weeks_ago">
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
     <string name="by_author">By %s</string>
     <string name="by_me">By Me</string>
-    <string name="bullet_separator">•</string>
-    <string name="failed_load_chart">Failed to load chart"</string>
-ß
+    <string name="bullet_separator" translatable="false">•</string>
+    <string name="failed_load_chart">Failed to load chart</string>
+
     //Chart Component
-    <string name="invalid_chart">"Invalid chart type was detected"</string>
-    <string name="line_scatter_x_metric">x</string>
-    <string name="line_scatter_y_metric">y</string>
+    <string name="invalid_chart">Invalid chart type was detected</string>
+    <string name="line_scatter_x_metric" translatable="false">x</string>
+    <string name="line_scatter_y_metric" translatable="false">y</string>
     <string name="stacked_bar_series">Series</string>
 
     // Chart legends full screen
@@ -98,7 +98,7 @@
     <string name="chart_selection_share_and_post">Share and post</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
-    <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
+    <string name="chart_selection_prompt">Choose the charts that best represents the insights you want to share.</string>
 
     // Edit Chart Title Dialog
 
@@ -110,6 +110,14 @@
     <string name="dialog_unsaved_title">Unsaved Changes</string>
     <string name="dialog_unsaved_message">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="dialog_leave">Leave</string>
+
+    <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
+    <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="dialog_unsaved_changes_cancel">Cancel</string>
+    <string name="dialog_unsaved_changes_confirm">Leave</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="unsaved_changes_confirmation">You have unsaved changes. Are you sure you want to leave?</string>
+
     // Feed — Delete / Hide dialogs
 
     <string name="feed_delete_title">Delete visualization?</string>
@@ -126,8 +134,6 @@
     // Share and Post
 
     <string name="team_member_count">%d members</string>
-    <string name="unsaved_changes">Unsaved Changes</string>
-    <string name="unsaved_changes_confirmation">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="avatar_description">Avatar of %s</string>
     <string name="my_teams">My Teams</string>
     <string name="empty_team">You haven\'t created any teams yet.</string>
@@ -139,7 +145,7 @@
     // Share With Teammates Screen
 
     <string name="share_with_teammates_title">Share to More Teammates</string>
-    <string name="share_with_teammates_empty">Search for teammates you\´d like to share with.</string>
+    <string name="share_with_teammates_empty">Search for teammates you\'d like to share with.</string>
     <string name="share_no_results">No users found for that email.</string>
     <string name="share_clear_search">Clear search</string>
     <string name="share_send">Send</string>
@@ -179,13 +185,13 @@
     <string name="error_team_saved_failed">Failed to save team</string>
     <string name="error_charts_not_generate">No charts could be generated for this dataset.</string>
     <string name="error_chart_invalid_state">Invalid state</string>
-    <string name="error_charts_not_selected">"No charts selected"</string>
+    <string name="error_charts_not_selected">No charts selected</string>
     <string name="error_chart_page_failed">Failed to fetch page for chart $chartIndex</string>
     <string name="error_chart_unable_load">Unable to Load Charts</string>
     <string name="error_teams_load_failed">Failed to load teams</string>
     <string name="error_team_delete_failed">Failed to delete team</string>
     <string name="error_share_load_failed">Failed to load sharing info. Please try again.</string>
-    <string name="error_share_failed">"Failed to share. Please try again."</string>
+    <string name="error_share_failed">Failed to share. Please try again.</string>
 
 
     //Icon Descriptions
@@ -257,9 +263,7 @@
     //Splash Page
     <string name="visualize">Visualize</string>
     <string name="slogan">Turn data into decisions.</string>
-    <string name="splash_description">Create, choose, and share AI-\n
-                        powered graphs in seconds.\n
-                        Fast, simple, and secure.</string>
+    <string name="splash_description">Create, choose, and share AI-\npowered graphs in seconds.\nFast, simple, and secure.</string>
     <string name="login">Log In</string>
     <string name="signup">Sign Up</string>
     <string name="version">V1.0.0</string>
@@ -314,12 +318,6 @@
     <string name="create_team_save_description">Save team</string>
     <string name="create_team_remove_member_description">Remove member</string>
     <string name="create_team_empty_hint">Search for teammates and add them to the list.</string>
-
-    <!-- Unsaved Changes Dialog (Create/Edit Team) -->
-    <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
-    <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
-    <string name="dialog_unsaved_changes_cancel">Cancel</string>
-    <string name="dialog_unsaved_changes_confirm">Leave</string>
 
     <!-- Delete Team Dialog (Teams Screen) -->
     <string name="dialog_delete_team_title">Delete Team?</string>
