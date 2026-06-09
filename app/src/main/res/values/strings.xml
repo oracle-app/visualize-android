@@ -43,9 +43,9 @@
     // FeedCard Time Formatting
 
     <string name="time_just_now">just now</string>
-    <string name="time_mins_ago" translatable="false">%d min ago</string>
-    <string name="time_hours_ago" translatable="false">%d h ago</string>
-    <string name="time_days_ago" translatable="false">%d d ago</string>
+    <string name="time_mins_ago">%d min ago</string>
+    <string name="time_hours_ago">%d h ago</string>
+    <string name="time_days_ago">%d d ago</string>
     <plurals name="time_weeks_ago">
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>

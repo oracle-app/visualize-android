@@ -35,6 +35,9 @@
 
     <!-- Formato de Tiempo en FeedCard -->
     <string name="time_just_now">ahora mismo</string>
+    <string name="time_mins_ago">hace %d min</string>
+    <string name="time_hours_ago">hace %d h</string>
+    <string name="time_days_ago">hace %d d</string>
     <plurals name="time_weeks_ago">
         <item quantity="one">%d semana atrás</item>
         <item quantity="many">%d semanas atrás</item>
@@ -307,5 +310,4 @@
     <string name="chart_theme_sunset">Atardecer</string>
     <string name="chart_theme_harvest">Cosecha</string>
     <string name="chart_theme_petal">Pétalo</string>
-
 </resources>
