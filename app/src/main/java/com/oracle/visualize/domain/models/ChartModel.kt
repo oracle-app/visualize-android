@@ -65,3 +65,10 @@ class AreaChart(
     metrics: List<String>,
     val stackNames: List<String>
 ) : Chart<Map<Float, List<Float>>>(chartTitle, ChartTypes.AREA, data, metrics, stackNames)
+
+class TileChart(
+    chartTitle: String,
+    data: Map<String, String>, //Every chart is a title, and value pair, but the value can be something more abstract.
+    metrics: List<String>,
+    fieldNames: List<String>
+) : Chart<Map<String, String>>(chartTitle, ChartTypes.TILE, data, metrics, fieldNames)

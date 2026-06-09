@@ -183,6 +183,7 @@ fun FeedCard(
                         Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)).skeletonEffect())
                     } else if (chart != null) {
                         ChartRenderGeneral(
+                            modifier         = Modifier.fillMaxSize(),
                             chart            = chart,
                             showAxisLabels   = false,
                             enableTooltips   = false,
