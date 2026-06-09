@@ -320,6 +320,12 @@
     <string name="create_team_remove_member_description">Remove member</string>
     <string name="create_team_empty_hint">Search for teammates and add them to the list.</string>
 
+    <!-- Diálogo de Cambios Sin Guardar (Crear/Editar Equipo) -->
+    <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
+    <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
+    <string name="dialog_unsaved_changes_cancel">Cancel</string>
+    <string name="dialog_unsaved_changes_confirm">Discard</string>
+
     <!-- Delete Team Dialog (Teams Screen) -->
     <string name="dialog_delete_team_title">Delete Team?</string>
     <string name="dialog_delete_team_message">This team and its members will be removed. This action cannot be undone.</string>
