@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Notification
 import com.oracle.visualize.presentation.components.UserAvatar
-import com.oracle.visualize.util.DateUtils
+import com.oracle.visualize.core.utils.DateUtils
 import androidx.compose.ui.platform.LocalContext
 
 @Composable

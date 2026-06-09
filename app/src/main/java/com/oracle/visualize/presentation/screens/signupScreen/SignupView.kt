@@ -23,8 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AuthTextField
-import com.oracle.visualize.ui.theme.Orange
-import com.oracle.visualize.ui.theme.SloganGray
 
 @Composable
 fun SignUpPage(
@@ -203,7 +201,7 @@ fun SignUpPage(
             Text(
                 text = stringResource(R.string.already_have_account),
                 fontSize = 14.sp,
-                color = SloganGray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             TextButton(
@@ -213,7 +211,7 @@ fun SignUpPage(
                 Text(
                     text = stringResource(R.string.login),
                     fontSize = 14.sp,
-                    color = Orange,
+                    color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
                 )
             }
@@ -223,7 +221,7 @@ fun SignUpPage(
             Text(
                 text = stringResource(R.string.version),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

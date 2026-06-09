@@ -33,8 +33,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.ui.theme.DarkMode_StrongBlue
-import com.oracle.visualize.ui.theme.DarkText
-import com.oracle.visualize.ui.theme.SloganGray
 
 @Composable
 fun SplashPage(
@@ -119,7 +117,7 @@ fun SplashPage(
                     fontWeight = FontWeight.Bold,
                     fontSize = 52.sp,
                     letterSpacing = 0.sp,
-                    color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onPrimaryContainer else DarkText
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -129,7 +127,7 @@ fun SplashPage(
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = (-0.43).sp,
-                    color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onBackground else SloganGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -188,7 +186,7 @@ fun SplashPage(
                 Text(
                     text = stringResource(R.string.version),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

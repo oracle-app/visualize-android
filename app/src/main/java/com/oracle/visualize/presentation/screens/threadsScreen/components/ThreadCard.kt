@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
-import com.oracle.visualize.util.DateUtils
+import com.oracle.visualize.core.utils.DateUtils
 import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -39,7 +39,7 @@ fun ThreadCard(
     onDeleteClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val formattedDate = DateUtils.formatTime(thread.createdAt, context)
+    val formattedDate = DateUtils.formatTime(thread.createdAt, context, isShort = true)
 
     var expanded by remember { mutableStateOf(false) }
 

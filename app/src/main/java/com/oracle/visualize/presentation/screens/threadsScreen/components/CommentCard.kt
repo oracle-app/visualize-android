@@ -25,7 +25,7 @@ import coil3.compose.SubcomposeAsyncImage
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.CommentUiModel
-import com.oracle.visualize.util.DateUtils
+import com.oracle.visualize.core.utils.DateUtils
 import androidx.compose.ui.platform.LocalContext
 
 @Composable

@@ -1,4 +1,4 @@
-package com.oracle.visualize.util
+package com.oracle.visualize.core.utils
 
 import android.content.Context
 import com.oracle.visualize.R
@@ -8,18 +8,33 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object DateUtils {
-    fun formatTime(date: Date, context: Context): String {
+    fun formatTime(date: Date, context: Context, isShort: Boolean = false): String {
         val now   = Date()
         val diff  = now.time - date.time
         val mins  = TimeUnit.MILLISECONDS.toMinutes(diff)
         val hours = TimeUnit.MILLISECONDS.toHours(diff)
         val days  = TimeUnit.MILLISECONDS.toDays(diff)
-        return when {
-            mins  < 1  -> context.getString(R.string.time_just_now)
-            mins  < 60 -> context.getString(R.string.time_mins_ago, mins.toInt())
-            hours < 24 -> context.getString(R.string.time_hours_ago, hours.toInt())
-            days  < 7  -> context.getString(R.string.time_days_ago, days.toInt())
-            else       -> SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(date)
+
+        return if (isShort) {
+            when {
+                mins < 1 -> context.getString(R.string.time_just_now)
+                mins < 60 -> context.getString(R.string.time_short_mins, mins.toInt())
+                hours < 24 -> context.getString(R.string.time_short_hours, hours.toInt())
+                days < 7 -> context.getString(R.string.time_short_days, days.toInt())
+                else -> {
+                    val weeks = (days / 7).toInt()
+                    context.getString(R.string.time_short_weeks, weeks)
+                }
+            }
+        } else {
+            when {
+                mins < 1 -> context.getString(R.string.time_just_now)
+                mins < 60 -> context.getString(R.string.time_mins_ago, mins.toInt())
+                hours < 24 -> context.getString(R.string.time_hours_ago, hours.toInt())
+                days < 7 -> context.getString(R.string.time_days_ago, days.toInt())
+                days < 8 -> context.getString(R.string.time_a_week_ago)
+                else -> SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(date)
+            }
         }
     }
 }

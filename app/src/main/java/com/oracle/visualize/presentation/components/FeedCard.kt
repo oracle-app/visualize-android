@@ -49,7 +49,7 @@ import com.oracle.visualize.presentation.screens.feedScreen.components.FeedCardM
 import com.oracle.visualize.presentation.screens.feedScreen.components.MemberAvatarStackFeed
 import com.oracle.visualize.presentation.screens.feedScreen.components.skeletonEffect
 import com.oracle.visualize.ui.theme.ChartPalette
-import com.oracle.visualize.util.DateUtils
+import com.oracle.visualize.core.utils.DateUtils
 import java.util.Date
 
 @Composable
