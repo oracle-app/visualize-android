@@ -310,5 +310,4 @@
     <string name="chart_theme_sunset">Atardecer</string>
     <string name="chart_theme_harvest">Cosecha</string>
     <string name="chart_theme_petal">Pétalo</string>
-    <string name="time_days_ago">hace %d días</string>
 </resources>
