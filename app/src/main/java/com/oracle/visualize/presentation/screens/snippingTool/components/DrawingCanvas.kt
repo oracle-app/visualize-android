@@ -29,10 +29,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -49,6 +51,8 @@ fun DrawingCanvas(
     selectedShape: ShapeType,
     selectedColor: Color,
     strokeWidth: Float,
+    selectedFontSize: TextUnit,
+    isItalics: Boolean,
     isDrawingMode: Boolean,
     onAddElement: (DrawElement) -> Unit,
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
@@ -186,7 +190,8 @@ fun DrawingCanvas(
                 onValueChange = { textInput = it },
                 textStyle = TextStyle(
                     color = selectedColor,
-                    fontSize = 16.sp
+                    fontSize = selectedFontSize,
+                    fontStyle = if (isItalics) FontStyle.Italic else FontStyle.Normal
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
@@ -200,7 +205,8 @@ fun DrawingCanvas(
                                     text = textInput,
                                     position = position,
                                     color = selectedColor,
-                                    fontSize = 16.sp
+                                    fontSize = selectedFontSize,
+                                    italics = isItalics
                                 )
                             )
                         }
@@ -238,7 +244,8 @@ private fun DrawScope.drawElement(element: DrawElement, textMeasurer: TextMeasur
                 topLeft = element.position,
                 style = TextStyle(
                     color = element.color,
-                    fontSize = element.fontSize
+                    fontSize = element.fontSize,
+                    fontStyle = if (element.italics) FontStyle.Italic else FontStyle.Normal
                 )
             )
         }
@@ -263,12 +270,10 @@ private fun DrawScope.drawShapePreview(
             )
         }
         ShapeType.CIRCLE -> {
-            val center = Offset((start.x + end.x) / 2, (start.y + end.y) / 2)
-            val radius = sqrt((end.x - start.x).pow(2) + (end.y - start.y).pow(2)) / 2
-            drawCircle(
+            drawOval(
                 color = color,
-                center = center,
-                radius = radius,
+                topLeft = Offset(minOf(start.x, end.x), minOf(start.y, end.y)),
+                size = Size(abs(end.x - start.x), abs(end.y - start.y)),
                 style = stroke
             )
         }

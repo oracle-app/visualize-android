@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.notificationScreen.components
 
 
 import android.content.Context
-import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -27,24 +26,17 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Notification
 import com.oracle.visualize.presentation.components.UserAvatar
-import java.util.Date
-import java.util.concurrent.TimeUnit
-
-fun formatTime(date: Date): String {
-    return DateUtils.getRelativeTimeSpanString(
-        date.time,
-        System.currentTimeMillis(),
-        DateUtils.MINUTE_IN_MILLIS
-    ).toString()
-}
+import com.oracle.visualize.core.utils.DateUtils
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun NotificationCard(
     notification: Notification,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val shape = RoundedCornerShape(5.dp)
-    val formattedDate = formatTime(notification.createdAt)
+    val formattedDate = DateUtils.formatTime(notification.createdAt, context)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
