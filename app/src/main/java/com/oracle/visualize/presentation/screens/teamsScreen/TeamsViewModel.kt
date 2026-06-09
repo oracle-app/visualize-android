@@ -66,7 +66,7 @@ class TeamsViewModel @Inject constructor(
 
                     val errorId = when (error) {
                         is AppError.NetworkError -> R.string.error_network
-                        else -> R.string.error_teams_load_failed
+                        else                     -> R.string.error_teams_load_failed
                     }
                     _uiState.value = TeamsUiState.Error(errorId)
                 }
@@ -79,6 +79,7 @@ class TeamsViewModel @Inject constructor(
     fun onEvent(event: TeamsUiEvent) {
         val current = _uiState.value as? TeamsUiState.Content ?: return
         when (event) {
+
             is TeamsUiEvent.ToggleExpand -> {
                 val updated = if (event.teamId in current.expandedTeamIds)
                     current.expandedTeamIds - event.teamId
@@ -100,17 +101,13 @@ class TeamsViewModel @Inject constructor(
                 _uiState.value = current.copy(teamPendingDeleteId = null)
                 viewModelScope.launch {
                     when (val result = deleteTeamUseCase(event.teamId)) {
-                        is AppResult.Success -> {
-                            loadTeams()
-                        }
-                        is AppResult.Error -> {
+                        is AppResult.Success -> loadTeams()
+                        is AppResult.Error   -> {
                             val errorId = when (result.error) {
                                 is AppError.NetworkError -> R.string.error_network
-                                else -> R.string.error_team_delete_failed
+                                else                     -> R.string.error_team_delete_failed
                             }
-                            _uiState.value = TeamsUiState.Error(
-                                errorId
-                            )
+                            _uiState.value = TeamsUiState.Error(errorId)
                         }
                     }
                 }
