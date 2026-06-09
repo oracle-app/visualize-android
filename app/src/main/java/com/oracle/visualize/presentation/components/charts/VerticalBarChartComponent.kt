@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -63,17 +64,24 @@ fun RenderVerticalBarChart(
     val coroutineScope = rememberCoroutineScope()
     val data = chart.data
 
-    val categories = remember(data) { data.keys.toList() }
-    val values = remember(data) { data.values.toList() }
+    // Add an artificial "left space" so the first bar is completely visible.
+    val categories = remember(data) { listOf("") + data.keys.toList() }
+    val values = remember(data) { listOf(0f) + data.values.toList() }
+
     val maxValue = remember(values) { values.maxOrNull() ?: 0f }
     val barColors = remember(categories) {
-        generateChartColors(categories.size, chartColorTheme)
+        generateChartColors(categories.size, chartColorTheme, isBarChart = true)
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 30.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
-                xAxisModel = remember { CategoryAxisModel(categories) },
+                xAxisModel = rememberFloatLinearAxisModel(
+                    range = 0f..categories.size.toFloat(),
+                    minViewExtent = 1f,
+                    minimumMajorTickIncrement = 1f,
+                    minimumMajorTickSpacing = 10.dp
+                ),
                 yAxisModel = rememberFloatLinearAxisModel(
                     range = 0f..maxValue,
                     minViewExtent = 0.01f,
@@ -83,15 +91,17 @@ fun RenderVerticalBarChart(
                 xAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = {
-                        Text(
-                            text = it,
-                            modifier = Modifier.rotate(45f).padding(top = 8.dp),
-                            fontSize = if (feedCardLabels) 8.sp else 10.sp,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.DarkGray,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        if (it.toInt() in categories.indices) {
+                            Text(
+                                text = categories[it.toInt()],
+                                modifier = Modifier.rotate(45f).padding(top = 8.dp),
+                                fontSize = if (feedCardLabels) 8.sp else 10.sp,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.DarkGray,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                      },
                     title = {
                         if (showAxisLabels && !chart.metrics.isEmpty()) {
@@ -124,7 +134,7 @@ fun RenderVerticalBarChart(
                 )
             ) {
                 VerticalBarPlot(
-                    xData = categories,
+                    xData = List(categories.size) { it.toFloat() },
                     yData = values,
                     bar = { index, _, _ ->
                         if (!enableTooltips) {

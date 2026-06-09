@@ -6,6 +6,7 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationCard
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,10 +25,12 @@ class ParseSingleChartUseCase @Inject constructor(
                     chartCacheManager.saveChart(card.id, parsed)
                     AppResult.Success(parsed)
                 } else {
-                    AppResult.Error(AppError.ParsingError("Parsed chart is null"))
+                    Log.e("ParseSingleChartUseCase", "Failed to parse chart for card ID: ${card.id}")
+                    AppResult.Error(AppError.ParsingError("Parsed chart is null for card ${card.id}"))
                 }
             } catch (e: Exception) {
-                AppResult.Error(AppError.ParsingError(e.message ?: "JSON parsing failed"))
+                Log.e("ParseSingleChartUseCase", "Exception parsing chart for card ID: ${card.id}", e)
+                AppResult.Error(AppError.ParsingError(e.message ?: "JSON parsing failed for card ${card.id}"))
             }
         }
 }

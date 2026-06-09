@@ -12,7 +12,9 @@ enum class ChartTypes(val typeName: String) {
     PIE("Pie"),
     DONUT("Donut"),
     SCATTER("Scatter"),
-    AREA("Area");
+    AREA("Area"),
+
+    TILE("Tile");
 
     companion object {
         fun fromTypeName(typeName: String): ChartTypes =

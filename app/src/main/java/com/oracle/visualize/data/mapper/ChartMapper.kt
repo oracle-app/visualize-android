@@ -1,10 +1,10 @@
 package com.oracle.visualize.data.mapper
 
-import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.*
 import com.oracle.visualize.data.datasources.dtos.ChartResponseDTO
 import com.google.gson.JsonObject
 import com.google.gson.JsonArray
+import android.util.Log
 import org.json.JSONException
 
 /**
@@ -21,9 +21,9 @@ object ChartMapper {
      *
      * @param previewJson The JSON code to process.
      * @return a Chart object, depending on the type of chart.
-    **/
+     **/
     fun fromPreviewJson(previewJson: String): Chart<*>? {
-        if (previewJson?.isBlank() == true || previewJson == "{}") return null
+        if (previewJson.isBlank() || previewJson == "{}") return null
 
         return try {
             val jsonObject = JSONObject(previewJson)
@@ -74,15 +74,18 @@ object ChartMapper {
                 "Area Chart", "Area" -> {
                     AreaChart(chartName, parseToMapFloatListFloat(dataObj), metricsNames, field1FieldNames)
                 }
+                "Tile", "Tile Chart" -> {
+                    TileChart(chartName, parseToMapStringString(dataObj), metricsNames, field1FieldNames)
+                }
                 else -> {
-                    throw AppError.ParsingError("Unsupported chart type: $chartTypeStr")
+                    Log.e("ChartMapper", "Unsupported chart type: $chartTypeStr for chart: $chartName")
+                    null
                 }
             }
-        }catch (e: JSONException) {
-            throw AppError.ParsingError("JSON parsing error: ${e.message}")
         } catch (e: Exception) {
-            if (e is AppError) throw e
-            throw AppError.ParsingError("Error parsing chart: ${e.message}")
+            val chartName = try { JSONObject(previewJson).optString("chartName", "Unknown") } catch(_: Exception) { "Unknown" }
+            Log.e("ChartMapper", "Error parsing chart '$chartName': ${e.message}", e)
+            null
         }
     }
 
@@ -164,6 +167,30 @@ object ChartMapper {
             for (i in 0 until keysArray.length()) {
                 val key = keysArray.optString(i)
                 val value = valuesArray.optString(i).toFloatOrNull() ?: 0f
+                map[key] = value
+            }
+        }
+        return map
+    }
+
+    /**
+     * Function to map a JSON object into the specific data format Map<String, String>
+     * for Tile charts.
+     *
+     * @param dataObj The JSON data object to process.
+     * @return map with String keys and String values.
+     **/
+    private fun parseToMapStringString(dataObj: JSONObject?): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+        if (dataObj == null) return map
+
+        val keysArray = dataObj.optJSONArray("field1")
+        val valuesArray = dataObj.optJSONArray("field2")
+
+        if (keysArray != null && valuesArray != null) {
+            for (i in 0 until keysArray.length()) {
+                val key = keysArray.optString(i)
+                val value = valuesArray.optString(i)
                 map[key] = value
             }
         }
@@ -380,6 +407,27 @@ object ChartMapper {
                 }
                 mergedData.add("field2", field2Obj)
             }
+            "Tile", "Tile Chart" -> {
+                val field1Array = JsonArray()
+                val field2Array = JsonArray()
+                for (page in pages) {
+                    val dataObj = page.data ?: continue
+                    val f1 = dataObj.getAsJsonArray("field1")
+                    if (f1 != null) {
+                        for (element in f1) {
+                            field1Array.add(element)
+                        }
+                    }
+                    val f2 = dataObj.getAsJsonArray("field2")
+                    if (f2 != null) {
+                        for (element in f2) {
+                            field2Array.add(element)
+                        }
+                    }
+                }
+                mergedData.add("field1", field1Array)
+                mergedData.add("field2", field2Array)
+            }
             else -> {
                 pages.firstOrNull()?.data?.let {
                     return it.deepCopy()
@@ -391,4 +439,3 @@ object ChartMapper {
 
 
 }
-

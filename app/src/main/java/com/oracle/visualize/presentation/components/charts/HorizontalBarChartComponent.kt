@@ -63,14 +63,16 @@ fun RenderHorizontalBarChart(
     val coroutineScope = rememberCoroutineScope()
     val data = chart.data
 
-    val categories = remember(data) { data.keys.toList() }
-    val values = remember(data) { data.values.toList() }
+    // Add an artificial "bottom space" so the first bar is completely visible.
+    val categories = remember(data) { listOf("") + data.keys.toList() }
+    val values = remember(data) { listOf(0f) + data.values.toList() }
+
     val maxValue = remember(values) { values.maxOrNull() ?: 0f }
     val barColors = remember(categories) {
-        generateChartColors(categories.size, chartColorTheme)
+        generateChartColors(categories.size, chartColorTheme, isBarChart = true)
     }
 
-    Box(modifier = Modifier) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 30.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(
@@ -79,7 +81,12 @@ fun RenderHorizontalBarChart(
                     minimumMajorTickIncrement = 0.01f,
                     minimumMajorTickSpacing = 60.dp
                 ),
-                yAxisModel = remember { CategoryAxisModel(categories) },
+                yAxisModel = rememberFloatLinearAxisModel(
+                    range = 0f..categories.size.toFloat(),
+                    minViewExtent = 1f,
+                    minimumMajorTickIncrement = 1f,
+                    minimumMajorTickSpacing = 10.dp
+                ),
                 xAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = Color.DarkGray) },
@@ -92,19 +99,19 @@ fun RenderHorizontalBarChart(
                 yAxisContent = AxisContent(
                     style = rememberAxisStyle(),
                     labels = {
-                        Text(
-                            text = it,
-                            modifier = Modifier.rotate(-45f).padding(top = 8.dp),
-                            fontSize = if (feedCardLabels) 8.sp else 10.sp,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.DarkGray,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        if (it.toInt() in categories.indices) {
+                            Text(
+                                text = categories[it.toInt()],
+                                fontSize = if (feedCardLabels) 8.sp else 10.sp,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.DarkGray,
+                                maxLines = 1
+                            )
+                        }
                     },
                     title = {
                         if (showAxisLabels && !chart.metrics.isEmpty()) {
-                            Box(modifier = modifier.width(25.dp).height(1.dp).rotate(90f)) {
+                            Box(modifier = Modifier.width(25.dp).height(1.dp).rotate(90f)) {
                                 Text(
                                     text = chart.metrics[1],
                                     overflow = TextOverflow.Visible,
@@ -125,12 +132,12 @@ fun RenderHorizontalBarChart(
             ) {
                 HorizontalBarPlot(
                     xData = values,
-                    yData = categories,
+                    yData = List(categories.size) { it.toFloat() },
                     bar = { index, _, _ ->
                         if (!enableTooltips) {
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
-                                modifier = modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         } else {
                             val tooltipDisplayState = rememberTooltipState(
@@ -146,7 +153,7 @@ fun RenderHorizontalBarChart(
                             ) {
                                 DefaultBar(
                                     brush = SolidColor(barColors[index]),
-                                    modifier = modifier.fillMaxWidth().pointerInput(Unit) {
+                                    modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
                                         awaitPointerEventScope {
                                             while (true) {
                                                 val fingerEvent = awaitPointerEvent()
