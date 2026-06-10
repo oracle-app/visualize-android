@@ -172,7 +172,7 @@ private fun ShareWithTeammatesContent(
                     ) {
                         Text(
                             text  = stringResource(R.string.share_no_results),
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -195,7 +195,7 @@ private fun ShareWithTeammatesContent(
                     ) {
                         Text(
                             text  = stringResource(R.string.share_with_teammates_empty),
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -205,7 +205,7 @@ private fun ShareWithTeammatesContent(
                 if (state.myTeams.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(24.dp))
                     HorizontalDivider(
-                        color     = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f),
+                        color     = MaterialTheme.colorScheme.outlineVariant,
                         thickness = 1.dp
                     )
                     Spacer(modifier = Modifier.height(16.dp))

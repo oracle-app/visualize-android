@@ -49,14 +49,14 @@ fun TeammateSearchBar(
                 Icon(
                     imageVector        = Icons.Default.Search,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.primary,
+                    tint               = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier           = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
                     imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.primary,
+                    tint               = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier           = Modifier.size(24.dp)
                 )
             }
@@ -68,7 +68,7 @@ fun TeammateSearchBar(
             placeholder   = {
                 Text(
                     text     = stringResource(R.string.input_email),
-                    color    = Color.Red,
+                    color    = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontSize = 16.sp
                 )
             },
