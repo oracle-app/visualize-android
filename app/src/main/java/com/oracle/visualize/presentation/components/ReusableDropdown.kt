@@ -62,8 +62,7 @@ fun AppDropdownMenu(
                     onDismiss()
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background),
+                    .fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
             )
         }

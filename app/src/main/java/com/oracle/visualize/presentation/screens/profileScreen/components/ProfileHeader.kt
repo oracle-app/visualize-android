@@ -33,7 +33,7 @@ fun ProfileHeader(
     profileImageUrl: String,
     onEditClick: () -> Unit
 ) {
-    val emailTextColor = MaterialTheme.colorScheme.tertiary
+    val emailTextColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     Column(
         modifier = modifier.fillMaxWidth(),

@@ -19,8 +19,8 @@ val onSecondaryContainer = Color(0xFF597271)
 val tertiaryContainer = Color(0xFFEDAE62)
 val onTertiaryContainer = Color(0xFFF0C592)
 
-val tertiary = Color(0xFF728382)
-val onTertiary = Color(0xFFC5D5D4)
+val tertiary = Color(0xFF86a5af)
+val onTertiary = Color(0xFFbbd6df)
 
 val tertiaryFixed = Color(0xFFFDF2E5)
 
@@ -38,19 +38,21 @@ val error = Color(0xFFEC4848)
 val onError = Color(0xFFFFFFFF)
 val scrim = Color(0xFF1A2F3F)
 
+val surfaceFixed = Color(0xFFFFFFFF)
+
 // And below are the colors of the Visualize Brand Identity (Dark Mode)
 
 val DARKprimary = Color(0xFF3C8B8E)
 val DARKonPrimary = Color(0xFFFFFFFF)
 
-val DARKprimaryContainer = Color(0xFF283434)
+val DARKprimaryContainer = Color(0xFF203636)
 val DARKonPrimaryContainer = Color(0xFFFFFFFF)
 
 val DARKsecondary = Color(0xFFEB9632)
 val DARKonSecondary = Color(0xFFFFFFFF)
 
 val DARKsecondaryContainer = Color(0xFF000000)
-val DARKonSecondaryContainer = Color(0xFF293838)
+val DARKonSecondaryContainer = Color(0xFF85A9A8)
 
 val DARKtertiaryContainer = Color(0xFFc08645)
 val DARKonTertiaryContainer = Color(0xFF926c40)
@@ -74,6 +76,18 @@ val DARKerror = Color(0xFFEC4848)
 val DARKonError = Color(0xFFFFFFFF)
 val DARKscrim = Color(0xFF1A2F3F)
 
+val DARKsurfaceFixed = Color(0xFF203636)
+
+// Brand Palette Colors
+val DarkText = Color(0xFF13212C)
+val SloganGray = Color(0xFF597271)
+val OffWhite = Color(0xFFFBF9F3)
+val Teal = Color(0xFF34797C)
+val Orange = Color(0xFFE18212)
+
+// Fixed black color for charts
+
+val chartText = Color(0xFF000000)
 
 // This is where the Chart Theme colors are defined.
 

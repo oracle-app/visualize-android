@@ -104,10 +104,11 @@ private fun TeamsContent(
             TeamsTopBar()
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                modifier       = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
 
+                // "My Teams" section — only visible for non-CONSUMER users
                 if (!isConsumer) {
                     item {
                         Spacer(modifier = Modifier.height(24.dp))
@@ -135,7 +136,7 @@ private fun TeamsContent(
                             onEdit         = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
                             onDelete       = { onEvent(TeamsUiEvent.RequestDeleteTeam(team.id)) }
                         )
-                        if (index < state.myTeams.size - 1) Spacer(modifier = Modifier.height(3.dp))
+                        if (index < state.myTeams.size - 1) Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
@@ -158,6 +159,7 @@ private fun TeamsContent(
                         else                              -> TeamPosition.MIDDLE
                     }
 
+                    // ADMIN sees edit/delete actions on Teams I'm In rows too
                     if (isAdmin) {
                         MyTeamRow(
                             team           = team,
@@ -177,11 +179,12 @@ private fun TeamsContent(
                         )
                     }
 
-                    if (index < state.teamsImIn.size - 1) Spacer(modifier = Modifier.height(3.dp))
+                    if (index < state.teamsImIn.size - 1) Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
 
+        // FAB only visible for non-CONSUMER users
         if (!isConsumer) {
             FloatingActionButton(
                 onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
@@ -191,9 +194,13 @@ private fun TeamsContent(
                     .size(80.dp),
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor   = MaterialTheme.colorScheme.onSecondary,
-                shape          = RoundedCornerShape(24.dp)
+                shape          = RoundedCornerShape(20.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.teams_create_fab_description), modifier = Modifier.size(40.dp))
+                Icon(
+                    imageVector        = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.teams_create_fab_description),
+                    modifier           = Modifier.size(40.dp)
+                )
             }
         }
 

@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.screens.splashScreen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -38,15 +41,7 @@ fun SplashPage(
     onSignUpClick: () -> Unit
 ) {
     BackHandler(enabled = true) {}
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val unknown = stringResource(R.string.error_unknown)
-    val appVersion = remember {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0)
-            .versionName ?: unknown
-    }
 
     LaunchedEffect(Unit) {
         viewModel.checkSession()
@@ -119,7 +114,7 @@ fun SplashPage(
                     text = stringResource(R.string.visualize),
                     fontWeight = FontWeight.Bold,
                     fontSize = 52.sp,
-                    letterSpacing = 3.sp,
+                    letterSpacing = 0.sp,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
@@ -127,17 +122,18 @@ fun SplashPage(
 
                 Text(
                     text = stringResource(R.string.slogan),
-                    fontSize = 13.sp,
-                    letterSpacing = 0.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = (-0.43).sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
 
                 Text(
                     text = stringResource(R.string.splash_description),
-                    fontSize = 18.sp,
-                    lineHeight = 28.sp,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -151,43 +147,44 @@ fun SplashPage(
                         .height(50.dp),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text(
                         text = stringResource(R.string.login),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
+                        fontSize = 16.sp
                     )
                 }
 
                 Spacer(modifier = Modifier.height(26.dp))
 
-                Button(
+                OutlinedButton(
                     onClick = onSignUpClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(50),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(1f),
+                        containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.primary
                     ),
-
                 ) {
                     Text(
                         text = stringResource(R.string.signup),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
+                        fontSize = 16.sp
                     )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = "V${appVersion}",
+                    text = stringResource(R.string.version),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
         }

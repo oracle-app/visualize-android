@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.navigation
 
+import com.oracle.visualize.domain.models.Chart
 import kotlinx.serialization.Serializable
 
 /**
@@ -47,4 +48,8 @@ sealed interface NavRoutes {
     data class CreateEditTeam(val teamId: String? = null) : NavRoutes
     @Serializable
     object ResetPassword : NavRoutes
+
+    @Serializable
+    data class SnippingTool(val visualizationId: String) : NavRoutes
+
 }

@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.components.UserAvatar
+import com.oracle.visualize.ui.theme.primary
 
 
 @Composable
@@ -291,7 +292,7 @@ private fun CreateEditTeamContent(
                     item {
                         Text(
                             text = stringResource(R.string.create_team_empty_hint), fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.tertiary, textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer, textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
                         )
                     }
@@ -313,7 +314,7 @@ private fun CreateEditTeamContent(
 
 @Composable
 private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
-    val usernameColor = MaterialTheme.colorScheme.primary
+    val usernameColor = MaterialTheme.colorScheme.onBackground
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onClick() }) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 64)
@@ -345,7 +346,7 @@ private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
 private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
     val nameTextColor = MaterialTheme.colorScheme.onSurface
 
-    val ownerEmailColor = MaterialTheme.colorScheme.primary
+    val ownerEmailColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -359,7 +360,7 @@ private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
         }
         if (isOwner) {
             Text(
-                text = stringResource(R.string.teams_owner_label), color = ownerEmailColor, fontSize = 12.sp,
+                text = stringResource(R.string.teams_owner_label), color = primary, fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(end = 8.dp)
             )
         } else {

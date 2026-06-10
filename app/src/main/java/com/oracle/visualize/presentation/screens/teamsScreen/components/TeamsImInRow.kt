@@ -46,7 +46,7 @@ fun TeamsImInRow(
 
     val arrowTint = MaterialTheme.colorScheme.onSurface
 
-    val amountOfMembersTextColor = MaterialTheme.colorScheme.primary
+    val amountOfMembersTextColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     Column(
         modifier = Modifier.fillMaxWidth().clip(teamShape(position))

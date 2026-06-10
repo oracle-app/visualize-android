@@ -6,6 +6,7 @@ import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.VisualizationFullScreen
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,10 +25,12 @@ class ParseFullScreenChartUseCase @Inject constructor(
                     chartCacheManager.saveChart(visualization.id, parsed)
                     AppResult.Success(parsed)
                 } else {
-                    AppResult.Error(AppError.ParsingError("Parsed chart is null"))
+                    Log.e("ParseFullScreenChartUseCase", "Failed to parse chart for visualization ID: ${visualization.id}")
+                    AppResult.Error(AppError.ParsingError("Parsed chart is null for visualization ${visualization.id}"))
                 }
             } catch (e: Exception) {
-                AppResult.Error(AppError.ParsingError(e.message ?: "JSON parsing failed"))
+                Log.e("ParseFullScreenChartUseCase", "Exception parsing chart for visualization ID: ${visualization.id}", e)
+                AppResult.Error(AppError.ParsingError(e.message ?: "JSON parsing failed for visualization ${visualization.id}"))
             }
         }
 }

@@ -103,7 +103,7 @@ fun NotificationPage(modifier: Modifier = Modifier,
                             Text(
                                 text = stringResource(subtitle),
                                 style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }

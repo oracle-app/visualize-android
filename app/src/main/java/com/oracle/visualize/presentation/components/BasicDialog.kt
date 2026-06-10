@@ -18,11 +18,11 @@ fun BasicDialog(
     onDismiss: () -> Unit
 ) {
     val titleTextColor = MaterialTheme.colorScheme.onSurface
-
-    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         title = { Text(text = title, color = titleTextColor) },
         text = { Text(text = message, color = dialogDescriptionTextColor) },
         confirmButton = {

@@ -33,6 +33,7 @@ import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.domain.models.HorizontalBarChart
 import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.ScatterChart
+import com.oracle.visualize.domain.models.TileChart
 import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.ChartLayout
@@ -79,7 +80,7 @@ fun ChartRenderFullScreen(
     }
 
     when (chart) {
-        is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart -> {
+        is VerticalBarChart, is HorizontalBarChart, is LineChart, is ScatterChart, is TileChart -> {
             Column(modifier = modifier.fillMaxSize()) {
                 Column(
                     modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)

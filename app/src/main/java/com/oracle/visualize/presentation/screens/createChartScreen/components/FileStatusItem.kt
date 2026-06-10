@@ -64,7 +64,7 @@ fun FileStatusItem(
                 Text(
                     text = fileSize,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
             }
             if (isSuccess) {
