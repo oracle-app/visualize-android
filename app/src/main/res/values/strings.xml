@@ -58,15 +58,9 @@
         <item quantity="other">%d weeks ago</item>
     </plurals>
     <string name="time_short_mins">%dm</string>
-    <plurals name="time_short_hours">
-        <item quantity="one">%d hour ago</item>
-        <item quantity="other">%d hours ago</item>
-    </plurals>
-    <plurals name="time_short_days">
-        <item quantity="one">%d day ago</item>
-        <item quantity="other">%d days ago</item>
-    </plurals>
-    <string name="time_short_weeks" translatable="false">%dw</string>
+    <string name="time_short_hours">%dh</string>
+    <string name="time_short_days">%dd</string>
+    <string name="time_short_weeks">%dw</string>
     <string name="by_author">by %s</string>
     <string name="by_me">by me</string>
     <string name="bullet_separator" translatable="false">•</string>
@@ -215,7 +209,7 @@
     <string name="version_declaration">Version</string>
     <string name="chart_theme_title">Chart theme</string>
     <string name="about_title">About</string>
-    <string name="developer">Developed by ----</string>
+    <string name="developer">Developed by ITC-6to</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="licenses">Licenses and open source libraries</string>
     <string name="preview">Preview</string>
@@ -223,7 +217,8 @@
     <string name="choose_photo">Choose photo</string>
     <string name="delete_photo">Delete photo</string>
     <string name="delete_photo_message">Delete profile picture?</string>
-    <string name="log_out_title">Log Out?</string>
+    <string name="log_out_title">Log Out</string>
+    <string name="log_out_message">Are you sure you want to log out?</string>
     <string name="updating_pfp">Updating profile picture…</string>
 
     // Descriptions

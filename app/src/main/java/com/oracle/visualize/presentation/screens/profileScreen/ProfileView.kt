@@ -125,7 +125,7 @@ fun ProfilePage(
     if (showLogoutDialog) {
         BasicDialog(
             title = stringResource(R.string.log_out_title),
-            message = "",
+            message = stringResource(R.string.log_out_message),
             confirm = stringResource(R.string.log_out),
             cancel = stringResource(R.string.cancel),
             onConfirm = {

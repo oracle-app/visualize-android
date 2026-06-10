@@ -36,15 +36,23 @@
     <!-- Formato de Tiempo en FeedCard -->
     <string name="time_just_now">ahora mismo</string>
     <string name="time_mins_ago">hace %d min</string>
-    <string name="time_hours_ago">hace %d h</string>
-    <string name="time_days_ago">hace %d d</string>
-    <plurals name="time_weeks_ago">
-        <item quantity="one">%d semana atrás</item>
-        <item quantity="many">%d semanas atrás</item>
-        <item quantity="other">%d semanas atrás</item>
+    <plurals name="time_hours_ago">
+        <item quantity="one">hace %d hora</item>
+        <item quantity="many">hace %d horas</item>
+        <item quantity="other">hace %d horas</item>
     </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">hace %d día</item>
+        <item quantity="many">hace %d días</item>
+        <item quantity="other">hace %d días</item>
+    </plurals>
+    <string name="time_a_week_ago">hace una semana</string>
     <string name="by_author">Por %s</string>
     <string name="by_me">Por mí</string>
+    <string name="time_short_mins">%dm</string>
+    <string name="time_short_hours">%dh</string>
+    <string name="time_short_days">%dd</string>
+    <string name="time_short_weeks">%dw</string>
     <string name="failed_load_chart">Error al cargar la gráfica</string>
 
     <!-- Componente de Gráfica -->
@@ -174,7 +182,7 @@
     <string name="version_declaration">Versión</string>
     <string name="chart_theme_title">Temas de colores</string>
     <string name="about_title">Acerca de</string>
-    <string name="developer">Desarrollado por ----</string>
+    <string name="developer">Desarrollado por ITC-6to</string>
     <string name="terms_of_service">Términos de servicio</string>
     <string name="licenses">Licencias y bibliotecas de código abierto</string>
     <string name="preview">Vista previa</string>
@@ -182,7 +190,8 @@
     <string name="choose_photo">Elegir foto</string>
     <string name="delete_photo">Eliminar foto</string>
     <string name="delete_photo_message">¿Eliminar foto de perfil?</string>
-    <string name="log_out_title">¿Cerrar sesión?</string>
+    <string name="log_out_title">Cerrar sesión</string>
+    <string name="log_out_message">¿Estás seguro de que quieres cerrar sesión?</string>
     <string name="updating_pfp">Actualizando foto de perfil…</string>
 
     <!-- Descripciones -->
