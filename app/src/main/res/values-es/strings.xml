@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Acciones -->
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="share">Compartir</string>
+    <string name="back">Atrás</string>
+    <string name="log_out">Cerrar sesión</string>
+    <string name="edit">Editar</string>
+    <string name="save_changes">Guardar cambios</string>
+
+    <!-- Roles -->
+    <string name="permission_denied">El usuario no posee el rol para realizar esta acción</string>
+
+    <!-- Barra de Navegación -->
+    <string name="nav_create">Crear</string>
+    <string name="nav_teams">Equipos</string>
+    <string name="nav_notifications">Notificaciones</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Nombre de la App -->
+    <string name="app_name">Visualize</string>
+
+    <!-- Barra Superior de Feed -->
+    <string name="feed_filter_all">Feed</string>
+    <string name="feed_filter_personal">Feed personal</string>
+    <string name="feed_filter_shared">Feed compartido</string>
+    <string name="feed_top_bar_options_description">Opciones</string>
+
+    <!-- Sección de Búsqueda -->
+    <string name="search_placeholder">Buscar por título</string>
+    <string name="search_icon_description">Buscar</string>
+
+    <!-- Formato de Tiempo en FeedCard -->
+    <string name="time_just_now">ahora mismo</string>
+    <string name="time_mins_ago">hace %d min</string>
+    <string name="time_hours_ago">hace %d h</string>
+    <string name="time_days_ago">hace %d d</string>
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%d semana atrás</item>
+        <item quantity="many">%d semanas atrás</item>
+        <item quantity="other">%d semanas atrás</item>
+    </plurals>
+    <string name="by_author">Por %s</string>
+    <string name="by_me">Por mí</string>
+    <string name="failed_load_chart">Error al cargar la gráfica</string>
+
+    <!-- Componente de Gráfica -->
+    <string name="invalid_chart">Se detectó un tipo de gráfica inválido</string>
+    <string name="stacked_bar_series">Series</string>
+
+    <!-- Leyendas de Gráfica en Pantalla Completa -->
+    <string name="chart_legend_cat_label">Categoría</string>
+    <string name="fullscreen_sharing_label_1">Compartiendo con</string>
+    <string name="fullscreen_sharing_label_2">miembros</string>
+
+    <!-- Vista de Creación -->
+    <string name="create_top_bar_title">Crear visualizaciones de datos</string>
+    <string name="create_description_success">¡Tu conjunto de datos está listo! Genera visualizaciones para explorar tus datos.</string>
+    <string name="create_description_uploading">Subiendo tu conjunto de datos…</string>
+    <string name="create_description_idle">Sube un conjunto de datos y generaremos las mejores visualizaciones para ayudarte a entender tus datos.</string>
+    <string name="create_generate_button">Generar visualizaciones</string>
+
+    <string name="dashed_selector_choose_file">Elige un archivo .xlsx o .csv.</string>
+    <string name="dashed_selector_min_size">Tamaño máximo de archivo: 100 MB</string>
+    <string name="dashed_selector_one_dataset">Solo se puede subir un conjunto de datos.</string>
+
+    <string name="dataset_requirements_title">Requisitos de formato del conjunto de datos</string>
+    <string name="dataset_requirements_body">Sube un conjunto de datos en formato de tabla con encabezados de columna en la primera fila.</string>
+    <string name="dataset_requirements_example_label">Ejemplo</string>
+    <string name="dataset_requirements_footer">Cada fila debe representar una sola entrada de datos. Evita filas vacías o celdas combinadas.</string>
+
+    <string name="unknown_file">archivo_desconocido</string>
+
+    <!-- Tabla de Ejemplo -->
+    <string name="table_header_date">Fecha</string>
+    <string name="table_header_product">Producto</string>
+    <string name="table_header_sales">Ventas</string>
+    <string name="table_header_region">Región</string>
+
+    <!-- Pantalla de Selección de Gráfica -->
+    <string name="chart_selection_title">Elige una visualización</string>
+    <string name="chart_selection_post_personal">Publicar en feed personal</string>
+    <string name="chart_selection_share_and_post">Compartir y publicar</string>
+    <string name="chart_selection_ready_title">¡Tus visualizaciones están listas!</string>
+    <string name="chart_selection_ready_subtitle">Hemos generado varias gráficas basadas en tu conjunto de datos.</string>
+    <string name="chart_selection_prompt">Elige las gráficas que mejor representen los conocimientos que deseas compartir.</string>
+
+    <!-- Diálogo de Editar Título de Gráfica -->
+    <string name="dialog_edit_title">Editar título de la gráfica</string>
+    <string name="dialog_edit_title_label">Nuevo título</string>
+
+    <!-- Diálogo de Cambios Sin Guardar -->
+    <string name="dialog_unsaved_title">Cambios sin guardar</string>
+    <string name="dialog_unsaved_message">Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?</string>
+    <string name="dialog_leave">Salir</string>
+
+    <!-- Feed — Diálogos de Eliminar / Ocultar -->
+    <string name="feed_delete_title">¿Eliminar visualización?</string>
+    <string name="feed_delete_for_everyone_message">Esta visualización se eliminará permanentemente para ti y para todos con quienes se compartió.</string>
+    <string name="feed_hide_title">¿Ocultar visualización?</string>
+    <string name="feed_delete_for_me_message">Esta visualización se ocultará de tu feed. Otros usuarios con acceso aún podrán verla.</string>
+
+    <!-- Feed — Menú de tres puntos de la tarjeta -->
+    <string name="feed_menu_share">Compartir</string>
+    <string name="feed_menu_delete_for_everyone">Eliminar para todos</string>
+    <string name="feed_menu_hide_for_me">Ocultar para mí</string>
+
+    <!-- Compartir y Publicar -->
+    <string name="team_member_count">%d miembros</string>
+    <string name="avatar_description">Avatar de %s</string>
+    <string name="my_teams">Mis equipos</string>
+    <string name="empty_team">Aún no has creado ningún equipo.</string>
+    <string name="share_my_teams">Equipos en los que estoy</string>
+    <string name="share_empty_teams">Aún no formas parte de ningún equipo.</string>
+    <string name="share_and_post">Compartir y publicar</string>
+    <string name="input_email">Ingresa el correo electrónico</string>
+
+    <!-- Pantalla de Compartir con Compañeros -->
+    <string name="share_with_teammates_title">Compartir con más compañeros</string>
+    <string name="share_with_teammates_empty">Busca compañeros con los que te gustaría compartir.</string>
+    <string name="share_no_results">No se encontraron usuarios para ese correo electrónico.</string>
+    <string name="share_clear_search">Limpiar búsqueda</string>
+    <string name="share_send">Enviar</string>
+    <string name="share_remove_title">¿Eliminar a %s?</string>
+    <string name="share_remove_confirm">Eliminar</string>
+    <string name="share_section_my_teams">Mis equipos</string>
+    <string name="share_section_teams_im_in">Equipos en los que estoy</string>
+
+    <!-- Errores -->
+    <string name="error_generic">Error</string>
+    <string name="error_unknown">Desconocido</string>
+    <string name="error_invalid_format">Por favor, sube un archivo .xlsx o .csv para continuar.</string>
+    <string name="error_network">Error de conexión. Por favor, comprueba tu internet.</string>
+    <string name="error_parsing">Hubo un problema al leer algunas visualizaciones.</string>
+    <string name="error_viz_not_found">No se encontraron visualizaciones.</string>
+    <string name="error_chart_not_found">No se encontró la gráfica.</string>
+    <string name="error_unknown_retry">Ocurrió un error inesperado.\nPor favor, inténtalo de nuevo.</string>
+    <string name="error_create_comment">Error al crear el comentario</string>
+    <string name="error_com_not_found">No se encontraron comentarios.</string>
+    <string name="error_empty_comment">El comentario no puede estar vacío.</string>
+    <string name="error_upload_snip">Error. La imagen no pudo ser subida.</string>
+    <string name="error_email_invalid">Por favor, ingresa una dirección de correo válida.</string>
+    <string name="error_auth_field_empty">Los campos obligatorios no pueden quedar vacíos.</string>
+    <string name="error_invalid_credentials">Correo o contraseña incorrectos.\nPor favor, inténtalo de nuevo.</string>
+    <string name="error_alert">Algo salió mal.\nPor favor, inténtalo de nuevo.</string>
+    <string name="error_name_length">El nombre debe tener al menos 2 caracteres.</string>
+    <string name="error_email_already">Este correo ya está registrado.</string>
+    <string name="error_password_length">La contraseña debe tener al menos 8 caracteres.</string>
+    <string name="error_password_weak">La contraseña debe incluir letras y números.</string>
+    <string name="error_password_special">Las contraseñas deben tener al menos uno de los siguientes caracteres ($ @ ! % * # ? &amp; .).</string>
+    <string name="error_passwords_not_match">Las contraseñas no coinciden.</string>
+    <string name="error_team_load_failed">Error al cargar el equipo</string>
+    <string name="error_team_name_empty">El nombre del equipo no puede estar vacío</string>
+    <string name="error_team_saved_failed">Error al guardar el equipo</string>
+    <string name="error_charts_not_generate">No se pudieron generar gráficas para este conjunto de datos.</string>
+    <string name="error_chart_invalid_state">Estado inválido</string>
+    <string name="error_charts_not_selected">No hay gráficas seleccionadas</string>
+    <string name="error_chart_page_failed">Error al obtener la página para la gráfica $chartIndex</string>
+    <string name="error_chart_unable_load">No se pudieron cargar las gráficas</string>
+    <string name="error_teams_load_failed">Error al cargar los equipos</string>
+    <string name="error_team_delete_failed">Error al eliminar el equipo</string>
+    <string name="error_share_load_failed">Error al cargar la información de compartido. Por favor, inténtalo de nuevo.</string>
+    <string name="error_share_failed">Error al compartir. Por favor, inténtalo de nuevo.</string>
+
+    <!-- Descripciones de Iconos -->
+    <string name="icon_remove_user">Eliminar usuario</string>
+    <string name="icon_back">Atrás</string>
+    <string name="icon_menu">Menú</string>
+
+    <!-- Página de Perfil -->
+    <string name="version_declaration">Versión</string>
+    <string name="chart_theme_title">Temas de colores</string>
+    <string name="about_title">Acerca de</string>
+    <string name="developer">Desarrollado por ----</string>
+    <string name="terms_of_service">Términos de servicio</string>
+    <string name="licenses">Licencias y bibliotecas de código abierto</string>
+    <string name="preview">Vista previa</string>
+    <string name="take_photo">Tomar foto</string>
+    <string name="choose_photo">Elegir foto</string>
+    <string name="delete_photo">Eliminar foto</string>
+    <string name="delete_photo_message">¿Eliminar foto de perfil?</string>
+    <string name="log_out_title">¿Cerrar sesión?</string>
+    <string name="updating_pfp">Actualizando foto de perfil…</string>
+
+    <!-- Descripciones -->
+    <string name="edit_image_description">Editar imagen de perfil</string>
+    <string name="profile_img_description">Imagen de perfil</string>
+
+    <!-- Página de Pantalla Completa -->
+    <string name="snipping_tool">Herramienta de recortes</string>
+    <string name="threads">Hilos</string>
+
+    <!-- Página de Hilos -->
+    <string name="reply">Responder</string>
+    <string name="write_reply">Escribe tu respuesta</string>
+    <string name="start_thread">Iniciar un nuevo hilo</string>
+    <string name="add_note">Agregar nota</string>
+    <string name="send">Enviar mensaje</string>
+    <string name="no_threads">No hay más hilos.</string>
+    <string name="no_threads_yet">Aún no hay comentarios.</string>
+    <string name="reply_to">Respondiendo a %s</string>
+    <string name="cancel_reply">Cancelar respuesta</string>
+    <string name="more">Más</string>
+
+    <!-- Herramienta de Recortes -->
+    <string name="undo">Deshacer</string>
+    <string name="redo">Rehacer</string>
+    <string name="toolbar_pen">Lápiz</string>
+    <string name="toolbar_eraser">Borrador</string>
+    <string name="toolbar_color">Color</string>
+    <string name="toolbar_thickness">Grosor</string>
+    <string name="toolbar_text">Texto</string>
+    <string name="toolbar_shape">Forma</string>
+    <string name="toolbar_crop">Recortar</string>
+    <string name="fab_confirm">Confirmar</string>
+    <string name="fab_cancel">Cancelar</string>
+    <string name="dialog_confirm_title">Compartir como nuevo hilo</string>
+    <string name="dialog_confirm_message">Esta visualización editada se compartirá como un nuevo hilo. Para responder a un hilo existente, ve a la sección de Hilos.</string>
+    <string name="dialog_confirm_yes">Compartir</string>
+    <string name="dialog_confirm_no">Cancelar</string>
+    <string name="dialog_cancel_title">Descartar cambios</string>
+    <string name="dialog_cancel_message">Si cancelas, tus cambios no se guardarán.</string>
+    <string name="dialog_cancel_yes">Descartar</string>
+    <string name="dialog_cancel_no">Cancelar</string>
+
+    <!-- Página de Inicio (Splash) -->
+    <string name="visualize">Visualize</string>
+    <string name="slogan">Convierte datos en decisiones.</string>
+    <string name="splash_description">Crea, elige y comparte gráficas\npotenciadas por IA en segundos.\nRápido, sencillo y seguro.</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="signup">Registrarse</string>
+    <string name="version">V1.0.0</string>
+
+    <!-- Página de Inicio de Sesión -->
+    <string name="welcome">Bienvenido</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="forgot_your_password">¿Olvidaste tu contraseña?</string>
+
+    <!-- Página de Registro -->
+    <string name="already_have_account">Ya tienes una cuenta</string>
+    <string name="confirm_password">Confirmar contraseña</string>
+    <string name="name">Nombre</string>
+    <string name="create_account">Crea tu cuenta</string>
+    <string name="passremember">Usa 8 o más letras, números y símbolos</string>
+
+    <!-- Página de Restablecer Contraseña -->
+    <string name="reset_password">Restablecer contraseña</string>
+    <string name="reset_password_description">Ingresa tu dirección de correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.</string>
+    <string name="send_link">Enviar</string>
+    <string name="back_to_login">Volver al inicio de sesión</string>
+    <string name="check_your_email">Revisa tu correo</string>
+    <string name="check_your_email_description">Por favor, haz clic en el enlace enviado a tu dirección de correo para restablecer tu contraseña.</string>
+    <string name="did_not_get_email">¿No recibiste el correo?</string>
+    <string name="resend_email">Reenviar correo</string>
+
+    <!-- Pantalla de Equipos -->
+    <string name="teams_title">Equipos</string>
+    <string name="teams_retry">Reintentar</string>
+    <string name="teams_my_teams_section">Mis equipos</string>
+    <string name="teams_im_in_section">Equipos en los que estoy</string>
+    <string name="teams_create_fab_description">Crear equipo</string>
+    <string name="teams_edit_description">Editar equipo</string>
+    <string name="teams_delete_description">Eliminar equipo</string>
+    <string name="teams_member_count">%d miembros</string>
+    <string name="teams_owner_label">Propietario</string>
+
+    <!-- Pantalla de Crear / Editar Equipo -->
+    <string name="create_team_title">Crear nuevo equipo</string>
+    <string name="edit_team_title">Editar tu equipo</string>
+    <string name="create_team_name_placeholder">Nombre del equipo</string>
+    <string name="create_team_add_people_section">Agrega personas a tu equipo</string>
+    <string name="create_team_search_placeholder">Buscar por correo</string>
+    <string name="edit_team_search_placeholder">Agregar más personas</string>
+    <string name="create_team_suggestions_section">Personas en los mismos equipos que tú</string>
+    <string name="create_team_member_list_section">Lista de miembros</string>
+    <string name="create_team_save_description">Guardar equipo</string>
+    <string name="create_team_remove_member_description">Eliminar miembro</string>
+    <string name="create_team_empty_hint">Busca compañeros y agrégalos a la lista.</string>
+
+    <!-- Diálogo de Cambios Sin Guardar (Crear/Editar Equipo) -->
+    <string name="dialog_unsaved_changes_title">Cambios sin guardar</string>
+    <string name="dialog_unsaved_changes_message">Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?</string>
+    <string name="dialog_unsaved_changes_cancel">Cancelar</string>
+    <string name="dialog_unsaved_changes_confirm">Salir</string>
+    <string name="unsaved_changes">Cambios sin guardar</string>
+    <string name="unsaved_changes_confirmation">Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?</string>
+
+    <!-- Diálogo de Eliminar Equipo (Pantalla de Equipos) -->
+    <string name="dialog_delete_team_title">¿Eliminar equipo?</string>
+    <string name="dialog_delete_team_message">Este equipo y sus miembros serán eliminados. Esta acción no se puede deshacer.</string>
+    <string name="dialog_delete_team_cancel">Cancelar</string>
+    <string name="dialog_delete_team_confirm">Eliminar</string>
+
+    <!-- Notificaciones -->
+    <string name="notification_title">Notificaciones</string>
+    <string name="no_notifications_yet">No hay notificaciones por aquí</string>
+    <string name="notify_you">Te notificaremos cuando haya algo nuevo.</string>
+    <string name="today">Hoy</string>
+    <string name="yesterday">Ayer</string>
+    <string name="last_30_days">Últimos 30 días</string>
+    <string name="older">Más antiguos</string>
+
+    <!-- Temas de color de gráfica -->
+    <string name="chart_changed_to_theme">Cambiado al tema</string>
+    <string name="chart_theme_lagoon">Laguna</string>
+    <string name="chart_theme_sunset">Atardecer</string>
+    <string name="chart_theme_harvest">Cosecha</string>
+    <string name="chart_theme_petal">Pétalo</string>
+</resources>

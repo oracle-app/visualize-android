@@ -18,7 +18,7 @@
 
     <string name="nav_create">Create</string>
     <string name="nav_teams">Teams</string>
-    <string name="nav_feed">Feed</string>
+    <string name="nav_feed" translatable="false">Feed</string>
     <string name="nav_notifications">Notifications</string>
     <string name="nav_profile">Profile</string>
 
@@ -66,15 +66,15 @@
         <item quantity="one">%d day ago</item>
         <item quantity="other">%d days ago</item>
     </plurals>
-    <string name="time_short_weeks">%dw</string>
+    <string name="time_short_weeks" translatable="false">%dw</string>
     <string name="by_author">by %s</string>
     <string name="by_me">by me</string>
-    <string name="bullet_separator">•</string>
+    <string name="bullet_separator" translatable="false">•</string>
     <string name="failed_load_chart">Failed to load chart</string>
     //Chart Component
-    <string name="invalid_chart">"Invalid chart type was detected"</string>
-    <string name="line_scatter_x_metric">x</string>
-    <string name="line_scatter_y_metric">y</string>
+    <string name="invalid_chart">Invalid chart type was detected</string>
+    <string name="line_scatter_x_metric" translatable="false">x</string>
+    <string name="line_scatter_y_metric" translatable="false">y</string>
     <string name="stacked_bar_series">Series</string>
 
     // Chart legends full screen
@@ -114,7 +114,7 @@
     <string name="chart_selection_share_and_post">Share and post</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
-    <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
+    <string name="chart_selection_prompt">Choose the charts that best represents the insights you want to share.</string>
 
     // Edit Chart Title Dialog
 
@@ -155,7 +155,7 @@
     // Share With Teammates Screen
 
     <string name="share_with_teammates_title">Share to More Teammates</string>
-    <string name="share_with_teammates_empty">Search for teammates you\´d like to share with.</string>
+    <string name="share_with_teammates_empty">Search for teammates you\'d like to share with.</string>
     <string name="share_no_results">No users found for that email.</string>
     <string name="share_clear_search">Clear search</string>
     <string name="share_send">Send</string>
@@ -196,13 +196,13 @@
     <string name="error_team_saved_failed">Failed to save team</string>
     <string name="error_charts_not_generate">No charts could be generated for this dataset.</string>
     <string name="error_chart_invalid_state">Invalid state</string>
-    <string name="error_charts_not_selected">"No charts selected"</string>
+    <string name="error_charts_not_selected">No charts selected</string>
     <string name="error_chart_page_failed">Failed to fetch page for chart $chartIndex</string>
     <string name="error_chart_unable_load">Unable to Load Charts</string>
     <string name="error_teams_load_failed">Failed to load teams</string>
     <string name="error_team_delete_failed">Failed to delete team</string>
     <string name="error_share_load_failed">Failed to load sharing info. Please try again.</string>
-    <string name="error_share_failed">"Failed to share. Please try again."</string>
+    <string name="error_share_failed">Failed to share. Please try again.</string>
 
 
     //Icon Descriptions
@@ -332,11 +332,11 @@
     <string name="create_team_remove_member_description">Remove member</string>
     <string name="create_team_empty_hint">Search for teammates and add them to the list.</string>
 
-    <!-- Unsaved Changes Dialog (Create/Edit Team) -->
+    <!-- Diálogo de Cambios Sin Guardar (Crear/Editar Equipo) -->
     <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
     <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="dialog_unsaved_changes_cancel">Cancel</string>
-    <string name="dialog_unsaved_changes_confirm">Leave</string>
+    <string name="dialog_unsaved_changes_confirm">Discard</string>
 
     <!-- Delete Team Dialog (Teams Screen) -->
     <string name="dialog_delete_team_title">Delete Team?</string>
