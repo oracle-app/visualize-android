@@ -148,16 +148,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                         )
                     )
                 },
-                onSnipClick = { uri ->
-                    uri?.let { safeUri ->
-                        navController.navigate(
-                            NavRoutes.SnipPreview(
-                                visualizationId = route.visualizationId,
-                                snipUri = safeUri
-                            )
-                        )
-                    }
-                }
             )
         }
 
@@ -257,12 +247,11 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                         )
                     ) {
                         popUpTo(
-                            NavRoutes.SnipPreview(
-                                visualizationId = route.visualizationId,
-                                snipUri = route.snipUri
+                            NavRoutes.FullScreen(
+                                visualizationId = route.visualizationId
                             )
                         ) {
-                            inclusive = true
+                            inclusive = false
                         }
                     }
                 }
@@ -276,7 +265,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 visualizationId = route.visualizationId,
                 onDone = { uri ->
                     navController.navigate(
-                        NavRoutes.Threads(
+                        NavRoutes.SnipPreview(
                             visualizationId = route.visualizationId,
                             snipUri = uri
                         )

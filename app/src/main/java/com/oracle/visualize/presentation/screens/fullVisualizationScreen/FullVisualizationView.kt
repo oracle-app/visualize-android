@@ -64,7 +64,6 @@ fun FullVisualizationPage(
     modifier: Modifier = Modifier,
     viewModel: FullVisualizationViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onSnipClick: (String?) -> Unit,
     onThreadsClick: (String?) -> Unit = {},
     startInSnippingMode: Boolean = false,
     onSnippingClick: (String?) -> Unit

@@ -117,44 +117,6 @@ fun SnippingToolView(
         viewModel.loadVisualization(visualizationId)
     }
 
-    if (uiState.showConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { viewModel.toggleConfirmDialog() },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            title = { Text(stringResource(R.string.dialog_confirm_title)) },
-            text = { Text(stringResource(R.string.dialog_confirm_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.toggleConfirmDialog()
-                    coroutineScope.launch {
-                        val bitmap = viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap())
-                        val uri = withContext(Dispatchers.IO) {
-                            File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
-                                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
-                            }.toURI().toString()
-                        }
-                        onDone(uri)
-                    }
-                }) {
-                    Text(
-                        stringResource(R.string.dialog_confirm_yes),
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewModel.toggleConfirmDialog() }) {
-                    Text(
-                        stringResource(R.string.dialog_confirm_no),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        )
-    }
-
     if (uiState.showCancelDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.toggleCancelDialog() },
@@ -236,7 +198,23 @@ fun SnippingToolView(
                                         Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cancel))
                                     }
                                     FilledIconButton(
-                                        onClick = { viewModel.toggleConfirmDialog() },
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                val bitmap = viewModel.confirmCrop(
+                                                    graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                                )
+
+                                                val uri = withContext(Dispatchers.IO) {
+                                                    File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                                                        file.outputStream().use {
+                                                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                                                        }
+                                                    }.toURI().toString()
+                                                }
+
+                                                onDone(uri)
+                                            }
+                                        },
                                         colors = IconButtonDefaults.filledIconButtonColors(
                                             containerColor = MaterialTheme.colorScheme.secondary,
                                             contentColor = MaterialTheme.colorScheme.onSecondary
