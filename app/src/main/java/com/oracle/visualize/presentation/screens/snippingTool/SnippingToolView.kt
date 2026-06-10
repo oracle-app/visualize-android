@@ -72,26 +72,6 @@ fun SnippingToolView(
     modifier: Modifier = Modifier,
     viewModel: SnippingToolViewModel = hiltViewModel()
 ) {
-
-
-
-    // TODO: Right now, the navigation bar appearing and reappearing crooks the crop. Fix this later.
-
-// DisposableEffect(Unit) {
-//     val window = (view.context as Activity).window
-//     val controller = WindowInsetsControllerCompat(window, view)
-//
-//     window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//     controller.hide(WindowInsetsCompat.Type.systemBars())
-//     controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//
-//     onDispose {
-//         window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//         controller.show(WindowInsetsCompat.Type.systemBars())
-//     }
-// }
-
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
