@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -33,12 +34,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.io.File
 
 /**
  * Screen that displays a selected visualization in FullScreen mode.

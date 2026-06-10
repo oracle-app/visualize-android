@@ -251,8 +251,9 @@
     <string name="fab_confirm">Confirm</string>
     <string name="fab_cancel">Cancel</string>
     <string name="dialog_confirm_title">Share as New Thread</string>
-    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread. To reply to an existing thread, go to the Threads section.</string>
+    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread.</string>
     <string name="dialog_confirm_yes">Share</string>
+    <string name="dialog_confirm_yes_atl">Sharing...</string>
     <string name="dialog_confirm_no">Cancel</string>
     <string name="dialog_cancel_title">Discard Changes</string>
     <string name="dialog_cancel_message">If you cancel, your changes will not be saved.</string>
@@ -348,5 +349,14 @@
     <string name="chart_theme_sunset">Sunset</string>
     <string name="chart_theme_harvest">Harvest</string>
     <string name="chart_theme_petal">Petal</string>
+
+    // Snipping Tool Preview Page
+    <string name="caption">Caption</string>
+    <string name="share_insights">Share insights about this edited visualization.</string>
+    <string name="add_desc">Add an optional description...</string>
+    <string name="edit_preview">Edited visualization preview</string>
+    <string name="preview_edited_vis">Preview of the edited visualization</string>
+
+
 
 </resources>
