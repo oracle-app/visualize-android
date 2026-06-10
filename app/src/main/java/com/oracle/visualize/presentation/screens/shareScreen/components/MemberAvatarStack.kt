@@ -31,11 +31,11 @@ fun MemberAvatarStack(
     members: List<ShareUser>,
     isSelected: Boolean
 ) {
-    val displayCount = minOf(members.size, 3)
+    // If there are exactly 4 members, show all 4 avatars.
+    // If there are more than 4, show 3 avatars and an overflow bubble (e.g., +2 for 5 members).
+    val displayCount = if (members.size == 4) 4 else minOf(members.size, 3)
     val extraCount = members.size - displayCount
-    // Only show the +N bubble when there are 2 or more extra members —
-    // showing +1 adds no value since it represents just one person.
-    val showExtraBubble = extraCount >= 2
+    val showExtraBubble = extraCount > 0
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

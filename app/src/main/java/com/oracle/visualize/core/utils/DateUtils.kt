@@ -19,21 +19,18 @@ object DateUtils {
             when {
                 mins < 1 -> context.getString(R.string.time_just_now)
                 mins < 60 -> context.getString(R.string.time_short_mins, mins.toInt())
-                hours < 24 -> context.getString(R.string.time_short_hours, hours.toInt())
-                days < 7 -> context.getString(R.string.time_short_days, days.toInt())
-                else -> {
-                    val weeks = (days / 7).toInt()
-                    context.getString(R.string.time_short_weeks, weeks)
-                }
+                hours < 24 -> context.resources.getQuantityString(R.plurals.time_short_hours, hours.toInt(), hours.toInt())
+                days < 7 -> context.resources.getQuantityString(R.plurals.time_short_days, days.toInt(), days.toInt())
+                else -> SimpleDateFormat("MMM dd, yyyy", Locale.US).format(date)
             }
         } else {
             when {
                 mins < 1 -> context.getString(R.string.time_just_now)
                 mins < 60 -> context.getString(R.string.time_mins_ago, mins.toInt())
-                hours < 24 -> context.getString(R.string.time_hours_ago, hours.toInt())
-                days < 7 -> context.getString(R.string.time_days_ago, days.toInt())
+                hours < 24 -> context.resources.getQuantityString(R.plurals.time_hours_ago, hours.toInt(), hours.toInt())
+                days < 7 -> context.resources.getQuantityString(R.plurals.time_days_ago, days.toInt(), days.toInt())
                 days < 8 -> context.getString(R.string.time_a_week_ago)
-                else -> SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(date)
+                else -> SimpleDateFormat("MMM dd, yyyy", Locale.US).format(date)
             }
         }
     }
