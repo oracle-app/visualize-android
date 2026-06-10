@@ -162,7 +162,6 @@ fun FullVisualizationPage(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         FullVisualizationTopBar (
-                            modifier = Modifier.statusBarsPadding(),
                             visualizationTitle = visualization.title,
                             members = visualization.allUsersSharedWith,
                             onBackClick = onBackClick
