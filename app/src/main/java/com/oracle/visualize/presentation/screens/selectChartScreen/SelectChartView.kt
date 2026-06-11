@@ -379,7 +379,7 @@ fun ChartSelectionPage(
         if (uiState is ChartSelectionUiState.Success && (uiState as ChartSelectionUiState.Success).isUnsavedChangesDialogVisible) {
             AlertDialog(
                 onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 title = {
                     Text(
                         text = stringResource(R.string.dialog_unsaved_title),
@@ -390,7 +390,7 @@ fun ChartSelectionPage(
                 text = {
                     Text(
                         text = stringResource(R.string.dialog_unsaved_message),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 },
                 confirmButton = {
@@ -411,7 +411,7 @@ fun ChartSelectionPage(
                     TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
                         Text(
                             text = stringResource(R.string.cancel),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }

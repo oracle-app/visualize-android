@@ -78,11 +78,11 @@ fun CreateEditTeamPage(
 private fun UnsavedChangesDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     val titleTextColor = MaterialTheme.colorScheme.onSurface
 
-    val dialogDescriptionTextColor = MaterialTheme.colorScheme.primary
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor   = MaterialTheme.colorScheme.surface,
+        containerColor   = MaterialTheme.colorScheme.surfaceContainer,
         shape            = RoundedCornerShape(28.dp),
         title = {
             Text(

@@ -76,7 +76,7 @@ val DARKerror = Color(0xFFEC4848)
 val DARKonError = Color(0xFFFFFFFF)
 val DARKscrim = Color(0xFF1A2F3F)
 
-val DARKsurfaceFixed = Color(0xFF203636)
+val DARKsurfaceFixed = Color(0xFF0E1717)
 
 // Brand Palette Colors
 val DarkText = Color(0xFF13212C)
