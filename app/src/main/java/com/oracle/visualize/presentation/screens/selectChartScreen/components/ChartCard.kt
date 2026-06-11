@@ -93,7 +93,9 @@ fun ChartCard(
                 ChartRenderGeneral(
                     chart = chart,
                     chartColorTheme = chartColorTheme,
-                    feedCardLabels = true
+                    feedCardLabels = true,
+                    enableTooltips  = false,
+                    enableZoomAndPan = false
                 )
             }
         }

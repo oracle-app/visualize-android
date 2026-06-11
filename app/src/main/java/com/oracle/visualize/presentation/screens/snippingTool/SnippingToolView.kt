@@ -72,7 +72,6 @@ fun SnippingToolView(
     modifier: Modifier = Modifier,
     viewModel: SnippingToolViewModel = hiltViewModel()
 ) {
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
@@ -217,7 +216,23 @@ fun SnippingToolView(
                                         Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cancel))
                                     }
                                     FilledIconButton(
-                                        onClick = { viewModel.toggleConfirmDialog() },
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                val bitmap = viewModel.confirmCrop(
+                                                    graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                                )
+
+                                                val uri = withContext(Dispatchers.IO) {
+                                                    File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                                                        file.outputStream().use {
+                                                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                                                        }
+                                                    }.toURI().toString()
+                                                }
+
+                                                onDone(uri)
+                                            }
+                                        },
                                         colors = IconButtonDefaults.filledIconButtonColors(
                                             containerColor = MaterialTheme.colorScheme.secondary,
                                             contentColor = MaterialTheme.colorScheme.onSecondary

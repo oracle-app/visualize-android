@@ -114,7 +114,7 @@ fun SplashPage(
                     text = stringResource(R.string.visualize),
                     fontWeight = FontWeight.Bold,
                     fontSize = 52.sp,
-                    letterSpacing = 0.sp,
+                    letterSpacing = 6.sp,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
