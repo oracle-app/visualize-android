@@ -107,7 +107,7 @@ private fun TileItem(
             text = title,
             style = MaterialTheme.typography.labelSmall,
             fontSize = (15 * scaleFactor).sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            color = Color.DarkGray,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -118,7 +118,7 @@ private fun TileItem(
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             fontSize = (24 * scaleFactor).sp,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = Color.DarkGray,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

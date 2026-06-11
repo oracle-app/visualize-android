@@ -54,13 +54,13 @@ fun MemberAvatarStackFeed(
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
                             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant), CircleShape)
-                            .background(MaterialTheme.colorScheme.onPrimary),
+                            .background(MaterialTheme.colorScheme.surface),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "+$extraCount",
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                            color = MaterialTheme.colorScheme.outlineVariant
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }

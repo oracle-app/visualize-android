@@ -38,19 +38,11 @@ fun CommentCard(
     onDeleteClick: () -> Unit,
     onDeleteThreadClick: (threadId: String) -> Unit
 ) {
-    val containerColor = if (isCurrentUser) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.onTertiary
-    }
+    val containerColor = MaterialTheme.colorScheme.onTertiary
 
-    val headerColor = if (isCurrentUser) {
-        MaterialTheme.colorScheme.outline
-    } else {
-        MaterialTheme.colorScheme.tertiary
-    }
+    val headerColor = MaterialTheme.colorScheme.tertiary
 
-    val timelineColor = MaterialTheme.colorScheme.primaryContainer
+    val timelineColor = MaterialTheme.colorScheme.surface
 
     val context = LocalContext.current
     val formattedDate = DateUtils.formatTime(comment.createdAt, context)
@@ -85,13 +77,13 @@ fun CommentCard(
                 Text(
                     text = if (isCurrentUser) stringResource(R.string.by_me) else comment.authorName,
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Text(
                     text = formattedDate,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
             if (comment.permissions.canDelete) {
@@ -109,9 +101,8 @@ fun CommentCard(
                     }
                     DropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = {
-                            expanded = false
-                        }
+                        onDismissRequest = { expanded = false },
+                        containerColor = MaterialTheme.colorScheme.surface
                     ) {
                         DropdownMenuItem(
                             text = {

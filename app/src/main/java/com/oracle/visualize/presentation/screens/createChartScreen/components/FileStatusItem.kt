@@ -64,14 +64,14 @@ fun FileStatusItem(
                 Text(
                     text = fileSize,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
             }
             if (isSuccess) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.delete),
-                    tint = ErrorRed,
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.clickable { onDelete() }
                 )
             } else {
@@ -87,7 +87,7 @@ fun FileStatusItem(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(errorMessage),
-                color = ErrorRed,
+                color = MaterialTheme.colorScheme.error,
                 fontSize = 12.sp
             )
         } else if (!isSuccess) {

@@ -11,76 +11,62 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-
+// Edit later!
 
 private val DarkColorScheme = darkColorScheme(
-    primary = StrongBlue,
-    onPrimary = White,
-    primaryContainer = DarkMode_LightBlue,
-    onPrimaryContainer = DarkMode_DarkGray,
-
-    secondary = StrongOrange,
-    onSecondary = White,
-
-    secondaryContainer = Color.Transparent,
-    onSecondaryContainer = DarkMode_NotAsLightGray,
-
-    tertiaryContainer = DarkMode_NotAsLightOrange,
-    onTertiaryContainer = DarkMode_LightOrange,
-
-    tertiary = DarkMode_GreyishBlue,
-    onTertiary = DarkMode_LightGreyishBlue,
-
-    tertiaryFixed = DarkMode_GreyContent,
-
-    background = DarkMode_Background,
-    onBackground = DarkMode_NotAsLightGray,
-    surface = DarkMode_Background,
-    onSurface = DarkMode_NotAsLightGray,
-
-    surfaceVariant = DarkMode_LighterBlue,
-    onSurfaceVariant = DarkMode_StrongBlue,
-
-    outline = DarkMode_GrayishBlue,
-    outlineVariant = DarkMode_NotAsDarkGray,
-    error = ErrorRed,
-    onError = White,
-    scrim = ScrimColor
+    primary = DARKprimary,
+    onPrimary = DARKonPrimary,
+    primaryContainer = DARKprimaryContainer,
+    onPrimaryContainer = DARKonPrimaryContainer,
+    secondary = DARKsecondary,
+    onSecondary = DARKonSecondary,
+    secondaryContainer = DARKsecondaryContainer,
+    onSecondaryContainer = DARKonSecondaryContainer,
+    tertiaryContainer = DARKtertiaryContainer,
+    onTertiaryContainer = DARKonTertiaryContainer,
+    tertiary = DARKtertiary,
+    onTertiary = DARKonTertiary,
+    tertiaryFixed = DARKtertiaryFixed,
+    background = DARKbackground,
+    onBackground = DARKonBackground,
+    surface = DARKsurface,
+    onSurface = DARKonSurface,
+    surfaceVariant = DARKsurfaceVariant,
+    onSurfaceVariant = DARKonSurfaceVariant,
+    outline = DARKoutline,
+    outlineVariant = DARKoutlineVariant,
+    error = DARKerror,
+    onError = DARKonError,
+    scrim = DARKscrim,
+    surfaceContainer = DARKsurfaceFixed
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = StrongBlue,
-    onPrimary = White,
-    primaryContainer = LightBlue,
-    onPrimaryContainer = DarkGray,
-
-    secondary = StrongOrange,
-    onSecondary = White,
-
-    secondaryContainer = White,
-    onSecondaryContainer = NotAsLightGray,
-
-    tertiaryContainer = NotAsLightOrange,
-    onTertiaryContainer = LightOrange,
-
-    tertiary = GreyishBlue,
-    onTertiary = LightGreyishBlue,
-
-    tertiaryFixed = GreyContent,
-
-    background = VeryLightGray,
-    onBackground = DarkGray,
-    surface = White,
-    onSurface = Color.Black,
-
-    surfaceVariant = LighterBlue,
-    onSurfaceVariant = NotAsLightGray,
-
-    outline = GrayishBlue,
-    outlineVariant = NotAsDarkGray,
-    error = ErrorRed,
-    onError = White,
-    scrim = ScrimColor
+    primary = primary,
+    onPrimary = onPrimary,
+    primaryContainer = primaryContainer,
+    onPrimaryContainer = onPrimaryContainer,
+    secondary = secondary,
+    onSecondary = onSecondary,
+    secondaryContainer = secondaryContainer,
+    onSecondaryContainer = onSecondaryContainer,
+    tertiaryContainer = tertiaryContainer,
+    onTertiaryContainer = onTertiaryContainer,
+    tertiary = tertiary,
+    onTertiary = onTertiary,
+    tertiaryFixed = tertiaryFixed,
+    background = background,
+    onBackground = onBackground,
+    surface = surface,
+    onSurface = onSurface,
+    surfaceVariant = surfaceVariant,
+    onSurfaceVariant = onSurfaceVariant,
+    outline = outline,
+    outlineVariant = outlineVariant,
+    error = error,
+    onError = onError,
+    scrim = scrim,
+    surfaceContainer = surfaceFixed
 )
 
 @Composable

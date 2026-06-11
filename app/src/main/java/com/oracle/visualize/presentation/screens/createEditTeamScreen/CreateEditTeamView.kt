@@ -2,7 +2,6 @@ package com.oracle.visualize.presentation.screens.createEditTeamScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -30,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.components.UserAvatar
+import com.oracle.visualize.ui.theme.primary
 
 
 @Composable
@@ -76,17 +76,13 @@ fun CreateEditTeamPage(
 
 @Composable
 private fun UnsavedChangesDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    val titleTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val titleTextColor = MaterialTheme.colorScheme.onSurface
 
-    val dialogDescriptionTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor   = MaterialTheme.colorScheme.surface,
+        containerColor   = MaterialTheme.colorScheme.surfaceContainer,
         shape            = RoundedCornerShape(28.dp),
         title = {
             Text(
@@ -124,13 +120,9 @@ private fun CreateEditTeamContent(
     state: CreateEditTeamUiState.Content,
     onEvent: (CreateEditTeamUiEvent) -> Unit
 ) {
-    val titleSubtitleTextColors = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val titleSubtitleTextColors = MaterialTheme.colorScheme.onSurface
 
-    val queryTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val queryTextColor = MaterialTheme.colorScheme.onSurface
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -181,7 +173,7 @@ private fun CreateEditTeamContent(
                                 unfocusedTextColor = queryTextColor,
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                errorContainerColor = MaterialTheme.colorScheme.error,
                                 focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 errorIndicatorColor = MaterialTheme.colorScheme.error,
@@ -227,7 +219,7 @@ private fun CreateEditTeamContent(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Search, contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         },
                         trailingIcon = if (state.searchQuery.isNotBlank()) ({
@@ -237,7 +229,7 @@ private fun CreateEditTeamContent(
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }) else null,
@@ -300,7 +292,7 @@ private fun CreateEditTeamContent(
                     item {
                         Text(
                             text = stringResource(R.string.create_team_empty_hint), fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.outlineVariant, textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer, textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp)
                         )
                     }
@@ -322,9 +314,7 @@ private fun CreateEditTeamContent(
 
 @Composable
 private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
-    val usernameColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val usernameColor = MaterialTheme.colorScheme.onBackground
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onClick() }) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 64)
@@ -338,13 +328,9 @@ private fun SuggestionItem(user: ShareUser, onClick: () -> Unit) {
 
 @Composable
 private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
-    val titleSubtitleTextColors = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val titleSubtitleTextColors = MaterialTheme.colorScheme.onSurface
 
-    val emailColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val emailColor = MaterialTheme.colorScheme.primary
 
     Row(modifier = Modifier.fillMaxWidth().clickable { onAdd() }.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         UserAvatar(username = user.username, profilePictureURL = user.profilePictureURL, size = 40)
@@ -358,13 +344,9 @@ private fun SearchResultRow(user: ShareUser, onAdd: () -> Unit) {
 
 @Composable
 private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
-    val nameTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onPrimary } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val nameTextColor = MaterialTheme.colorScheme.onSurface
 
-    val ownerEmailColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outlineVariant } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val ownerEmailColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -378,7 +360,7 @@ private fun MemberRow(user: ShareUser, isOwner: Boolean, onRemove: () -> Unit) {
         }
         if (isOwner) {
             Text(
-                text = stringResource(R.string.teams_owner_label), color = ownerEmailColor, fontSize = 12.sp,
+                text = stringResource(R.string.teams_owner_label), color = primary, fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(end = 8.dp)
             )
         } else {

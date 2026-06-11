@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.oracle.visualize.ui.theme.SearchHint
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,14 +49,14 @@ fun TeammateSearchBar(
                 Icon(
                     imageVector        = Icons.Default.Search,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.primary,
+                    tint               = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier           = Modifier.size(24.dp)
                 )
             } else {
                 Icon(
                     imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.primary,
+                    tint               = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier           = Modifier.size(24.dp)
                 )
             }
@@ -69,7 +68,7 @@ fun TeammateSearchBar(
             placeholder   = {
                 Text(
                     text     = stringResource(R.string.input_email),
-                    color    = SearchHint,
+                    color    = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontSize = 16.sp
                 )
             },

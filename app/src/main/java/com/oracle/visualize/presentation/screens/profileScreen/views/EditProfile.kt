@@ -49,7 +49,7 @@ fun EditProfile(
     ) {
 
     Image(
-        painter = painterResource(id = R.drawable.splashbackground),
+        painter = painterResource(id = R.drawable.profilebgtransparent),
         contentDescription = null,
         modifier = Modifier
             .fillMaxWidth()
@@ -101,7 +101,7 @@ fun EditProfile(
             title = stringResource(R.string.about_title),
             titleDrawableImage = R.drawable.baseline_info_24
         ) {
-            val textColor = MaterialTheme.colorScheme.onSurfaceVariant
+            val textColor = MaterialTheme.colorScheme.onBackground
 
             Text(
                 modifier = Modifier.padding(start = 8.dp),
@@ -125,7 +125,7 @@ fun EditProfile(
             border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.error
             ),
             modifier = Modifier

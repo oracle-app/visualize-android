@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
@@ -29,6 +30,7 @@ import com.oracle.visualize.presentation.components.UserAvatar
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadUiModel
 import com.oracle.visualize.core.utils.DateUtils
 import androidx.compose.ui.platform.LocalContext
+import com.oracle.visualize.ui.theme.onSurface
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -66,7 +68,7 @@ fun ThreadCard(
                 size = 32,
                 modifier = Modifier.border(
                     width = 3.dp,
-                    color = MaterialTheme.colorScheme.primaryContainer,
+                    color = MaterialTheme.colorScheme.surface,
                     shape = CircleShape
                 )
             )
@@ -87,7 +89,7 @@ fun ThreadCard(
                     bottomEnd = 14.dp
                 ),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 4.dp
@@ -106,13 +108,13 @@ fun ThreadCard(
                         Text(
                             text = if (isCurrentUser) stringResource(R.string.by_me) else thread.authorName,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.weight(1f)
                         )
                         Text(
                             text = formattedDate,
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
 
@@ -121,7 +123,7 @@ fun ThreadCard(
                     Text(
                         text = thread.content,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

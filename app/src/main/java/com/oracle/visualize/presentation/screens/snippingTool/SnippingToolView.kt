@@ -97,12 +97,50 @@ fun SnippingToolView(
         viewModel.loadVisualization(visualizationId)
     }
 
+    if (uiState.showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.toggleConfirmDialog() },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            title = { Text(stringResource(R.string.dialog_confirm_title)) },
+            text = { Text(stringResource(R.string.dialog_confirm_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.toggleConfirmDialog()
+                    coroutineScope.launch {
+                        val bitmap = viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap())
+                        val uri = withContext(Dispatchers.IO) {
+                            File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                            }.toURI().toString()
+                        }
+                        onDone(uri)
+                    }
+                }) {
+                    Text(
+                        stringResource(R.string.dialog_confirm_yes),
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.toggleConfirmDialog() }) {
+                    Text(
+                        stringResource(R.string.dialog_confirm_no),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        )
+    }
+
     if (uiState.showCancelDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.toggleCancelDialog() },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             title = { Text(stringResource(R.string.dialog_cancel_title)) },
             text = { Text(stringResource(R.string.dialog_cancel_message)) },
             confirmButton = {
@@ -120,7 +158,7 @@ fun SnippingToolView(
                 TextButton(onClick = { viewModel.toggleCancelDialog() }) {
                     Text(
                         stringResource(R.string.dialog_cancel_no),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

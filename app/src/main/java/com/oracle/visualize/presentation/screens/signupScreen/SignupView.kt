@@ -201,7 +201,7 @@ fun SignUpPage(
             Text(
                 text = stringResource(R.string.already_have_account),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
 
             TextButton(
@@ -221,7 +221,7 @@ fun SignUpPage(
             Text(
                 text = stringResource(R.string.version),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }

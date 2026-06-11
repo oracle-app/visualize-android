@@ -125,7 +125,7 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.forgot_your_password),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .align(Alignment.End)
@@ -175,7 +175,7 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.no_account),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
 
             TextButton(
@@ -191,12 +191,6 @@ fun LoginPage(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = stringResource(R.string.version),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

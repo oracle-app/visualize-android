@@ -60,7 +60,7 @@ fun TeammateTeamSection(
                 text       = title,
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color      = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                color      = MaterialTheme.colorScheme.onBackground,
                 modifier   = Modifier.weight(1f)
             )
             Icon(

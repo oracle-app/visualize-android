@@ -31,8 +31,8 @@ fun ChartCard(
     onEditTitle: () -> Unit
 ) {
     val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-    val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+    val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
 
     Card(
         modifier = Modifier
@@ -87,7 +87,7 @@ fun ChartCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    .background(topBottomBackground)
                     .padding(16.dp)
             ) {
                 ChartRenderGeneral(

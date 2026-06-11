@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,9 +33,7 @@ fun ProfileHeader(
     profileImageUrl: String,
     onEditClick: () -> Unit
 ) {
-    val emailTextColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.onBackground } else {
-        MaterialTheme.colorScheme.onSecondaryContainer
-    }
+    val emailTextColor = MaterialTheme.colorScheme.onSecondaryContainer
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -75,7 +72,7 @@ fun ProfileHeader(
             text = userName,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         Spacer(modifier = Modifier.height(4.dp))

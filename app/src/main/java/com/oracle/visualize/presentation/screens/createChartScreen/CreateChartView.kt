@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -33,7 +34,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.SelectedDataset
 import com.oracle.visualize.presentation.screens.createChartScreen.components.FileStatusItem
-import com.oracle.visualize.ui.theme.White
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -117,7 +117,7 @@ fun CreatePage(
                 Text(
                     text = descriptionText,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 24.dp)
@@ -186,7 +186,7 @@ fun DashedSelector(onClick: () -> Unit) {
                 size = Size(size.width - strokeWidth, size.height - strokeWidth)
             )
         }
-        val teal = MaterialTheme.colorScheme.onSurfaceVariant
+        val teal = MaterialTheme.colorScheme.primary
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Canvas(modifier = Modifier.size(48.dp)) {
                 val iconSize = size.width
@@ -263,14 +263,14 @@ fun DatasetRequirementsSection() {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.dataset_requirements_body),
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.dataset_requirements_example_label),
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -281,7 +281,7 @@ fun DatasetRequirementsSection() {
         Text(
             text = stringResource(R.string.dataset_requirements_footer),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 }
@@ -295,10 +295,10 @@ fun TableExampleComponent() {
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
-            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
-            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
-            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
         }
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.onPrimary)
 
@@ -311,7 +311,7 @@ fun TableExampleComponent() {
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
-                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = White)
+                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                 }
             }
         }

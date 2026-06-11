@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -32,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
-import com.oracle.visualize.ui.theme.DarkMode_StrongBlue
 
 @Composable
 fun SplashPage(
@@ -127,7 +125,7 @@ fun SplashPage(
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = (-0.43).sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -169,8 +167,8 @@ fun SplashPage(
                         .height(50.dp),
                     shape = RoundedCornerShape(50),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color.Transparent,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.primary
                     ),
                 ) {
@@ -186,7 +184,7 @@ fun SplashPage(
                 Text(
                     text = stringResource(R.string.version),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
         }

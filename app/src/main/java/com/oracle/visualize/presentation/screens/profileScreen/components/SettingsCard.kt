@@ -1,7 +1,6 @@
 package com.oracle.visualize.presentation.screens.profileScreen.components
 
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,10 +31,8 @@ fun SettingsCard(
     titleDrawableImage: Int? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val strokeColor = Color.DarkGray //MaterialTheme.colorScheme.outlineVariant
-    val titleColor = if (isSystemInDarkTheme()) { MaterialTheme.colorScheme.outline } else {
-        MaterialTheme.colorScheme.scrim
-    }
+    val strokeColor = MaterialTheme.colorScheme.outlineVariant
+    val titleColor = MaterialTheme.colorScheme.onBackground
 
     Box(
         modifier = modifier.fillMaxWidth().drawBehind {
