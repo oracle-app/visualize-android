@@ -56,7 +56,7 @@ fun MainScreen(
                     currentDestination = currentDestination,
                     onItemSelected = { destination ->
                         navController.navigate(destination) {
-                            popUpTo(navController.graph.startDestinationId) {
+                            popUpTo<NavRoutes.Feed> {
                                 saveState = true
                             }
                             launchSingleTop = true

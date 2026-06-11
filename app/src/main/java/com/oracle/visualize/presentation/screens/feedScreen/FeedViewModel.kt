@@ -1,6 +1,7 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
 import com.oracle.visualize.data.datasources.local.FeedCacheManager
@@ -37,12 +38,17 @@ class FeedViewModel @Inject constructor(
     private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
     private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
     private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
-    private val feedCacheManager: FeedCacheManager
+    private val feedCacheManager: FeedCacheManager,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
+    private val FILTER_KEY = "selected_filter"
 
+    private val savedFilter: VisualizationFilter
+        get() = savedStateHandle.get<String>(FILTER_KEY)?.let { enumValueOf<VisualizationFilter>(it) }
+            ?: VisualizationFilter.ALL
     private var allFeedItems: List<FeedItem> = emptyList()
     private var currentUserID: String = ""
     private var currentUserType: UserType = UserType.CONSUMER
@@ -143,6 +149,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
+        savedStateHandle[FILTER_KEY] = filter.name
         val currentState = _uiState.value
         if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
         _uiState.value = when (currentState) {
@@ -258,7 +265,7 @@ class FeedViewModel @Inject constructor(
 
     private fun applyLocalFilterAndSearch() {
         val currentState = _uiState.value
-        val filter      = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
+        val filter      = if (currentState is FeedUiState.Success) currentState.selectedFilter else savedFilter
         val search      = if (currentState is FeedUiState.Success) currentState.searchText else ""
         val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
 
