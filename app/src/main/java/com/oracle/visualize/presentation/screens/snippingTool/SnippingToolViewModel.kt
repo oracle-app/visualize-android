@@ -95,7 +95,9 @@ class SnippingToolViewModel @Inject constructor(
         _uiState.update { it.copy(fontSize = fontsize) }
     }
 
-    fun selectTool(tool: DrawingTool) {
+    // Toggle tool, as the name implies, toggles a tool on or off depending on its current state; useful for one and done tools like drawing or erasing.
+
+    fun toggleTool(tool: DrawingTool) {
         _uiState.update { current ->
             if (current.isDrawingMode && current.selectedTool == tool) {
                 current.copy(isDrawingMode = false, selectedTool = null)
@@ -106,6 +108,19 @@ class SnippingToolViewModel @Inject constructor(
                     selectedTool = tool
                 )
             }
+        }
+        setIsTransformable()
+    }
+
+    // Select tool selects a tool with no additional logic, useful for tools that require a picker to work (like shapes).
+
+    fun selectTool(tool: DrawingTool) {
+        _uiState.update { current ->
+                current.copy(
+                    isDrawingMode = true,
+                    isCroppingMode = false,
+                    selectedTool = tool
+                )
         }
         setIsTransformable()
     }
