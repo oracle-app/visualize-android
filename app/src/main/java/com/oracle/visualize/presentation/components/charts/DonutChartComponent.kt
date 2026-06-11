@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.DonutChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -35,7 +36,13 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, chartColorTheme: ChartPalette, enableTooltips: Boolean) {
+fun RenderDonutChart(
+    modifier: Modifier = Modifier,
+    chart: DonutChart,
+    chartColorTheme: ChartPalette,
+    feedCardLabel: Boolean,
+    enableTooltips: Boolean
+) {
     val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
@@ -59,15 +66,17 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, chartColo
             holeSize = 0.6f,
             holeContent = {
                 Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Total",
                             style = MaterialTheme.typography.titleMedium,
+                            fontSize = if (feedCardLabel) 13.sp else 18.sp,
                             color = Color.DarkGray
                         )
                         Text(
                             text = (values.sum().roundToInt() / 1.0f).toString(),
                             style = MaterialTheme.typography.titleMedium,
+                            fontSize = if (feedCardLabel) 9.sp else 14.sp,
                             color = Color.DarkGray
                         )
                     }

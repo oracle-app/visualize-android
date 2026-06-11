@@ -137,7 +137,7 @@ fun RenderHorizontalBarChart(
                         if (!enableTooltips) {
                             DefaultBar(
                                 brush = SolidColor(barColors[index]),
-                                modifier = modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         } else {
                             val tooltipDisplayState = rememberTooltipState(

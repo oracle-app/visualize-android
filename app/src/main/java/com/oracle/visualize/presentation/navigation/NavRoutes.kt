@@ -1,6 +1,5 @@
 package com.oracle.visualize.presentation.navigation
 
-import com.oracle.visualize.domain.models.Chart
 import kotlinx.serialization.Serializable
 
 /**
@@ -52,4 +51,6 @@ sealed interface NavRoutes {
     @Serializable
     data class SnippingTool(val visualizationId: String) : NavRoutes
 
+    @Serializable
+    data class SnipPreview(val visualizationId: String, val snipUri: String): NavRoutes
 }

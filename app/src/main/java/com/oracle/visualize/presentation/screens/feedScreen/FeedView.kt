@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,6 +48,7 @@ fun FeedPage(
 ) {
     val uiState        by feedViewModel.uiState.collectAsStateWithLifecycle<FeedUiState>()
     val scrollBehavior  = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
 
     // Auto-reload when resuming from ShareWithTeammates
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -117,6 +119,7 @@ fun FeedPage(
 
                 is FeedUiState.Success -> {
                     LazyColumn(
+                        state = listState,
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier            = Modifier.fillMaxSize().padding(horizontal = 20.dp)
                     ) {

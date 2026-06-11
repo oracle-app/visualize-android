@@ -25,6 +25,7 @@ import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.StackedBarChart
+import com.oracle.visualize.domain.models.TileChart
 import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.presentation.components.charts.RenderAreaChart
 import com.oracle.visualize.presentation.components.charts.RenderDonutChart
@@ -33,6 +34,7 @@ import com.oracle.visualize.presentation.components.charts.RenderLineChart
 import com.oracle.visualize.presentation.components.charts.RenderPieChart
 import com.oracle.visualize.presentation.components.charts.RenderScatterChart
 import com.oracle.visualize.presentation.components.charts.RenderStackedBarChart
+import com.oracle.visualize.presentation.components.charts.RenderTileChart
 import com.oracle.visualize.presentation.components.charts.RenderVerticalBarChart
 import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -55,9 +57,15 @@ fun ChartRenderGeneral(
     enableZoomAndPan: Boolean = true,
     feedCardLabels: Boolean = false
 ) {
+    val topPadding = if (feedCardLabels) 8.dp else 18.dp
+    val bottomPadding = if (feedCardLabels) 8.dp else 8.dp
+    val sidePadding = if (feedCardLabels) 6.dp else 6.dp
+
     Column(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-            .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.onPrimary)
+            .padding(top = topPadding, start = sidePadding, end = sidePadding, bottom = bottomPadding)
     ) {
         when (chart) {
             is VerticalBarChart -> {
@@ -93,11 +101,21 @@ fun ChartRenderGeneral(
 
             is PieChartModel -> RenderPieChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
 
-            is DonutChart -> RenderDonutChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
+            is DonutChart -> RenderDonutChart(
+                chart = chart, chartColorTheme = chartColorTheme, feedCardLabel = feedCardLabels,
+                enableTooltips = enableTooltips
+            )
 
             is AreaChart -> RenderAreaChart(
                 chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
                 enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan
+            )
+
+            is TileChart -> RenderTileChart(
+                modifier = Modifier.fillMaxSize(),
+                chart = chart,
+                chartColorTheme = chartColorTheme,
+                isFeedCard = feedCardLabels
             )
         }
     }

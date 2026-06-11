@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.ShareUser
 import com.oracle.visualize.presentation.components.UserAvatar
 
-private val AVATAR_SIZE = 29.dp
-private val AVATAR_OFFSET = 15.dp
+private val AVATAR_SIZE        = 29.dp
+private val AVATAR_OFFSET      = 15.dp
 private val EXTRA_BUBBLE_OFFSET = 6.dp
 
 @Composable
@@ -31,8 +31,11 @@ fun MemberAvatarStack(
     members: List<ShareUser>,
     isSelected: Boolean
 ) {
-    val displayCount = minOf(members.size, 3)
-    val extraCount   = members.size - displayCount
+    // If there are exactly 4 members, show all 4 avatars.
+    // If there are more than 4, show 3 avatars and an overflow bubble (e.g., +2 for 5 members).
+    val displayCount = if (members.size == 4) 4 else minOf(members.size, 3)
+    val extraCount = members.size - displayCount
+    val showExtraBubble = extraCount > 0
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -40,7 +43,7 @@ fun MemberAvatarStack(
     ) {
         Layout(
             content = {
-                if (extraCount > 0) {
+                if (showExtraBubble) {
                     Box(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
@@ -56,7 +59,6 @@ fun MemberAvatarStack(
                         )
                     }
                 }
-                // We draw in reverse order so the first one ends up on top
                 repeat(displayCount) { index ->
                     val memberIndex = displayCount - 1 - index
                     Box(
@@ -83,15 +85,23 @@ fun MemberAvatarStack(
             val itemCount = placeables.size
             val totalWidth = if (itemCount > 0) {
                 val base = avatarSize + (offset * (itemCount - 1))
-                if (itemCount > 3) base + extraBubbleSpace else base
+                if (showExtraBubble) base + extraBubbleSpace else base
             } else 0
             val height = placeables.firstOrNull()?.height ?: 0
 
             layout(totalWidth, height) {
                 placeables.forEachIndexed { index, placeable ->
-                    var x = (itemCount - 1 - index) * offset
-                    if (itemCount > 3 && index == 0) x += extraBubbleSpace
-                    placeable.placeWithLayer(x = x, y = 0, zIndex = index.toFloat())
+                    val x = (itemCount - 1 - index) * offset
+                    val z = if (showExtraBubble && index == 0) {
+                        0f
+                    } else {
+                        (itemCount - index).toFloat()
+                    }
+                    if (showExtraBubble && index == 0) {
+                        placeable.placeWithLayer(x = x + extraBubbleSpace, y = 0, zIndex = z)
+                    } else {
+                        placeable.placeWithLayer(x = x, y = 0, zIndex = z)
+                    }
                 }
             }
         }

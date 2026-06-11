@@ -125,7 +125,7 @@ fun ProfilePage(
     if (showLogoutDialog) {
         BasicDialog(
             title = stringResource(R.string.log_out_title),
-            message = "",
+            message = stringResource(R.string.log_out_message),
             confirm = stringResource(R.string.log_out),
             cancel = stringResource(R.string.cancel),
             onConfirm = {
@@ -136,15 +136,6 @@ fun ProfilePage(
             },
             onDismiss = { showLogoutDialog = false }
         )
-    }
-
-    // This is where the page fetches the current app version.
-
-    val unknown = stringResource(R.string.error_unknown)
-    val appVersion = remember {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0)
-            .versionName ?: unknown
     }
 
     // Page layout start
@@ -161,7 +152,6 @@ fun ProfilePage(
                 when (state) {
                     is ProfileUiState.Ready -> {
                         EditProfile(
-                            appversion = appVersion,
                             username = state.username,
                             email = state.eMail,
                             image = state.image,
