@@ -292,7 +292,7 @@ private fun ShareTeamSection(
 @Composable
 private fun ShareBottomBar(onConfirmShare: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().requiredHeight(136.dp)
+        modifier = Modifier.fillMaxWidth().requiredHeight(80.dp)
             .background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically

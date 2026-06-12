@@ -38,7 +38,7 @@ fun TeammateShareBottomBar(
             .background(MaterialTheme.colorScheme.primaryContainer)
             .navigationBarsPadding()
             .padding(horizontal = 16.dp)
-            .height(100.dp),
+            .height(80.dp),
         horizontalArrangement = Arrangement.End,
         verticalAlignment     = Alignment.CenterVertically
     ) {
