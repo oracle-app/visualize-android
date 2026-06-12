@@ -26,14 +26,16 @@ fun ThemeItem(
     val shape = RoundedCornerShape(35)
 
     val borderColor: Color = if(isSelected) {
+
         MaterialTheme.colorScheme.onPrimaryContainer
+
     } else {
         Color.Transparent
     }
 
     Row(
         modifier = modifier
-            .height(20.dp)
+            .height(27.dp)
             .border(2.dp, borderColor, shape)
             .clip(shape)
             .clickable { onClick() }

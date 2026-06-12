@@ -26,6 +26,10 @@ fun DeleteTeamDialog(
         if (c == Color.Transparent) MaterialTheme.colorScheme.surface else c
     }
 
+    val titleTextColor = MaterialTheme.colorScheme.onSurface
+
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor   = containerColor,
@@ -35,14 +39,14 @@ fun DeleteTeamDialog(
                 text       = stringResource(R.string.dialog_delete_team_title),
                 fontSize   = 24.sp,
                 fontWeight = FontWeight.Normal,
-                color      = MaterialTheme.colorScheme.onSurface
+                color      = titleTextColor
             )
         },
         text = {
             Text(
                 text     = stringResource(R.string.dialog_delete_team_message),
                 fontSize = 16.sp,
-                color    = MaterialTheme.colorScheme.onSurfaceVariant
+                color    = dialogDescriptionTextColor
             )
         },
         dismissButton = {

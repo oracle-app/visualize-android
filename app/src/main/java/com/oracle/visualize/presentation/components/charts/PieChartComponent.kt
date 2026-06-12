@@ -4,17 +4,16 @@ import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
 import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
-import io.github.koalaplot.core.animation.StartAnimationUseCase
 import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -30,16 +29,16 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel, enableTooltips: Boolean) {
+fun RenderPieChart(modifier: Modifier = Modifier, chart: PieChartModel, chartColorTheme: ChartPalette, enableTooltips: Boolean) {
     val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
-    val colors = generateChartColors(categories.size, ChartPalette.THEME1)
+    val colors = generateChartColors(categories.size, chartColorTheme)
 
     Box(
-        modifier = modifier.fillMaxSize().graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true),
+        modifier = if (enableTooltips) modifier.padding(top = 40.dp).fillMaxSize() else modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         PieChart(

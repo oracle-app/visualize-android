@@ -19,7 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.Avatar
 
@@ -31,6 +33,8 @@ fun ProfileHeader(
     profileImageUrl: String,
     onEditClick: () -> Unit
 ) {
+    val emailTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -67,7 +71,8 @@ fun ProfileHeader(
         Text(
             text = userName,
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -75,7 +80,9 @@ fun ProfileHeader(
         Text(
             text = email,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 17.sp,
+            color = emailTextColor
         )
     }
 }

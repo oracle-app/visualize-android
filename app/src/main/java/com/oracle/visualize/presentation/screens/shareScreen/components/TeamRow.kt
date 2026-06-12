@@ -43,7 +43,7 @@ fun TeamRow(
     val targetBg = if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.surfaceVariant
     val animatedBg by animateColorAsState(targetValue = targetBg, animationSpec = tween(200), label = "teamBg")
     val textColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
-    val subColor  = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.onBackground
+    val subColor  = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

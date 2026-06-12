@@ -3,7 +3,7 @@ package com.oracle.visualize.usecases
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.models.Visualization
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import com.oracle.visualize.domain.usecases.PublishVisualizationsInBulkUseCase
+import com.oracle.visualize.domain.usecases.visualization.PublishVisualizationsInBulkUseCase
 import com.oracle.visualize.fixtures.VisualizationFixtures
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

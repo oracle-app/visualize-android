@@ -4,10 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +25,7 @@ import com.oracle.visualize.domain.models.LineChart
 import com.oracle.visualize.domain.models.PieChartModel
 import com.oracle.visualize.domain.models.ScatterChart
 import com.oracle.visualize.domain.models.StackedBarChart
+import com.oracle.visualize.domain.models.TileChart
 import com.oracle.visualize.domain.models.VerticalBarChart
 import com.oracle.visualize.presentation.components.charts.RenderAreaChart
 import com.oracle.visualize.presentation.components.charts.RenderDonutChart
@@ -30,6 +34,7 @@ import com.oracle.visualize.presentation.components.charts.RenderLineChart
 import com.oracle.visualize.presentation.components.charts.RenderPieChart
 import com.oracle.visualize.presentation.components.charts.RenderScatterChart
 import com.oracle.visualize.presentation.components.charts.RenderStackedBarChart
+import com.oracle.visualize.presentation.components.charts.RenderTileChart
 import com.oracle.visualize.presentation.components.charts.RenderVerticalBarChart
 import com.oracle.visualize.ui.theme.ChartPalette
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -46,75 +51,72 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 fun ChartRenderGeneral(
     modifier: Modifier = Modifier,
     chart: Chart<*>,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     showAxisLabels: Boolean = true,
     enableTooltips: Boolean = true,
     enableZoomAndPan: Boolean = true,
     feedCardLabels: Boolean = false
 ) {
-    val scrollState = rememberScrollState()
-    var chartWidth: Dp
-    var barCount: Int
-    var scrollable: Boolean
-    var boxModifier: Modifier
-    var chartModifier: Modifier
+    val topPadding = if (feedCardLabels) 8.dp else 18.dp
+    val bottomPadding = if (feedCardLabels) 8.dp else 8.dp
+    val sidePadding = if (feedCardLabels) 6.dp else 6.dp
 
     Column(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.onPrimary)
-            .padding(top = 18.dp, start = 0.dp, end = 12.dp, bottom = 8.dp)
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.onPrimary)
+            .padding(top = topPadding, start = sidePadding, end = sidePadding, bottom = bottomPadding)
     ) {
         when (chart) {
             is VerticalBarChart -> {
-                barCount = chart.fieldNames.size
-                scrollable = barCount > 10 && !feedCardLabels
-                chartWidth = if (scrollable) (barCount * 100).dp else 0.dp
-                boxModifier = if (scrollable) Modifier.fillMaxWidth().horizontalScroll(scrollState) else Modifier.fillMaxWidth()
-                chartModifier = if (!scrollable) Modifier.fillMaxWidth() else Modifier.width(chartWidth)
-
-                Box(modifier = boxModifier) {
-                    RenderVerticalBarChart(
-                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                        enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
-                    )
-                }
+                RenderVerticalBarChart(
+                    modifier = Modifier.fillMaxSize(), chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                    enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                )
             }
 
             is HorizontalBarChart -> {
-                RenderHorizontalBarChart(chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                        enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels)
+                RenderHorizontalBarChart(
+                    modifier = Modifier.fillMaxSize(), chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                    enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                )
             }
 
             is StackedBarChart -> {
-                barCount = chart.data.size
-                scrollable = barCount > 10 && !feedCardLabels
-                chartWidth = if (scrollable) (barCount * 100).dp else 0.dp
-                boxModifier = if (scrollable) Modifier.fillMaxWidth().horizontalScroll(scrollState) else Modifier.fillMaxWidth()
-                chartModifier = if (!scrollable) Modifier.fillMaxWidth() else Modifier.width(chartWidth)
-
-                Box(modifier = boxModifier) {
-                    RenderStackedBarChart(
-                        modifier = chartModifier, chart = chart, showAxisLabels = showAxisLabels,
-                        enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan,
-                        feedCardLabels = feedCardLabels
-                    )
-                }
+                RenderStackedBarChart(
+                    modifier = Modifier.fillMaxSize(), chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                    enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                )
             }
 
             is LineChart -> RenderLineChart(
-                chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
             )
 
             is ScatterChart -> RenderScatterChart(
-                chart = chart, showAxisLabels = showAxisLabels, enableTooltips = enableTooltips,
-                enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
+                chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan, feedCardLabels = feedCardLabels
             )
 
-            is PieChartModel -> RenderPieChart(chart = chart, enableTooltips = enableTooltips)
+            is PieChartModel -> RenderPieChart(chart = chart, chartColorTheme = chartColorTheme, enableTooltips = enableTooltips)
 
-            is DonutChart -> RenderDonutChart(chart = chart, enableTooltips = enableTooltips)
+            is DonutChart -> RenderDonutChart(
+                chart = chart, chartColorTheme = chartColorTheme, feedCardLabel = feedCardLabels,
+                enableTooltips = enableTooltips
+            )
 
-            is AreaChart -> RenderAreaChart(chart = chart, showAxisLabels = showAxisLabels,
-                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan)
+            is AreaChart -> RenderAreaChart(
+                chart = chart, showAxisLabels = showAxisLabels, chartColorTheme = chartColorTheme,
+                enableTooltips = enableTooltips, enableZoomAndPan = enableZoomAndPan
+            )
+
+            is TileChart -> RenderTileChart(
+                modifier = Modifier.fillMaxSize(),
+                chart = chart,
+                chartColorTheme = chartColorTheme,
+                isFeedCard = feedCardLabels
+            )
         }
     }
 }
@@ -124,13 +126,15 @@ fun ChartRenderGeneral(
  *
  * @param n The amount of colors to be created.
  * @param colorTheme The user's preferred chart color palette.
+ * @param isBarChart Activates a special palette for vertical and horizontal bar charts.
  * @returns a list of [Color] objects.
  * */
-fun generateChartColors(n: Int, colorTheme: ChartPalette): List<Color> {
+fun generateChartColors(n: Int, colorTheme: ChartPalette, isBarChart: Boolean = false): List<Color> {
     if (n <= 0) return emptyList()
 
     val colors = colorTheme.colors
     val colorsSize = colors.size
+    val finalColorsList = List(n) { i -> if (i < colorsSize) { colors[i] } else { colors[i % colorsSize] } }
 
-    return List(n) { i -> if (i < colorsSize) { colors[i] } else { colors[i % colorsSize] } }
+    return if (isBarChart) listOf(Color.Transparent) + finalColorsList else finalColorsList
 }

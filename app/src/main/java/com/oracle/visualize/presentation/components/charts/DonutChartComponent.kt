@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,12 +15,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.DonutChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
-import io.github.koalaplot.core.animation.StartAnimationUseCase
 import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -36,16 +36,22 @@ import kotlin.math.roundToInt
  */
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, enableTooltips: Boolean) {
+fun RenderDonutChart(
+    modifier: Modifier = Modifier,
+    chart: DonutChart,
+    chartColorTheme: ChartPalette,
+    feedCardLabel: Boolean,
+    enableTooltips: Boolean
+) {
     val coroutineScope = rememberCoroutineScope()
     val categories = chart.fieldNames
     val values = chart.data
     val valuesTotal = values.sum()
     val percentageValues = values.map { value -> (value/valuesTotal) * 100 }
-    val colors = generateChartColors(categories.size, ChartPalette.THEME1)
+    val colors = generateChartColors(categories.size, chartColorTheme)
 
     Box(
-        modifier = modifier.fillMaxSize().graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true),
+        modifier = if (enableTooltips) modifier.padding(top = 40.dp).fillMaxSize() else modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         PieChart(
@@ -60,15 +66,17 @@ fun RenderDonutChart(modifier: Modifier = Modifier, chart: DonutChart, enableToo
             holeSize = 0.6f,
             holeContent = {
                 Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Total",
                             style = MaterialTheme.typography.titleMedium,
+                            fontSize = if (feedCardLabel) 13.sp else 18.sp,
                             color = Color.DarkGray
                         )
                         Text(
                             text = (values.sum().roundToInt() / 1.0f).toString(),
                             style = MaterialTheme.typography.titleMedium,
+                            fontSize = if (feedCardLabel) 9.sp else 14.sp,
                             color = Color.DarkGray
                         )
                     }

@@ -1,5 +1,6 @@
 package com.oracle.visualize.presentation.screens.selectChartScreen
 import com.oracle.visualize.domain.models.Chart
+import com.oracle.visualize.ui.theme.ChartPalette
 import java.util.UUID
 /**
  * Represents the UI state for the Chart Selection screen.
@@ -13,7 +14,7 @@ sealed interface ChartSelectionUiState {
         val hasTitleChanges: Boolean = false
     ) : ChartSelectionUiState
 
-    data class Error(val message: String) : ChartSelectionUiState
+    data class Error(val message: Int) : ChartSelectionUiState
 }
 
 /**
@@ -23,6 +24,7 @@ data class ChartSelection(
     val id: String = UUID.randomUUID().toString(),
     val chartIndex: Int,
     val chart: Chart<*>,
+    val chartColorTheme: ChartPalette = ChartPalette.THEME1,
     val customTitle: String,
     val isSelected: Boolean = false
 )

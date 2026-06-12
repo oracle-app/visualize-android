@@ -32,6 +32,7 @@ sealed class DrawElement {
         val text: String,
         val position: Offset,
         val color: Color,
-        val fontSize: TextUnit
+        val fontSize: TextUnit,
+        val italics: Boolean
     ) : DrawElement()
 }

@@ -24,24 +24,21 @@ import com.oracle.visualize.R
  */
 @Composable
 fun TeamsTopBar() {
+    val titleColor = MaterialTheme.colorScheme.onSurface
+
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)
             .statusBarsPadding()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier          = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .padding(horizontal = 16.dp)
+            modifier = Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 16.dp)
         ) {
             Text(
                 text       = stringResource(R.string.teams_title),
+                color      = titleColor,
                 fontSize   = 28.sp,
-                fontWeight = FontWeight.Normal,
-                color      = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.Medium
             )
         }
     }

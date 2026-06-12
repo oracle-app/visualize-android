@@ -36,8 +36,11 @@ private val AVATAR_OFFSET  = 16.dp
 fun MemberAvatarStackFeed(
     members: List<User>,
 ) {
-    val displayCount = minOf(members.size, 3)
+    // If there are exactly 4 members, show all 4 avatars.
+    // If there are more than 4, show 3 avatars and an overflow bubble (e.g., +2 for 5 members).
+    val displayCount = if (members.size == 4) 4 else minOf(members.size, 3)
     val extraCount = members.size - displayCount
+    val showExtraBubble = extraCount > 0
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -45,19 +48,19 @@ fun MemberAvatarStackFeed(
     ) {
         Layout(
             content = {
-                if (extraCount > 0) {
+                if (showExtraBubble) {
                     Box(
                         modifier = Modifier
                             .requiredSize(AVATAR_SIZE)
                             .clip(CircleShape)
                             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant), CircleShape)
-                            .background(MaterialTheme.colorScheme.onPrimary),
+                            .background(MaterialTheme.colorScheme.surface),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "+$extraCount",
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Normal),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -84,21 +87,19 @@ fun MemberAvatarStackFeed(
             val placeables = measurables.map { it.measure(constraints) }
             val avatarSize = placeables.firstOrNull()?.width ?: 0
             val offset = (AVATAR_SIZE - AVATAR_OFFSET).roundToPx()
+            val extraBubbleSpace = if (showExtraBubble) 22 else 0
             val itemCount = placeables.size
-            val totalWidth = if (itemCount > 0)
-                avatarSize + (offset * (itemCount - 1))
-            else 0
+            val totalWidth = if (itemCount > 0) avatarSize + (offset * (itemCount - 1)) + extraBubbleSpace else 0
             val height = placeables.firstOrNull()?.height ?: 0
 
             layout(totalWidth, height) {
                 placeables.forEachIndexed { index, placeable ->
                     // index 0 = extra bubble or last member, last index = first member (on top)
-                    val x = (itemCount - 1 - index) * offset
+                    var x = (itemCount - 1 - index) * offset
+                    if (showExtraBubble && index == 0) x += extraBubbleSpace
                     placeable.placeWithLayer(x, 0, zIndex = index.toFloat())
                 }
             }
         }
-
-
     }
 }

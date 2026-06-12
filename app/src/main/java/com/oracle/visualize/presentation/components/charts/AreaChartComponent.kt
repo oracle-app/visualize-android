@@ -2,9 +2,10 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -22,15 +23,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.oracle.visualize.domain.models.AreaChart
 import com.oracle.visualize.presentation.components.generateChartColors
 import com.oracle.visualize.ui.theme.ChartPalette
@@ -64,7 +62,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderAreaChart(
-    modifier: Modifier = Modifier, chart: AreaChart, showAxisLabels: Boolean,
+    modifier: Modifier = Modifier, chart: AreaChart, chartColorTheme: ChartPalette, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -75,9 +73,10 @@ fun RenderAreaChart(
     val minX = remember(sortedKeys) { sortedKeys.firstOrNull() ?: 0f }
     val maxX = remember(sortedKeys) { sortedKeys.lastOrNull() ?: 0f }
     val maxY = remember(data) { data.values.maxOfOrNull { it.sum() } ?: 0f }
-    val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, ChartPalette.THEME1) }
+    val seriesColors = remember(seriesNames) { generateChartColors(seriesNames.size, chartColorTheme) }
 
-    Box(modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true)) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 20.dp) else modifier) {
+        Spacer(modifier = Modifier.height(40.dp))
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

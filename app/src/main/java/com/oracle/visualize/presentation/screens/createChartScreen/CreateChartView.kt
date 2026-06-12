@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -74,6 +75,7 @@ fun CreatePage(
     val scrollState = rememberScrollState()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -92,49 +94,56 @@ fun CreatePage(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val descriptionText = when (uiState) {
-                is CreateChartUiState.Success -> stringResource(R.string.create_description_success)
-                is CreateChartUiState.Uploading -> stringResource(R.string.create_description_uploading)
-                else -> stringResource(R.string.create_description_idle)
-            }
-
-            Text(
-                text = descriptionText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-            )
+                    .weight(1f)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(25.dp))
 
-            if (uiState is CreateChartUiState.Idle) {
-                DashedSelector(
-                    onClick = { launcher.launch("*/*") }
+                val descriptionText = when (uiState) {
+                    is CreateChartUiState.Success -> stringResource(R.string.create_description_success)
+                    is CreateChartUiState.Uploading -> stringResource(R.string.create_description_uploading)
+                    else -> stringResource(R.string.create_description_idle)
+                }
+
+                Text(
+                    text = descriptionText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
                 )
-            } else {
-                FileStatusSection(uiState as CreateChartUiState, viewModel)
+
+                if (uiState is CreateChartUiState.Idle) {
+                    DashedSelector(
+                        onClick = { launcher.launch("*/*") }
+                    )
+                } else {
+                    FileStatusSection(uiState as CreateChartUiState, viewModel)
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                if (uiState !is CreateChartUiState.Success) {
+                    DatasetRequirementsSection()
+                }
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            if (uiState !is CreateChartUiState.Success) {
-                DatasetRequirementsSection()
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             if (uiState is CreateChartUiState.Success) {
                 Button(
                     onClick = { onNavigateToSelection((uiState as CreateChartUiState.Success).taskId) },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .padding(bottom = 32.dp, top = 16.dp)
+                        .fillMaxWidth(0.8f)
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     shape = RoundedCornerShape(28.dp)
@@ -177,7 +186,7 @@ fun DashedSelector(onClick: () -> Unit) {
                 size = Size(size.width - strokeWidth, size.height - strokeWidth)
             )
         }
-        val teal = MaterialTheme.colorScheme.onSurfaceVariant
+        val teal = MaterialTheme.colorScheme.primary
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Canvas(modifier = Modifier.size(48.dp)) {
                 val iconSize = size.width
@@ -254,14 +263,14 @@ fun DatasetRequirementsSection() {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.dataset_requirements_body),
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.dataset_requirements_example_label),
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -272,7 +281,7 @@ fun DatasetRequirementsSection() {
         Text(
             text = stringResource(R.string.dataset_requirements_footer),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 }
@@ -286,10 +295,10 @@ fun TableExampleComponent() {
             .padding(8.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(stringResource(R.string.table_header_date), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.table_header_product), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.table_header_sales), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(stringResource(R.string.table_header_region), modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
         }
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.onPrimary)
 
@@ -302,7 +311,7 @@ fun TableExampleComponent() {
         rows.forEach { row ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 row.forEach { cell ->
-                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground)
+                    Text(cell, modifier = Modifier.weight(1f), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                 }
             }
         }

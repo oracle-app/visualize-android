@@ -9,14 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,15 +32,7 @@ fun LoginPage(
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val unknown = stringResource(R.string.error_unknown)
-    val appVersion = remember {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0)
-            .versionName ?: unknown
-    }
 
     LaunchedEffect(uiState.success) {
         if (uiState.success) {
@@ -83,7 +74,8 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.welcome),
                 fontSize = 32.sp,
-                letterSpacing = 1.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.sp,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
@@ -93,9 +85,18 @@ fun LoginPage(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
                 placeholder = stringResource(R.string.email),
-                isError = uiState.emailError != null,
+                isError = uiState.emailErrorRes != null,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
             )
+
+            uiState.emailErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -103,19 +104,28 @@ fun LoginPage(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
                 placeholder = stringResource(R.string.password),
-                isError = uiState.passwordError != null,
+                isError = uiState.passwordErrorRes != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isPasswordVisible,
                 onVisibilityClick = viewModel::onPasswordVisibilityChange,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f)
             )
 
+            uiState.passwordErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = stringResource(R.string.forgot_your_password),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .align(Alignment.End)
@@ -123,11 +133,11 @@ fun LoginPage(
                     .padding(vertical = 4.dp, horizontal = 8.dp)
             )
 
-            uiState.error?.let {
+            uiState.errorRes?.let { errorId ->
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = it,
+                    text = stringResource(id = errorId),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -165,7 +175,7 @@ fun LoginPage(
             Text(
                 text = stringResource(R.string.no_account),
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
 
             TextButton(
@@ -175,16 +185,17 @@ fun LoginPage(
                 Text(
                     text = stringResource(R.string.signup),
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "V${appVersion}",
+                text = stringResource(R.string.version),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }

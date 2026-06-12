@@ -89,7 +89,7 @@ fun ChartSelectionPage(
     }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -118,9 +118,10 @@ fun ChartSelectionPage(
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         },
@@ -128,7 +129,7 @@ fun ChartSelectionPage(
             val state = uiState
             if (state is ChartSelectionUiState.Success) {
                 Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     tonalElevation = 0.dp,
                     shadowElevation = 0.dp
                 ) {
@@ -198,7 +199,7 @@ fun ChartSelectionPage(
                 }
             }
         },
-        containerColor = MaterialTheme.colorScheme.surfaceVariant
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -230,16 +231,16 @@ fun ChartSelectionPage(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Unable to Load Charts",
+                                text = stringResource(id = R.string.error_chart_unable_load),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = state.message,
+                                text = stringResource(id = state.message),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
@@ -296,7 +297,7 @@ fun ChartSelectionPage(
                             Text(
                                 text = stringResource(R.string.chart_selection_prompt),
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 fontSize = 14.sp
                             )
                         }
@@ -308,6 +309,7 @@ fun ChartSelectionPage(
                             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                                 ChartCard(
                                     chart = selection.chart,
+                                    chartColorTheme = selection.chartColorTheme,
                                     title = selection.customTitle,
                                     isSelected = selection.isSelected,
                                     onSelect = { viewModel.toggleSelection(selection.id) },
@@ -326,7 +328,7 @@ fun ChartSelectionPage(
         if (showEditDialog != null) {
             AlertDialog(
                 onDismissRequest = { showEditDialog = null },
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 title = {
                     Text(
                         text = stringResource(R.string.dialog_edit_title),
@@ -341,10 +343,11 @@ fun ChartSelectionPage(
                         label = { Text(text = stringResource(R.string.dialog_edit_title_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 },
@@ -366,7 +369,7 @@ fun ChartSelectionPage(
                     TextButton(onClick = { showEditDialog = null }) {
                         Text(
                             text = stringResource(R.string.cancel),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -376,7 +379,7 @@ fun ChartSelectionPage(
         if (uiState is ChartSelectionUiState.Success && (uiState as ChartSelectionUiState.Success).isUnsavedChangesDialogVisible) {
             AlertDialog(
                 onDismissRequest = { viewModel.showUnsavedChangesDialog(false) },
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 title = {
                     Text(
                         text = stringResource(R.string.dialog_unsaved_title),
@@ -387,7 +390,7 @@ fun ChartSelectionPage(
                 text = {
                     Text(
                         text = stringResource(R.string.dialog_unsaved_message),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 },
                 confirmButton = {
@@ -408,7 +411,7 @@ fun ChartSelectionPage(
                     TextButton(onClick = { viewModel.showUnsavedChangesDialog(false) }) {
                         Text(
                             text = stringResource(R.string.cancel),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }

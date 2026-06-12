@@ -2,6 +2,7 @@ package com.oracle.visualize.presentation.components.charts
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,10 +22,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
@@ -68,7 +67,7 @@ import kotlin.collections.component2
 @OptIn(ExperimentalKoalaPlotApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RenderScatterChart(
-    modifier: Modifier = Modifier, chart: ScatterChart, showAxisLabels: Boolean,
+    modifier: Modifier = Modifier, chart: ScatterChart, chartColorTheme: ChartPalette, showAxisLabels: Boolean,
     enableTooltips: Boolean, enableZoomAndPan: Boolean, feedCardLabels: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -76,7 +75,7 @@ fun RenderScatterChart(
         listOf(DefaultPoint(0f, 0f)) + chart.data.map { (x, y) -> DefaultPoint(x, y) }
     }
 
-    val dotColors = generateChartColors(2, ChartPalette.THEME1)
+    val dotColors = generateChartColors(2, chartColorTheme)
 
     var xMetric = stringResource(R.string.line_scatter_x_metric)
     var yMetric = stringResource(R.string.line_scatter_y_metric)
@@ -86,7 +85,7 @@ fun RenderScatterChart(
         yMetric = chart.metrics[1].ifBlank { yMetric }
     }
 
-    Box(modifier = modifier.graphicsLayer(compositingStrategy = CompositingStrategy.ModulateAlpha, clip = true)) {
+    Box(modifier = if (enableTooltips) modifier.padding(top = 60.dp) else modifier) {
         KoalaPlotTheme(axis = KoalaPlotTheme.axis.copy(color = Color.Gray, minorGridlineStyle = null)) {
             XYGraph(
                 xAxisModel = rememberFloatLinearAxisModel(

@@ -27,11 +27,13 @@ fun SearchSection(
     text: String,
     onTextChange: (String) -> Unit
 ) {
+    val queryTextColor = MaterialTheme.colorScheme.onSurface
+
     OutlinedTextField(
         value = text,
         onValueChange = onTextChange,
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+        placeholder = { Text(stringResource(R.string.search_placeholder), color = MaterialTheme.colorScheme.onPrimaryContainer) },
         trailingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
@@ -41,8 +43,10 @@ fun SearchSection(
         singleLine = true,
         shape = RoundedCornerShape(24.dp),
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = queryTextColor,
+            unfocusedTextColor = queryTextColor,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = MaterialTheme.colorScheme.outline,
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,

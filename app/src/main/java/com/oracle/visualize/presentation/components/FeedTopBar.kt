@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -60,6 +59,12 @@ fun FeedTopBar(
         VisualizationFilter.SHARED   to stringResource(R.string.feed_filter_shared)
     )
 
+    val filterTextColor = MaterialTheme.colorScheme.onSurface
+
+    val selectFilterBGColor = MaterialTheme.colorScheme.primaryContainer
+
+    val dropdownBGColor = MaterialTheme.colorScheme.surface
+
     TopAppBar(
         windowInsets = TopAppBarDefaults.windowInsets,
         title = {
@@ -71,7 +76,8 @@ fun FeedTopBar(
                         text = filterLabels[selectedFilter]
                             ?: stringResource(R.string.feed_filter_all),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp
+                        fontSize = 30.sp,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
                     IconButton(
@@ -92,7 +98,7 @@ fun FeedTopBar(
                     onDismissRequest = { expanded = false },
                     modifier = Modifier
                         .width(200.dp)
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(dropdownBGColor)
                         .align(Alignment.TopStart)
                 ) {
                     VisualizationFilter.entries.forEach { filter ->
@@ -103,7 +109,8 @@ fun FeedTopBar(
                                 Text(
                                     text = filterLabels[filter] ?: filter.name,
                                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
+                                    color = filterTextColor
                                 )
                             },
                             onClick = {
@@ -112,12 +119,11 @@ fun FeedTopBar(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 5.dp)
                                 .background(
                                     color = if (isSelected)
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                        selectFilterBGColor
                                     else
-                                        MaterialTheme.colorScheme.primaryContainer
+                                        dropdownBGColor
                                 )
                                 .clip(RoundedCornerShape(10.dp)),
                             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)

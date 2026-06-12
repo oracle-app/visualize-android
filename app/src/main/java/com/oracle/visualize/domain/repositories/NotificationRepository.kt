@@ -1,5 +1,6 @@
 package com.oracle.visualize.domain.repositories
 
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.Notification
 
 /**
@@ -7,7 +8,7 @@ import com.oracle.visualize.domain.models.Notification
  */
 interface NotificationRepository {
 
-    suspend fun getNotificationsForUser(userID: String): List<Notification>
-    suspend fun markAsRead(notificationID: String)
-    suspend fun markAllAsRead(userID: String)
+    suspend fun getNotificationsForUser(userID: String): AppResult<List<Notification>>
+    suspend fun markAsRead(notificationID: String): AppResult<Unit>
+    suspend fun markAllAsRead(userID: String): AppResult<Unit>
 }

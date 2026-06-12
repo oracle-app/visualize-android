@@ -2,7 +2,7 @@ package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.NotificationRepository
-import com.oracle.visualize.domain.usecases.MarkAllNotificationsAsReadUseCase
+import com.oracle.visualize.domain.usecases.notification.MarkAllNotificationsAsReadUseCase
 import com.oracle.visualize.fixtures.NotificationFixtures
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

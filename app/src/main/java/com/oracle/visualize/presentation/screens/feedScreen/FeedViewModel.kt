@@ -1,15 +1,25 @@
 package com.oracle.visualize.presentation.screens.feedScreen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.oracle.visualize.R
+import com.oracle.visualize.data.datasources.local.FeedCacheManager
 import com.oracle.visualize.domain.exceptions.AppError
+import com.oracle.visualize.domain.exceptions.AppResult
 import com.oracle.visualize.domain.models.FeedItem
 import com.oracle.visualize.domain.models.VisualizationCard
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.domain.models.enums.VisualizationFilter
+import com.oracle.visualize.domain.models.policyObjects.VisualizationPermissions
 import com.oracle.visualize.domain.repositories.AuthRepository
+import com.oracle.visualize.domain.repositories.UserRepository
+import com.oracle.visualize.domain.usecases.visualization.DeleteVisualizationForEveryoneUseCase
+import com.oracle.visualize.domain.usecases.visualization.HideVisualizationForMeUseCase
 import com.oracle.visualize.domain.usecases.ObserveUserFeedUseCase
-import com.oracle.visualize.domain.usecases.ParseSingleChartUseCase
+import com.oracle.visualize.domain.usecases.chart.GetUserChartThemeUseCase
+import com.oracle.visualize.domain.usecases.chart.ParseSingleChartUseCase
+import com.oracle.visualize.ui.theme.ChartPalette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,24 +33,54 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(
     private val observeUserFeedUseCase: ObserveUserFeedUseCase,
     private val authRepository: AuthRepository,
-    private val parseSingleChartUseCase: ParseSingleChartUseCase
+    private val userRepository: UserRepository,
+    private val parseSingleChartUseCase: ParseSingleChartUseCase,
+    private val deleteVisualizationForEveryoneUseCase: DeleteVisualizationForEveryoneUseCase,
+    private val hideVisualizationForMeUseCase: HideVisualizationForMeUseCase,
+    private val getUserChartThemeUseCase: GetUserChartThemeUseCase,
+    private val feedCacheManager: FeedCacheManager,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
+    private val FILTER_KEY = "selected_filter"
 
+    private val savedFilter: VisualizationFilter
+        get() = savedStateHandle.get<String>(FILTER_KEY)?.let { enumValueOf<VisualizationFilter>(it) }
+            ?: VisualizationFilter.ALL
     private var allFeedItems: List<FeedItem> = emptyList()
     private var currentUserID: String = ""
+    private var currentUserType: UserType = UserType.CONSUMER
     private var feedJob: Job? = null
 
+    private var userChartTheme: ChartPalette = ChartPalette.THEME1
+
     init {
-        try {
-            currentUserID = authRepository.getCurrentUserID()
-            loadData(forceRefresh = false)
-        } catch (e: Exception) {
+        currentUserID = authRepository.getCurrentUserID() ?: ""
+
+        if (currentUserID.isBlank()) {
             _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+        } else {
+            viewModelScope.launch {
+                try {
+                    when (val userResult = userRepository.getUserByUserID(currentUserID)) {
+                        is AppResult.Success -> {
+                            currentUserType = userResult.data.userType
+                            loadData(forceRefresh = false)
+                        }
+                        is AppResult.Error -> {
+                            _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                        }
+                    }
+                } catch (e: Exception) {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
         }
     }
+
+    // ─── Data loading ──────────────────────────────────────────────────────────
 
     fun toggleSearch() {
         _uiState.update { currentState ->
@@ -52,7 +92,10 @@ class FeedViewModel @Inject constructor(
 
     fun loadChartForCard(card: VisualizationCard) {
         viewModelScope.launch {
-            val chart = parseSingleChartUseCase(card)
+            val chart = when (val result = parseSingleChartUseCase(card)) {
+                is AppResult.Success -> result.data
+                is AppResult.Error -> null
+            }
 
             allFeedItems = allFeedItems.map { item ->
                 if (item.card.id == card.id) {
@@ -77,15 +120,22 @@ class FeedViewModel @Inject constructor(
 
         feedJob?.cancel()
         feedJob = viewModelScope.launch {
+
+            userChartTheme = when (val chartThemeResult = getUserChartThemeUseCase(currentUserID)) {
+                is AppResult.Success -> chartThemeResult.data
+                is AppResult.Error -> userChartTheme
+            }
+
             observeUserFeedUseCase(currentUserID, forceRefresh).collect { result ->
-                result.fold(
-                    onSuccess = { items ->
-                        allFeedItems = items.distinctBy { it.card.id }
+
+                when (result) {
+                    is AppResult.Success -> {
+                        allFeedItems = result.data.distinctBy { it.card.id }
                         applyLocalFilterAndSearch()
-                    },
-                    onFailure = { error ->
+                    }
+                    is AppResult.Error -> {
                         allFeedItems = emptyList()
-                        val uiErrorMessage = when (error) {
+                        val uiErrorMessage = when (result.error) {
                             is AppError.NetworkError -> R.string.error_network
                             is AppError.ParsingError -> R.string.error_parsing
                             is AppError.NotFound     -> R.string.error_viz_not_found
@@ -93,12 +143,13 @@ class FeedViewModel @Inject constructor(
                         }
                         _uiState.value = FeedUiState.Error(uiErrorMessage)
                     }
-                )
+                }
             }
         }
     }
 
     fun onFilterChange(filter: VisualizationFilter) {
+        savedStateHandle[FILTER_KEY] = filter.name
         val currentState = _uiState.value
         if (currentState is FeedUiState.Success && currentState.selectedFilter == filter) return
         _uiState.value = when (currentState) {
@@ -116,9 +167,105 @@ class FeedViewModel @Inject constructor(
         applyLocalFilterAndSearch()
     }
 
+    // ─── Cache ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Called when the Feed screen resumes (e.g. after navigating back from ShareWithTeammates).
+     * If [FeedCacheManager] was cleared by another screen (like after a successful share),
+     * forces a full reload so the feed reflects the latest shared users immediately.
+     */
+    fun refreshIfCacheInvalidated() {
+        val freshUserID = authRepository.getCurrentUserID() ?: ""
+
+        if (freshUserID.isNotBlank() && freshUserID != currentUserID) {
+            currentUserID = freshUserID
+
+            viewModelScope.launch {
+                when (val userResult = userRepository.getUserByUserID(currentUserID)) {
+                    is AppResult.Success -> {
+                        currentUserType = userResult.data.userType
+                        loadData(forceRefresh = true)
+                    }
+                    is AppResult.Error -> {
+                        updateSuccess { it }
+                        _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                    }
+                }
+            }
+        }
+        else if (feedCacheManager.cachedFeed == null) {
+            loadData(forceRefresh = true)
+        }
+    }
+
+    // ─── Card menu ─────────────────────────────────────────────────────────────
+
+    fun onMenuOpen(visualizationId: String) = updateSuccess {
+        it.copy(menuOpenForId = visualizationId)
+    }
+
+    fun onMenuDismiss() = updateSuccess {
+        it.copy(menuOpenForId = null)
+    }
+
+    fun onRequestShare(visualizationId: String) = updateSuccess {
+        it.copy(menuOpenForId = null, pendingShareId = visualizationId)
+    }
+
+    fun onShareNavigated() = updateSuccess {
+        it.copy(pendingShareId = null)
+    }
+
+    fun onRequestDeleteForEveryone(visualizationId: String) = updateSuccess {
+        it.copy(menuOpenForId = null, deleteDialogForId = visualizationId)
+    }
+
+    fun onRequestHideForMe(visualizationId: String) = updateSuccess {
+        it.copy(menuOpenForId = null, hideDialogForId = visualizationId)
+    }
+
+    fun onDismissDialog() = updateSuccess {
+        it.copy(deleteDialogForId = null, hideDialogForId = null)
+    }
+
+    fun onConfirmDeleteForEveryone(visualizationId: String) {
+        updateSuccess { it.copy(deleteDialogForId = null) }
+        viewModelScope.launch {
+
+            when (val result = deleteVisualizationForEveryoneUseCase(visualizationId)) {
+                is AppResult.Success -> {
+                    feedCacheManager.clearCache()
+                    allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
+                    applyLocalFilterAndSearch()
+                }
+                is AppResult.Error -> {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
+        }
+    }
+
+    fun onConfirmHideForMe(visualizationId: String) {
+        updateSuccess { it.copy(hideDialogForId = null) }
+        viewModelScope.launch {
+            when (val result = hideVisualizationForMeUseCase(currentUserID, visualizationId)) {
+                is AppResult.Success -> {
+                    feedCacheManager.clearCache()
+                    allFeedItems = allFeedItems.filter { it.card.id != visualizationId }
+                    applyLocalFilterAndSearch()
+                }
+                is AppResult.Error -> {
+                    _uiState.value = FeedUiState.Error(R.string.error_unknown_retry)
+                }
+            }
+        }
+    }
+
+    // ─── Helpers ───────────────────────────────────────────────────────────────
+
     private fun applyLocalFilterAndSearch() {
         val currentState = _uiState.value
-        val filter      = if (currentState is FeedUiState.Success) currentState.selectedFilter else VisualizationFilter.ALL
+        val filter      = if (currentState is FeedUiState.Success) currentState.selectedFilter else savedFilter
         val search      = if (currentState is FeedUiState.Success) currentState.searchText else ""
         val isSearching = if (currentState is FeedUiState.Success) currentState.isSearching else false
 
@@ -134,15 +281,30 @@ class FeedViewModel @Inject constructor(
             }
         }
 
-        _uiState.update { state ->
+        val permissionsMap = filteredItems.associate { item ->
+            item.card.id to VisualizationPermissions(
+                userType = currentUserType,
+                currentUserID = currentUserID,
+                authorID = item.card.authorID
+            )
+        }
+
+        _uiState.update {
             FeedUiState.Success(
                 items          = filteredItems,
                 currentUserID  = currentUserID,
                 searchText     = search,
                 selectedFilter = filter,
                 isRefreshing   = false,
-                isSearching    = isSearching
+                isSearching    = isSearching,
+                chartColorTheme = userChartTheme,
+                permissionsMap = permissionsMap
             )
         }
+    }
+
+    private fun updateSuccess(block: (FeedUiState.Success) -> FeedUiState.Success) {
+        val current = _uiState.value as? FeedUiState.Success ?: return
+        _uiState.value = block(current)
     }
 }

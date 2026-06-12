@@ -2,7 +2,7 @@ package com.oracle.visualize.usecases
 
 import com.oracle.visualize.domain.exceptions.AppError
 import com.oracle.visualize.domain.repositories.VisualizationRepository
-import com.oracle.visualize.domain.usecases.GetIndividualVisualizationUseCase
+import com.oracle.visualize.domain.usecases.visualization.GetIndividualVisualizationUseCase
 import com.oracle.visualize.fixtures.VisualizationFixtures
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery

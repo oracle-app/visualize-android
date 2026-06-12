@@ -19,18 +19,20 @@ import androidx.compose.ui.unit.dp
 import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.Chart
 import com.oracle.visualize.presentation.components.ChartRenderGeneral
+import com.oracle.visualize.ui.theme.ChartPalette
 
 @Composable
 fun ChartCard(
     chart: Chart<*>,
+    chartColorTheme: ChartPalette = ChartPalette.THEME1,
     title: String,
     isSelected: Boolean,
     onSelect: () -> Unit,
     onEditTitle: () -> Unit
 ) {
     val topBottomBackground = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-    val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+    val iconColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
 
     Card(
         modifier = Modifier
@@ -85,10 +87,16 @@ fun ChartCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    .background(topBottomBackground)
                     .padding(16.dp)
             ) {
-                ChartRenderGeneral(chart = chart)
+                ChartRenderGeneral(
+                    chart = chart,
+                    chartColorTheme = chartColorTheme,
+                    feedCardLabels = true,
+                    enableTooltips  = false,
+                    enableZoomAndPan = false
+                )
             }
         }
     }

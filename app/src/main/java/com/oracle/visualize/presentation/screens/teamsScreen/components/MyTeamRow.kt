@@ -1,9 +1,13 @@
 package com.oracle.visualize.presentation.screens.teamsScreen.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,10 +43,8 @@ import com.oracle.visualize.R
 import com.oracle.visualize.domain.models.ShareTeam
 import com.oracle.visualize.presentation.screens.shareScreen.components.MemberAvatarStack
 
-// Each row is fully rounded — matches Figma where every card is independent
 private val ROW_SHAPE = RoundedCornerShape(16.dp)
 
-// Keep TeamPosition and teamShape for TeamsImInRow which still uses grouped style
 enum class TeamPosition { SINGLE, TOP, MIDDLE, BOTTOM }
 
 fun teamShape(position: TeamPosition) = when (position) {
@@ -62,82 +66,96 @@ fun MyTeamRow(
 ) {
     val offset by animateDpAsState(targetValue = if (isSwiped) (-140).dp else 0.dp, label = "swipeOffset")
 
-    Box(
+    val teamNameColor = MaterialTheme.colorScheme.onSurface
+
+    val amountOfMembersTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .clip(ROW_SHAPE)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clip(shape = teamShape(position))
     ) {
-        // Swipe action buttons (revealed on swipe)
-        Row(
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .width(140.dp)
-                .fillMaxHeight()
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .background(MaterialTheme.colorScheme.onSurface)
         ) {
-            Box(
+            // Swipe action buttons (revealed on swipe)
+            Row(
                 modifier = Modifier
-                    .weight(1f)
+                    .align(Alignment.CenterEnd)
+                    .width(140.dp)
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.primary)
-                    .clickable { onEdit(); onDismissSwipe() },
-                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector        = Icons.Default.Edit,
-                    contentDescription = stringResource(R.string.teams_edit_description),
-                    tint               = MaterialTheme.colorScheme.onPrimary,
-                    modifier           = Modifier.size(28.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable { onEdit(); onDismissSwipe() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector        = Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.teams_edit_description),
+                        tint               = MaterialTheme.colorScheme.onPrimary,
+                        modifier           = Modifier.size(28.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.error)
+                        .clickable { onDelete() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector        = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.teams_delete_description),
+                        tint               = MaterialTheme.colorScheme.onPrimary,
+                        modifier           = Modifier.size(28.dp)
+                    )
+                }
             }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.error)
-                    .clickable { onDelete() },
-                contentAlignment = Alignment.Center
+
+            // Main row content
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier          = Modifier
+                    .offset(x = offset)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures { _, dragAmount ->
+                            if (dragAmount < -15f) onSwipe()
+                            if (dragAmount > 15f) onDismissSwipe()
+                        }
+                    }
+                    .clickable { onSwipe() }
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                Icon(
-                    imageVector        = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.teams_delete_description),
-                    tint               = MaterialTheme.colorScheme.onPrimary,
-                    modifier           = Modifier.size(28.dp)
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text       = team.name,
+                        fontSize   = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color      = teamNameColor
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text     = stringResource(R.string.teams_member_count, team.memberCount),
+                        fontSize = 14.sp,
+                        color    = amountOfMembersTextColor
+                    )
+                }
+                MemberAvatarStack(members = team.members, isSelected = false)
             }
         }
 
-        // Main row content
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier          = Modifier
-                .offset(x = offset)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures { _, dragAmount ->
-                        if (dragAmount < -15f) onSwipe()
-                        if (dragAmount > 15f) onDismissSwipe()
-                    }
-                }
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text       = team.name,
-                    fontSize   = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                    color      = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text     = stringResource(R.string.teams_member_count, team.memberCount),
-                    fontSize = 14.sp,
-                    color    = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            MemberAvatarStack(members = team.members, isSelected = false)
-        }
+        // Expandable edit/delete action row — visible when tapped
+
     }
 }
+

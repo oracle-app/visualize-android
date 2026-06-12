@@ -4,9 +4,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.oracle.visualize.data.datasources.dtos.VisualizationDTO
 import com.oracle.visualize.domain.exceptions.AppError
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
+import kotlin.coroutines.resumeWithException
 
 /**
  * Data source for visualization-related operations using Firestore.
@@ -22,13 +24,13 @@ class VisualizationDatasource @Inject constructor(
 
     private fun formatVisualization(v: VisualizationDTO): HashMap<String, Any> {
         return hashMapOf(
-            "authorID" to v.authorID,
-            "title" to v.title,
-            "configJSON" to v.configJSON,
-            "previewJSON" to v.previewJSON,
+            "authorID"        to v.authorID,
+            "title"           to v.title,
+            "configJSON"      to v.configJSON,
+            "previewJSON"     to v.previewJSON,
             "sharedWithUsers" to v.sharedWithUsers,
             "sharedWithTeams" to v.sharedWithTeams,
-            "createdAt" to v.createdAt
+            "createdAt"       to v.createdAt
         )
     }
 
@@ -38,7 +40,9 @@ class VisualizationDatasource @Inject constructor(
     }
 
     suspend fun getAllVisualizations(): List<VisualizationDTO> {
-        val visualizations = visualizationsRef.get().await()
+        val visualizations = visualizationsRef
+            .get()
+            .await()
         if (visualizations.isEmpty) return emptyList()
         return visualizations.documents.map { doc ->
             doc.toObject(VisualizationDTO::class.java)
@@ -49,7 +53,8 @@ class VisualizationDatasource @Inject constructor(
     suspend fun getVisualizationsSharedWithUser(userID: String): List<VisualizationDTO> {
         val visualizations = visualizationsRef
             .whereArrayContains("sharedWithUsers", userID)
-            .get().await()
+            .get()
+            .await()
         if (visualizations.isEmpty) return emptyList()
         return visualizations.documents.map { doc ->
             doc.toObject(VisualizationDTO::class.java)
@@ -78,7 +83,8 @@ class VisualizationDatasource @Inject constructor(
             val batch = db.batch()
             for (v in chunk) {
                 val doc = visualizationsRef.document()
-                batch.set(doc, formatVisualization(v))
+                val formattedVisualization = formatVisualization(v)
+                batch.set(doc, formattedVisualization)
             }
             batch.commit().await()
         }
@@ -97,20 +103,46 @@ class VisualizationDatasource @Inject constructor(
     }
 
     /**
+     * Searches a visualization from the database by its ID.
+     * Used by both [VisualizationRepositoryImpl.getIndividualVisualization]
+     * and [VisualizationRepositoryImpl.getVisualizationById].
+     *
+     * @param visualizationID The unique ID of the visualization.
+     * @return [VisualizationDTO] object.
+     */
+    suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
+        val visualization = visualizationsRef.document(visualizationID).get().await()
+        if (!visualization.exists()) return null
+        return visualization.toObject(VisualizationDTO::class.java)
+            ?: throw AppError.ParsingError("Error parsing VisualizationDTO.")
+    }
+
+    /**
      * Permanently deletes a visualization document from the database.
-     * Uses [withTimeout] to prevent indefinite hanging on slow or offline connections.
+     * Uses [withTimeout] + [suspendCancellableCoroutine] to ensure the timeout
+     * can actually cancel a hanging Firestore task.
      * [kotlinx.coroutines.TimeoutCancellationException] propagates to the repository.
      */
     suspend fun deleteVisualization(visualizationId: String) {
         withTimeout(10_000) {
-            visualizationsRef.document(visualizationId).delete().await()
+            suspendCancellableCoroutine { cont ->
+                val task = visualizationsRef.document(visualizationId).delete()
+                task.addOnSuccessListener {
+                    if (cont.isActive) cont.resume(Unit) {}
+                }
+                task.addOnFailureListener { e ->
+                    if (cont.isActive) cont.resumeWithException(e)
+                }
+                cont.invokeOnCancellation { }
+            }
         }
     }
 
     /**
-     * Overwrites [sharedWithUsers] and [sharedWithTeams] on a visualization using
-     * [SetOptions.merge] so other fields are not affected.
-     * Uses [withTimeout] to prevent indefinite hanging.
+     * Replaces [sharedWithUsers] and [sharedWithTeams] on a visualization.
+     * The caller passes the complete desired lists including existing and new recipients.
+     * Uses [withTimeout] + [suspendCancellableCoroutine] to ensure the timeout
+     * can actually cancel a hanging Firestore task.
      * [kotlinx.coroutines.TimeoutCancellationException] propagates to the repository.
      */
     suspend fun updateSharedUsers(
@@ -119,27 +151,23 @@ class VisualizationDatasource @Inject constructor(
         teamIds: List<String>
     ) {
         withTimeout(10_000) {
-            visualizationsRef.document(visualizationId)
-                .set(
-                    mapOf(
-                        "sharedWithUsers" to userIds,
-                        "sharedWithTeams" to teamIds
-                    ),
-                    SetOptions.merge()
-                ).await()
+            suspendCancellableCoroutine { cont ->
+                val task = visualizationsRef.document(visualizationId)
+                    .set(
+                        mapOf(
+                            "sharedWithUsers" to userIds,
+                            "sharedWithTeams" to teamIds
+                        ),
+                        SetOptions.merge()
+                    )
+                task.addOnSuccessListener {
+                    if (cont.isActive) cont.resume(Unit) {}
+                }
+                task.addOnFailureListener { e ->
+                    if (cont.isActive) cont.resumeWithException(e)
+                }
+                cont.invokeOnCancellation { }
+            }
         }
-    }
-        /** Searches a visualization from the database by its ID.
-         *
-         * @param visualizationID The unique ID of the visualization.
-         * @return [VisualizationDTO] object.
-         */
-    suspend fun getIndividualVisualization(visualizationID: String): VisualizationDTO? {
-        val visualization = visualizationsRef.document(visualizationID).get().await()
-
-        if (!visualization.exists()) return null
-
-        return visualization.toObject(VisualizationDTO::class.java)
-            ?: throw AppError.ParsingError("Error parsing VisualizationDTO.")
     }
 }

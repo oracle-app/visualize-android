@@ -24,8 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.oracle.visualize.R
 import com.oracle.visualize.presentation.components.AppDropdownMenu
 import com.oracle.visualize.presentation.screens.profileScreen.components.ChartThemePicker
@@ -34,7 +37,6 @@ import com.oracle.visualize.presentation.screens.profileScreen.components.Settin
 
 @Composable
 fun EditProfile(
-    appversion: String,
     username: String,
     email: String,
     image: String,
@@ -95,39 +97,45 @@ fun EditProfile(
             onPaletteChange = { onPaletteChange(it) }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        SettingsCard(
+            title = stringResource(R.string.about_title),
+            titleDrawableImage = R.drawable.baseline_info_24
+        ) {
+            val textColor = MaterialTheme.colorScheme.onBackground
 
-        SettingsCard(title = stringResource(R.string.about_title)) {
             Text(
-                text = "${stringResource(R.string.version_declaration)} $appversion\n${stringResource(R.string.developer)}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                modifier = Modifier.padding(start = 8.dp),
+                text = "${stringResource(R.string.version_declaration)} ${stringResource(R.string.version)}\n${stringResource(R.string.developer)}",
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
+                color = textColor.copy(alpha = 0.6f)
             )
             Text(
+                modifier = Modifier.padding(start = 8.dp),
                 text = "${stringResource(R.string.terms_of_service)}\n${stringResource(R.string.licenses)}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
+                textDecoration = TextDecoration.Underline,
+                color = textColor
             )
         }
-
-        Spacer(modifier = Modifier.height(64.dp))
 
         OutlinedButton(
             onClick = { onLogoutClick() },
             border = BorderStroke(2.dp, MaterialTheme.colorScheme.error),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.error
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 48.dp)
-                .height(64.dp)
+                .height(44.dp)
         ) {
             Text(
                 text = stringResource(R.string.log_out),
-                style = MaterialTheme.typography.titleMedium
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

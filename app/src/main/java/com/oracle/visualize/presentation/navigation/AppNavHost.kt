@@ -1,5 +1,7 @@
 package com.oracle.visualize.presentation.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.oracle.visualize.presentation.screens.teamsScreen.TeamsPage
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,8 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.oracle.visualize.presentation.screens.createChartScreen.CreatePage
-import com.oracle.visualize.presentation.screens.createEditScreen.CreateEditTeamPage
+import com.oracle.visualize.presentation.screens.createEditTeamScreen.CreateEditTeamPage
 import com.oracle.visualize.presentation.screens.feedScreen.FeedPage
+import com.oracle.visualize.presentation.screens.shareWithTeammatesScreen.ShareWithTeammatesScreen
 import com.oracle.visualize.presentation.screens.fullVisualizationScreen.FullVisualizationPage
 import com.oracle.visualize.presentation.screens.loginScreen.LoginPage
 import com.oracle.visualize.presentation.screens.notificationScreen.NotificationPage
@@ -19,9 +22,10 @@ import com.oracle.visualize.presentation.screens.resetPasswordScreen.ResetPasswo
 import com.oracle.visualize.presentation.screens.selectChartScreen.ChartSelectionPage
 import com.oracle.visualize.presentation.screens.shareScreen.ShareAndPostScreen
 import com.oracle.visualize.presentation.screens.signupScreen.SignUpPage
+import com.oracle.visualize.presentation.screens.snipPreviewScreen.SnipPreviewPage
 import com.oracle.visualize.presentation.screens.splashScreen.SplashPage
 import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
-
+import com.oracle.visualize.presentation.screens.snippingTool.SnippingToolView
 
 /**
  * The main navigation host for the application.
@@ -30,6 +34,7 @@ import com.oracle.visualize.presentation.screens.threadsScreen.ThreadsPage
  * @param navController The [NavHostController] that manages the navigation within this host.
  * @param modifier The modifier to be applied to the NavHost.
  */
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
@@ -42,6 +47,9 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 modifier             = Modifier.fillMaxSize(),
                 onVisualizationClick = { visualizationId ->
                     navController.navigate(NavRoutes.FullScreen(visualizationId))
+                },
+                onShareVisualization = { visualizationId ->
+                    navController.navigate(NavRoutes.ShareWithTeammates(visualizationId))
                 }
             )
         }
@@ -64,7 +72,7 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
                 },
                 onNavigateToFeed = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.ChartSelection) { inclusive = true }
+                        popUpTo(NavRoutes.Feed) { inclusive = true }
                     }
                 }
             )
@@ -87,60 +95,6 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         composable<NavRoutes.Teams> {
-            // TODO: Implement TeamsPage
-        }
-
-        composable<NavRoutes.Profile> {
-            ProfilePage(
-                modifier = Modifier.fillMaxSize(),
-                navController = navController,
-                onLogout = {
-                    navController.navigate(NavRoutes.Splash)
-                }
-            )
-        }
-
-        composable<NavRoutes.FullScreen> { backStackEntry ->
-            val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
-            FullVisualizationPage(
-                visualizationId = route.visualizationId,
-                modifier = Modifier.fillMaxSize(),
-                startInSnippingMode = route.startInSnippingMode,
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onThreadsClick = { uri ->
-                    navController.navigate(
-                        NavRoutes.Threads(
-                            visualizationId = route.visualizationId,
-                            snipUri = uri
-                        )
-                    )
-                }
-            )
-        }
-
-        composable<NavRoutes.Threads> { backStackEntry ->
-            val route = backStackEntry.toRoute<NavRoutes.Threads>()
-            ThreadsPage(
-                visualizationId = route.visualizationId,
-                modifier = Modifier.fillMaxSize(),
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onCropClick = {
-                    navController.navigate(
-                        NavRoutes.FullScreen(
-                            visualizationId = route.visualizationId,
-                            startInSnippingMode = true
-                        )
-                    )
-                },
-                image = route.snipUri
-            )
-        }
-
-        composable<NavRoutes.Teams> {
             TeamsPage(
                 modifier           = Modifier.fillMaxSize(),
                 onNavigateToCreate = {
@@ -158,57 +112,112 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
             )
         }
 
-        composable<NavRoutes.Splash> {
-            SplashPage(
-                modifier = Modifier.fillMaxSize(),
-                onSessionActive = {
-                    navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Splash) {
+        composable<NavRoutes.Profile> {
+            ProfilePage(
+                modifier      = Modifier.fillMaxSize(),
+                navController = navController,
+                onLogout      = {
+                    navController.navigate(NavRoutes.Splash) {
+                        popUpTo(navController.graph.id) {
                             inclusive = true
                         }
                     }
-                },
-                onLoginClick = {
-                    navController.navigate(NavRoutes.Login)
-                },
-                onSignUpClick = {
-                    navController.navigate(NavRoutes.Signup)
                 }
+            )
+        }
+
+        composable<NavRoutes.FullScreen> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.FullScreen>()
+            FullVisualizationPage(
+                visualizationId     = route.visualizationId,
+                modifier            = Modifier.fillMaxSize(),
+                startInSnippingMode = route.startInSnippingMode,
+                onBackClick         = { navController.popBackStack() },
+                onThreadsClick      = { uri ->
+                    navController.navigate(
+                        NavRoutes.Threads(
+                            visualizationId = route.visualizationId,
+                            snipUri         = uri
+                        )
+                    )
+                },
+                onSnippingClick = { chart ->
+                    navController.navigate(
+                        NavRoutes.SnippingTool(
+                            visualizationId = route.visualizationId
+                        )
+                    )
+                },
+            )
+        }
+
+        composable<NavRoutes.ShareWithTeammates> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.ShareWithTeammates>()
+            ShareWithTeammatesScreen(
+                visualizationId = route.visualizationId,
+                onNavigateBack  = { navController.popBackStack() }
+            )
+        }
+
+        composable<NavRoutes.Threads> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.Threads>()
+            ThreadsPage(
+                visualizationId = route.visualizationId,
+                modifier        = Modifier.fillMaxSize(),
+                onBackClick     = { navController.popBackStack() },
+                onCropClick     = {
+                    navController.navigate(
+                        NavRoutes.FullScreen(
+                            visualizationId     = route.visualizationId,
+                            startInSnippingMode = true
+                        )
+                    )
+                },
+                image = route.snipUri
+            )
+        }
+
+        composable<NavRoutes.Splash> {
+            SplashPage(
+                modifier        = Modifier.fillMaxSize(),
+                onSessionActive = {
+                    navController.navigate(NavRoutes.Feed) {
+                        popUpTo(NavRoutes.Splash) { inclusive = true }
+                    }
+                },
+                onLoginClick  = { navController.navigate(NavRoutes.Login) },
+                onSignUpClick = { navController.navigate(NavRoutes.Signup) }
             )
         }
 
         composable<NavRoutes.Login> {
             LoginPage(
-                modifier = Modifier.fillMaxSize(),
-                onLoginSuccess = {
+                modifier              = Modifier.fillMaxSize(),
+                onLoginSuccess        = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Login) {
+                        popUpTo(navController.graph.id) {
                             inclusive = true
                         }
                     }
                 },
-                onSignUpClick  = { navController.navigate(NavRoutes.Signup) },
-                onForgotPasswordClick = {
-                    navController.navigate(NavRoutes.ResetPassword)
-                }
+                onSignUpClick         = { navController.navigate(NavRoutes.Signup) },
+                onForgotPasswordClick = { navController.navigate(NavRoutes.ResetPassword) }
             )
         }
 
         composable<NavRoutes.Signup> {
             SignUpPage(
-                modifier = Modifier.fillMaxSize(),
+                modifier        = Modifier.fillMaxSize(),
                 onSignUpSuccess = {
                     navController.navigate(NavRoutes.Feed) {
-                        popUpTo(NavRoutes.Splash) {
+                        popUpTo(navController.graph.id) {
                             inclusive = true
                         }
                     }
                 },
-                onLoginClick = {
+                onLoginClick    = {
                     navController.navigate(NavRoutes.Login) {
-                        popUpTo(NavRoutes.Signup) {
-                            inclusive = true
-                        }
+                        popUpTo(NavRoutes.Signup) { inclusive = true }
                     }
                 }
             )
@@ -216,10 +225,53 @@ fun AppNavHost(navController: NavHostController, modifier: Modifier = Modifier) 
 
         composable<NavRoutes.ResetPassword> {
             ResetPasswordPage(
+                modifier           = Modifier.fillMaxSize(),
+                onBackToLoginClick = { navController.popBackStack() }
+            )
+        }
+
+        composable<NavRoutes.SnipPreview> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.SnipPreview>()
+
+            SnipPreviewPage(
+                visualizationId = route.visualizationId,
+                snipUri = route.snipUri,
                 modifier = Modifier.fillMaxSize(),
-                onBackToLoginClick = {
+                onBackClick = {
                     navController.popBackStack()
+                },
+                onShareCompleted = {
+                    navController.navigate(
+                        NavRoutes.Threads(
+                            visualizationId = route.visualizationId
+                        )
+                    ) {
+                        popUpTo(
+                            NavRoutes.FullScreen(
+                                visualizationId = route.visualizationId
+                            )
+                        ) {
+                            inclusive = false
+                        }
+                    }
                 }
+            )
+        }
+
+        composable<NavRoutes.SnippingTool> { backStackEntry ->
+            val route = backStackEntry.toRoute<NavRoutes.SnippingTool>()
+            SnippingToolView(
+                modifier = Modifier.fillMaxSize(),
+                visualizationId = route.visualizationId,
+                onDone = { uri ->
+                    navController.navigate(
+                        NavRoutes.SnipPreview(
+                            visualizationId = route.visualizationId,
+                            snipUri = uri
+                        )
+                    )
+                },
+                onCancel = { navController.popBackStack() },
             )
         }
     }

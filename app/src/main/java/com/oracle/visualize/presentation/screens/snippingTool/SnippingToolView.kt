@@ -1,39 +1,45 @@
 package com.oracle.visualize.presentation.screens.snippingTool
 
+import android.app.Activity
+import android.content.ContextWrapper
 import android.graphics.Bitmap
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
@@ -45,62 +51,71 @@ import com.oracle.visualize.presentation.screens.snippingTool.components.Drawing
 import com.oracle.visualize.presentation.screens.snippingTool.components.SnippingToolActionBar
 import com.oracle.visualize.presentation.screens.snippingTool.components.SnippingToolbar
 import kotlinx.coroutines.launch
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.oracle.visualize.R
+import com.oracle.visualize.presentation.components.ChartRenderFullScreen
+import com.oracle.visualize.presentation.screens.fullVisualizationScreen.components.ZoomableChart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun SnippingToolView(
-    bitmap: Bitmap,
-    onDone: (Bitmap) -> Unit,
+    visualizationId: String,
+    onDone: (String) -> Unit,
     onCancel: () ->  Unit,
     modifier: Modifier = Modifier,
     viewModel: SnippingToolViewModel = hiltViewModel()
 ) {
-
-
-
-    // TODO: Right now, the navigation bar appearing and reappearing crooks the crop. Fix this later.
-
-// DisposableEffect(Unit) {
-//     val window = (view.context as Activity).window
-//     val controller = WindowInsetsControllerCompat(window, view)
-//
-//     window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//     controller.hide(WindowInsetsCompat.Type.systemBars())
-//     controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//
-//     onDispose {
-//         window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-//         controller.show(WindowInsetsCompat.Type.systemBars())
-//     }
-// }
-
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-    val transformState = rememberTransformableState { zoomChange, panChange, centroid ->
-        scale = (scale * zoomChange).coerceIn(1f, 5f)
-        offset += panChange
+    val context = LocalContext.current
+
+    // Hide Android system bars to allow gesture interaction.
+    DisposableEffect(Unit) {
+        val activity = context as? Activity ?: (context as? ContextWrapper)?.baseContext as? Activity
+        val screenWindow = activity?.window
+
+        if (screenWindow != null) {
+            val insetsController = WindowInsetsControllerCompat(screenWindow, screenWindow.decorView)
+            insetsController.hide(WindowInsetsCompat.Type.systemBars())
+            insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+            onDispose { insetsController.show(WindowInsetsCompat.Type.systemBars()) }
+        } else {
+            onDispose {}
+        }
+    }
+
+    LaunchedEffect(visualizationId) {
+        viewModel.loadVisualization(visualizationId)
     }
 
     if (uiState.showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.toggleConfirmDialog() },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             title = { Text(stringResource(R.string.dialog_confirm_title)) },
             text = { Text(stringResource(R.string.dialog_confirm_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.toggleConfirmDialog()
                     coroutineScope.launch {
-                        onDone(viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap()))
+                        val bitmap = viewModel.confirmCrop(graphicsLayer.toImageBitmap().asAndroidBitmap())
+                        val uri = withContext(Dispatchers.IO) {
+                            File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                            }.toURI().toString()
+                        }
+                        onDone(uri)
                     }
                 }) {
                     Text(
@@ -113,7 +128,7 @@ fun SnippingToolView(
                 TextButton(onClick = { viewModel.toggleConfirmDialog() }) {
                     Text(
                         stringResource(R.string.dialog_confirm_no),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -123,9 +138,9 @@ fun SnippingToolView(
     if (uiState.showCancelDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.toggleCancelDialog() },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             title = { Text(stringResource(R.string.dialog_cancel_title)) },
             text = { Text(stringResource(R.string.dialog_cancel_message)) },
             confirmButton = {
@@ -143,7 +158,7 @@ fun SnippingToolView(
                 TextButton(onClick = { viewModel.toggleCancelDialog() }) {
                     Text(
                         stringResource(R.string.dialog_cancel_no),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -156,111 +171,160 @@ fun SnippingToolView(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .onSizeChanged { size ->
-                    if (uiState.cropRect == IntRect.Zero) {
-                        viewModel.setCropRect(IntRect(
-                            (size.width * 0.1f).toInt(),
-                            (size.height * 0.1f).toInt(),
-                            (size.width * 0.9f).toInt(),
-                            (size.height * 0.9f).toInt()
-                        ))
+        ) {
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                uiState.errorMessage != null -> {
+                    Text(
+                        text = stringResource(uiState.errorMessage!!),
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                uiState.chart != null -> {
+                    val chart = uiState.chart!!
+
+                    Scaffold(
+                        containerColor = Color.Transparent,
+                        topBar = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .windowInsetsPadding(WindowInsets.statusBars.add(WindowInsets(top = 16.dp)))
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                SnippingToolActionBar(
+                                    onUndo = { viewModel.undo() },
+                                    onRedo = { viewModel.redo() }
+                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    FilledIconButton(
+                                        onClick = { viewModel.toggleCancelDialog() },
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                            contentColor = MaterialTheme.colorScheme.onError
+                                        )
+                                    ) {
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cancel))
+                                    }
+                                    FilledIconButton(
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                val bitmap = viewModel.confirmCrop(
+                                                    graphicsLayer.toImageBitmap().asAndroidBitmap()
+                                                )
+
+                                                val uri = withContext(Dispatchers.IO) {
+                                                    File(context.cacheDir, "snip_${System.currentTimeMillis()}.png").also { file ->
+                                                        file.outputStream().use {
+                                                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                                                        }
+                                                    }.toURI().toString()
+                                                }
+
+                                                onDone(uri)
+                                            }
+                                        },
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.secondary,
+                                            contentColor = MaterialTheme.colorScheme.onSecondary
+                                        )
+                                    ) {
+                                        Icon(Icons.Default.Send, contentDescription = stringResource(R.string.share))
+                                    }
+                                }
+                            }
+                        },
+                        bottomBar = {
+                            SnippingToolbar(
+                                onPenClick = { viewModel.toggleTool(DrawingTool.PEN) },
+                                onEraserClick = { viewModel.toggleTool(DrawingTool.ERASER) },
+                                onColorClick = { color -> viewModel.setColor(color.selectedColor) },
+                                strokeWidth = uiState.strokeWidth,
+                                fontSize = uiState.fontSize,
+                                onThicknessClick = { viewModel.setStrokeWidth(it) },
+                                onTextClick = { viewModel.toggleTool(DrawingTool.TEXT) },
+                                onFontSizeChange = {viewModel.setFontSize(it)},
+                                onShapeClick = { viewModel.selectTool(DrawingTool.SHAPE) },
+                                onShapeSet = { shape -> viewModel.setShape(shape)},
+                                onCropClick = { viewModel.toggleCrop() },
+                                selectedColor = uiState.selectedColor,
+                                selectedTool = uiState.selectedTool,
+                                isItalics = uiState.isItalics,
+                                italicsToggle = { viewModel.setItalics() },
+                                cropMode = uiState.isCroppingMode,
+                                modifier = Modifier
+                                    .windowInsetsPadding(WindowInsets.navigationBars)
+                            )
+                        }
+                    ) { innerPadding ->
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .drawWithContent {
+                                graphicsLayer.record { this@drawWithContent.drawContent() }
+                                drawLayer(graphicsLayer)
+                            }
+                        ) {
+                            ZoomableChart(
+                                chart = chart,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                ChartRenderFullScreen(
+                                    chart = chart,
+                                    showAxisLabels = true,
+                                    chartColorTheme = uiState.chartColorTheme
+                                )
+                            }
+
+                            DrawingCanvas(
+                                elements = uiState.elements,
+                                selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
+                                selectedShape = uiState.selectedShape,
+                                selectedColor = uiState.selectedColor,
+                                strokeWidth = uiState.strokeWidth,
+                                onAddElement = { viewModel.addElement(it) },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        compositingStrategy = CompositingStrategy.Offscreen
+                                    },
+                                isDrawingMode = uiState.isDrawingMode,
+                                selectedFontSize = uiState.fontSize.sp,
+                                isItalics = uiState.isItalics
+                            )
+
+                            CropOverlay(
+                                cropRect = uiState.cropRect,
+                                onCropRectChange = { viewModel.setCropRect(it) },
+                                isCropDraggable = uiState.isCroppingMode,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .onSizeChanged { size ->
+                                        viewModel.setContainerSize(size)
+                                        if (uiState.cropRect == IntRect.Zero) {
+                                            viewModel.setCropRect(
+                                                IntRect(
+                                                    (size.width * 0.1f).toInt(),
+                                                    (size.height * 0.1f).toInt(),
+                                                    (size.width * 0.9f).toInt(),
+                                                    (size.height * 0.9f).toInt()
+                                                )
+                                            )
+                                        }
+                                    }
+                            )
+                        }
                     }
                 }
-                .then(
-                    if (uiState.isTransformable) Modifier.transformable(state = transformState)
-                    else Modifier
-                )
-                .drawWithContent {
-                    graphicsLayer.record { this@drawWithContent.drawContent() }
-                    drawLayer(graphicsLayer)
-                }
-        ) {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                    }
-            )
-
-            DrawingCanvas(
-                elements = uiState.elements,
-                selectedTool = uiState.selectedTool ?: DrawingTool.PEN,
-                selectedShape = uiState.selectedShape,
-                selectedColor = uiState.selectedColor,
-                strokeWidth = uiState.strokeWidth,
-                onAddElement = { viewModel.addElement(it) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        translationX = offset.x
-                        translationY = offset.y
-                        compositingStrategy = CompositingStrategy.Offscreen
-                    },
-                isDrawingMode = uiState.isDrawingMode
-            )
-        }
-
-        CropOverlay(
-            cropRect = uiState.cropRect,
-            onCropRectChange = { viewModel.setCropRect(it) },
-            isCropDraggable = uiState.isCroppingMode,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        SnippingToolbar(
-            onPenClick = { viewModel.selectTool(DrawingTool.PEN) },
-            onEraserClick = { viewModel.selectTool(DrawingTool.ERASER) },
-            onColorClick = { color -> viewModel.setColor(color.selectedColor) },
-            strokeWidth = uiState.strokeWidth,
-            onThicknessClick = { viewModel.setStrokeWidth(it) },
-            onTextClick = { viewModel.selectTool(DrawingTool.TEXT) },
-            onShapeClick = { shape ->
-                viewModel.selectTool(DrawingTool.SHAPE)
-                viewModel.setShape(shape)
-            },
-            onCropClick = { viewModel.toggleCrop() },
-            selectedColor = uiState.selectedColor,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = 48.dp),
-            selectedTool = uiState.selectedTool,
-            cropMode = uiState.isCroppingMode
-        )
-
-        SnippingToolActionBar(
-            onUndo = { viewModel.undo() },
-            onRedo = { viewModel.redo() },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 64.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 48.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            FloatingActionButton(
-                onClick = { viewModel.toggleCancelDialog() },
-                containerColor = MaterialTheme.colorScheme.error
-            ) {
-                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.fab_cancel), tint = MaterialTheme.colorScheme.onSecondary)
-            }
-            FloatingActionButton(
-                onClick = { viewModel.toggleConfirmDialog() },
-                containerColor = MaterialTheme.colorScheme.secondary
-            ) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.fab_confirm), tint = MaterialTheme.colorScheme.onSecondary)
             }
         }
     }

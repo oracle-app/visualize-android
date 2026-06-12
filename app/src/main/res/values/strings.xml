@@ -11,12 +11,14 @@
     <string name="edit">Edit</string>
     <string name="save_changes">Save Changes</string>
 
+    // Roles
+    <string name="permission_denied">User does not possess the role to perform this action</string>
 
     // Navigation Bar
 
     <string name="nav_create">Create</string>
     <string name="nav_teams">Teams</string>
-    <string name="nav_feed">Feed</string>
+    <string name="nav_feed" translatable="false">Feed</string>
     <string name="nav_notifications">Notifications</string>
     <string name="nav_profile">Profile</string>
 
@@ -42,24 +44,34 @@
 
     <string name="time_just_now">just now</string>
     <string name="time_mins_ago">%d min ago</string>
-    <string name="time_hours_ago">%d h ago</string>
-    <string name="time_days_ago">%d d ago</string>
+    <plurals name="time_hours_ago">
+        <item quantity="one">%d hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <string name="time_a_week_ago">a week ago</string>
     <plurals name="time_weeks_ago">
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
-    <string name="by_author">By %s</string>
-    <string name="by_me">By Me</string>
-    <string name="bullet_separator">•</string>
-    <string name="failed_load_chart">Failed to load chart"</string>
-ß
+    <string name="time_short_mins">%dm</string>
+    <string name="time_short_hours">%dh</string>
+    <string name="time_short_days">%dd</string>
+    <string name="time_short_weeks">%dw</string>
+    <string name="by_author">by %s</string>
+    <string name="by_me">by me</string>
+    <string name="bullet_separator" translatable="false">•</string>
+    <string name="failed_load_chart">Failed to load chart</string>
     //Chart Component
-    <string name="invalid_chart">"Invalid chart type was detected"</string>
-    <string name="line_scatter_x_metric">x</string>
-    <string name="line_scatter_y_metric">y</string>
+    <string name="invalid_chart">Invalid chart type was detected</string>
+    <string name="line_scatter_x_metric" translatable="false">x</string>
+    <string name="line_scatter_y_metric" translatable="false">y</string>
     <string name="stacked_bar_series">Series</string>
 
-    // Chart full screen
+    // Chart legends full screen
     <string name="chart_legend_cat_label">Category</string>
     <string name="fullscreen_sharing_label_1">Sharing with</string>
     <string name="fullscreen_sharing_label_2">members</string>
@@ -96,7 +108,7 @@
     <string name="chart_selection_share_and_post">Share and post</string>
     <string name="chart_selection_ready_title">Your Visualizations Are Ready!</string>
     <string name="chart_selection_ready_subtitle">We\'ve generated several charts based on your dataset.</string>
-    <string name="chart_selection_prompt">Choose the chart that best represents the insights you want to share.</string>
+    <string name="chart_selection_prompt">Choose the charts that best represents the insights you want to share.</string>
 
     // Edit Chart Title Dialog
 
@@ -137,7 +149,7 @@
     // Share With Teammates Screen
 
     <string name="share_with_teammates_title">Share to More Teammates</string>
-    <string name="share_with_teammates_empty">Search for teammates you\´d like to share with.</string>
+    <string name="share_with_teammates_empty">Search for teammates you\'d like to share with.</string>
     <string name="share_no_results">No users found for that email.</string>
     <string name="share_clear_search">Clear search</string>
     <string name="share_send">Send</string>
@@ -157,11 +169,34 @@
     <string name="error_parsing">There was a problem reading some visualizations.</string>
     <string name="error_viz_not_found">No visualizations found.</string>
     <string name="error_chart_not_found">No chart found.</string>
-    <string name="error_unknown_retry">An unexpected error occurred. Please try again.</string>
+    <string name="error_unknown_retry">An unexpected error occurred.\nPlease try again.</string>
     <string name="error_create_comment">Failed to create comment</string>
     <string name="error_com_not_found">No comments found.</string>
     <string name="error_empty_comment">Comment cannot be empty.</string>
+
     <string name="error_upload_snip">Error. Image could not be uploaded.</string>
+    <string name="error_email_invalid">Please enter a valid email address.</string>
+    <string name="error_auth_field_empty">Required fields cannot be left blank.</string>
+    <string name="error_invalid_credentials">Incorrect email or password.\nPlease try again.</string>
+    <string name="error_alert">Something went wrong.\nPlease try again.</string>
+    <string name="error_name_length">Name must be at least 2 characters.</string>
+    <string name="error_email_already">This email is already registered.</string>
+    <string name="error_password_length">Password must be at least 12 characters.</string>
+    <string name="error_password_weak">Password must include letters and numbers.</string>
+    <string name="error_password_special">Password must include one of ($ @ ! % * # ? &amp; .).</string>
+    <string name="error_passwords_not_match">Passwords do not match.</string>
+    <string name="error_team_load_failed">Failed to load team</string>
+    <string name="error_team_name_empty">Team name cannot be empty</string>
+    <string name="error_team_saved_failed">Failed to save team</string>
+    <string name="error_charts_not_generate">No charts could be generated for this dataset.</string>
+    <string name="error_chart_invalid_state">Invalid state</string>
+    <string name="error_charts_not_selected">No charts selected</string>
+    <string name="error_chart_page_failed">Failed to fetch page for chart $chartIndex</string>
+    <string name="error_chart_unable_load">Unable to Load Charts</string>
+    <string name="error_teams_load_failed">Failed to load teams</string>
+    <string name="error_team_delete_failed">Failed to delete team</string>
+    <string name="error_share_load_failed">Failed to load sharing info. Please try again.</string>
+    <string name="error_share_failed">Failed to share. Please try again.</string>
 
 
     //Icon Descriptions
@@ -174,7 +209,7 @@
     <string name="version_declaration">Version</string>
     <string name="chart_theme_title">Chart theme</string>
     <string name="about_title">About</string>
-    <string name="developer">Developed by ----</string>
+    <string name="developer">Developed by VisTeam</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="licenses">Licenses and open source libraries</string>
     <string name="preview">Preview</string>
@@ -182,7 +217,8 @@
     <string name="choose_photo">Choose photo</string>
     <string name="delete_photo">Delete photo</string>
     <string name="delete_photo_message">Delete profile picture?</string>
-    <string name="log_out_title">Log Out?</string>
+    <string name="log_out_title">Log Out</string>
+    <string name="log_out_message">Are you sure you want to log out?</string>
     <string name="updating_pfp">Updating profile picture…</string>
 
     // Descriptions
@@ -222,8 +258,9 @@
     <string name="fab_confirm">Confirm</string>
     <string name="fab_cancel">Cancel</string>
     <string name="dialog_confirm_title">Share as New Thread</string>
-    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread. To reply to an existing thread, go to the Threads section.</string>
+    <string name="dialog_confirm_message">This edited visualization will be shared as a new thread.</string>
     <string name="dialog_confirm_yes">Share</string>
+    <string name="dialog_confirm_yes_atl">Sharing...</string>
     <string name="dialog_confirm_no">Cancel</string>
     <string name="dialog_cancel_title">Discard Changes</string>
     <string name="dialog_cancel_message">If you cancel, your changes will not be saved.</string>
@@ -236,9 +273,9 @@
     <string name="splash_description">Create, choose, and share AI-\n
                         powered graphs in seconds.\n
                         Fast, simple, and secure.</string>
-    <string name="login">Log In</string>
-    <string name="signup">Sign Up</string>
-    <string name="version">V1.0.0</string>
+    <string name="login">Log in</string>
+    <string name="signup">Sign up</string>
+    <string name="version">V 1.0.0</string>
 
     //Login Page
     <string name="welcome">Welcome</string>
@@ -248,7 +285,7 @@
     <string name="forgot_your_password">Forgot your password?</string>
 
     //Signup Page
-    <string name="already_have_account">Already have an account</string>
+    <string name="already_have_account">Already have an account?</string>
     <string name="confirm_password">Confirm password</string>
     <string name="name">Name</string>
     <string name="create_account">Create your account</string>
@@ -256,7 +293,7 @@
 
     //Reset Password Page
     <string name="reset_password">Reset Password</string>
-    <string name="reset_password_description">Enter your email address and we will send you instructions to reset your password.</string>
+    <string name="reset_password_description">Enter the email address associated with your account to receive a recovery code.</string>
     <string name="send_link">Send</string>
     <string name="back_to_login">Back to log in</string>
     <string name="check_your_email">Check your email</string>
@@ -291,16 +328,42 @@
     <string name="create_team_remove_member_description">Remove member</string>
     <string name="create_team_empty_hint">Search for teammates and add them to the list.</string>
 
-    <!-- Unsaved Changes Dialog (Create/Edit Team) -->
+    <!-- Diálogo de Cambios Sin Guardar (Crear/Editar Equipo) -->
     <string name="dialog_unsaved_changes_title">Unsaved Changes</string>
     <string name="dialog_unsaved_changes_message">You have unsaved changes. Are you sure you want to leave?</string>
     <string name="dialog_unsaved_changes_cancel">Cancel</string>
-    <string name="dialog_unsaved_changes_confirm">Leave</string>
+    <string name="dialog_unsaved_changes_confirm">Discard</string>
 
     <!-- Delete Team Dialog (Teams Screen) -->
     <string name="dialog_delete_team_title">Delete Team?</string>
     <string name="dialog_delete_team_message">This team and its members will be removed. This action cannot be undone.</string>
     <string name="dialog_delete_team_cancel">Cancel</string>
     <string name="dialog_delete_team_confirm">Delete</string>
+
+    //Notifications
+    <string name="notification_title">Notifications</string>
+    <string name="no_notifications_yet">No Notifications Yet</string>
+    <string name="notify_you">We’ll notify you when there’s something new.</string>
+
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="older">Older</string>
+
+    // Chart color themes
+    <string name="chart_changed_to_theme">Changed to Theme</string>
+    <string name="chart_theme_lagoon">Lagoon</string>
+    <string name="chart_theme_sunset">Sunset</string>
+    <string name="chart_theme_harvest">Harvest</string>
+    <string name="chart_theme_petal">Petal</string>
+
+    // Snipping Tool Preview Page
+    <string name="caption">Caption</string>
+    <string name="share_insights">Share insights about this edited visualization.</string>
+    <string name="add_desc">Add an optional description...</string>
+    <string name="edit_preview">Edited visualization preview</string>
+    <string name="preview_edited_vis">Preview of the edited visualization</string>
+
+
 
 </resources>

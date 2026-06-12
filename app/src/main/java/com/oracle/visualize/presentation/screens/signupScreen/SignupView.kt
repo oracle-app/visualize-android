@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,6 +15,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,17 +31,7 @@ fun SignUpPage(
     onSignUpSuccess: () -> Unit,
     onLoginClick: () -> Unit
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    // This is where the page fetches the current app version.
-
-    val unknown = stringResource(R.string.error_unknown)
-    val appVersion = remember {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0)
-            .versionName ?: unknown
-    }
 
     LaunchedEffect(uiState.success) {
         if (uiState.success) {
@@ -75,13 +66,14 @@ fun SignUpPage(
                 )
                 .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 36.dp)
-                .padding(top = 68.dp, bottom = 30.dp),
+                .padding(top = 46.dp, bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(
                 text = stringResource(R.string.create_account),
-                fontSize = 26.sp,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
@@ -92,8 +84,17 @@ fun SignUpPage(
                 onValueChange = viewModel::onNameChange,
                 placeholder = stringResource(R.string.name),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.nameError != null
+                isError = uiState.nameErrorRes != null
             )
+
+            uiState.nameErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(22.dp))
 
@@ -102,8 +103,17 @@ fun SignUpPage(
                 onValueChange = viewModel::onEmailChange,
                 placeholder = stringResource(R.string.email),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.emailError != null
+                isError = uiState.emailErrorRes != null
             )
+
+            uiState.emailErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(22.dp))
 
@@ -112,11 +122,20 @@ fun SignUpPage(
                 onValueChange = viewModel::onPasswordChange,
                 placeholder = stringResource(R.string.password),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.passwordError != null,
+                isError = uiState.passwordErrorRes != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isPasswordVisible,
                 onVisibilityClick = viewModel::onPasswordVisibilityChange
             )
+
+            uiState.passwordErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -125,24 +144,26 @@ fun SignUpPage(
                 onValueChange = viewModel::onConfirmPasswordChange,
                 placeholder = stringResource(R.string.confirm_password),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                isError = uiState.confirmPasswordError != null,
+                isError = uiState.confirmPasswordErrorRes != null,
                 isPassword = true,
                 isPasswordVisible = uiState.isConfirmPasswordVisible,
                 onVisibilityClick = viewModel::onConfirmPasswordVisibilityChange
             )
-            Text(
-                text = stringResource(R.string.passremember),
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(.5f),
-                fontSize = 11.sp,
-                modifier = Modifier.padding(top = 5.dp).align(Alignment.Start)
 
-            )
+            uiState.confirmPasswordErrorRes ?.let {
+                Text(
+                    text = stringResource(id = it),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 11.sp,
+                    modifier = Modifier.align(Alignment.Start).padding(start= 8.dp, top = 4.dp)
+                )
+            }
 
-            uiState.error?.let {
+            uiState.errorRes?.let { errorId ->
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = it,
+                    text = stringResource(id = errorId),
                     color = MaterialTheme.colorScheme.error,
                     fontSize = 12.sp
                 )
@@ -179,8 +200,8 @@ fun SignUpPage(
 
             Text(
                 text = stringResource(R.string.already_have_account),
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onBackground
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
 
             TextButton(
@@ -189,17 +210,18 @@ fun SignUpPage(
             ) {
                 Text(
                     text = stringResource(R.string.login),
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.secondary
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium.copy(textDecoration = TextDecoration.Underline)
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "V${appVersion}",
+                text = stringResource(R.string.version),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }

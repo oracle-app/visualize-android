@@ -19,7 +19,7 @@ class NotificationIntegrationTest {
     private lateinit var repository: NotificationRepositoryImpl
 
     // TODO: Replace with a real userID from your Firestore
-    private val testUserID = "aB26cJBIA4NErpnXDLSw0s1ossJ2"
+    private val testUserID = "XefJEHcsfdTl6YZa4ubje28fT7B2"
     private var testNotificationID: String = ""
 
     @Before

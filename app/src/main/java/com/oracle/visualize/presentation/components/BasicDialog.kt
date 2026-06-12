@@ -1,9 +1,12 @@
 package com.oracle.visualize.presentation.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.oracle.visualize.R
 
 @Composable
 fun BasicDialog(
@@ -14,18 +17,26 @@ fun BasicDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val titleTextColor = MaterialTheme.colorScheme.onSurface
+    val dialogDescriptionTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = { Text(message) },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        title = { Text(text = title, color = titleTextColor) },
+        text = { Text(text = message, color = dialogDescriptionTextColor) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(confirm)
+                if (confirm == stringResource(R.string.delete) || confirm == stringResource(R.string.log_out)) {
+                    Text(text = confirm, color = MaterialTheme.colorScheme.error)
+                } else {
+                    Text(text = confirm, color = MaterialTheme.colorScheme.primary)
+                }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(cancel)
+                Text(text = cancel, color = MaterialTheme.colorScheme.primary)
             }
         }
     )

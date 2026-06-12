@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.oracle.visualize.R
+import com.oracle.visualize.domain.models.enums.UserType
 import com.oracle.visualize.presentation.screens.teamsScreen.components.DeleteTeamDialog
 import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamPosition
 import com.oracle.visualize.presentation.screens.teamsScreen.components.TeamsImInRow
@@ -71,7 +72,7 @@ fun TeamsPage(
         is TeamsUiState.Error -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    Text(text = stringResource(state.message), color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(onClick = { viewModel.onEvent(TeamsUiEvent.Refresh) }) {
                         Text(stringResource(R.string.teams_retry))
@@ -88,6 +89,11 @@ private fun TeamsContent(
     modifier: Modifier = Modifier,
     onEvent: (TeamsUiEvent) -> Unit
 ) {
+    val isConsumer = state.userType == UserType.CONSUMER
+    val isAdmin = state.userType == UserType.ADMIN
+
+    val subtitleTextColors = MaterialTheme.colorScheme.onBackground
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -98,38 +104,40 @@ private fun TeamsContent(
             TeamsTopBar()
 
             LazyColumn(
-                modifier       = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                modifier       = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text       = stringResource(R.string.teams_my_teams_section),
-                        fontSize   = 24.sp,
-                        fontWeight = FontWeight.Normal,
-                        color      = MaterialTheme.colorScheme.onSurface,
-                        modifier   = Modifier.padding(bottom = 12.dp)
-                    )
-                }
 
-                itemsIndexed(state.myTeams) { index, team ->
-                    MyTeamRow(
-                        team           = team,
-                        isSwiped       = state.swipedTeamId == team.id,
-                        position       = when {
-                            state.myTeams.size == 1         -> TeamPosition.SINGLE
-                            index == 0                      -> TeamPosition.TOP
-                            index == state.myTeams.size - 1 -> TeamPosition.BOTTOM
-                            else                            -> TeamPosition.MIDDLE
-                        },
-                        onSwipe        = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
-                        onDismissSwipe = { onEvent(TeamsUiEvent.SwipeTeam(null)) },
-                        onEdit         = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
-                        onDelete       = { onEvent(TeamsUiEvent.RequestDeleteTeam(team.id)) }
-                    )
-                    if (index < state.myTeams.size - 1) Spacer(modifier = Modifier.height(3.dp))
+                // "My Teams" section — only visible for non-CONSUMER users
+                if (!isConsumer) {
+                    item {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Text(
+                            text       = stringResource(R.string.teams_my_teams_section),
+                            fontSize   = 24.sp,
+                            fontWeight = FontWeight.Normal,
+                            color      = subtitleTextColors,
+                            modifier   = Modifier.padding(bottom = 12.dp)
+                        )
+                    }
+
+                    itemsIndexed(state.myTeams) { index, team ->
+                        MyTeamRow(
+                            team           = team,
+                            isSwiped       = state.swipedTeamId == team.id,
+                            position       = when {
+                                state.myTeams.size == 1         -> TeamPosition.SINGLE
+                                index == 0                      -> TeamPosition.TOP
+                                index == state.myTeams.size - 1 -> TeamPosition.BOTTOM
+                                else                            -> TeamPosition.MIDDLE
+                            },
+                            onSwipe        = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
+                            onDismissSwipe = { onEvent(TeamsUiEvent.SwipeTeam(null)) },
+                            onEdit         = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
+                            onDelete       = { onEvent(TeamsUiEvent.RequestDeleteTeam(team.id)) }
+                        )
+                        if (index < state.myTeams.size - 1) Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
 
                 item {
@@ -138,39 +146,62 @@ private fun TeamsContent(
                         text       = stringResource(R.string.teams_im_in_section),
                         fontSize   = 24.sp,
                         fontWeight = FontWeight.Normal,
-                        color      = MaterialTheme.colorScheme.onSurface,
+                        color      = subtitleTextColors,
                         modifier   = Modifier.padding(bottom = 12.dp)
                     )
                 }
 
                 itemsIndexed(state.teamsImIn) { index, team ->
-                    TeamsImInRow(
-                        team       = team,
-                        isExpanded = team.id in state.expandedTeamIds,
-                        position   = when {
-                            state.teamsImIn.size == 1         -> TeamPosition.SINGLE
-                            index == 0                        -> TeamPosition.TOP
-                            index == state.teamsImIn.size - 1 -> TeamPosition.BOTTOM
-                            else                              -> TeamPosition.MIDDLE
-                        },
-                        onToggle   = { onEvent(TeamsUiEvent.ToggleExpand(team.id)) }
-                    )
-                    if (index < state.teamsImIn.size - 1) Spacer(modifier = Modifier.height(3.dp))
+                    val position = when {
+                        state.teamsImIn.size == 1         -> TeamPosition.SINGLE
+                        index == 0                        -> TeamPosition.TOP
+                        index == state.teamsImIn.size - 1 -> TeamPosition.BOTTOM
+                        else                              -> TeamPosition.MIDDLE
+                    }
+
+                    // ADMIN sees edit/delete actions on Teams I'm In rows too
+                    if (isAdmin) {
+                        MyTeamRow(
+                            team           = team,
+                            isSwiped       = state.swipedTeamId == team.id,
+                            position       = position,
+                            onSwipe        = { onEvent(TeamsUiEvent.SwipeTeam(team.id)) },
+                            onDismissSwipe = { onEvent(TeamsUiEvent.SwipeTeam(null)) },
+                            onEdit         = { onEvent(TeamsUiEvent.NavigateToEditTeam(team.id)) },
+                            onDelete       = { onEvent(TeamsUiEvent.RequestDeleteTeam(team.id)) }
+                        )
+                    } else {
+                        TeamsImInRow(
+                            team       = team,
+                            isExpanded = team.id in state.expandedTeamIds,
+                            position   = position,
+                            onToggle   = { onEvent(TeamsUiEvent.ToggleExpand(team.id)) }
+                        )
+                    }
+
+                    if (index < state.teamsImIn.size - 1) Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
 
-        FloatingActionButton(
-            onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
-            modifier       = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 32.dp, end = 24.dp)
-                .size(80.dp),
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor   = MaterialTheme.colorScheme.onSecondary,
-            shape          = RoundedCornerShape(24.dp)
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.teams_create_fab_description), modifier = Modifier.size(40.dp))
+        // FAB only visible for non-CONSUMER users
+        if (!isConsumer) {
+            FloatingActionButton(
+                onClick        = { onEvent(TeamsUiEvent.NavigateToCreateTeam) },
+                modifier       = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 32.dp, end = 24.dp)
+                    .size(80.dp),
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor   = MaterialTheme.colorScheme.onSecondary,
+                shape          = RoundedCornerShape(20.dp)
+            ) {
+                Icon(
+                    imageVector        = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.teams_create_fab_description),
+                    modifier           = Modifier.size(40.dp)
+                )
+            }
         }
 
         if (state.teamPendingDeleteId != null) {
