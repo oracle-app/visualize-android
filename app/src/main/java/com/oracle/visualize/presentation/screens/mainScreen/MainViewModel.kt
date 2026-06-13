@@ -64,7 +64,7 @@ class MainViewModel @Inject constructor(
                     NavItem(
                         label = R.string.nav_notifications,
                         icon  = Icons.Default.Notifications,
-                        badgeCount = 5,
+                        badgeCount = 0,
                         destination = NavRoutes.Notifications
                     ),
                     NavItem(
