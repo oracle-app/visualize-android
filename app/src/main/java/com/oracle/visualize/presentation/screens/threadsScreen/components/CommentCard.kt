@@ -169,9 +169,9 @@ fun CommentCard(
                 modifier = Modifier
                     .padding(start = 14.dp, bottom = 20.dp)
                     .width(155.dp)
-                    .height(200.dp)
+                    .wrapContentHeight()
                     .clip(RoundedCornerShape(6.dp)),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillWidth
             )
         }
         Box(

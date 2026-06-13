@@ -45,9 +45,9 @@ fun SnipPreviewPage(
                     viewModel.dismissConfirmDialog()
                 }
             },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             title = { Text(stringResource(R.string.dialog_confirm_title)) },
             text = { Text(stringResource(R.string.dialog_confirm_message)) },
             confirmButton = {
@@ -73,7 +73,7 @@ fun SnipPreviewPage(
                 ) {
                     Text(
                         stringResource(R.string.dialog_confirm_no),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
